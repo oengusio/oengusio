@@ -1,0 +1,17 @@
+@import "~bulmaswatch/solar/variables";
+
+.validated {
+  background-color: rgba($green, .3);
+}
+
+.bonus {
+  background-color: rgba($info, .3);
+}
+
+.rejected {
+  background-color: rgba($red, .3);
+}
+
+.backup {
+  background-color: rgba($warning, .3);
+}

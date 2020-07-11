@@ -1,0 +1,146 @@
+<div class="container">
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h1 class="title">
+          {{localStorage.getItem('language') === 'ja' && !!user.usernameJapanese ? user.usernameJapanese : user.username}}
+        </h1>
+      </div>
+    </div>
+  </section>
+
+  <div *ngIf="!!user.twitchName || !!user.twitterName || !!user.speedruncomName">
+    <hr/>
+    <nav class="level">
+      <div class="level-item has-text-centered" *ngIf="!!user.twitchName">
+        <div>
+          <p class="heading">Twitch</p>
+          <p class="title">
+            <a href="https://twitch.tv/{{user.twitchName}}" target="_blank">
+              <fa-icon [icon]="faTwitch"></fa-icon>
+            </a>
+          </p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered" *ngIf="!!user.twitterName">
+        <div>
+          <p class="heading">Twitter</p>
+          <p class="title">
+            <a href="https://twitter.com/{{user.twitterName}}" target="_blank">
+              <fa-icon [icon]="faTwitter"></fa-icon>
+            </a>
+          </p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered" *ngIf="!!user.speedruncomName">
+        <div>
+          <p class="heading">Speedrun.com</p>
+          <p class="title">
+            <a href="https://speedrun.com/user/{{user.speedruncomName}}" target="_blank">
+              <fa-icon [icon]="faTrophy"></fa-icon>
+            </a>
+          </p>
+        </div>
+      </div>
+    </nav>
+    <hr/>
+  </div>
+
+  <div *ngIf="!!user.history && user.history.length > 0">
+    <h4 class="title is-4">{{'user.profile.submissions' | translate}}</h4>
+    <div class="is-pulled-right" style="margin-bottom: 0.5rem">
+      <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+            <span>{{'user.profile.filter.status.title' | translate}}</span>
+            <span class="icon is-small">
+            <fa-icon [icon]="faAngleDown"></fa-icon>
+          </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item" *ngFor="let status of statusFilter; let i = index">
+              <label class="checkbox">
+                <input type="checkbox" name="status-{{i}}" [(ngModel)]="status.selected" (ngModelChange)="filter()">
+                {{'marathon.selection.status.' + status.title | translate}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown is-hoverable is-right" style="margin-left: 1rem">
+        <div class="dropdown-trigger">
+          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+            <span>{{'user.profile.filter.temporality.title' | translate}}</span>
+            <span class="icon is-small">
+            <fa-icon [icon]="faAngleDown"></fa-icon>
+          </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item" *ngFor="let date of dateFilter; let i = index">
+              <label class="checkbox">
+                <input type="checkbox" name="temporality-{{i}}" [(ngModel)]="date.selected" (ngModelChange)="filter()">
+                {{'user.profile.filter.temporality.' + date.title | translate}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table is-fullwidth">
+      <thead>
+      <tr>
+        <th>{{ 'marathon.submissions.table.marathon' | translate}}</th>
+        <th>{{ 'marathon.submissions.table.game' | translate}}</th>
+        <th>{{ 'marathon.submissions.table.category' | translate}}</th>
+        <th>{{ 'marathon.submissions.table.estimate' | translate}}</th>
+        <th>{{ 'marathon.submissions.table.status' | translate}}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-template ngFor let-marathon [ngForOf]="user.history" let-i="index">
+        <ng-template ngFor let-game [ngForOf]="marathon.games" let-j="index">
+          <ng-template ngFor let-category [ngForOf]="game.categories" let-k="index">
+            <tr *ngIf="category.visible && marathon.visible">
+              <ng-template [ngIf]="j === firstDisplayed(marathon.games) && k === firstDisplayed(game.categories)">
+                <td [attr.rowspan]="visibleGames(marathon)" class="{{marathon.status}}">
+                  <a [routerLink]="'/marathon/' + marathon.marathonId">{{marathon.marathonName}}</a>
+                  ({{moment(marathon.marathonStartDate).fromNow()}})
+                </td>
+              </ng-template>
+              <ng-template [ngIf]="k === firstDisplayed(game.categories)">
+                <td [attr.rowspan]="visibleCategories(game)" class="{{game.status}}">
+                  {{game.name}}
+                </td>
+              </ng-template>
+              <td class="{{category.status.toLowerCase()}}">
+                {{category.name}}
+              </td>
+              <td class="{{category.status.toLowerCase()}}">
+                {{category.estimateHuman}}
+              </td>
+              <td class="{{category.status.toLowerCase()}}">
+                {{'marathon.selection.status.' + category.status | translate}}
+              </td>
+            </tr>
+          </ng-template>
+        </ng-template>
+      </ng-template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!!user.moderatedMarathons && user.moderatedMarathons.length > 0">
+    <br/>
+    <h4 class="title is-4">{{'user.profile.moderator' | translate}}</h4>
+    <div class="list is-hoverable">
+      <span class="list-item" *ngFor="let marathon of user.moderatedMarathons">
+        <a [routerLink]="'/marathon/' + marathon.id">{{marathon.name}}</a>
+          ({{moment(marathon.startDate).fromNow()}})
+      </span>
+    </div>
+  </div>
+</div>

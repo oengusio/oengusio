@@ -1,0 +1,124 @@
+<div class="columns">
+  <div class="column is-narrow-desktop">
+    <aside class="menu" [ngClass]="{'minimized' : minimized}">
+      <div class="box">
+        <ul class="menu-list is-hidden-mobile">
+          <li>
+            <p>
+              <fa-icon [icon]="faCaretLeft"
+                       *ngIf="!minimized"
+                       (click)="minimized = !minimized" class="is-pulled-right"></fa-icon>
+              <fa-icon [icon]="faCaretRight"
+                       *ngIf="minimized"
+                       (click)="minimized = !minimized"
+                       class="is-pulled-right"></fa-icon>
+            </p>
+          </li>
+        </ul>
+        <hr *ngIf="minimized">
+        <h4 class="title is-4" *ngIf="!minimized">{{marathonService.marathon.name}}</h4>
+        <p class="menu-label" *ngIf="!minimized">
+          {{ 'marathon.menu.overview' | translate}}
+        </p>
+        <ul class="menu-list">
+          <li><a routerLink="." [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+            <fa-icon [icon]="faHome" style="margin-right:0.4rem"></fa-icon>
+            <span *ngIf="!minimized">{{ 'marathon.menu.home' | translate}}</span>
+          </a></li>
+          <li><a routerLink="submissions" [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+            <fa-icon [icon]="faBook" style="margin-right:0.4rem"></fa-icon>
+            <span *ngIf="!minimized">{{ 'marathon.menu.viewSubmissions' | translate}}</span>
+          </a></li>
+          <li
+            *ngIf="marathonService.marathon.canEditSubmissions && !!userService.user?.id && !marathonService.isArchived() &&
+            !userService.isBanned()">
+            <a routerLink="submit" #rla="routerLinkActive" [ngClass]="{'is-emphasized': !rla.isActive}"
+               [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+              <fa-icon [icon]="faPaperPlane" style="margin-right:0.4rem"></fa-icon>
+              <span
+                *ngIf="!marathonService.marathon.hasSubmitted && !minimized">{{ 'marathon.menu.submitRuns' | translate}}</span>
+              <span *ngIf="marathonService.marathon.hasSubmitted && !minimized">{{ 'marathon.menu.editSubmission' | translate}}</span>
+            </a>
+          </li>
+          <li *ngIf="marathonService.marathon.canEditSubmissions && !userService.user?.id &&
+          !marathonService.isArchived() && !minimized">
+            <a><b>{{ 'marathon.menu.loginToSubmit' | translate}}</b></a></li>
+          <li *ngIf="marathonService.marathon.scheduleDone">
+            <a routerLink="schedule" [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+              <fa-icon [icon]="faCalendar" style="margin-right:0.4rem"></fa-icon>
+              <span *ngIf="!minimized">{{ 'marathon.menu.schedule' | translate}}</span></a>
+          </li>
+        </ul>
+        <ng-template
+          [ngIf]="marathonService.marathon.hasIncentives || marathonService.marathon.hasDonations">
+          <p class="menu-label" *ngIf="!minimized">
+            {{ 'marathon.menu.tracker' | translate}}
+          </p>
+          <hr *ngIf="minimized">
+          <ul class="menu-list">
+            <li
+              *ngIf="marathonService.marathon.hasDonations && marathonService.marathon.donationsOpen &&
+              !marathonService.isArchived()">
+              <a routerLink="donate"
+                 #rla="routerLinkActive"
+                 [ngClass]="{'is-emphasized': !rla.isActive}"
+                 [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+                <fa-icon [icon]="faDonate" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.donate' | translate}}</span></a>
+            </li>
+            <li *ngIf="marathonService.marathon.hasDonations">
+              <a routerLink="donations" disabled [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact:
+              true}">
+                <fa-icon [icon]="faMoneyBill" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.donations' | translate}}</span></a>
+            </li>
+            <li *ngIf="marathonService.marathon.hasIncentives">
+              <a routerLink="incentives" disabled [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact:
+              true}">
+                <fa-icon [icon]="faBullseye" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.incentives' | translate}}</span></a>
+            </li>
+          </ul>
+        </ng-template>
+        <ng-template [ngIf]="isAdmin() && !userService.isBanned()">
+          <p class="menu-label" *ngIf="!minimized">
+            {{ 'marathon.menu.admin' | translate}}
+          </p>
+          <hr *ngIf="minimized">
+          <ul class="menu-list">
+            <li><a routerLink="settings" [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+              <fa-icon [icon]="faCogs" style="margin-right:0.4rem"></fa-icon>
+              <span *ngIf="!minimized">{{ 'marathon.menu.settings' | translate}}</span></a></li>
+            <li *ngIf="!marathonService.isArchived()">
+              <a routerLink="selection" [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
+                <fa-icon [icon]="faCheckSquare" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.selectRuns' | translate}}</span></a></li>
+            <li *ngIf="!marathonService.isArchived()">
+              <a routerLink="schedule/manage"
+                 [routerLinkActive]="'is-active'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                <fa-icon [icon]="faCalendarCheck" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.manageSchedule' | translate}}</span></a></li>
+            <li *ngIf="marathonService.marathon.hasIncentives && !marathonService.isArchived()">
+              <a routerLink="incentives/manage"
+                 [routerLinkActive]="'is-active'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                <fa-icon [icon]="faDotCircle" style="margin-right:0.4rem"></fa-icon>
+                <span *ngIf="!minimized">{{ 'marathon.menu.manageIncentives' | translate}}</span></a>
+            </li>
+          </ul>
+        </ng-template>
+        <ng-template [ngIf]="!minimized">
+          <p class="menu-label">
+            {{ 'marathon.menu.moderators' | translate}}
+          </p>
+          <span><app-user [user]="marathonService.marathon.creator"></app-user><br/></span>
+          <span *ngFor="let mod of marathonService.marathon.moderators"><app-user [user]="mod"></app-user><br/></span>
+        </ng-template>
+      </div>
+    </aside>
+  </div>
+  <div class="column">
+    <router-outlet></router-outlet>
+  </div>
+</div>

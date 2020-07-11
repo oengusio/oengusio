@@ -1,0 +1,65 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~bulmaswatch/solar/variables';
+@import '~bulma';
+@import '~bulmaswatch/solar/overrides';
+@import '~bulma-extensions/dist/css/bulma-extensions.min.css';
+@import '~bulma-extensions/bulma-tooltip/src/sass/index';
+@import '~@wizishop/ng-wizi-bulma/ng-wizi-bulma';
+@import "~@busacca/ng-pick-datetime/assets/style/picker.min.css";
+@import "~flag-icon-css/css/flag-icon.min.css";
+@import "~vis-timeline/dist/vis-timeline-graph2d.min.css";
+@import '~@fullcalendar/core/main.css';
+@import '~@fullcalendar/daygrid/main.css';
+
+#twitch-embed {
+  iframe {
+    width: 100% !important;
+    height: 480px !important;
+  }
+}
+
+.vis-timeline, .vis-timeline * {
+  border-color: $border !important;
+  color: $text !important;
+}
+
+.vis-item {
+  background-color: $primary;
+}
+
+.vis-timeline .vis-even {
+  background-color: $table-striped-row-even-background-color;
+}
+
+.fc-unthemed th,
+.fc-unthemed td,
+.fc-unthemed thead,
+.fc-unthemed tbody,
+.fc-unthemed .fc-divider,
+.fc-unthemed .fc-row,
+.fc-unthemed .fc-content,
+.fc-unthemed .fc-popover,
+.fc-unthemed .fc-list-view,
+.fc-unthemed .fc-list-heading td {
+  border-color: $border !important;
+}
+
+.fc-unthemed .fc-popover {
+  background-color: #fff;
+}
+
+.fc-unthemed .fc-divider,
+.fc-unthemed .fc-popover .fc-header,
+.fc-unthemed .fc-list-heading td {
+  background: #eee;
+}
+
+.fc-unthemed td.fc-today {
+  background: rgba($info, 0.5);
+  color: #fff;
+}
+
+.table td.is-emphasized, .table th.is-emphasized, .table tr.is-emphasized {
+  background-color: rgba($primary, 0.3) !important;
+  color: #fff
+}

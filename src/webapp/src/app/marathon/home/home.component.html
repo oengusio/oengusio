@@ -1,0 +1,113 @@
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        {{marathonService.marathon.name}}
+      </h1>
+    </div>
+  </div>
+</section>
+
+<hr/>
+<nav class="level">
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">{{ 'marathon.home.from' | translate}}</p>
+      <p class="title">{{moment(marathonService.marathon.startDate).tz(timezone).format('L')}}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">{{ 'marathon.home.to' | translate}}</p>
+      <p class="title">{{moment(marathonService.marathon.endDate).tz(timezone).format('L')}}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">{{ 'marathon.home.location' | translate}}</p>
+      <p class="title">
+        <fa-icon *ngIf="!marathonService.marathon.country || !marathonService.marathon.onsite"
+                 [icon]="faGlobe"></fa-icon>
+        <span [class]="'flag-icon flag-icon-' + marathonService.marathon.country.toLowerCase()"
+              *ngIf="marathonService.marathon.onsite && marathonService.marathon.country"> </span>
+      </p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">{{ 'marathon.home.language' | translate}}</p>
+      <p class="title">{{languages[marathonService.marathon.language].nativeName | titlecase}}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered" *ngIf="marathonService.marathon.twitch">
+    <div>
+      <p class="heading">Twitch</p>
+      <p class="title">
+        <a [href]="'https://twitch.tv/' + marathonService.marathon.twitch" target="_blank">
+          <fa-icon [icon]="faTwitch"></fa-icon>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered" *ngIf="marathonService.marathon.twitter">
+    <div>
+      <p class="heading">Twitter</p>
+      <p class="title">
+        <a [href]="'https://twitter.com/' + marathonService.marathon.twitter" target="_blank">
+          <fa-icon [icon]="faTwitter"></fa-icon>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered"
+       *ngIf="marathonService.marathon.discord && !marathonService.marathon.discordPrivacy">
+    <div>
+      <p class="heading">Discord</p>
+      <p class="title">
+        <a [href]="'https://discord.gg/' + marathonService.marathon.discord" target="_blank">
+          <fa-icon [icon]="faDiscord"></fa-icon>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered" *ngIf="!!marathonService.marathon.youtube">
+    <div>
+      <p class="heading">Youtube</p>
+      <p class="title">
+        <a [href]="marathonService.marathon.youtube" target="_blank">
+          <fa-icon [icon]="faYoutube"></fa-icon>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered" *ngIf="marathonService.marathon.hasDonations">
+    <div>
+      <p class="heading has-text-warning">{{ 'marathon.donations.total' | translate}}</p>
+      <p class="title has-text-warning">
+        <app-monetary-amount [amount]="marathonService.marathon.donationsTotal"
+                             [currency]="marathonService.marathon.donationCurrency"></app-monetary-amount>
+      </p>
+    </div>
+  </div>
+</nav>
+<hr/>
+
+<div class="content">
+  <div class="has-text-centered"
+       *ngIf="marathonService.marathon.submitsOpen && !!userService.user?.id && !userService.isBanned() &&
+       !marathonService.isArchived()">
+    <a class="button is-large is-primary"
+       routerLink="./submit"><b *ngIf="!marathonService.marathon.hasSubmitted">{{ 'marathon.menu.submitRuns' | translate}}</b>
+      <b *ngIf="marathonService.marathon.hasSubmitted">{{ 'marathon.menu.editSubmission' | translate}}</b></a>
+  </div>
+  <div class="has-text-centered" *ngIf="marathonService.marathon.submitsOpen && !userService.user?.id">
+    <a class="button is-large is-static"><b>{{ 'marathon.menu.loginToSubmit' | translate}}</b></a>
+  </div>
+  <div class="notification is-info has-text-centered" *ngIf="marathonService.isArchived()">
+    <i>{{ 'marathon.help.isArchived' | translate}}</i>
+  </div>
+  <div class="container">
+    <div id="twitch-embed"></div>
+  </div>
+  <ngx-md [data]="marathonService.marathon.description"></ngx-md>
+</div>
