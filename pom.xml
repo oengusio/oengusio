@@ -247,8 +247,8 @@
                             <to>
                                 <image>docker.io/oengus/site</image>
                                 <auth>
-                                    <username>$DOCKER_USERNAME</username>
-                                    <password>$DOCKER_PASSWORD</password>
+                                    <username>${env.DOCKER_USERNAME}</username>
+                                    <password>${env.DOCKER_PASSWORD}</password>
                                 </auth>
                                 <tags>
                                     <tag>${project.version}</tag>
@@ -326,8 +326,8 @@
                             <to>
                                 <image>docker.io/oengus/site</image>
                                 <auth>
-                                    <username>$DOCKER_USERNAME</username>
-                                    <password>$DOCKER_PASSWORD</password>
+                                    <username>${env.DOCKER_USERNAME}</username>
+                                    <password>${env.DOCKER_PASSWORD}</password>
                                 </auth>
                                 <tags>
                                     <tag>${project.version}-SNAPSHOT</tag>
