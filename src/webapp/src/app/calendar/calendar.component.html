@@ -1,0 +1,11 @@
+<div class="container">
+  <h1 class="title">{{'calendar.title' | translate}}</h1>
+  <p>{{'calendar.help' | translate}}</p>
+  <full-calendar defaultView="dayGridMonth"
+                 [plugins]="calendarPlugins"
+                 [locale]="localStorage.getItem('language')"
+                 [events]="events"
+                 (datesRender)="fetchMarathons($event)"
+                 (eventClick)="goToEvent($event)"
+  ></full-calendar>
+</div>

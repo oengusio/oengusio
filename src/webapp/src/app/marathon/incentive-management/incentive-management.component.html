@@ -1,0 +1,199 @@
+<h1 class="title">{{ 'marathon.incentives.management.title' | translate}}</h1>
+
+<div class="notification is-danger has-text-centered"
+     *ngIf="!schedule || !schedule.lines || schedule.lines.length === 0">
+  {{'marathon.incentives.management.noSchedule' | translate}}
+</div>
+
+<div *ngIf="!!schedule && !!schedule.lines && schedule.lines.length > 0">
+  <form ngForm="incentivesForm" (ngSubmit)="submit()" #form="ngForm">
+    <table class="table is-fullwidth is-striped">
+      <thead>
+      <tr>
+        <th>{{ 'marathon.incentives.management.table.game' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.incentive' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.description' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.currentAmount' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.goal' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.isBidWar' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.locked' | translate}}</th>
+        <th>{{ 'marathon.incentives.management.table.actions' | translate}}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-template ngFor let-incentive [ngForOf]="incentives" let-i="index">
+        <tr *ngIf="!incentive.toDelete">
+          <td [attr.rowspan]="incentive.bidWar ? (countNotDeletedBids(incentive) + 1) : 1">
+            <div class="select">
+              <select [(ngModel)]="incentive.scheduleLine" name="language{{i}}" [compareWith]="byId"
+                      [disabled]="incentive.locked">
+                <option *ngFor="let scheduleLine of schedule.lines"
+                        [ngValue]="scheduleLine">{{scheduleLine.gameName}} - {{scheduleLine.categoryName}}</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="field">
+              <div class="control">
+                <input class="input"
+                       type="text"
+                       [(ngModel)]="incentive.name"
+                       [disabled]="incentive.locked"
+                       name="incentiveName{{i}}"
+                       [ngClass]="{'is-danger': incentiveName.invalid}"
+                       required
+                       maxlength="50"
+                       #incentiveName="ngModel">
+                <p class="help is-pulled-right">{{incentive.name?.length}}/50</p>
+              </div>
+              <div *ngIf="incentiveName.invalid">
+                <p class="help is-danger" *ngIf="incentiveName.errors.required">
+                  {{'marathon.incentives.management.name.error.required' | translate}}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="field">
+              <div class="control">
+            <textarea class="textarea"
+                      rows=3
+                      maxlength="300"
+                      [(ngModel)]="incentive.description"
+                      [disabled]="incentive.locked"
+                      name="incentiveDescription{{i}}"
+                      [ngClass]="{'is-danger': incentiveDescription.invalid}"
+                      #incentiveDescription="ngModel"></textarea>
+                <p class="help is-pulled-right">{{incentive.description?.length}}/300</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="field" *ngIf="!incentive.bidWar">
+              <div class="control">
+                <input class="input"
+                       type="number"
+                       [(ngModel)]="incentive.currentAmount"
+                       [disabled]="incentive.locked || marathonService.marathon.hasDonations"
+                       name="currentAmount{{i}}"
+                       [ngClass]="{'is-danger': currentAmount.invalid}"
+                       [required]="!incentive.bidWar"
+                       min="0"
+                       #currentAmount="ngModel">
+              </div>
+              <div *ngIf="currentAmount.invalid">
+                <p class="help is-danger" *ngIf="currentAmount.errors?.required">
+                  {{'marathon.incentives.management.currentAmount.error.required' | translate}}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="field" *ngIf="!incentive.bidWar">
+              <div class="control">
+                <input class="input"
+                       type="number"
+                       [(ngModel)]="incentive.goal"
+                       [disabled]="incentive.locked"
+                       name="goal{{i}}"
+                       [ngClass]="{'is-danger': goal.invalid}"
+                       [required]="!incentive.bidWar"
+                       min="0"
+                       #goal="ngModel">
+              </div>
+              <div *ngIf="goal.invalid">
+                <p class="help is-danger" *ngIf="goal.errors?.required">
+                  {{'marathon.incentives.management.goal.error.required' | translate}}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="control is-flex">
+              <span style="margin-right: 0.5rem">{{ 'marathon.incentives.management.donationGoal' | translate}}</span>
+              <nwb-switch [(ngModel)]="incentive.bidWar" name="isBidWar{{i}}" [disabled]="incentive.locked">
+                <span>{{ 'marathon.incentives.management.bidWar' | translate}}</span>
+              </nwb-switch>
+            </div>
+            <div class="control" *ngIf="incentive.bidWar">
+              <nwb-switch [(ngModel)]="incentive.openBid" name="openBid{{i}}" [disabled]="incentive.locked">
+                <span>{{ 'marathon.incentives.management.openBid' | translate}}</span>
+              </nwb-switch>
+            </div>
+          </td>
+          <td>
+            <nwb-switch [(ngModel)]="incentive.locked" name="isLocked{{i}}">
+            </nwb-switch>
+          </td>
+          <td>
+            <a *ngIf="incentive.bidWar" (click)="addBid(i)" style="margin-right: 0.4rem">
+              <fa-icon [icon]="faPlus"></fa-icon>
+            </a>
+            <a (click)="incentive.toDelete = true">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </a>
+          </td>
+        </tr>
+        <ng-container *ngIf="incentive.bidWar && !incentive.toDelete">
+          <ng-container *ngFor="let bid of incentive.bids; let j = index">
+            <tr [ngClass]="{'is-emphasized': !bid.approved}" *ngIf="!bid.toDelete">
+              <td>
+                <div class="field">
+                  <div class="control">
+                    <input class="input"
+                           type="text"
+                           [(ngModel)]="bid.name"
+                           name="bidName{{i}}-{{j}}"
+                           [disabled]="incentive.locked"
+                           [ngClass]="{'is-danger': bidName.invalid}"
+                           required
+                           maxlength="50"
+                           #bidName="ngModel">
+                    <p class="help is-pulled-right">{{bid.name?.length}}/50</p>
+                  </div>
+                  <div *ngIf="bidName.invalid">
+                    <p class="help is-danger" *ngIf="bidName.errors.required">
+                      {{'marathon.incentives.management.bidName.error.required' | translate}}</p>
+                  </div>
+                </div>
+              </td>
+              <td></td>
+              <td>
+                <div class="field">
+                  <div class="control">
+                    <input class="input"
+                           type="number"
+                           [(ngModel)]="bid.currentAmount"
+                           [disabled]="incentive.locked || marathonService.marathon.hasDonations"
+                           name="bidCurrentAmount{{i}}-{{j}}"
+                           [ngClass]="{'is-danger': bidCurrentAmount.invalid}"
+                           required
+                           min="0"
+                           #bidCurrentAmount="ngModel">
+                  </div>
+                  <div *ngIf="bidCurrentAmount.invalid">
+                    <p class="help is-danger" *ngIf="bidCurrentAmount.errors?.required">
+                      {{'marathon.incentives.management.currentAmount.error.required' | translate}}</p>
+                  </div>
+                </div>
+              </td>
+              <td colspan="3"></td>
+              <td>
+                <a (click)="bid.approved = true" *ngIf="!bid.approved" style="margin-right: 0.4rem"
+                   [nwbToolTip]="'marathon.incentives.management.approveBid' | translate" [nwbToolTipIsMultiline]="true"
+                   nwbToolTipPosition="left">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </a>
+                <a (click)="removeBid(i,j)">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </a>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </ng-template>
+      </tbody>
+    </table>
+    <button class="button is-primary is-pulled-right" [ngClass]="{'is-loading': loading}" style="margin-left: 1rem"
+            type="submit" [disabled]="form.invalid">{{'action.submit' | translate}}</button>
+    <button class="button is-info is-pulled-right" (click)="addIncentive()"
+            type="button">{{'marathon.incentives.management.action.add' | translate}}</button>
+  </form>
+</div>

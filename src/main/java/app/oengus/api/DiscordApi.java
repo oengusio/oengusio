@@ -1,0 +1,28 @@
+package app.oengus.api;
+
+import app.oengus.entity.model.api.DiscordUser;
+import app.oengus.spring.CoreFeignConfiguration;
+import app.oengus.spring.model.AccessToken;
+import feign.Headers;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+
+@FeignClient(value = "discord", url = "https://discordapp.com/api/v6", configuration = CoreFeignConfiguration.class)
+public interface DiscordApi {
+
+	@Headers("Content-Type: application/x-www-form-urlencoded")
+	@RequestMapping(method = RequestMethod.POST, value = "/oauth2/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+	AccessToken getAccessToken(@RequestBody Map<String, ?> body);
+
+	@RequestMapping(method = RequestMethod.GET, value = "/users/@me")
+	DiscordUser getCurrentUser(@RequestHeader("Authorization") String token);
+
+	@RequestMapping(method = RequestMethod.GET, value = "/users/{id}")
+	DiscordUser getUser(@RequestHeader("Authorization") String token, @PathVariable("id") String id);
+
+
+}

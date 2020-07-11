@@ -1,0 +1,156 @@
+<h1 class="title">{{ 'marathon.selection.title' | translate}}</h1>
+
+<form ngForm="selectionForm" (ngSubmit)="submit()" #form="ngForm">
+  <div class="columns is-desktop">
+    <div class="column is-one-quarter">
+      <h4 class="subtitle is-4">{{ 'marathon.selection.statistics.title' | translate}}</h4>
+      <table class="table is-fullwidth">
+        <tbody>
+        <tr class="is-static-stat">
+          <td>{{ 'marathon.selection.statistics.table.numberOfRuns' | translate}}</td>
+          <td>{{getNumberOfRuns()}}</td>
+        </tr>
+        <tr class="is-static-stat">
+          <td>{{ 'marathon.selection.statistics.table.numberOfRunners' | translate}}</td>
+          <td>{{getNumberOfRunners()}}</td>
+        </tr>
+        <tr class="is-static-stat">
+          <td>{{ 'marathon.selection.statistics.table.totalTime' | translate}}</td>
+          <td>{{getTotalTime()}}</td>
+        </tr>
+        <tr class="is-static-stat">
+          <td>{{ 'marathon.selection.statistics.table.averageEstimate' | translate}}</td>
+          <td>{{getAverageTime()}}</td>
+        </tr>
+        <tr>
+          <td>{{ 'marathon.selection.statistics.table.marathonLength' | translate}}</td>
+          <td>{{getMarathonLength()}}</td>
+        </tr>
+        <tr>
+          <td>{{ 'marathon.selection.statistics.table.defaultSetupTime' | translate}}</td>
+          <td>{{getDefaultSetupTime()}}</td>
+        </tr>
+        <tr>
+          <td><b>{{ 'marathon.selection.statistics.table.totalTimeValidated' | translate}}</b></td>
+          <td><b>{{getValidatedRunsTime()}}</b></td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="columns is-multiline">
+        <div class="column is-full">
+          <p class="help">{{ 'marathon.selection.availabilities.help' | translate}}</p>
+          <div id="timeline"></div>
+        </div>
+        <div class="column is-full">
+          <button type="button"
+                  class="button is-info is-pulled-right"
+                  (click)="clearAvailabilities()">
+            {{'action.clearAvailabilities' | translate}}
+          </button>
+        </div>
+        <div class="column is-full">
+          <p class="help">{{'marathon.selection.publish.help' | translate}}</p>
+          <button type="button"
+                  class="button is-success is-pulled-right"
+                  [disabled]="!canPublish()"
+                  [ngClass]="{'is-loading': loading}"
+                  (click)="publish()">
+            {{'marathon.selection.action.publish' | translate}}
+          </button>
+          <button type="submit" style="margin-right: 1rem"
+                  [ngClass]="{'is-loading': loading}"
+                  class="button is-primary is-pulled-right">{{'action.save' | translate}}</button>
+        </div>
+      </div>
+    </div>
+    <div class="column is-three-quarters">
+      <h4 class="subtitle is-4">{{ 'marathon.selection.selection.title' | translate}}</h4>
+      <p>{{'marathon.selection.help.BACKUP' | translate}}</p>
+      <table class="table is-fullwidth is-striped">
+        <thead>
+        <tr>
+          <th>{{ 'marathon.submissions.table.runner' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.game' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.console' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.ratio' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.category' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.type' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.estimate' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.status' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-template ngFor let-game [ngForOf]="games">
+          <tr *ngFor="let category of game.categories; let i = index">
+            <ng-template [ngIf]="i === 0">
+              <td [rowSpan]="game.categories.length" [attr.rowspan]="game.categories.length">
+                <div class="is-flex">
+                  <a (click)="getAvailabilitiesForRunner(game.user.id)" style="margin-right: 0.4rem"
+                     *ngIf="!availabilitiesSelected.includes(game.user.username)">
+                    <fa-icon [icon]="faCalendarWeek"></fa-icon>
+                  </a>
+                  <a (click)="removeAvailabilitiesForRunner(game.user.username)" style="margin-right: 0.4rem"
+                     *ngIf="availabilitiesSelected.includes(game.user.username)">
+                    <fa-icon [icon]="faCalendarTimes"></fa-icon>
+                  </a>
+                  <app-user [user]="game.user" [showSocialLinks]="true"></app-user>
+                </div>
+              </td>
+              <td [attr.rowspan]="game.categories.length">
+                {{game.name}}
+              </td>
+              <td [attr.rowspan]="game.categories.length">
+                {{game.console}}<sup *ngIf="game.emulated">{{ 'global.emu' | translate }}</sup>
+              </td>
+              <td [attr.rowspan]="game.categories.length">
+                {{game.ratio}}
+              </td>
+            </ng-template>
+            <td>{{category.name}} <a [href]="category.video" target="_blank" aria-label="Video">
+            <span class="icon">
+              <fa-icon [icon]="faFilm"></fa-icon>
+            </span>
+            </a>
+            </td>
+            <td>
+              {{ 'marathon.schedule.type.' + category.type | translate}}
+              <p *ngIf="category.type !== 'SINGLE' && category.opponentDtos && category.opponentDtos.length > 0">{{'marathon.submit.category.opponent.with' | translate}}
+                <span *ngFor="let opponent of category.opponentDtos; let i = index">
+                <div class="is-flex">
+                  <a (click)="getAvailabilitiesForRunner(opponent.user.id)" style="margin-right: 0.4rem"
+                     *ngIf="!availabilitiesSelected.includes(opponent.user.username)">
+                    <fa-icon [icon]="faCalendarWeek"></fa-icon>
+                  </a>
+                  <a (click)="removeAvailabilitiesForRunner(opponent.user.username)" style="margin-right: 0.4rem"
+                     *ngIf="availabilitiesSelected.includes(opponent.user.username)">
+                    <fa-icon [icon]="faCalendarTimes"></fa-icon>
+                  </a>
+                  <app-user [user]="opponent.user" [showSocialLinks]="true"></app-user>
+                  <a [href]="opponent.video" target="_blank" aria-label="Video">
+                  <span class="icon">
+                    <fa-icon [icon]="faFilm"></fa-icon>
+                  </span>
+                  </a>
+                </div>
+              </span>
+              </p>
+            </td>
+            <td>{{category.estimateHuman}}</td>
+            <td>
+              <div class="select {{getSelectColor(selection[category.id].status)}}">
+                <select [(ngModel)]="selection[category.id].status" name="status-{{category.id}}">
+                  <option value="TODO">{{ 'marathon.selection.status.TODO' | translate}}</option>
+                  <option value="REJECTED">{{ 'marathon.selection.status.REJECTED' | translate}}</option>
+                  <option value="BONUS">{{ 'marathon.selection.status.BONUS' | translate}}</option>
+                  <option value="BACKUP">{{ 'marathon.selection.status.BACKUP' | translate}}</option>
+                  <option value="VALIDATED">{{ 'marathon.selection.status.VALIDATED' | translate}}</option>
+                </select>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>

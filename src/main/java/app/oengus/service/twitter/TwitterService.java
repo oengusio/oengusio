@@ -1,0 +1,28 @@
+package app.oengus.service.twitter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+
+@Service
+@Profile("prod")
+public class TwitterService extends AbstractTwitterService {
+
+	static Logger LOGGER = LoggerFactory.getLogger(TwitterService.class);
+
+	@Autowired
+	private Twitter twitter;
+
+	@Override
+	public void send(final String message) {
+		try {
+			this.twitter.updateStatus(message);
+		} catch (final TwitterException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+}

@@ -1,0 +1,59 @@
+<h1 class="title">{{ 'marathon.incentives.title' | translate}}</h1>
+
+<div class="container">
+  <table class="table is-fullwidth is-striped">
+    <thead>
+    <tr>
+      <th>{{ 'marathon.incentives.management.table.game' | translate}}</th>
+      <th>{{ 'marathon.incentives.management.table.incentive' | translate}}</th>
+      <th>{{ 'marathon.incentives.management.table.description' | translate}}</th>
+      <th>{{ 'marathon.incentives.management.table.progress' | translate}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-incentive [ngForOf]="incentives" let-i="index">
+      <tr *ngIf="!incentive.toDelete">
+        <td [attr.rowspan]="incentive.bidWar ? (incentive.bids.length + 1) : 1">
+          {{incentive.scheduleLine.gameName}} - {{incentive.scheduleLine.categoryName}}
+        </td>
+        <td>
+          {{incentive.name}}
+        </td>
+        <td>
+          {{incentive.description}}
+        </td>
+        <td>
+          <div class="is-flex" *ngIf="!incentive.bidWar" style="align-items: center">
+            <app-monetary-amount [amount]="incentive.currentAmount"
+                                 [currency]="marathonService.marathon.donationCurrency"></app-monetary-amount>
+            <progress class="progress"
+                      style="min-width: 150px; margin: 0 0.4rem"
+                      [ngClass]="{'is-primary':incentive.currentAmount<incentive.goal,'is-success':incentive.currentAmount>=incentive.goal}"
+                      [value]="incentive.currentAmount" [max]="incentive.goal"></progress>
+            <app-monetary-amount [amount]="incentive.goal"
+                                 [currency]="marathonService.marathon.donationCurrency"></app-monetary-amount>
+          </div>
+        </td>
+      </tr>
+      <ng-container *ngIf="incentive.bidWar && !incentive.toDelete">
+        <tr *ngFor="let bid of incentive.bids; let j = index">
+          <td>
+            {{bid.name}}
+          </td>
+          <td></td>
+          <td>
+            <div class="is-flex" style="align-items: center">
+              <app-monetary-amount [amount]="bid.currentAmount"
+                                   [currency]="marathonService.marathon.donationCurrency"></app-monetary-amount>
+              <progress class="progress"
+                        [ngClass]="{'is-primary':j>0,'is-success':j===0}"
+                        style="min-width: 150px; margin-left: 0.4rem"
+                        [value]="bid.currentAmount" [max]="incentive.bids[0].currentAmount"></progress>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-template>
+    </tbody>
+  </table>
+</div>

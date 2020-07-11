@@ -1,0 +1,13 @@
+image: "maven:3.6.1-jdk-12"
+
+install:
+  only:
+    - master
+  script:
+    - mvn clean compile jib:build -DskipTests -Pproduction
+
+install-sandbox:
+  only:
+    - develop
+  script:
+    - mvn clean compile jib:build -DskipTests -Psandbox
