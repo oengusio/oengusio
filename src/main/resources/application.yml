@@ -1,0 +1,110 @@
+oengus:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 604800
+  baseUrl: ${BASE_URL}
+
+discord:
+  clientId: ${DISCORD_CLIENT_ID}
+  clientSecret: ${DISCORD_CLIENT_SECRET}
+  grantType: 'authorization_code'
+  redirectUri: '${BASE_URL}/login/discord'
+  syncRedirectUri: '${BASE_URL}/user/settings/sync/discord'
+  scope:
+    - identify
+  botToken: ${DISCORD_BOT_TOKEN}
+
+twitter:
+  loginCallback: '${BASE_URL}/login/twitter'
+  syncCallback: '${BASE_URL}/user/settings/sync/twitter'
+  oauth:
+    consumerKey: ${TWITTER_CONSUMER_KEY}
+    consumerSecret: ${TWITTER_CONSUMER_SECRET}
+    accessToken: ${TWITTER_ACCESS_TOKEN}
+    accessTokenSecret: ${TWITTER_ACCESS_TOKEN_SECRET}
+
+paypal:
+  clientId: ${PAYPAL_CLIENT_ID}
+  clientSecret: ${PAYPAL_CLIENT_SECRET}
+
+twitch:
+  login:
+    clientId: ${TWITCH_LOGIN_CLIENT_ID}
+    clientSecret: ${TWITCH_LOGIN_CLIENT_SECRET}
+    grantType: 'authorization_code'
+    redirectUri: '${BASE_URL}/login/twitch'
+    scope:
+      - openid
+  sync:
+    clientId: ${TWITCH_SYNC_CLIENT_ID}
+    clientSecret: ${TWITCH_SYNC_CLIENT_SECRET}
+    grantType: 'authorization_code'
+    syncRedirectUri: '${BASE_URL}/user/settings/sync/twitch'
+    scope:
+      - openid
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      javax:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+      hibernate:
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+        dialect: org.hibernate.dialect.PostgreSQL82Dialect
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        temp:
+          use_jdbc_metadata_defaults: false
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  jackson:
+    mapper:
+      DEFAULT_VIEW_INCLUSION: true
+    deserialization:
+      USE_BIG_DECIMAL_FOR_FLOATS: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - health
+
+javers:
+  mappingStyle: FIELD
+  algorithm: SIMPLE
+  commitIdGenerator: synchronized_sequence
+  prettyPrint: true
+  typeSafeValues: false
+  newObjectSnapshot: false
+  packagesToScan:
+  auditableAspectEnabled: true
+  springDataAuditableRepositoryAspectEnabled: true
+  sqlSchema: public
+  sqlSchemaManagementEnabled: true
+  prettyPrintDateFormats:
+    localDateTime: "dd MMM yyyy, HH:mm:ss"
+    zonedDateTime: "dd MMM yyyy, HH:mm:ssZ"
+    localDate: "dd MMM yyyy"
+    localTime: "HH:mm:ss"
+
+log4j:
+  logger:
+    org:
+      hibernate: info
+
+hibernate:
+  show_sql: false

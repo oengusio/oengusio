@@ -1,0 +1,111 @@
+<div class="container">
+  <div class="columns">
+    <div class="column is-half">
+      <div class="box">
+        <h3 class="title is-3">{{ 'homepage.welcomeTitle' | translate}}</h3>
+        <p [innerHTML]="'homepage.welcomeText.par1' | translate"></p>
+        <p [innerHTML]="'homepage.welcomeText.par3' | translate" *ngIf="!userService.user"></p>
+        <a class="button is-primary" *ngIf="!userService.user"
+           [href]="'https://discordapp.com/api/oauth2/authorize?client_id=559625844197163008&redirect_uri='+userService.getRedirectUri()+'discord&response_type=code&scope=identify'">
+          <fa-icon [icon]="faDiscord" style="margin-right: 0.4rem"></fa-icon>
+          {{'navbar.login.discord' | translate}}</a>
+        <a class="button is-primary" style="margin-left: 1rem" *ngIf="!userService.user"
+           [href]="'https://id.twitch.tv/oauth2/authorize?client_id='+userService.getTwitchLoginClientId()+'&redirect_uri='+userService.getRedirectUri()+'twitch&response_type=code&scope=openid'">
+          <fa-icon [icon]="faTwitch" style="margin-right: 0.4rem"></fa-icon>
+          {{'navbar.login.twitch' | translate}}</a>
+        <p [innerHTML]="'homepage.welcomeText.par4.prod' | translate" *ngIf="!environment.sandbox"></p>
+        <p [innerHTML]="'homepage.welcomeText.par4.sandbox' | translate" *ngIf="environment.sandbox"></p>
+        <br>
+        <br>
+        <h3 class="title is-3">{{ 'homepage.plannedFeatures.title' | translate}}</h3>
+        <div class="content">
+          <ul>
+            <li>{{ 'homepage.plannedFeatures.1' | translate}} ✓</li>
+            <li>{{ 'homepage.plannedFeatures.2' | translate}}</li>
+            <li>{{ 'homepage.plannedFeatures.3' | translate}} ✓</li>
+            <li>{{ 'homepage.plannedFeatures.4' | translate}}</li>
+            <li>{{ 'homepage.plannedFeatures.5' | translate}}</li>
+            <li>{{ 'homepage.plannedFeatures.6' | translate}}</li>
+            <li>{{ 'homepage.plannedFeatures.7' | translate}} ✓</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="column is-half">
+      <ng-template [ngIf]="liveMarathons.length > 0">
+        <h3 class="title is-3">{{ 'homepage.marathons.live' | translate}}</h3>
+        <table class="table is-fullwidth">
+          <tbody>
+          <tr *ngFor="let marathon of liveMarathons">
+            <td><a [routerLink]="'/marathon/' + marathon.id">{{marathon.name}}</a></td>
+            <td class="has-text-centered">
+              <fa-icon *ngIf="!marathon.country || !marathon.onsite"
+                       [icon]="faGlobe"></fa-icon>
+              <span [class]="'flag-icon flag-icon-' + marathon.country.toLowerCase()"
+                    *ngIf="marathon.onsite && marathon.country"> </span></td>
+            <td>{{marathon.language | uppercase}}</td>
+            <td><span>{{ 'homepage.ends' | translate:{'duration': moment(marathon.endDate).fromNow()} }}</span></td>
+          </tr>
+          </tbody>
+        </table>
+        <br>
+      </ng-template>
+      <h3 class="title is-3">{{ 'homepage.marathons.upcoming' | translate}}
+        (<a routerLink="/calendar">{{'homepage.marathons.calendar' | translate}}</a>)</h3>
+      <table class="table is-fullwidth">
+        <tbody>
+        <tr *ngFor="let marathon of nextMarathons">
+          <td><a [routerLink]="'/marathon/' + marathon.id">{{marathon.name}}</a></td>
+          <td class="has-text-centered">
+            <fa-icon *ngIf="!marathon.country || !marathon.onsite"
+                     [icon]="faGlobe"></fa-icon>
+            <span [class]="'flag-icon flag-icon-' + marathon.country.toLowerCase()"
+                  *ngIf="marathon.onsite && marathon.country"> </span></td>
+          <td>{{marathon.language | uppercase}}</td>
+          <td>
+            <span>{{ 'homepage.starts' | translate:{'duration': moment(marathon.startDate).fromNow()} }}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <br>
+      <h3 class="title is-3">{{ 'homepage.marathons.open' | translate}}</h3>
+      <table class="table is-fullwidth">
+        <tbody>
+        <tr *ngFor="let marathon of openMarathons">
+          <td><a [routerLink]="'/marathon/' + marathon.id">{{marathon.name}}</a></td>
+          <td class="has-text-centered">
+            <fa-icon *ngIf="!marathon.country || !marathon.onsite"
+                     [icon]="faGlobe"></fa-icon>
+            <span [class]="'flag-icon flag-icon-' + marathon.country.toLowerCase()"
+                  *ngIf="marathon.onsite && marathon.country"> </span></td>
+          <td>{{marathon.language | uppercase}}</td>
+          <td>
+            <span>{{ 'homepage.starts' | translate:{'duration': moment(marathon.startDate).fromNow()} }}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <ng-template [ngIf]="!!moderatedMarathons && moderatedMarathons.length > 0">
+        <br>
+        <h3 class="title is-3">{{ 'homepage.marathons.moderated' | translate}}</h3>
+        <table class="table is-fullwidth">
+          <tbody>
+          <tr *ngFor="let marathon of moderatedMarathons">
+            <td><a [routerLink]="'/marathon/' + marathon.id">{{marathon.name}}</a></td>
+            <td class="has-text-centered">
+              <fa-icon *ngIf="!marathon.country || !marathon.onsite"
+                       [icon]="faGlobe"></fa-icon>
+              <span [class]="'flag-icon flag-icon-' + marathon.country.toLowerCase()"
+                    *ngIf="marathon.onsite && marathon.country"> </span></td>
+            <td>{{marathon.language | uppercase}}</td>
+            <td>
+              <span>{{ 'homepage.starts' | translate:{'duration': moment(marathon.startDate).fromNow()} }}</span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-template>
+    </div>
+  </div>
+</div>

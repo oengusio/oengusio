@@ -1,0 +1,199 @@
+<h1 class="title">{{ 'marathon.submissions.title' | translate}}
+  <button class="button is-pulled-right is-info" (click)="exportToCsv()"
+          *ngIf="marathonService.isAdmin(userService.user)">{{ 'marathon.submissions.export' | translate}}
+  </button>
+</h1>
+<div class="tabs is-centered" *ngIf="displaysTabs()">
+  <ul>
+    <li [ngClass]="{'is-active':active==='submissions'}">
+      <a (click)="active = 'submissions'">{{'marathon.submissions.tabs.submissions' | translate}}</a>
+    </li>
+    <li [ngClass]="{'is-active':active==='answers'}">
+      <a (click)="active = 'answers'">{{'marathon.submissions.tabs.answers' | translate}}</a>
+    </li>
+  </ul>
+</div>
+<div [hidden]="displaysTabs() && active !== 'submissions'">
+  <table class="table is-fullwidth {{marathonService.marathon.selectionDone ? '' : 'is-striped'}}">
+    <thead>
+    <tr>
+      <th>{{ 'marathon.submissions.table.runner' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.game' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.console' | translate}}</th>
+      <th *ngIf="marathonService.isAdmin(userService.user)">{{ 'marathon.submissions.table.ratio' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.gameDescription' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.category' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.type' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.estimate' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.categoryDescription' | translate}}</th>
+      <th *ngIf="marathonService.marathon.selectionDone">{{ 'marathon.submissions.table.status' | translate}}</th>
+    </tr>
+    <tr>
+      <th><input class="input" type="text" [(ngModel)]="runnerFilter" (ngModelChange)="filter()"></th>
+      <th><input class="input" type="text" [(ngModel)]="gameFilter" (ngModelChange)="filter()"></th>
+      <th></th>
+      <th *ngIf="marathonService.isAdmin(userService.user)"></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th *ngIf="marathonService.marathon.selectionDone">
+        <span class="select">
+          <select [(ngModel)]="categoryFilter" (ngModelChange)="filter()">
+            <option value=""></option>
+            <option value="REJECTED">{{ 'marathon.selection.status.REJECTED' | translate}}</option>
+            <option value="BONUS">{{ 'marathon.selection.status.BONUS' | translate}}</option>
+            <option value="BACKUP">{{ 'marathon.selection.status.BACKUP' | translate}}</option>
+            <option value="VALIDATED">{{ 'marathon.selection.status.VALIDATED' | translate}}</option>
+          </select>
+        </span>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-game [ngForOf]="games">
+      <ng-template ngFor let-category [ngForOf]="game.categories" let-i="index">
+        <tr *ngIf="game.visible && category.visible">
+          <ng-template [ngIf]="i === firstDisplayed(game)">
+            <td [rowSpan]="visibleCategories(game)"
+                [attr.rowspan]="visibleCategories(game)"
+                class="{{game.status}}">
+              <app-user [user]="game.user" [showSocialLinks]="true"></app-user>
+              <div class="is-pulled-right"
+                   *ngIf="!marathonService.marathon.selectionDone && marathonService.isAdmin(this.userService.user)">
+                <a class="is-tooltip-danger" (click)="confirmDeletion.submission[game.submissionId] = true"
+                   *ngIf="confirmDeletion.submission[game.submissionId] !== true"
+                   [nwbToolTip]="'marathon.submissions.submission.delete' | translate"
+                   nwbToolTipIsMultiline="true">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </a>
+                <a class="is-tooltip-danger" (click)="deleteSubmission(game.submissionId)"
+                   *ngIf="confirmDeletion.submission[game.submissionId] === true"
+                   [nwbToolTip]="'action.confirm' | translate">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </a>
+                <a class="is-tooltip-danger" (click)="confirmDeletion.submission[game.submissionId] = false"
+                   style="margin-left: 0.4rem"
+                   *ngIf="confirmDeletion.submission[game.submissionId] === true"
+                   [nwbToolTip]="'action.cancel' | translate">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </a>
+              </div>
+            </td>
+            <td [attr.rowspan]="visibleCategories(game)" class="{{getGameStatus(game)}}">
+              {{game.name}}
+              <div class="is-pulled-right"
+                   *ngIf="!marathonService.marathon.selectionDone && marathonService.isAdmin(this.userService.user)">
+                <a class="is-tooltip-danger" (click)="confirmDeletion.game[game.id] = true"
+                   *ngIf="confirmDeletion.game[game.id] !== true"
+                   [nwbToolTip]="'marathon.submissions.game.delete' | translate"
+                   nwbToolTipIsMultiline="true">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </a>
+                <a class="is-tooltip-danger" (click)="deleteGame(game.id)"
+                   *ngIf="confirmDeletion.game[game.id] === true"
+                   [nwbToolTip]="'action.confirm' | translate">
+                  <fa-icon [icon]="faCheck"></fa-icon>
+                </a>
+                <a class="is-tooltip-danger" (click)="confirmDeletion.game[game.id] = false" style="margin-left: 0.4rem"
+                   *ngIf="confirmDeletion.game[game.id] === true"
+                   [nwbToolTip]="'action.cancel' | translate">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </a>
+              </div>
+            </td>
+            <td [attr.rowspan]="visibleCategories(game)" class="{{getGameStatus(game)}}">
+              {{game.console}}<sup *ngIf="game.emulated">{{ 'global.emu' | translate }}</sup>
+            </td>
+            <td [attr.rowspan]="visibleCategories(game)" class="{{getGameStatus(game)}}"
+                *ngIf="marathonService.isAdmin(userService.user)">
+              {{game.ratio}}
+            </td>
+            <td style="text-align: justify; word-break: break-word" [attr.rowspan]="visibleCategories(game)"
+                class="{{getGameStatus(game)}}">
+              {{game.description}}
+            </td>
+          </ng-template>
+          <td class="{{getCategoryStatus(category)}}">
+            {{category.name}} <a [href]="category.video" target="_blank" aria-label="Video" *ngIf="!!category.video">
+            <span class="icon">
+              <fa-icon [icon]="faFilm"></fa-icon>
+            </span>
+          </a>
+            <div class="is-pulled-right"
+                 *ngIf="!marathonService.marathon.selectionDone && marathonService.isAdmin(this.userService.user)">
+              <a class="is-tooltip-danger" (click)="confirmDeletion.category[category.id] = true"
+                 *ngIf="confirmDeletion.category[category.id] !== true"
+                 [nwbToolTip]="'marathon.submissions.category.delete' | translate"
+                 nwbToolTipIsMultiline="true">
+                <fa-icon [icon]="faTimes"></fa-icon>
+              </a>
+              <a class="is-tooltip-danger" (click)="deleteCategory(game.id, category.id)"
+                 *ngIf="confirmDeletion.category[category.id] === true"
+                 [nwbToolTip]="'action.confirm' | translate">
+                <fa-icon [icon]="faCheck"></fa-icon>
+              </a>
+              <a class="is-tooltip-danger" (click)="confirmDeletion.category[category.id] = false"
+                 *ngIf="confirmDeletion.category[category.id] === true" style="margin-left: 0.4rem"
+                 [nwbToolTip]="'action.cancel' | translate">
+                <fa-icon [icon]="faTimes"></fa-icon>
+              </a>
+            </div>
+          </td>
+          <td class="{{getCategoryStatus(category)}}">
+            {{ 'marathon.schedule.type.' + category.type | translate}}
+            <p *ngIf="category.type !== 'SINGLE' && category.opponentDtos && category.opponentDtos.length > 0">{{'marathon.submit.category.opponent.with' | translate}}
+              <span *ngFor="let opponent of category.opponentDtos; let i = index">
+                <span *ngIf="i > 0">, </span>
+                <app-user [user]="opponent.user" [showSocialLinks]="true"></app-user>
+                <a [href]="opponent.video" target="_blank" aria-label="Video" *ngIf="!!opponent.video">
+                  <span class="icon">
+                    <fa-icon [icon]="faFilm"></fa-icon>
+                  </span>
+                </a>
+              </span>
+            </p>
+          </td>
+          <td class="{{getCategoryStatus(category)}}">{{category.estimateHuman}}</td>
+          <td style="text-align: justify; word-break: break-word"
+              class="{{getCategoryStatus(category)}}">{{category.description}}</td>
+          <td class="{{getCategoryStatus(category)}}" *ngIf="marathonService.marathon.selectionDone">
+            {{'marathon.selection.status.' + selection[category.id].status |translate}}
+          </td>
+        </tr>
+      </ng-template>
+    </ng-template>
+    </tbody>
+  </table>
+</div>
+<div [hidden]="!displaysTabs() || active !== 'answers'" class="container">
+  <table class="table is-fullwidth is-striped">
+    <thead>
+    <tr>
+      <th>{{ 'marathon.submissions.table.runner' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.question' | translate}}</th>
+      <th>{{ 'marathon.submissions.table.answer' | translate}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-submission [ngForOf]="answers">
+      <tr *ngFor="let answer of submission.answers; let i = index">
+        <ng-template [ngIf]="i === 0">
+          <td [attr.rowspan]="submission.answers.length">
+            <app-user [user]="submission.user" [showSocialLinks]="true"></app-user>
+          </td>
+        </ng-template>
+        <td>
+          {{answer.question.label}}
+        </td>
+        <td>
+          <p class="content">
+            <ngx-md [data]="answer.answer"></ngx-md>
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+    </tbody>
+  </table>
+</div>

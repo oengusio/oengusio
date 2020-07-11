@@ -1,0 +1,137 @@
+<div class="container">
+  <h1 class="title">{{ 'marathon.new.title' | translate}}</h1>
+  <h2 class="subtitle">{{ 'marathon.new.description' | translate}}</h2>
+
+  <div class="notification is-info" [innerHTML]="'homepage.welcomeText.par4.prod' | translate" *ngIf="!env.sandbox">
+  </div>
+
+  <form ngForm="newMarathonForm" (ngSubmit)="submit()" #form="ngForm">
+    <div class="field">
+      <label class="label">{{ 'marathon.settings.name.label' | translate}}</label>
+      <div class="control">
+        <input class="input"
+               [ngClass]="{'is-danger': name.invalid}"
+               type="text"
+               [(ngModel)]="marathon.name"
+               name="name"
+               maxlength="40"
+               minlength="4"
+               pattern="^[\w\- ]{4,40}$"
+               required
+               #name="ngModel">
+        <p class="help is-pulled-right">{{marathon.name?.length}}/40</p>
+      </div>
+      <div *ngIf="name.invalid">
+        <p class="help is-danger"
+           *ngIf="name.errors.required">{{'marathon.settings.name.error.required' | translate}}</p>
+        <p class="help is-danger" *ngIf="name.errors.minlength">{{'marathon.settings.name.error.min' | translate}}</p>
+        <p class="help is-danger" *ngIf="name.errors.maxlength">{{'marathon.settings.name.error.max' | translate}}</p>
+        <p class="help is-danger" *ngIf="name.errors.pattern">{{'marathon.settings.name.error.pattern' | translate}}</p>
+      </div>
+    </div>
+    <label class="label">{{ 'marathon.settings.shortname.label' | translate}}</label>
+    <div class="field">
+      <div class="field has-addons is-marginless">
+        <div class="control">
+          <a class="button is-static">
+            {{env.baseSite}}/marathon/
+          </a>
+        </div>
+        <div class="control is-expanded">
+          <input class="input"
+                 [ngClass]="{'is-danger': shortname.invalid}"
+                 type="text"
+                 [(ngModel)]="marathon.id"
+                 name="id"
+                 maxlength="10"
+                 minlength="4"
+                 pattern="^[\w\-]{4,10}$"
+                 required
+                 #shortname="ngModel"
+                 appMarathonExistsValidator>
+        </div>
+      </div>
+      <p class="help is-pulled-right">{{marathon.id?.length}}/10</p>
+      <div *ngIf="shortname.invalid">
+        <p class="help is-danger"
+           *ngIf="shortname.errors.required">{{'marathon.settings.shortname.error.required' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="shortname.errors.minlength">{{'marathon.settings.shortname.error.min' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="shortname.errors.maxlength">{{'marathon.settings.shortname.error.max' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="shortname.errors.exists">{{'marathon.settings.shortname.error.exists' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="shortname.errors.pattern">{{'marathon.settings.shortname.error.pattern' | translate}}</p>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column is-half">
+        <div class="field">
+          <label class="label">{{ 'marathon.settings.startDate.label' | translate}}</label>
+          <div class="control">
+            <input class="input"
+                   readonly
+                   [ngClass]="{'is-danger': startDate.invalid}"
+                   [owlDateTimeTrigger]="dtStartDate"
+                   [owlDateTime]="dtStartDate"
+                   [(ngModel)]="marathon.startDate"
+                   name="startDate"
+                   [min]="now"
+                   required
+                   #startDate="ngModel">
+            <owl-date-time #dtStartDate></owl-date-time>
+          </div>
+          <div *ngIf="startDate.invalid">
+            <p class="help is-danger"
+               *ngIf="startDate.errors.required">{{'marathon.settings.startDate.error.required' | translate}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <label class="label">{{ 'marathon.settings.endDate.label' | translate}}</label>
+          <div class="control">
+            <input class="input"
+                   readonly
+                   [ngClass]="{'is-danger': endDate.invalid}"
+                   [owlDateTimeTrigger]="dtEndDate" [owlDateTime]="dtEndDate"
+                   [disabled]="!marathon.startDate"
+                   [min]="marathon.startDate"
+                   [(ngModel)]="marathon.endDate" name="endDate" required #endDate="ngModel">
+            <owl-date-time #dtEndDate></owl-date-time>
+          </div>
+          <div *ngIf="endDate.invalid">
+            <p class="help is-danger"
+               *ngIf="endDate.errors.required">{{'marathon.settings.endDate.error.required' | translate}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ 'marathon.settings.type.label' | translate}}</label>
+      <div class="control is-flex">
+        <span style="margin-right: 0.5rem">{{ 'marathon.settings.type.online' | translate}}</span>
+        <nwb-switch [(ngModel)]="marathon.onsite" name="isOnsite">
+          <span>{{ 'marathon.settings.type.onsite' | translate}}</span>
+        </nwb-switch>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{ 'marathon.settings.privacy.label' | translate}}</label>
+      <div class="control is-flex">
+        <span style="margin-right: 0.5rem">{{ 'marathon.settings.privacy.public' | translate}}</span>
+        <nwb-switch [(ngModel)]="marathon.isPrivate" name="isPrivate">
+          <span>{{ 'marathon.settings.privacy.private' | translate}}</span>
+        </nwb-switch>
+      </div>
+      <p class="help">{{ 'marathon.settings.privacy.help' | translate}}</p>
+    </div>
+    <div class="field">
+      <div class="control">
+        <button class="button is-link" [ngClass]="{'is-loading': loading}" type="submit"
+                [disabled]="form.invalid">{{'action.submit' | translate}}</button>
+      </div>
+    </div>
+  </form>
+</div>

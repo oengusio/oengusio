@@ -1,0 +1,56 @@
+<div class="container">
+  <h1 class="title">{{'user.settings.new.beforeWeStart' | translate}}</h1>
+  <h2 class="subtitle">{{'user.settings.new.description' | translate}}</h2>
+
+  <form ngForm="newUserForm"
+        (ngSubmit)="submit()"
+        #form="ngForm">
+    <div class="field">
+      <label class="label">{{'user.settings.username.label' | translate}}</label>
+      <div class="control">
+        <input class="input"
+               [ngClass]="{'is-danger': username.invalid}"
+               type="text"
+               [(ngModel)]="user.username"
+               name="username"
+		       #username="ngModel"
+               minlength="3"
+               maxlength="16"
+               pattern="^[\w\-]{3,16}$"
+               appUsernameExistsValidator
+               required>
+      </div>
+      <div *ngIf="username.invalid">
+        <p class="help is-danger"
+           *ngIf="username.errors.minlength">{{'user.settings.username.error.min' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="username.errors.maxlength">{{'user.settings.username.error.max' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="username.errors.exists">{{'user.settings.username.error.exists' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="username.errors.required">{{'user.settings.username.error.required' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="username.errors.pattern">{{'user.settings.username.error.pattern' | translate}}</p>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">{{'user.settings.email.label' | translate}}</label>
+      <div class="control">
+        <input class="input" [ngClass]="{'is-danger': mail.invalid}" type="email" [(ngModel)]="user.mail" name="mail"
+		       #mail="ngModel" email required>
+      </div>
+      <div *ngIf="mail.invalid">
+        <p class="help is-danger" *ngIf="mail.errors.email">{{'user.settings.email.error.email' | translate}}</p>
+        <p class="help is-danger" *ngIf="mail.errors.required">{{'user.settings.email.error.required' | translate}}</p>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <button class="button is-link"
+                [ngClass]="{'is-loading': loading}"
+                type="submit"
+                [disabled]="form.invalid">{{'action.submit' | translate}}</button>
+      </div>
+    </div>
+  </form>
+</div>

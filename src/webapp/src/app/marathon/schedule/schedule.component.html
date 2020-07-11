@@ -1,0 +1,126 @@
+<h1 class="title">{{ 'marathon.schedule.title' | translate}}
+  <div class="dropdown is-pulled-right is-right" [ngClass]="{'is-active':exportActive}">
+    <div class="dropdown-trigger">
+      <button class="button is-info"
+              aria-haspopup="true"
+              aria-controls="dropdown-menu"
+              (click)="exportActive = !exportActive">
+        <span>{{ 'marathon.schedule.export.title' | translate}}</span>
+        <span class="icon">
+        <fa-icon [icon]="faAngleDown"></fa-icon>
+          </span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+      <div class="dropdown-content">
+        <a class="dropdown-item" (click)="export('ics')">
+          {{ 'marathon.schedule.export.ics' | translate}}
+        </a>
+        <a class="dropdown-item" (click)="export('csv')">
+          {{ 'marathon.schedule.export.csv' | translate}}
+        </a>
+        <a class="dropdown-item" (click)="export('json')">
+          {{ 'marathon.schedule.export.json' | translate}}
+        </a>
+      </div>
+    </div>
+  </div>
+</h1>
+
+<p>{{ 'marathon.schedule.timezone' | translate}}</p>
+<p *ngIf="marathonService.hasDstChange()">{{ 'marathon.schedule.dstChange' | translate}}</p>
+
+<div class="container">
+  <div class="columns" *ngIf="isLive()">
+    <div class="column is-half-desktop is-full-mobile">
+      <article class="message is-primary">
+        <div class="message-header">
+          <p>{{ 'marathon.schedule.currentRun' | translate }}</p>
+        </div>
+        <div class="message-body">
+          <p>{{schedule.lines[currentIndex].gameName}} - {{schedule.lines[currentIndex].categoryName}} -
+            {{schedule.lines[currentIndex].console}}</p>
+          <p>
+            <span *ngFor="let user of schedule.lines[currentIndex].runners; let isLast=last">
+            <app-user [user]="user"
+                      [showSocialLinks]="false"></app-user>
+              <span *ngIf="!isLast">, </span>
+            </span>
+          </p>
+        </div>
+      </article>
+    </div>
+    <div class="column is-half-desktop is-full-mobile" *ngIf="currentIndex !== undefined && currentIndex <
+    schedule.lines.length - 1">
+      <article class="message is-dark">
+        <div class="message-header">
+          <p>{{ 'marathon.schedule.nextRun' | translate:{'duration': moment(schedule.lines[currentIndex + 1].date).fromNow()}
+            }}</p>
+        </div>
+        <div class="message-body">
+          <p>{{schedule.lines[currentIndex + 1].gameName}} - {{schedule.lines[currentIndex + 1].categoryName}} -
+            {{schedule.lines[currentIndex + 1].console}}</p>
+          <p>
+            <span *ngFor="let user of schedule.lines[currentIndex + 1].runners; let isLast=last">
+            <app-user [user]="user"
+                      [showSocialLinks]="false"></app-user>
+              <span *ngIf="!isLast">, </span>
+            </span>
+          </p>
+        </div>
+      </article>
+    </div>
+  </div>
+  <table class="table is-fullwidth is-striped">
+    <thead>
+    <tr>
+      <th>{{ 'marathon.schedule.table.time' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.runner' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.game' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.category' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.type' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.console' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.estimate' | translate}}</th>
+      <th>{{ 'marathon.schedule.table.setup' | translate}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-template ngFor let-line [ngForOf]="schedule.lines" let-i="index">
+      <tr *ngIf="i === 0 || moment.tz(line.date, timezone).isAfter(moment.tz(schedule.lines[i-1].date, timezone), 'day')">
+        <td colspan="8" class="is-primary has-text-centered"><b>{{moment.tz(line.date, timezone).format('LL')}}</b></td>
+      </tr>
+      <tr *ngIf="!line.setupBlock" [ngClass]="{'is-emphasized': currentIndex === i}">
+        <td>{{moment.tz(line.date, timezone).format('HH:mm')}}</td>
+        <td>
+          <div class="is-flex" style="flex-direction: column">
+            <app-user *ngFor="let user of line.runners" [user]="user" [showSocialLinks]="true"></app-user>
+            <br/>
+          </div>
+        </td>
+        <td>
+          {{line.gameName}}
+        </td>
+        <td>
+          {{line.categoryName}}
+        </td>
+        <td>
+          {{ 'marathon.schedule.type.' + line.type | translate}}
+        </td>
+        <td>
+          {{line.console}}<sup *ngIf="line.emulated">{{ 'global.emu' | translate }}</sup>
+        </td>
+        <td>{{line.estimateHuman}}</td>
+        <td>{{line.setupTimeHuman}}</td>
+      </tr>
+      <tr *ngIf="line.setupBlock" [ngClass]="{'is-emphasized': currentIndex === i}">
+        <td>{{moment(line.date).format('HH:mm')}}</td>
+        <td colspan="6" class="has-text-centered">
+          <b *ngIf="!line.setupBlockText">{{'marathon.schedule.setupBlock' | translate}}</b>
+          <b *ngIf="line.setupBlockText">{{line.setupBlockText}}</b>
+        </td>
+        <td>{{line.setupTimeHuman}}</td>
+      </tr>
+    </ng-template>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,227 @@
+<div class="container">
+  <h1 class="title">{{'marathon.donate.title' | translate}}</h1>
+  <h2 class="subtitle">{{'marathon.donate.description' | translate:{
+    'supportedCharity': marathonService.marathon.supportedCharity
+  } }}</h2>
+
+  <form ngForm="donateForm"
+        #form="ngForm">
+    <div class="field">
+      <label class="label">{{'marathon.donate.nickname.label' | translate}}</label>
+      <div class="control">
+        <input class="input"
+               [ngClass]="{'is-danger': nickname.invalid}"
+               type="text"
+               [(ngModel)]="donation.nickname"
+               name="nickname"
+               #nickname="ngModel"
+               maxlength="16"
+               pattern="^[\w\-]{0,16}$">
+      </div>
+      <p class="help is-pulled-right">{{donation.nickname?.length}}/16</p>
+      <div *ngIf="nickname.invalid">
+        <p class="help is-danger"
+           *ngIf="nickname.errors.maxlength">{{'marathon.donate.nickname.error.max' | translate}}</p>
+        <p class="help is-danger"
+           *ngIf="nickname.errors.pattern">{{'marathon.donate.nickname.error.pattern' | translate}}</p>
+      </div>
+    </div>
+    <label class="label">{{'marathon.donate.amount.label' | translate}}</label>
+    <div class="field">
+      <input class="input"
+             [ngClass]="{'is-danger': amount.invalid}"
+             type="number"
+             [(ngModel)]="donation.amount"
+             name="amount"
+             appMinNumberValidator="1"
+             #amount="ngModel"
+             required>
+      <p class="help is-pulled-right">
+        <app-monetary-amount [currency]="marathonService.marathon.donationCurrency"
+                             [amount]="donation.amount"></app-monetary-amount>
+      </p>
+    </div>
+    <div *ngIf="amount.invalid">
+      <p class="help is-danger"
+         *ngIf="amount.errors.required">{{'marathon.donate.amount.error.required' | translate}}</p>
+      <p class="help is-danger"
+         *ngIf="amount.errors.minNumber">{{'marathon.donate.amount.error.minNumber' | translate}}</p>
+    </div>
+    <div class="field">
+      <label class="label">{{ 'marathon.donate.comment.label' | translate}}</label>
+      <div class="control">
+        <textarea class="textarea"
+                  maxlength="500"
+                  [(ngModel)]="donation.comment"
+                  name="comment"></textarea>
+        <p class="help is-pulled-right">{{donation.comment?.length}}/500</p>
+      </div>
+    </div>
+    <ng-container *ngIf="!!incentives && incentives.length > 0">
+      <div class="is-clearfix"></div>
+      <hr/>
+      <h4 class="title is-4">{{'marathon.donate.incentives.title' | translate}}</h4>
+      <p>{{'marathon.donate.incentives.description' | translate}}</p>
+      <button type="button" class="button is-info is-pulled-right" style="margin-bottom: 1rem"
+              (click)="addLink()">{{ 'marathon.donate.incentives.add' | translate}}
+      </button>
+      <table class="table is-fullwidth" *ngIf="!!links && links.length > 0">
+        <thead>
+        <tr>
+          <th>{{ 'marathon.donate.incentives.header.incentive' | translate}}</th>
+          <th>{{ 'marathon.donate.incentives.header.amount' | translate}}</th>
+          <th>{{ 'marathon.donate.incentives.header.action' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody #amounts="ngModelGroup" ngModelGroup="incentives" [appTotalValidator]="donation.amount">
+        <tr *ngFor="let link of links; let i = index">
+          <td>
+            <div class="field is-horizontal">
+              <div class="field-body">
+                <div class="field">
+                  <div class="select">
+                    <select name="incentive-{{i}}" [(ngModel)]="link.incentive">
+                      <ng-template ngFor let-incentive [ngForOf]="incentives">
+                        <option *ngIf="!incentive.bidWar" [ngValue]="incentive">
+                          {{incentive.scheduleLine.gameName}} - {{incentive.name}}
+                        </option>
+                        <ng-container *ngIf="incentive.bidWar">
+                          <option *ngFor="let bid of incentive.bids" [ngValue]="bid">
+                      <span *ngIf="!bid.isNew">{{incentive.scheduleLine.gameName}} - {{incentive.name}} -
+                        {{bid.name}}</span>
+                            <span *ngIf="bid.isNew">{{incentive.scheduleLine.gameName}} - {{incentive.name}} -
+                              {{'marathon.donate.incentives.bid.new' | translate}}</span></option>
+                        </ng-container>
+                      </ng-template>
+                    </select>
+                  </div>
+                </div>
+                <div class="field" *ngIf="link.incentive?.isNew">
+                  <input
+                    class="input"
+                    [ngClass]="{'is-danger': name.invalid}"
+                    type="text"
+                    [(ngModel)]="link.incentive.name"
+                    name="name-{{i}}"
+                    #name="ngModel"
+                    required>
+                  <div *ngIf="name.invalid">
+                    <p class="help is-danger"
+                       *ngIf="name.errors.required">{{'marathon.donate.name.error.required' | translate}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td><input class="input"
+                     [ngClass]="{'is-danger': amount.invalid}"
+                     type="number"
+                     [(ngModel)]="link.amount"
+                     name="amount-{{i}}"
+                     appMinNumberValidator="1"
+                     #amount="ngModel"
+                     required>
+            <div *ngIf="amount.invalid">
+              <p class="help is-danger"
+                 *ngIf="amount.errors.required">{{'marathon.donate.incentiveAmount.error.required' | translate}}</p>
+              <p class="help is-danger"
+                 *ngIf="amount.errors.minNumber">{{'marathon.donate.incentiveAmount.error.minNumber' | translate}}</p>
+            </div>
+          </td>
+          <td>
+            <a (click)="removeLink(i)">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </a></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <p>{{ 'marathon.donate.incentives.left' | translate}}
+              <app-monetary-amount [amount]="getLeftAmount()"
+                                   [currency]="marathonService.marathon.donationCurrency"></app-monetary-amount>
+            </p>
+            <p class="help is-danger"
+               *ngIf="amounts.errors?.total">{{'marathon.donate.total.error.total' | translate}}</p></td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-container *ngIf="donation.answers?.length > 0">
+      <div class="is-clearfix"></div>
+      <hr/>
+      <h4 class="title is-4">{{'marathon.donate.extra.title' | translate}}</h4>
+      <p>{{'marathon.donate.extra.description' | translate}}</p>
+      <h3 class="title is-3">{{'marathon.submit.details' | translate}}</h3>
+      <div class="field" *ngFor="let answer of donation.answers; let i = index">
+        <label class="label" *ngIf="answer.question.fieldType !== 'CHECKBOX'">{{answer.question.label}}</label>
+        <div class="control" *ngIf="answer.question.fieldType === 'TEXT'">
+          <input class="input"
+                 type="text"
+                 [(ngModel)]="answer.answer"
+                 name="answer{{i}}"
+                 [ngClass]="{'is-danger': answerField.invalid}"
+                 [required]="answer.question.required"
+                 maxlength="50"
+                 #answerField="ngModel">
+          <p class="help is-pulled-right">{{answer.answer?.length}}/50</p>
+          <div *ngIf="answerField.invalid">
+            <p class="help is-danger" *ngIf="answerField.errors.required">
+              {{'marathon.submit.customField.error.required' | translate}}</p>
+          </div>
+        </div>
+        <div class="control" *ngIf="answer.question.fieldType === 'TEXTAREA'">
+        <textarea class="textarea"
+                  rows=3
+                  maxlength="500"
+                  [(ngModel)]="answer.answer"
+                  name="answer{{i}}"
+                  [ngClass]="{'is-danger': answerField.invalid}"
+                  [required]="answer.question.required"
+                  #answerField="ngModel"></textarea>
+          <p class="help is-pulled-right">{{answer.answer?.length}}/500</p>
+          <div *ngIf="answerField.invalid">
+            <p class="help is-danger" *ngIf="answerField.errors.required">
+              {{'marathon.submit.customField.error.required' | translate}}</p>
+          </div>
+        </div>
+        <div class="control" *ngIf="answer.question.fieldType === 'SELECT'">
+        <span class="select">
+              <select [(ngModel)]="answer.answer" name="answer{{i}}" #answerField="ngModel"
+                      [ngClass]="{'is-danger': answerField.invalid}" [required]="answer.question.required">
+                <option
+                  *ngFor="let option of answer.question.options" [ngValue]="option">{{option}}</option>
+              </select>
+            </span>
+          <div *ngIf="answerField.invalid">
+            <p class="help is-danger" *ngIf="answerField.errors.required">
+              {{'marathon.submit.customField.error.required' | translate}}</p>
+          </div>
+        </div>
+        <div class="control" *ngIf="answer.question.fieldType === 'FREETEXT'">
+          <ngx-md [data]="answer.question.description"></ngx-md>
+        </div>
+        <div class="control" *ngIf="answer.question.fieldType === 'CHECKBOX'">
+          <nwb-switch [(ngModel)]="answer.answer"
+                      [required]="answer.question.required"
+                      name="answer{{i}}"
+                      #answerField="ngModel">{{answer.question.label}}</nwb-switch>
+          <div *ngIf="answerField.invalid">
+            <p class="help is-danger" *ngIf="answerField.errors.required">
+              {{'marathon.submit.customField.error.required' | translate}}</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="field" [hidden]="form.invalid" *ngIf="!marathonService.isArchived()">
+      <div class="control">
+        <div class="box has-text-centered">
+          <div class="loader-wrapper" [ngClass]="{'is-active': loading}">
+            <div class="loader is-loading"></div>
+          </div>
+          <ngx-paypal [config]="this.paypalConfig"></ngx-paypal>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

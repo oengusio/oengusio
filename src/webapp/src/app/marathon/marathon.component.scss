@@ -1,0 +1,16 @@
+@import '~bulmaswatch/solar/variables';
+
+aside {
+  margin-right: 1rem;
+  width: 220px;
+}
+
+.minimized {
+  margin-right: 1rem;
+  width: 76px;
+}
+
+.menu-list a.is-emphasized {
+  background-color: rgba($primary, 0.3);
+  color: #fff;
+}

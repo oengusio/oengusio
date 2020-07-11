@@ -1,0 +1,228 @@
+<h1 class="title">{{ 'marathon.schedule.management.title' | translate}}</h1>
+
+<p>{{ 'marathon.schedule.timezone' | translate}}</p>
+<p *ngIf="marathonService.hasDstChange()">{{ 'marathon.schedule.dstChange' | translate}}</p>
+<p>{{'marathon.schedule.management.help.dragAndDrop' | translate}}
+  <fa-icon [icon]="faBars"></fa-icon>
+</p>
+<div class="columns is-multiline">
+  <div class="column is-full">
+    <div id="timeline"></div>
+  </div>
+  <div class="column is-full">
+    <button type="button"
+            class="button is-info is-pulled-right"
+            (click)="clearAvailabilities()">
+      {{'action.clearAvailabilities' | translate}}
+    </button>
+  </div>
+</div>
+<div class="columns is-desktop">
+  <div class="column is-5">
+    <h4 class="subtitle is-4">{{ 'marathon.schedule.management.selectedRuns' | translate}}</h4>
+    <div class="table-container">
+      <table class="table is-fullwidth is-striped">
+        <thead>
+        <tr>
+          <th>{{ 'marathon.submissions.table.runner' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.game' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.category' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.console' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.estimate' | translate}}</th>
+          <th>{{ 'marathon.submissions.table.actions' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let line of scheduleTodo; let i = index">
+          <td>
+            <div *ngFor="let user of line.runners" class="is-flex">
+              <a (click)="selectAvailabilities(user.username)" style="margin-right: 0.4rem"
+                 *ngIf="!availabilitiesSelected.includes(user.username)">
+                <fa-icon [icon]="faCalendarWeek"></fa-icon>
+              </a>
+              <a (click)="unselectAvailabilities(user.username)" style="margin-right: 0.4rem"
+                 *ngIf="availabilitiesSelected.includes(user.username)">
+                <fa-icon [icon]="faCalendarTimes"></fa-icon>
+              </a>
+              <app-user [user]="user" [showSocialLinks]="true"></app-user>
+              <br/>
+            </div>
+          </td>
+          <td>
+            {{line.gameName}}
+          </td>
+          <td>{{line.categoryName}}
+          </td>
+          <td>
+            {{line.console}}<sup *ngIf="line.emulated">{{ 'global.emu' | translate}}</sup>
+          </td>
+          <td>{{line.estimateHuman}}</td>
+          <td>
+            <a (click)="moveToSchedule(i)">
+              <fa-icon [icon]="faChevronRight"></fa-icon>
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="column is-7">
+    <h4 class="subtitle is-4">{{ 'marathon.schedule.management.schedule' | translate}}</h4>
+    <div class="table-container">
+      <table class="table is-fullwidth is-striped">
+        <thead>
+        <tr>
+          <th>{{ 'marathon.schedule.table.time' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.runner' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.game' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.category' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.type' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.console' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.estimate' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.setup' | translate}}</th>
+          <th>{{ 'marathon.schedule.table.actions' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody cdkDropList
+               [cdkDropListData]="schedule.lines"
+               (cdkDropListDropped)="drop($event)">
+        <tr *ngIf="!schedule.lines.length">
+          <td colspan="8">{{ 'marathon.schedule.table.placeholder' | translate}}
+          </td>
+        </tr>
+        <ng-template ngFor let-line [ngForOf]="schedule.lines" let-i="index">
+          <tr *ngIf="i === 0 || moment(line.date).tz(timezone).isAfter(moment(schedule.lines[i-1].date), 'day')">
+            <td colspan="9" class="is-primary has-text-centered"><b>{{moment(line.date).format('LL')}}</b></td>
+          </tr>
+          <tr cdkDrag *ngIf="!line.setupBlock">
+            <td [ngClass]="{'is-warning': !matchesAvailabilities(line)}">{{moment(line.date).tz(timezone).format('HH:mm')}}</td>
+            <td>
+              <div class="is-flex" style="justify-content: space-between">
+                <div class="is-flex" style="flex-direction: column">
+                  <div *ngFor="let user of line.runners; let j = index" class="is-flex">
+                    <a *ngIf="editMode[line.categoryId] && (line.runners.length > 1 || line.customRun)"
+                       style="margin-right: 0.3rem" (click)="removeUser(j, line)">
+                      <fa-icon [icon]="faTimes"></fa-icon>
+                    </a>
+                    <a (click)="selectAvailabilities(user.username)" style="margin-right: 0.4rem"
+                       *ngIf="!availabilitiesSelected.includes(user.username)">
+                      <fa-icon [icon]="faCalendarWeek"></fa-icon>
+                    </a>
+                    <a (click)="unselectAvailabilities(user.username)" style="margin-right: 0.4rem"
+                       *ngIf="availabilitiesSelected.includes(user.username)">
+                      <fa-icon [icon]="faCalendarTimes"></fa-icon>
+                    </a>
+                    <app-user [user]="user" [showSocialLinks]="true"></app-user>
+                  </div>
+                  <div style="width: 10rem" *ngIf="editMode[line.categoryId]">
+                    <ng-autocomplete
+                      [data]="userSearch[line.categoryId]"
+                      searchKeyword="username"
+                      (selected)="onSelectUser($event, line)"
+                      (inputChanged)="onSearchUser($event, line.categoryId)"
+                      [itemTemplate]="itemTemplate">
+                    </ng-autocomplete>
+                  </div>
+                </div>
+                <a (click)="editMode[line.categoryId] = !editMode[line.categoryId]"
+                   *ngIf="!editInProgress() || editMode[line.categoryId]">
+                  <fa-icon [icon]="faEdit"></fa-icon>
+                </a>
+              </div>
+            </td>
+            <td>
+              <nwb-edit-in-place [(ngModel)]="line.gameName"></nwb-edit-in-place>
+            </td>
+            <td>
+              <nwb-edit-in-place [(ngModel)]="line.categoryName"></nwb-edit-in-place>
+            </td>
+            <td>
+            <span
+              *ngIf="line.runners.length === 1 && !line.customRun">{{'marathon.schedule.type.SINGLE' | translate}}</span>
+              <div class="select" *ngIf="line.runners.length > 1 || line.customRun">
+                <select [(ngModel)]="line.type" name="type-{{i}}">
+                  <option value="SINGLE"
+                          *ngIf="line.customRun">{{ 'marathon.schedule.type.SINGLE' | translate}}</option>
+                  <option value="RACE">{{ 'marathon.schedule.type.RACE' | translate}}</option>
+                  <option value="COOP">{{ 'marathon.schedule.type.COOP' | translate}}</option>
+                  <option value="COOP_RACE">{{ 'marathon.schedule.type.COOP_RACE' | translate}}</option>
+                  <option value="OTHER">{{ 'marathon.schedule.type.OTHER' | translate}}</option>
+                </select>
+              </div>
+            </td>
+            <td>
+            <span>
+              <nwb-edit-in-place [(ngModel)]="line.console"></nwb-edit-in-place>
+              <sup *ngIf="line.emulated">{{ 'global.emu' |translate}}</sup>
+            </span>
+            </td>
+            <td>
+              <nwb-edit-in-place [(ngModel)]="line.estimateHuman"
+                                 [config]="durationEditConfig"
+                                 (ngModelChange)="estimateChange(line, $event)"></nwb-edit-in-place>
+            </td>
+            <td>
+              <nwb-edit-in-place [(ngModel)]="line.setupTimeHuman"
+                                 [config]="setupDurationEditConfig"
+                                 (ngModelChange)="setupChange(line, $event)"></nwb-edit-in-place>
+            <td>
+              <fa-icon [icon]="faBars" cdkDragHandle class="is-pulled-right"></fa-icon>
+              <a class="is-pulled-right" (click)="moveToTodo(i)" style="margin-right: 0.4rem" *ngIf="!line.customRun">
+                <fa-icon [icon]="faChevronLeft"></fa-icon>
+              </a>
+              <a class="is-pulled-right" (click)="removeLine(i)" style="margin-right: 0.4rem" *ngIf="line.customRun">
+                <fa-icon [icon]="faTimes"></fa-icon>
+              </a>
+            </td>
+          </tr>
+          <tr cdkDrag *ngIf="line.setupBlock">
+            <td>{{moment(line.date).format('HH:mm')}}</td>
+            <td colspan="6" class="has-text-centered">
+              <b>{{'marathon.schedule.setupBlock' | translate}}</b>
+              <label class="checkbox" style="margin-left: 0.5rem">
+                <input type="checkbox" name="setupBlockText-{{i}}" [(ngModel)]="line.useSetupBlockText">
+                Custom label:
+              </label>
+              <nwb-edit-in-place [(ngModel)]="line.setupBlockText"></nwb-edit-in-place>
+            </td>
+            <td>
+              <nwb-edit-in-place [(ngModel)]="line.setupTimeHuman"
+                                 [config]="setupDurationEditConfig"
+                                 (ngModelChange)="setupChange(line, $event)"></nwb-edit-in-place>
+            <td>
+              <fa-icon [icon]="faBars" cdkDragHandle class="is-pulled-right"></fa-icon>
+              <a class="is-pulled-right" (click)="removeLine(i)" style="margin-right: 0.4rem">
+                <fa-icon [icon]="faTimes"></fa-icon>
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        </tbody>
+      </table>
+    </div>
+    <p class="help">{{'marathon.schedule.management.help.save' | translate}}</p>
+    <button type="button" class="button is-success is-pulled-right" style="margin-left: 1rem"
+            (click)="publish()"
+            [ngClass]="{'is-loading': loading}"
+            *ngIf="!marathonService.marathon.scheduleDone">{{'marathon.schedule.management.action.publish' | translate}}
+    </button>
+    <button type="button" disabled class="button is-success is-pulled-right" style="margin-left: 1rem"
+            *ngIf="marathonService.marathon.scheduleDone">{{'marathon.schedule.management.action.alreadyPublished' |
+      translate}}
+    </button>
+    <button type="button" class="button is-primary is-pulled-right" style="margin-left: 1rem"
+            [ngClass]="{'is-loading': loading}"
+            (click)="submit()">{{'action.save' | translate}}</button>
+    <button type="button" class="button is-info is-pulled-right" style="margin-left: 1rem"
+            (click)="addLine(true)">{{'marathon.schedule.management.action.addSetupBlock' | translate}}
+    </button>
+    <button type="button" class="button is-info is-pulled-right" style="margin-left: 1rem"
+            (click)="addLine(false)">{{'marathon.schedule.management.action.addRun' | translate}}
+    </button>
+  </div>
+</div>
+
+<ng-template #itemTemplate let-item>
+  <a [innerHTML]="item.username"></a>
+</ng-template>

@@ -1,0 +1,54 @@
+package app.oengus.entity.dto;
+
+import app.oengus.entity.model.Availability;
+import app.oengus.entity.model.User;
+import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import java.util.List;
+
+public class OpponentCategoryDto {
+	@JsonView(Views.Public.class)
+	private Integer id;
+
+	@JsonView(Views.Public.class)
+	private User user;
+
+	@JsonView(Views.Public.class)
+	private String video;
+
+	@JsonView(Views.Public.class)
+	private List<Availability> availabilities;
+
+	public Integer getId() {
+		return this.id;
+	}
+
+	public void setId(final Integer id) {
+		this.id = id;
+	}
+
+	public String getVideo() {
+		return this.video;
+	}
+
+	public void setVideo(final String video) {
+		this.video = video;
+	}
+
+	public User getUser() {
+		return this.user;
+	}
+
+	public void setUser(final User user) {
+		this.user = user;
+	}
+
+	public List<Availability> getAvailabilities() {
+		return this.availabilities;
+	}
+
+	public void setAvailabilities(final List<Availability> availabilities) {
+		this.availabilities = availabilities;
+	}
+}

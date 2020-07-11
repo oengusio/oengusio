@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="20190428-01" author="gyoo">
+        <createTable tableName="users">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true"/>
+            <column name="mail" type="text"/>
+            <column name="discord_id" type="text"/>
+        </createTable>
+        <createTable tableName="user_roles">
+            <column name="user_id" type="int"/>
+            <column name="role" type="varchar(16)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="user_id" constraintName="fk_user_roles"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20190202-01" author="gyoo">
+        <createTable tableName="marathon">
+            <column name="id" type="varchar(10)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="int"/>
+            <column name="start_date" type="timestamp with time zone"/>
+            <column name="end_date" type="timestamp with time zone"/>
+            <column name="description" type="text"/>
+            <column name="is_onsite" type="boolean" defaultValue="false"/>
+            <column name="location" type="text"/>
+            <column name="language" type="varchar(3)" defaultValue="en"/>
+            <column name="max_games_per_runner" type="int" defaultValue="5"/>
+            <column name="max_categories_per_game" type="int" defaultValue="3"/>
+            <column name="has_multiplayer" type="boolean" defaultValue="true"/>
+            <column name="max_number_of_screens" type="int" defaultValue="4"/>
+            <column name="twitch" type="varchar(25)"/>
+            <column name="twitter" type="varchar(15)"/>
+            <column name="discord" type="text"/>
+        </createTable>
+        <createTable tableName="moderator">
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="user_id" type="int"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="marathon" baseColumnNames="creator_id"
+                                 constraintName="fk_marathon_creator"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="moderator" baseColumnNames="user_id" constraintName="fk_moderator_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="moderator" baseColumnNames="marathon_id"
+                                 constraintName="fk_moderator_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20190707-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="country" type="varchar(3)"/>
+            <column name="discord_privacy" type="boolean"/>
+            <column name="submits_open" type="boolean"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190713-01" author="gyoo">
+        <createTable tableName="submission">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+            <column name="marathon_id" type="varchar(10)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="submission" baseColumnNames="user_id"
+                                 constraintName="fk_submission_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="submission" baseColumnNames="marathon_id"
+                                 constraintName="fk_submission_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="availability">
+            <column name="submission_id" type="int"/>
+            <column name="date_from" type="timestamp with time zone"/>
+            <column name="date_to" type="timestamp with time zone"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="availability" baseColumnNames="submission_id"
+                                 constraintName="fk_availability_submission"
+                                 referencedTableName="submission"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="game">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="submission_id" type="int"/>
+            <column name="name" type="text"/>
+            <column name="description" type="text"/>
+            <column name="console" type="text"/>
+            <column name="ratio" type="text"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="game" baseColumnNames="submission_id"
+                                 constraintName="fk_game_submission"
+                                 referencedTableName="submission"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="category">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="game_id" type="int"/>
+            <column name="name" type="text"/>
+            <column name="estimate" type="bigint"/>
+            <column name="description" type="text"/>
+            <column name="video" type="text"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="category" baseColumnNames="game_id"
+                                 constraintName="fk_category_game"
+                                 referencedTableName="game"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="201907020-01" author="gyoo">
+        <createTable tableName="audit">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type_action" type="text"/>
+            <column name="entity_id" type="text"/>
+            <column name="user_id" type="int"/>
+            <column name="date_action" type="timestamp"/>
+            <column name="old_value" type="jsonb"/>
+            <column name="new_value" type="jsonb"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="audit" baseColumnNames="user_id"
+                                 constraintName="fk_audit_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="201907020-02" author="gyoo">
+        <dropColumn tableName="audit" columnName="old_value"/>
+        <renameColumn tableName="audit" oldColumnName="new_value" newColumnName="value"/>
+    </changeSet>
+
+    <changeSet id="20190723-01" author="gyoo">
+        <sql>
+            UPDATE marathon
+            SET description = substring(description from 0 for 3000),
+            location = substring(location from 0 for 150),
+            discord = substring(discord from 0 for 20);
+        </sql>
+        <modifyDataType tableName="marathon" columnName="description" newDataType="varchar(3000)"/>
+        <modifyDataType tableName="marathon" columnName="location" newDataType="varchar(150)"/>
+        <modifyDataType tableName="marathon" columnName="discord" newDataType="varchar(20)"/>
+        <sql>
+            UPDATE game
+            SET name = substring(name from 0 for 100),
+            description = substring(description from 0 for 500),
+            console = substring(console from 0 for 10),
+            ratio = substring(ratio from 0 for 10);
+        </sql>
+        <modifyDataType tableName="game" columnName="name" newDataType="varchar(100)"/>
+        <modifyDataType tableName="game" columnName="description" newDataType="varchar(500)"/>
+        <modifyDataType tableName="game" columnName="console" newDataType="varchar(10)"/>
+        <modifyDataType tableName="game" columnName="ratio" newDataType="varchar(10)"/>
+        <sql>
+            UPDATE category
+            SET name = substring(name from 0 for 100),
+            description = substring(description from 0 for 300),
+            video = substring(video from 0 for 100);
+        </sql>
+        <modifyDataType tableName="category" columnName="name" newDataType="varchar(100)"/>
+        <modifyDataType tableName="category" columnName="description" newDataType="varchar(300)"/>
+        <modifyDataType tableName="category" columnName="video" newDataType="varchar(100)"/>
+    </changeSet>
+
+    <changeSet id="20190731-01" author="gyoo">
+        <addColumn tableName="users">
+            <column name="twitter_name" type="varchar(15)"/>
+            <column name="twitch_name" type="varchar(25)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190801-01" author="gyoo">
+        <addColumn tableName="game">
+            <column name="emulated" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190801-02" author="gyoo">
+        <dropTable tableName="audit"/>
+    </changeSet>
+
+    <changeSet id="20190805-01" author="gyoo">
+        <createTable tableName="selection">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="category_id" type="int"/>
+            <column name="status" type="varchar(9)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="selection" baseColumnNames="marathon_id"
+                                 constraintName="fk_selection_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="selection" baseColumnNames="category_id"
+                                 constraintName="fk_selection_category"
+                                 referencedTableName="category"
+                                 referencedColumnNames="id"/>
+        <addColumn tableName="marathon">
+            <column name="default_setup_time" type="bigint" defaultValueNumeric="600000000000"/>
+            <column name="is_selection_done" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190808-01" author="gyoo">
+        <sql>
+            INSERT INTO selection(marathon_id, category_id, status)
+            SELECT m.id, c.id, 0
+            FROM category c
+            LEFT JOIN game g on c.game_id = g.id
+            LEFT JOIN submission s on g.submission_id = s.id
+            LEFT JOIN marathon m on s.marathon_id = m.id
+        </sql>
+    </changeSet>
+
+    <changeSet id="20190815-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="schedule_done" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+        <createTable tableName="schedule_line">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="game_name" type="varchar(100)"/>
+            <column name="console" type="varchar(10)"/>
+            <column name="emulated" type="boolean"/>
+            <column name="ratio" type="varchar(10)"/>
+            <column name="category_name" type="varchar(100)"/>
+            <column name="estimate" type="bigint"/>
+            <column name="setup_time" type="bigint"/>
+            <column name="setup_block" type="boolean" defaultValueBoolean="false"/>
+            <column name="position" type="int"/>
+        </createTable>
+        <createTable tableName="schedule_line_runner">
+            <column name="schedule_line_id" type="int"/>
+            <column name="user_id" type="int"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="schedule_line" baseColumnNames="marathon_id"
+                                 constraintName="fk_schedule_line_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="schedule_line_runner" baseColumnNames="schedule_line_id"
+                                 constraintName="fk_schedule_line_runner_schedule_line"
+                                 referencedTableName="schedule_line"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="schedule_line_runner" baseColumnNames="user_id"
+                                 constraintName="fk_schedule_line_runner_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20190815-02" author="gyoo">
+        <addColumn tableName="schedule_line">
+            <column name="category_id" type="int"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="schedule_line" baseColumnNames="category_id"
+                                 constraintName="fk_schedule_line_category"
+                                 referencedTableName="category"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20190815-03" author="gyoo">
+        <modifyDataType tableName="selection" columnName="status" newDataType="int"/>
+    </changeSet>
+
+    <changeSet id="20190817-01" author="gyoo">
+        <createTable tableName="schedule">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="schedule" baseColumnNames="marathon_id"
+                                 constraintName="fk_schedule_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="schedule_line" constraintName="fk_schedule_line_marathon"/>
+        <renameColumn tableName="schedule_line" oldColumnName="marathon_id" newColumnName="schedule_id"/>
+        <modifyDataType tableName="schedule_line" columnName="schedule_id" newDataType="int"/>
+        <addForeignKeyConstraint baseTableName="schedule_line" baseColumnNames="schedule_id"
+                                 constraintName="fk_line_schedule"
+                                 referencedTableName="schedule"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20190817-02" author="gyoo">
+        <addColumn tableName="users">
+            <column name="speedruncom_name" type="varchar(20)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190822-01" author="gyoo">
+        <addColumn tableName="users">
+            <column name="username_ja" type="varchar(16)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190922-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="is_private" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190922-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="is_private" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190922-02" author="gyoo">
+        <addColumn tableName="users">
+            <column name="twitch_id" type="text"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190928-01" author="gyoo">
+        <createTable tableName="incentive">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="schedule_line_id" type="int"/>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(300)"/>
+            <column name="bid_war" type="boolean"/>
+            <column name="goal" type="numeric"/>
+            <column name="current_amount" type="numeric"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="incentive" baseColumnNames="marathon_id"
+                                 constraintName="fk_incentive_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="incentive" baseColumnNames="schedule_line_id"
+                                 constraintName="fk_incentive_schedule_line"
+                                 referencedTableName="schedule_line"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="bid">
+            <column name="incentive_id" type="int"/>
+            <column name="name" type="text"/>
+            <column name="current_amount" type="numeric"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="bid" baseColumnNames="incentive_id"
+                                 constraintName="fk_bid_incentive"
+                                 referencedTableName="incentive"
+                                 referencedColumnNames="id"/>
+        <addColumn tableName="marathon">
+            <column name="incentives" type="boolean" defaultValueBoolean="false"/>
+            <column name="currency" type="varchar(4)"/>
+            <column name="currency_position" type="varchar(6)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20190928-02" author="gyoo">
+        <update tableName="marathon">
+            <column name="currency_position" value="AFTER" defaultValue="AFTER"/>
+        </update>
+    </changeSet>
+
+    <changeSet id="20190929-01" author="gyoo">
+        <addColumn tableName="incentive">
+            <column name="locked" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191011-01" author="gyoo">
+        <createTable tableName="question">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="label" type="varchar(50)"/>
+            <column name="field_type" type="varchar(1)"/>
+            <column name="required" type="boolean"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="question" baseColumnNames="marathon_id"
+                                 constraintName="fk_question_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="select_option">
+            <column name="question_id" type="int"/>
+            <column name="question_option" type="varchar(50)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="select_option" baseColumnNames="question_id"
+                                 constraintName="fk_option_question"
+                                 referencedTableName="question"
+                                 referencedColumnNames="id"/>
+        <createTable tableName="answer">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="question_id" type="int"/>
+            <column name="submission_id" type="int"/>
+            <column name="answer" type="varchar(500)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="question_id"
+                                 constraintName="fk_answer_question"
+                                 referencedTableName="question"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="submission_id"
+                                 constraintName="fk_answer_submission"
+                                 referencedTableName="submission"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20191016-01" author="gyoo">
+        <addColumn tableName="schedule_line">
+            <column name="run_type" type="varchar(1)" defaultValue="0"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191024-01" author="gyoo">
+        <addColumn tableName="schedule_line">
+            <column name="custom_run" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191118-01" author="gyoo">
+        <addColumn tableName="category">
+            <column name="run_type" type="varchar(1)" defaultValue="0"/>
+            <column name="code" type="varchar(6)"/>
+        </addColumn>
+        <createTable tableName="opponent">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="category_id" type="int"/>
+            <column name="user_id" type="int"/>
+            <column name="video" type="varchar(100)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="opponent" baseColumnNames="marathon_id"
+                                 constraintName="fk_opponent_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="opponent" baseColumnNames="category_id"
+                                 constraintName="fk_opponent_category"
+                                 referencedTableName="category"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="opponent" baseColumnNames="user_id"
+                                 constraintName="fk_opponent_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20191118-02" author="gyoo">
+        <dropForeignKeyConstraint baseTableName="opponent" constraintName="fk_opponent_marathon"/>
+        <dropForeignKeyConstraint baseTableName="opponent" constraintName="fk_opponent_user"/>
+        <dropColumn tableName="opponent" columnName="marathon_id"/>
+        <dropColumn tableName="opponent" columnName="user_id"/>
+        <addColumn tableName="opponent">
+            <column name="opponent_submission_id" type="int"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="opponent" baseColumnNames="opponent_submission_id"
+                                 constraintName="fk_opponent_submission"
+                                 referencedTableName="submission"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20191214-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="can_edit_submissions" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+        <sql>
+            UPDATE marathon
+            SET can_edit_submissions = true
+            WHERE submits_open = true OR is_selection_done = true
+        </sql>
+    </changeSet>
+
+    <changeSet id="20191220-01" author="gyoo">
+        <addColumn tableName="users">
+            <column name="twitter_id" type="text"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191223-01" author="gyoo">
+        <modifyDataType tableName="marathon" columnName="description" newDataType="varchar(5000)"/>
+    </changeSet>
+
+    <changeSet id="20191226-01" author="gyoo">
+        <addColumn tableName="bid">
+            <column name="id" type="serial" beforeColumn="incentive_id">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="approved" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+        <createTable tableName="donation">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="functional_id" type="text"/>
+            <column name="payment_source" type="text"/>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="nickname" type="varchar(16)"/>
+            <column name="first_name" type="varchar(50)"/>
+            <column name="last_name" type="varchar(50)"/>
+            <column name="address" type="varchar(200)"/>
+            <column name="zipcode" type="varchar(10)"/>
+            <column name="city" type="varchar(50)"/>
+            <column name="country" type="varchar(50)"/>
+            <column name="donation_date" type="timestamp with time zone"/>
+            <column name="amount" type="numeric"/>
+            <column name="donation_comment" type="varchar(500)"/>
+            <column name="approved" type="boolean"/>
+        </createTable>
+        <createTable tableName="donation_incentive">
+            <column name="donation_id" type="integer"/>
+            <column name="incentive_id" type="integer"/>
+            <column name="bid_id" type="integer"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="donation_incentive" baseColumnNames="donation_id"
+                                 constraintName="fk_donation_incentive_donation"
+                                 referencedTableName="donation"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="donation_incentive" baseColumnNames="incentive_id"
+                                 constraintName="fk_donation_incentive_incentive"
+                                 referencedTableName="incentive"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="donation_incentive" baseColumnNames="bid_id"
+                                 constraintName="fk_donation_incentive_bid"
+                                 referencedTableName="bid"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20191228-01" author="gyoo">
+        <renameTable oldTableName="donation_incentive" newTableName="donation_incentive_link"/>
+        <addColumn tableName="donation_incentive_link">
+            <column name="amount" type="numeric"/>
+        </addColumn>
+        <addColumn tableName="marathon">
+            <column name="has_donations" type="boolean" defaultValueBoolean="false"/>
+            <column name="donation_payee" type="varchar(100)"/>
+            <column name="donation_currency_iso" type="varchar(3)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20191230-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="supported_charity" type="varchar(100)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200114-01" author="gyoo">
+        <addColumn tableName="donation_incentive_link">
+            <column name="id" type="serial"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200117-01" author="gyoo">
+        <dropColumn tableName="marathon" columnName="currency"/>
+        <dropColumn tableName="marathon" columnName="currency_position"/>
+    </changeSet>
+
+    <changeSet id="20200120-01" author="gyoo">
+        <addColumn tableName="question">
+            <column name="question_type" type="varchar(10)"/>
+            <column name="description" type="varchar(1000)"/>
+        </addColumn>
+        <update tableName="question">
+            <column name="question_type" value="SUBMISSION"/>
+        </update>
+        <createTable tableName="donation_extra_data">
+            <column name="id" type="serial"/>
+            <column name="question_id" type="int"/>
+            <column name="donation_id" type="int"/>
+            <column name="answer" type="varchar(500)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="donation_extra_data" baseColumnNames="question_id"
+                                 constraintName="fk_donation_question"
+                                 referencedTableName="question"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="donation_extra_data" baseColumnNames="donation_id"
+                                 constraintName="fk_answer_donation"
+                                 referencedTableName="donation"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20200123-01" author="gyoo">
+        <dropColumn tableName="donation" columnName="first_name"/>
+        <dropColumn tableName="donation" columnName="last_name"/>
+        <dropColumn tableName="donation" columnName="address"/>
+        <dropColumn tableName="donation" columnName="zipcode"/>
+        <dropColumn tableName="donation" columnName="city"/>
+        <dropColumn tableName="donation" columnName="country"/>
+    </changeSet>
+
+    <changeSet id="20200124-01" author="gyoo">
+        <addColumn tableName="question">
+            <column name="position" type="int"/>
+        </addColumn>
+        <sql>
+            UPDATE question
+            SET position = id;
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200201-01" author="gyoo">
+        <addColumn tableName="incentive">
+            <column name="open_bid" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200201-02" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="cleared" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200401-02" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="donation_webhook" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200310-02" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="donation_open" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200321-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="video_required" type="boolean" defaultValueBoolean="true"/>
+            <column name="unlimited_games" type="boolean" defaultValueBoolean="false"/>
+            <column name="unlimited_categories" type="boolean" defaultValueBoolean="false"/>
+            <column name="emulator_authorized" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200413-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="youtube" type="varchar(100)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200420-01" author="gyoo">
+        <addColumn tableName="marathon">
+            <column name="submissions_start_date" type="timestamp with time zone"/>
+            <column name="submissions_end_date" type="timestamp with time zone"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200425-01" author="gyoo">
+        <createTable tableName="twitter_audit">
+            <column name="id" type="serial"/>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="action_date" type="timestamp with time zone"/>
+            <column name="action" type="varchar(50)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="twitter_audit" baseColumnNames="marathon_id"
+                                 constraintName="fk_twitter_audit_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20200516-01" author="gyoo">
+        <addColumn tableName="schedule_line">
+            <column name="setup_block_text" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
