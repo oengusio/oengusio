@@ -1,8 +1,8 @@
-# Marathons.I/O
+# Oengus
 
-Marathons.IO (formerly Oengus) is a web application that helps managins speedrun marathons
+Oengus is a web application that helps managins speedrun marathons
 
-https://marathons.io
+https://oengus.io
 
 ## How to run on your computer
 
@@ -16,7 +16,7 @@ https://marathons.io
 
 #### Setup
 
-On PostgreSQL, create a database named `oengus` (artifact from the old app name)
+On PostgreSQL, create a database named `oengus`
 
 Fill the following fields and add them to your environment variables (can be done locally with your favourite IDE). For Discord/Twitch/Twitter, only one of them is required so you can login. We recommend using [Discord](https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application) since it's the easiest to setup 
 
