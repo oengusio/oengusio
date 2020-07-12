@@ -72,4 +72,4 @@ Please make sure to update tests as appropriate (if tests exist).
 After working for almost a full year on this project, developments start to slow down. We're actively looking for maintainers to keep adding new features and fix bugs. 
 
 ## License
-[GNU GPL v3.0](https://choosealicense.com/licenses/gpl-3.0/)
+[GNU AGPL v3.0](https://choosealicense.com/licenses/agpl-3.0/)
