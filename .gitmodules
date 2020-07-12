@@ -1,6 +1,6 @@
 [submodule "src/webapp/src/assets/i18n"]
 	path = src/webapp/src/assets/i18n
-	url = git@gitlab.com:Gyoo1/oengus-localization.git
+	url = https://gitlab.com/Gyoo1/oengus-localization.git
 [submodule "src/main/resources/export"]
 	path = src/main/resources/export
-	url = git@gitlab.com:Gyoo1/oengus-localization-exports.git
+	url = https://gitlab.com/Gyoo1/oengus-localization-exports.git
