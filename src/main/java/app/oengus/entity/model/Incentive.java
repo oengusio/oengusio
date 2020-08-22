@@ -77,7 +77,7 @@ public class Incentive {
 	@JsonManagedReference("incentive")
 	private List<Bid> bids;
 
-	@OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "incentive")
 	@JsonIgnore
 	private List<DonationIncentiveLink> donationIncentiveLinks;
 

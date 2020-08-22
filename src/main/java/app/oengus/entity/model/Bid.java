@@ -44,7 +44,7 @@ public class Bid {
 	@JsonView(Views.Public.class)
 	private Boolean approved;
 
-	@OneToMany(mappedBy = "bid", orphanRemoval = true)
+	@OneToMany(mappedBy = "bid")
 	@JsonIgnore
 	private List<DonationIncentiveLink> donationIncentiveLinks;
 
