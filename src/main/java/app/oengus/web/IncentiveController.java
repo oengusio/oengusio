@@ -16,7 +16,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/marathon/{marathonId}/incentive")
@@ -36,7 +35,7 @@ public class IncentiveController {
 	                                         @RequestParam(required = false, defaultValue = "false") final Boolean withUnapproved) {
 		try {
 			return ResponseEntity.ok()
-			                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+			                     .cacheControl(CacheControl.noCache())
 			                     .body(this.incentiveService.findByMarathon(marathonId, withLocked, withUnapproved));
 		} catch (final NotFoundException e) {
 			return ResponseEntity.notFound().build();
