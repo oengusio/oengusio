@@ -1,6 +1,6 @@
 {
   "name": "webapp",
-  "version": "2020.34.1",
+  "version": "2020.48.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

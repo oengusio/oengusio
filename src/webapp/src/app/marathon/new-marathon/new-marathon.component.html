@@ -5,6 +5,10 @@
   <div class="notification is-info" [innerHTML]="'homepage.welcomeText.par4.prod' | translate" *ngIf="!env.sandbox">
   </div>
 
+  <div class="notification is-warning">Oengus will shut down in July 2021. You can still create marathons until then.
+    More information <a href="https://pastebin.com/LYngmiKK">here</a>
+  </div>
+
   <form ngForm="newMarathonForm" (ngSubmit)="submit()" #form="ngForm">
     <div class="field">
       <label class="label">{{ 'marathon.settings.name.label' | translate}}</label>
@@ -78,6 +82,7 @@
                    [(ngModel)]="marathon.startDate"
                    name="startDate"
                    [min]="now"
+                   [max]="env.closingDate"
                    required
                    #startDate="ngModel">
             <owl-date-time #dtStartDate></owl-date-time>
@@ -98,6 +103,7 @@
                    [owlDateTimeTrigger]="dtEndDate" [owlDateTime]="dtEndDate"
                    [disabled]="!marathon.startDate"
                    [min]="marathon.startDate"
+                   [max]="env.closingDate"
                    [(ngModel)]="marathon.endDate" name="endDate" required #endDate="ngModel">
             <owl-date-time #dtEndDate></owl-date-time>
           </div>

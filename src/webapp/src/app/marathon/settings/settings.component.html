@@ -91,6 +91,8 @@
                        [owlDateTimeTrigger]="dtStartDate"
                        [owlDateTime]="dtStartDate"
                        [(ngModel)]="marathon.startDate"
+                       [min]="now"
+                       [max]="env.closingDate"
                        name="startDate"
                        required
                        #startDate="ngModel">
@@ -113,6 +115,7 @@
                        [ngClass]="{'is-danger': endDate.invalid}"
                        [owlDateTimeTrigger]="dtEndDate" [owlDateTime]="dtEndDate"
                        [min]="marathon.startDate"
+                       [max]="env.closingDate"
                        [(ngModel)]="marathon.endDate" name="endDate" required #endDate="ngModel">
                 <owl-date-time #dtEndDate></owl-date-time>
               </div>
@@ -137,7 +140,7 @@
                        [owlDateTimeTrigger]="dtSubmissionsStartDate"
                        [owlDateTime]="dtSubmissionsStartDate"
                        [(ngModel)]="marathon.submissionsStartDate"
-                       [max]="marathon.startDate"
+                       [max]="min(marathon.startDate, env.closingDate)"
                        name="submissionsStartDate"
                        [required]="!!marathon.submissionsEndDate"
                        #submissionsStartDate="ngModel">
@@ -160,7 +163,7 @@
                        [ngClass]="{'is-danger': submissionsEndDate.invalid}"
                        [owlDateTimeTrigger]="dtSubmissionsEndDate"
                        [owlDateTime]="dtSubmissionsEndDate"
-                       [max]="marathon.startDate"
+                       [max]="min(marathon.startDate, env.closingDate)"
                        [min]="marathon.submissionsStartDate"
                        [(ngModel)]="marathon.submissionsEndDate"
                        name="submissionsEndDate"

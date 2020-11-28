@@ -9,12 +9,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/marathon/{marathonId}/selection")
@@ -31,7 +33,10 @@ public class SelectionController {
 			response = Schedule.class)
 	public ResponseEntity findAllForMarathon(@PathVariable("marathonId") final String marathonId,
 	                                         @RequestParam(name = "status", required = false) final List<Status> statuses) {
-		return ResponseEntity.ok(this.selectionService.findByMarathon(marathonId, statuses));
+		return ResponseEntity.ok()
+		                     .cacheControl(
+				                     CacheControl.maxAge(1, TimeUnit.MINUTES))
+		                     .body(this.selectionService.findByMarathon(marathonId, statuses));
 	}
 
 	@PutMapping

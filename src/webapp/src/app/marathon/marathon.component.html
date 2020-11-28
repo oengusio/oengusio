@@ -56,22 +56,22 @@
           </p>
           <hr *ngIf="minimized">
           <ul class="menu-list">
-            <li
-              *ngIf="marathonService.marathon.hasDonations && marathonService.marathon.donationsOpen &&
-              !marathonService.isArchived()">
-              <a routerLink="donate"
-                 #rla="routerLinkActive"
-                 [ngClass]="{'is-emphasized': !rla.isActive}"
-                 [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">
-                <fa-icon [icon]="faDonate" style="margin-right:0.4rem"></fa-icon>
-                <span *ngIf="!minimized">{{ 'marathon.menu.donate' | translate}}</span></a>
-            </li>
-            <li *ngIf="marathonService.marathon.hasDonations">
-              <a routerLink="donations" disabled [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact:
-              true}">
-                <fa-icon [icon]="faMoneyBill" style="margin-right:0.4rem"></fa-icon>
-                <span *ngIf="!minimized">{{ 'marathon.menu.donations' | translate}}</span></a>
-            </li>
+            <!--            <li-->
+            <!--              *ngIf="marathonService.marathon.hasDonations && marathonService.marathon.donationsOpen &&-->
+            <!--              !marathonService.isArchived()">-->
+            <!--              <a routerLink="donate"-->
+            <!--                 #rla="routerLinkActive"-->
+            <!--                 [ngClass]="{'is-emphasized': !rla.isActive}"-->
+            <!--                 [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact: true}">-->
+            <!--                <fa-icon [icon]="faDonate" style="margin-right:0.4rem"></fa-icon>-->
+            <!--                <span *ngIf="!minimized">{{ 'marathon.menu.donate' | translate}}</span></a>-->
+            <!--            </li>-->
+            <!--            <li *ngIf="marathonService.marathon.hasDonations">-->
+            <!--              <a routerLink="donations" disabled [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact:-->
+            <!--              true}">-->
+            <!--                <fa-icon [icon]="faMoneyBill" style="margin-right:0.4rem"></fa-icon>-->
+            <!--                <span *ngIf="!minimized">{{ 'marathon.menu.donations' | translate}}</span></a>-->
+            <!--            </li>-->
             <li *ngIf="marathonService.marathon.hasIncentives">
               <a routerLink="incentives" disabled [routerLinkActive]="'is-active'" [routerLinkActiveOptions]="{exact:
               true}">
