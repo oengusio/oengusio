@@ -9,5 +9,5 @@ export const environment = {
   syncRedirect: 'https://sandbox.oengus.io/user/settings/sync/',
   matomoId: 2,
   paypalClientId: 'Ac7rzLgpb5emA9JuRxRXpRDVMdULzgA_BxwyhPlAxPHtg1NtDv3nyjLcWgHBOUEmtdWJ5npWnMN-b7_8',
-  closingDate: Date.UTC(2021, 6, 1, 0, 0, 0)
+  closingDate: new Date(2021, 6, 1, 0, 0, 0)
 };
