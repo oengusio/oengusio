@@ -26,6 +26,7 @@ export class SettingsComponent implements OnInit {
   public countries = countries;
   public env = environment;
   public loading = false;
+  public now: Date;
 
   public data = [];
   public active = 'general';
@@ -46,6 +47,8 @@ export class SettingsComponent implements OnInit {
   constructor(public marathonService: MarathonService,
               private donationService: DonationService,
               public userService: UserService) {
+    this.now = new Date();
+    this.now.setSeconds(0);
   }
 
   ngOnInit() {
@@ -167,5 +170,12 @@ export class SettingsComponent implements OnInit {
   drop(event: CdkDragDrop<Question[]>) {
     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     this.computeQuestionsPositions();
+  }
+
+  min(date1: Date, date2: Date): Date {
+    if (date1 < date2) {
+      return date1;
+    }
+    return date2;
   }
 }

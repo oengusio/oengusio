@@ -10,7 +10,7 @@
     </parent>
     <groupId>app.oengus</groupId>
     <artifactId>oengus</artifactId>
-    <version>2020.45.0</version>
+    <version>2020.48.0</version>
     <name>oengus</name>
     <description>A tool to manage speedrunning marathons</description>
 

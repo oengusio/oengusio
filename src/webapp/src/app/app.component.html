@@ -18,6 +18,19 @@
       </p>
     </div>
   </div>
+  <div class="privacy-consent has-background-dark is-flex-desktop"
+       style="justify-content: space-between"
+       *ngIf="!isClosed()">
+    <p class="navbar-item">
+      <span>Oengus will shut down in July 2021. You can still create marathons until then.
+        More information <a href="https://pastebin.com/LYngmiKK" target="_blank">here</a></span>
+    </p>
+    <div class="field is-grouped" style="padding: 0 0.75rem">
+      <p class="control" style="display: flex; align-items: center">
+        <a class="delete" (click)="closeNotification()"></a>
+      </p>
+    </div>
+  </div>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" routerLink="/">

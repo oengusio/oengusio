@@ -79,6 +79,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.matomoTracker.trackPageView();
   }
 
+  closeNotification(): void {
+    localStorage.setItem('closed', 'true');
+  }
+
   acceptPrivacyConsent(): void {
     this.matomoTracker.rememberConsentGiven();
     localStorage.setItem('consent', 'true');
@@ -91,6 +95,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   consentWasGiven(): boolean {
     return localStorage.getItem('consent') !== null;
+  }
+
+  isClosed(): boolean {
+    return localStorage.getItem('closed') !== null;
   }
 
   ngAfterViewInit(): void {
