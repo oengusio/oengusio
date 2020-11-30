@@ -1,6 +1,6 @@
 [submodule "src/webapp/src/assets/i18n"]
 	path = src/webapp/src/assets/i18n
-	url = ../../Gyoo1/oengus-localization.git
+	url = https://github.com/esamarathon/oengus-localization.git
 [submodule "src/main/resources/export"]
 	path = src/main/resources/export
-	url = ../../Gyoo1/oengus-localization-exports.git
+	url = https://github.com/esamarathon/oengus-localization-exports.git
