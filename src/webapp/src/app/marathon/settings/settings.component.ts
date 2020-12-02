@@ -171,11 +171,4 @@ export class SettingsComponent implements OnInit {
     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     this.computeQuestionsPositions();
   }
-
-  min(date1: Date, date2: Date): Date {
-    if (date1 < date2) {
-      return date1;
-    }
-    return date2;
-  }
 }

@@ -8,6 +8,5 @@ export const environment = {
   loginRedirect: 'https://oengus.io/login/',
   syncRedirect: 'https://oengus.io/user/settings/sync/',
   matomoId: 1,
-  paypalClientId: 'AZdzNo_y3Y_JyXJp_Dbv5ulY5EHinZo8S0OFNUyoCe7U9vj-1MfR9xbf0VIja6KYBUAey0tNOrubxT2b',
-  closingDate: new Date(2021, 6, 1, 0, 0, 0)
+  paypalClientId: 'AZdzNo_y3Y_JyXJp_Dbv5ulY5EHinZo8S0OFNUyoCe7U9vj-1MfR9xbf0VIja6KYBUAey0tNOrubxT2b'
 };

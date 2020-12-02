@@ -80,7 +80,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   closeNotification(): void {
-    localStorage.setItem('closed', 'true');
+    localStorage.setItem('closed-msg2', 'true');
   }
 
   acceptPrivacyConsent(): void {
@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   isClosed(): boolean {
-    return localStorage.getItem('closed') !== null;
+    return localStorage.getItem('closed-msg2') !== null;
   }
 
   ngAfterViewInit(): void {
