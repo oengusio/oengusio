@@ -5,7 +5,6 @@ import { environment } from '../environments/environment';
 import { Game } from '../model/game';
 import { NwbAlertConfig, NwbAlertService } from '@wizishop/ng-wizi-bulma';
 import { TranslateService } from '@ngx-translate/core';
-import { MatomoTracker } from '@ambroise-rabier/ngx-matomo';
 import moment from 'moment-timezone';
 
 @Injectable({
@@ -15,8 +14,7 @@ export class GameService {
 
   constructor(private http: HttpClient,
               private toastr: NwbAlertService,
-              private translateService: TranslateService,
-              private matomoTracker: MatomoTracker) {
+              private translateService: TranslateService) {
   }
 
   getAllForMarathon(marathonId: string): Observable<Game[]> {
@@ -26,7 +24,7 @@ export class GameService {
   exportAllForMarathon(marathonId: string) {
     const exportUrl = environment.api + '/marathon/' + marathonId + '/game/export?locale='
       + localStorage.getItem('language') + '&zoneId=' + moment.tz.guess();
-    this.matomoTracker.trackLink(exportUrl, 'download');
+    // TODO: tracker this.matomoTracker.trackLink(exportUrl, 'download');
     this.http.get(exportUrl, {responseType: 'text'})
       .subscribe(response => {
           const blob = new Blob([response], {type: 'text/csv'});

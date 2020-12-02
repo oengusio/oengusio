@@ -7,7 +7,6 @@ import { NwbAlertConfig, NwbAlertService } from '@wizishop/ng-wizi-bulma';
 import { Observable } from 'rxjs';
 import { ValidationErrors } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { MatomoTracker } from '@ambroise-rabier/ngx-matomo';
 import { UserProfile } from '../model/user-profile';
 
 @Injectable({
@@ -20,8 +19,7 @@ export class UserService {
   constructor(private http: HttpClient,
               private router: Router,
               private toastr: NwbAlertService,
-              private translateService: TranslateService,
-              private matomoTracker: MatomoTracker) {
+              private translateService: TranslateService) {
   }
 
   getRedirectUri() {
@@ -60,7 +58,7 @@ export class UserService {
 
   logout() {
     this._user = null;
-    this.matomoTracker.setUserId(null);
+    // TODO: tracker this.matomoTracker.setUserId(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.router.navigate(['/']);
@@ -73,7 +71,7 @@ export class UserService {
   me() {
     return this.getMe().subscribe((response: User) => {
       this._user = response;
-      this.matomoTracker.setUserId(this._user.username);
+      // TODO: tracker this.matomoTracker.setUserId(this._user.username);
       if (!this._user.mail) {
         this.router.navigate(['user/new']);
       }

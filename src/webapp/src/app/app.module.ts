@@ -21,7 +21,6 @@ import { OengusCommonModule } from './oengus-common/oengus-common.module';
 import { AboutComponent } from './about/about.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarComponent } from './calendar/calendar.component';
-import { MatomoModule } from '@ambroise-rabier/ngx-matomo';
 import { WebpackTranslateLoader } from '../loader/webpack-translate-loader';
 
 const appRoutes: Routes = [
@@ -74,8 +73,7 @@ const appRoutes: Routes = [
     }),
     OengusCommonModule,
     NwbCommonModule,
-    FullCalendarModule,
-    MatomoModule
+    FullCalendarModule
   ],
   exports: [RouterModule],
   providers: [httpInterceptorProviders,

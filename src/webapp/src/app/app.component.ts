@@ -7,9 +7,6 @@ import isoLang from '../assets/languages.json';
 import moment from 'moment-timezone';
 import { DateTimeAdapter } from '@busacca/ng-pick-datetime';
 import { environment } from '../environments/environment';
-import { MatomoInjector, MatomoTracker } from '@ambroise-rabier/ngx-matomo';
-import { NavigationEnd, Router } from '@angular/router';
-import { delay, filter, skip } from 'rxjs/operators';
 import localeFr from '@angular/common/locales/fr';
 import localeDe from '@angular/common/locales/de';
 import localeNl from '@angular/common/locales/nl';
@@ -25,7 +22,7 @@ import { registerLocaleData } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   title = !environment.sandbox ? 'Oengus' : 'Oengus [Sandbox]';
 
   @ViewChild('navBurger', {static: true}) navBurger: ElementRef;
@@ -46,10 +43,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   constructor(public userService: UserService,
               private translate: TranslateService,
-              private dateTimeAdapter: DateTimeAdapter<any>,
-              private matomoInjector: MatomoInjector,
-              private matomoTracker: MatomoTracker,
-              private router: Router) {
+              private dateTimeAdapter: DateTimeAdapter<any>) {
     registerLocaleData(localeFr, 'fr');
     registerLocaleData(localeDe, 'de');
     registerLocaleData(localeNl, 'nl');
@@ -58,11 +52,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     registerLocaleData(localeCy, 'cy');
     registerLocaleData(localePt, 'pt_BR');
     registerLocaleData(localeZhHk, 'zh_Hant_HK');
-    this.matomoInjector.init({
-      url: 'https://matomo.oengus.io/',
-      id: environment.matomoId,
-      enableLinkTracking: true
-    });
     translate.setDefaultLang('en');
     if (this.availableLocales.includes(this.language)) {
       this.useLanguage(this.language);
@@ -75,8 +64,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.matomoTracker.requireConsent();
-    this.matomoTracker.trackPageView();
+    //
   }
 
   closeNotification(): void {
@@ -84,12 +72,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   acceptPrivacyConsent(): void {
-    this.matomoTracker.rememberConsentGiven();
+    //
     localStorage.setItem('consent', 'true');
   }
 
   declinePrivacyConsent(): void {
-    this.matomoTracker.forgetConsentGiven();
+    //
     localStorage.setItem('consent', 'false');
   }
 
@@ -99,22 +87,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   isClosed(): boolean {
     return localStorage.getItem('closed-msg2') !== null;
-  }
-
-  ngAfterViewInit(): void {
-    let referrer: string = window.location.href;
-    this.router.events.pipe(
-      // filter out NavigationStart, Resolver, ...
-      filter(e => e instanceof NavigationEnd),
-      // skip first NavigationEnd fired when subscribing, already handled by init().
-      skip(1),
-      // idk why, used in angulartics2 lib.
-      delay(0)
-    ).subscribe(next => {
-      // referrer is optional
-      this.matomoInjector.onPageChange({referrer});
-      referrer = window.location.href;
-    });
   }
 
   useLanguage(language: string) {

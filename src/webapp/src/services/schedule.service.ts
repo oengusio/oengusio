@@ -6,7 +6,6 @@ import { NwbAlertConfig, NwbAlertService } from '@wizishop/ng-wizi-bulma';
 import { TranslateService } from '@ngx-translate/core';
 import { Schedule } from '../model/schedule';
 import moment from 'moment-timezone';
-import { MatomoTracker } from '@ambroise-rabier/ngx-matomo';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +14,7 @@ export class ScheduleService {
 
   constructor(private http: HttpClient,
               private toastr: NwbAlertService,
-              private translateService: TranslateService,
-              private matomoTracker: MatomoTracker) {
+              private translateService: TranslateService) {
   }
 
   getAllForMarathon(marathonId: string): Observable<Schedule> {
@@ -24,15 +22,16 @@ export class ScheduleService {
   }
 
   save(marathonId: string, schedule: Schedule) {
-    return this.http.put(environment.api + '/marathon/' + marathonId + '/schedule', schedule, {observe: 'response'}).subscribe((response: any) => {
-      this.translateService.get('alert.schedule.save.success').subscribe((res: string) => {
-        const alertConfig: NwbAlertConfig = {
-          message: res,
-          duration: 3000,
-          position: 'is-right',
-          color: 'is-success'
-        };
-        this.toastr.open(alertConfig);
+    return this.http.put(environment.api + '/marathon/' + marathonId + '/schedule', schedule, {observe: 'response'})
+      .subscribe((response: any) => {
+        this.translateService.get('alert.schedule.save.success').subscribe((res: string) => {
+          const alertConfig: NwbAlertConfig = {
+            message: res,
+            duration: 3000,
+            position: 'is-right',
+            color: 'is-success'
+          };
+          this.toastr.open(alertConfig);
       });
     }, error => {
       this.translateService.get('alert.schedule.save.error').subscribe((res: string) => {
@@ -50,7 +49,7 @@ export class ScheduleService {
   exportAllForMarathon(marathonId: string, format: string) {
     const exportUrl = environment.api + '/marathon/' + marathonId + '/schedule/export?format=' + format + '&zoneId='
       + moment.tz.guess() + '&locale=' + localStorage.getItem('language');
-    this.matomoTracker.trackLink(exportUrl, 'download');
+    // TODO: tracker this.matomoTracker.trackLink(exportUrl, 'download');
     this.http.get(exportUrl, {responseType: 'text'})
       .subscribe(response => {
           const blob = new Blob([response], {type: 'text/csv'});

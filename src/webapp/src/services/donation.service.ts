@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 import { Page } from '../model/page';
 import { DonationStats } from '../model/donation-stats';
 import moment from 'moment-timezone';
-import { MatomoTracker } from '@ambroise-rabier/ngx-matomo';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +18,7 @@ export class DonationService {
   constructor(private http: HttpClient,
               private router: Router,
               private toastr: NwbAlertService,
-              private translateService: TranslateService,
-              private matomoTracker: MatomoTracker) {
+              private translateService: TranslateService) {
   }
 
   find(marathonId: string, page: number, size: number): Observable<Page<Donation>> {
@@ -76,7 +74,7 @@ export class DonationService {
   exportAllForMarathon(marathonId: string) {
     const exportUrl = environment.api + '/marathon/' + marathonId + '/donation/export?zoneId='
       + moment.tz.guess();
-    this.matomoTracker.trackLink(exportUrl, 'download');
+    // TODO: tracker this.matomoTracker.trackLink(exportUrl, 'download');
     this.http.get(exportUrl, {responseType: 'text'})
       .subscribe(response => {
           const blob = new Blob([response], {type: 'text/csv'});
