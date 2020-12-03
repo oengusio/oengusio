@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { faDiscord, faGitlab, faPaypal, faTwitch, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faBug, faLanguage } from '@fortawesome/free-solid-svg-icons';
@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
   }
 
   closeNotification(): void {
-    localStorage.setItem('closed-msg2', 'true');
+    localStorage.removeItem('closed');
   }
 
   acceptPrivacyConsent(): void {
@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
   }
 
   isClosed(): boolean {
-    return localStorage.getItem('closed-msg2') !== null;
+    return localStorage.getItem('closed') === null;
   }
 
   useLanguage(language: string) {
