@@ -1,7 +1,7 @@
 FROM openjdk:12.0.2 AS builder
 
 WORKDIR /oengus
-COPY gradle gradlew build.gradle.kts ./
+COPY gradle gradlew build.gradle.kts settings.gradle.kts ./
 RUN ./gradlew dependencies
 COPY . .
 RUN ./gradlew build
