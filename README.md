@@ -1,15 +1,16 @@
 # Oengus
 
-Oengus is a web application that helps managins speedrun marathons
+Oengus is a web application that helps manage speedrun marathons
 
 https://oengus.io
+
+Note that the front-end lives on this repository [https://github.com/esamarathon/oengus-webapp](https://github.com/esamarathon/oengus-webapp).
 
 ## How to run on your computer
 
 ### Requirements
 
 - Java JDK 12
-- NodeJS 10+
 - PostgreSQL 10+
 
 ### Instructions
@@ -43,20 +44,12 @@ BASE_URL=http://localhost:4200;
 #### Dependencies
 
 ```shell script
-./mvnw clean install
-cd src/webapp
-npm install
+./gradlew dependencies
 ```
 
 #### Run
 
-Back : Start Application.java with your favourite IDE. On first startup the database will be initialized automatically.
-
-Front : 
-```shell script
-cd src/webapp
-npm start
-```
+Start Application.java with your favourite IDE. On first startup the database will be initialized automatically.
 
 ## Support
 
@@ -66,10 +59,6 @@ Please join the official [Discord server](https://discord.gg/ZZFS8YT) for questi
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate (if tests exist).
-
-## Project status
-
-After working for almost a full year on this project, developments start to slow down. We're actively looking for maintainers to keep adding new features and fix bugs. 
 
 ## License
 [GNU AGPL v3.0](https://choosealicense.com/licenses/agpl-3.0/)
