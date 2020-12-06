@@ -25,25 +25,26 @@ public class CoreConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/assets/**/*")
-		        .addResourceLocations("classpath:/static/assets/")
-		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES));
-		registry.addResourceHandler("/index.html")
-		        .addResourceLocations("classpath:/static/index.html")
-		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES));
-		registry.addResourceHandler("/**/*")
-		        .addResourceLocations("classpath:/static/")
-		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-		        .resourceChain(true)
-		        .addResolver(new PathResourceResolver() {
-			        @Override
-			        protected Resource getResource(final String resourcePath, final Resource location)
-					        throws IOException {
-				        final Resource requestedResource = location.createRelative(resourcePath);
-				        return requestedResource.exists() && requestedResource.isReadable() ? requestedResource :
-						        new ClassPathResource("/static/index.html");
-			        }
-		        });
+		// TODO: double check this
+//		registry.addResourceHandler("/assets/**/*")
+//		        .addResourceLocations("classpath:/static/assets/")
+//		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES));
+//		registry.addResourceHandler("/index.html")
+//		        .addResourceLocations("classpath:/static/index.html")
+//		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES));
+//		registry.addResourceHandler("/**/*")
+//		        .addResourceLocations("classpath:/static/")
+//		        .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+//		        .resourceChain(true)
+//		        .addResolver(new PathResourceResolver() {
+//			        @Override
+//			        protected Resource getResource(final String resourcePath, final Resource location)
+//					        throws IOException {
+//				        final Resource requestedResource = location.createRelative(resourcePath);
+//				        return requestedResource.exists() && requestedResource.isReadable() ? requestedResource :
+//						        new ClassPathResource("/static/index.html");
+//			        }
+//		        });
 		registry.addResourceHandler("swagger-ui.html")
 		        .addResourceLocations("classpath:/META-INF/resources/");
 		registry.addResourceHandler("/webjars/**")
