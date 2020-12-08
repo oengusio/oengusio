@@ -87,6 +87,7 @@ dependencies {
 }
 
 val shadowJar: ShadowJar by tasks
+val wrapper: Wrapper by tasks
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -97,4 +98,9 @@ tasks.withType<JavaCompile> {
 shadowJar.apply {
     archiveClassifier.set("all")
     archiveVersion.set("")
+}
+
+wrapper.apply {
+    gradleVersion = "6.7.1"
+    distributionType = Wrapper.DistributionType.ALL
 }
