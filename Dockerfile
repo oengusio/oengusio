@@ -5,7 +5,7 @@ COPY gradle/ ./gradle
 COPY gradlew build.gradle.kts settings.gradle.kts ./
 RUN ./gradlew dependencies
 COPY . .
-RUN ./gradlew build
+RUN ./gradlew bootJar
 
 FROM openjdk:12.0.2
 

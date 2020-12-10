@@ -1,14 +1,16 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     java
     application
 
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.springframework.boot") version "2.4.0"
+    id("org.springframework.boot") version "2.1.4.RELEASE"
+    id("io.spring.dependency-management") version "1.0.10.RELEASE"
 }
 
-apply(plugin = "io.spring.dependency-management")
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
+    }
+}
 
 project.group = "app.oengus"
 project.version = "2020.48.0"
@@ -19,7 +21,7 @@ java {
 }
 
 application {
-    mainClassName = "${project.group}.OengusApplication"
+    mainClass.set("${project.group}.OengusApplication")
 }
 
 repositories {
@@ -77,18 +79,12 @@ dependencies {
     implementation(group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7")
 }
 
-val shadowJar: ShadowJar by tasks
 val wrapper: Wrapper by tasks
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
     options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
-}
-
-shadowJar.apply {
-    archiveClassifier.set("all")
-    archiveVersion.set("")
 }
 
 wrapper.apply {
