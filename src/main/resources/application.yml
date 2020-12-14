@@ -29,15 +29,15 @@ paypal:
 
 twitch:
   login:
-    clientId: ${TWITCH_LOGIN_CLIENT_ID}
-    clientSecret: ${TWITCH_LOGIN_CLIENT_SECRET}
+    clientId: ${TWITCH_CLIENT_ID}
+    clientSecret: ${TWITCH_CLIENT_SECRET}
     grantType: 'authorization_code'
     redirectUri: '${BASE_URL}/login/twitch'
     scope:
       - openid
   sync:
-    clientId: ${TWITCH_SYNC_CLIENT_ID}
-    clientSecret: ${TWITCH_SYNC_CLIENT_SECRET}
+    clientId: ${TWITCH_CLIENT_ID}
+    clientSecret: ${TWITCH_CLIENT_SECRET}
     grantType: 'authorization_code'
     syncRedirectUri: '${BASE_URL}/user/settings/sync/twitch'
     scope:
