@@ -4,9 +4,6 @@ services:
     container_name: oengus-backend
     build:
       context: .
-      args:
-        - SPRING_PROFILE=prod # sandbox
-        - JAVA_XMX=1G # sets the -Xmx{var} flag for java
     ports:
       - "8080:8080"
     environment:
