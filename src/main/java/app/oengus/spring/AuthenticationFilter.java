@@ -22,7 +22,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private JWTUtil jwtUtil;
 
-	private final String authHeader = "Authorization";
+	private static final String AUTH_HEADER = "Authorization";
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
@@ -40,7 +40,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
 		}
 
-		final String authHeader = request.getHeader(this.authHeader);
+		final String authHeader = request.getHeader(AUTH_HEADER);
 
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			final String token = authHeader.substring(7);

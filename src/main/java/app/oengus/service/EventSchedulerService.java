@@ -27,7 +27,7 @@ public class EventSchedulerService {
 	@Autowired
 	private AbstractTwitterService twitterService;
 
-	private final Map<String, ScheduledFuture> scheduledEvents = new ConcurrentHashMap<>();
+	private final Map<String, ScheduledFuture<?>> scheduledEvents = new ConcurrentHashMap<>();
 
 	public void scheduleSubmissions(final Marathon marathon) {
 		this.unscheduleSubmissions(marathon);
@@ -46,8 +46,8 @@ public class EventSchedulerService {
 	}
 
 	public void unscheduleSubmissions(final Marathon marathon) {
-		final ScheduledFuture start = this.scheduledEvents.get(marathon.getId() + "-start");
-		final ScheduledFuture end = this.scheduledEvents.get(marathon.getId() + "-end");
+		final ScheduledFuture<?> start = this.scheduledEvents.get(marathon.getId() + "-start");
+		final ScheduledFuture<?> end = this.scheduledEvents.get(marathon.getId() + "-end");
 		if (start != null) {
 			start.cancel(true);
 			this.scheduledEvents.remove(marathon.getId() + "-start");
@@ -59,7 +59,7 @@ public class EventSchedulerService {
 	}
 
 	public void scheduleMarathonStartAlert(final Marathon marathon) {
-		final ScheduledFuture start = this.scheduledEvents.get(marathon.getId());
+		final ScheduledFuture<?> start = this.scheduledEvents.get(marathon.getId());
 		if (start != null) {
 			start.cancel(true);
 		}
