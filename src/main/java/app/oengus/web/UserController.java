@@ -39,7 +39,7 @@ public class UserController {
 	@PostMapping("/login")
 	@PermitAll
 	@ApiIgnore
-	public ResponseEntity login(@RequestBody final LoginRequest request) {
+	public ResponseEntity<?> login(@RequestBody final LoginRequest request) {
 		try {
 			return ResponseEntity.ok(
 					this.userService.login(request.getService(), request.getCode(), request.getOauthToken(),
@@ -53,7 +53,7 @@ public class UserController {
 	@RolesAllowed({"ROLE_USER"})
 	@PreAuthorize("!isBanned()")
 	@ApiIgnore
-	public ResponseEntity sync(@RequestBody final LoginRequest request) {
+	public ResponseEntity<?> sync(@RequestBody final LoginRequest request) {
 		try {
 			return ResponseEntity.ok(
 					this.userService.sync(request.getService(), request.getCode(), request.getOauthToken(),
@@ -89,13 +89,13 @@ public class UserController {
 	@ApiOperation(value = "Get a user profile",
 			response = UserProfileDto.class)
 	public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) {
-		return ResponseEntity.ok(this.userService.getUserProfile(name));
+        return ResponseEntity.ok(this.userService.getUserProfile(name));
 	}
 
 	@PatchMapping("/{id}")
 	@PreAuthorize("isSelf(#id) && !isBanned()")
 	@ApiIgnore
-	public ResponseEntity updateUser(@PathVariable("id") final Integer id,
+	public ResponseEntity<?> updateUser(@PathVariable("id") final Integer id,
 	                                 @RequestBody @Valid final User userPatch,
 	                                 final BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {

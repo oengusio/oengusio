@@ -41,7 +41,7 @@ public class MarathonController {
 	@RolesAllowed({"ROLE_USER"})
 	@PreAuthorize("!isBanned()")
 	@ApiIgnore
-	public ResponseEntity create(@RequestBody @Valid final Marathon marathon, final Principal principal,
+	public ResponseEntity<?> create(@RequestBody @Valid final Marathon marathon, final Principal principal,
 	                             final BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
@@ -106,7 +106,7 @@ public class MarathonController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
 	@ApiIgnore
-	public ResponseEntity delete(@PathVariable("id") final String id) {
+	public ResponseEntity<?> delete(@PathVariable("id") final String id) {
 		try {
 			this.marathonService.delete(id);
 			return ResponseEntity.ok().build();
@@ -118,7 +118,7 @@ public class MarathonController {
 	@PatchMapping("/{id}")
 	@PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
 	@ApiIgnore
-	public ResponseEntity update(@PathVariable("id") final String id,
+	public ResponseEntity<?> update(@PathVariable("id") final String id,
 	                             @RequestBody @Valid final Marathon patch,
 	                             final BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {

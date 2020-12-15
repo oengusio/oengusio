@@ -4,3 +4,4 @@ Dockerfile
 .gitattributes
 .gitignore
 .gitlab-ci.yml
+build/

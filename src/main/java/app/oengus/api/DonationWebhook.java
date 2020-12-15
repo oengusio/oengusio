@@ -14,6 +14,6 @@ import java.net.URI;
 public interface DonationWebhook {
 
 	@RequestMapping(method = RequestMethod.POST)
-	ResponseEntity sendDonationEvent(URI baseURI, @RequestBody Donation donation);
+	ResponseEntity<?> sendDonationEvent(URI baseURI, @RequestBody Donation donation);
 
 }

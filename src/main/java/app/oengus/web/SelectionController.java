@@ -31,7 +31,7 @@ public class SelectionController {
 	@JsonView(Views.Public.class)
 	@ApiOperation(value = "Get all selection statuses a marathon",
 			response = Schedule.class)
-	public ResponseEntity findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
 	                                         @RequestParam(name = "status", required = false) final List<Status> statuses) {
 		return ResponseEntity.ok()
 		                     .cacheControl(
@@ -42,7 +42,7 @@ public class SelectionController {
 	@PutMapping
 	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity saveOrUpdate(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
 	                                   @RequestBody final List<SelectionDto> selections) {
 		this.selectionService.saveOrUpdate(marathonId, selections);
 		return ResponseEntity.noContent().build();

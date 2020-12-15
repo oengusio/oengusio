@@ -36,7 +36,7 @@ public class GameController {
 	@ApiOperation(value = "Find all submitted games by marathon",
 			response = GameDto.class,
 			responseContainer = "List")
-	public ResponseEntity findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
+	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
 		return ResponseEntity.ok()
 		                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
 		                     .body(this.gameService.findByMarathon(marathonId));
@@ -60,7 +60,7 @@ public class GameController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
 	@ApiIgnore
-	public ResponseEntity delete(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
 	                             @PathVariable("id") final Integer id) {
 		this.gameService.delete(id);
 		return ResponseEntity.ok().build();

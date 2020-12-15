@@ -180,7 +180,7 @@ public class DonationService {
 		donation.setAmount(BigDecimal.valueOf(Math.random()));
 		donation.setTest(true);
 		try {
-			final ResponseEntity response = this.donationWebhook.sendDonationEvent(URI.create(url), donation);
+			final ResponseEntity<?> response = this.donationWebhook.sendDonationEvent(URI.create(url), donation);
 			return response.getStatusCode().is2xxSuccessful();
 		} catch (final FeignException e) {
 			return false;

@@ -24,7 +24,7 @@ public class CategoryController {
 	@JsonView(Views.Public.class)
 	@ApiOperation(value = "Find a multiplayer category by its code and return basic information",
 			response = OpponentSubmissionDto.class)
-	public ResponseEntity findCategoryByCode(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> findCategoryByCode(@PathVariable("marathonId") final String marathonId,
 	                                         @PathVariable("code") final String code) {
 		return ResponseEntity.ok(this.categoryService.findCategoryByCode(marathonId, code));
 	}
@@ -32,7 +32,7 @@ public class CategoryController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
 	@ApiIgnore
-	public ResponseEntity delete(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
 	                             @PathVariable("id") final Integer id) {
 		this.categoryService.delete(id);
 		return ResponseEntity.ok().build();

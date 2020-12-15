@@ -32,7 +32,7 @@ public class SubmissionController {
 	@RolesAllowed({"ROLE_USER"})
 	@PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity create(@RequestBody @Valid final Submission submission,
+	public ResponseEntity<?> create(@RequestBody @Valid final Submission submission,
 	                             @PathVariable("marathonId") final String marathonId,
 	                             final Principal principal,
 	                             final BindingResult bindingResult) {
@@ -57,7 +57,7 @@ public class SubmissionController {
 			"&& #submission.id != null " +
 			"&& (#submission.user.id == principal.id || isAdmin())")
 	@ApiIgnore
-	public ResponseEntity update(@RequestBody @Valid final Submission submission,
+	public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
 	                             @PathVariable("marathonId") final String marathonId,
 	                             final Principal principal,
 	                             final BindingResult bindingResult) {
@@ -79,7 +79,7 @@ public class SubmissionController {
 	@GetMapping("/availabilities")
 	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity getAvailabilities(@PathVariable("marathonId") final String marathonId) {
+	public ResponseEntity<?> getAvailabilities(@PathVariable("marathonId") final String marathonId) {
 		return ResponseEntity.ok()
 		                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
 		                     .body(this.submissionService.getRunnersAvailabilitiesForMarathon(marathonId));
@@ -88,7 +88,7 @@ public class SubmissionController {
 	@GetMapping("/answers")
 	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity getAnswers(@PathVariable("marathonId") final String marathonId) {
+	public ResponseEntity<?> getAnswers(@PathVariable("marathonId") final String marathonId) {
 		return ResponseEntity.ok()
 		                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
 		                     .body(this.submissionService.findCustomAnswersByMarathon(marathonId));
@@ -97,7 +97,7 @@ public class SubmissionController {
 	@GetMapping("/availabilities/{userId}")
 	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
 	                                               @PathVariable("userId") final Integer userId) {
 		try {
 			return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
@@ -122,7 +122,7 @@ public class SubmissionController {
 	@RolesAllowed({"ROLE_USER"})
 	@PreAuthorize(value = "!isBanned()")
 	@ApiIgnore
-	public ResponseEntity delete(@PathVariable("id") final Integer id,
+	public ResponseEntity<?> delete(@PathVariable("id") final Integer id,
 	                             final Principal principal) {
 		try {
 			this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));

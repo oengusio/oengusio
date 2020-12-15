@@ -37,7 +37,7 @@ public class DonationController {
 	@GetMapping
 	@JsonView(Views.Public.class)
 	@ApiIgnore
-	public ResponseEntity findForMarathon(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
 	                                      @RequestParam("page") final Integer page,
 	                                      @RequestParam("size") final Integer size) {
 		try {
@@ -52,7 +52,7 @@ public class DonationController {
 	@GetMapping("/stats")
 	@JsonView(Views.Public.class)
 	@ApiIgnore
-	public ResponseEntity findStatsForMarathon(@PathVariable("marathonId") final String marathonId) {
+	public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) {
 		try {
 			return ResponseEntity.ok()
 			                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
@@ -65,7 +65,7 @@ public class DonationController {
 	@PostMapping("/donate")
 	@ApiIgnore
 	@PreAuthorize("!isMarathonArchived(#marathonId)")
-	public ResponseEntity initDonation(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> initDonation(@PathVariable("marathonId") final String marathonId,
 	                                   @RequestBody final Donation donation) {
 		try {
 			return ResponseEntity.ok(new OrderDto(this.donationService.initDonation(marathonId, donation).id()));
@@ -78,7 +78,7 @@ public class DonationController {
 	@JsonView(Views.Public.class)
 	@ApiIgnore
 	@PreAuthorize("!isMarathonArchived(#marathonId)")
-	public ResponseEntity validateDonation(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> validateDonation(@PathVariable("marathonId") final String marathonId,
 	                                       @PathVariable("code") final String code) {
 		try {
 			this.donationService.approveDonation(marathonId, code);
@@ -91,7 +91,7 @@ public class DonationController {
 	@DeleteMapping("/{code}")
 	@ApiIgnore
 	@PreAuthorize("!isMarathonArchived(#marathonId)")
-	public ResponseEntity deleteDonation(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> deleteDonation(@PathVariable("marathonId") final String marathonId,
 	                                     @PathVariable("code") final String code) {
 		try {
 			this.donationService.deleteDonation(code);
@@ -118,7 +118,7 @@ public class DonationController {
 	@GetMapping("/webhook")
 	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
 	@ApiIgnore
-	public ResponseEntity isWebhookOnline(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> isWebhookOnline(@PathVariable("marathonId") final String marathonId,
 	                                      @RequestParam("url") final String url) throws IOException {
 		final boolean isOnline = this.donationService.isWebhookOnline(url);
 		if (isOnline) {

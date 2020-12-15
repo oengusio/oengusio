@@ -30,7 +30,7 @@ public class IncentiveController {
 	@ApiOperation(value = "Get all incentives for a marathon",
 			response = Incentive.class,
 			responseContainer = "List")
-	public ResponseEntity findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
 	                                         @RequestParam(required = false, defaultValue = "true") final Boolean withLocked,
 	                                         @RequestParam(required = false, defaultValue = "false") final Boolean withUnapproved) {
 		try {
@@ -47,7 +47,7 @@ public class IncentiveController {
 	@RolesAllowed({"ROLE_USER"})
 	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
 	@ApiIgnore
-	public ResponseEntity save(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> save(@PathVariable("marathonId") final String marathonId,
 	                           @RequestBody final List<Incentive> incentives) {
 		return ResponseEntity.ok(this.incentiveService.saveAll(incentives, marathonId));
 	}

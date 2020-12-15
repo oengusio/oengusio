@@ -40,3 +40,4 @@ src/webapp/src/assets/i18n/README.md
 
 # Ignore Gradle build output directory
 build
+docker-compose.override.yml

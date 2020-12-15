@@ -6,7 +6,9 @@ services:
       context: .
     ports:
       - "8080:8080"
+    network_mode: "host"
     environment:
+      - SPRING_PROFILE=local
       - JWT_SECRET="<random string>"
       - PAYPAL_CLIENT_ID= # Unrequired if you don't work on donations
       - PAYPAL_CLIENT_SECRET= #Unrequired if you don't work on donations

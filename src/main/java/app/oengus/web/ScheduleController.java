@@ -37,7 +37,7 @@ public class ScheduleController {
 	@JsonView(Views.Public.class)
 	@ApiOperation(value = "Get schedule for a marathon",
 			response = Schedule.class)
-	public ResponseEntity findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
+	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
 		return ResponseEntity.ok()
 		                     .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
 		                     .body(this.scheduleService.findByMarathon(marathonId));
@@ -46,7 +46,7 @@ public class ScheduleController {
 	@PutMapping
 	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
 	@ApiIgnore
-	public ResponseEntity saveOrUpdate(@PathVariable("marathonId") final String marathonId,
+	public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
 	                                   @RequestBody final Schedule schedule) {
 		try {
 			this.scheduleService.saveOrUpdate(marathonId, schedule);
