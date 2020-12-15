@@ -12,4 +12,5 @@ FROM openjdk:12.0.2
 WORKDIR /oengus-backend
 COPY --from=builder /oengus-backend/build/libs/oengusio-*.jar ./oengusio.jar
 COPY entrypoint.sh ./
-CMD ["bash entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+CMD ["./entrypoint.sh"]
