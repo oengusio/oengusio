@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/marathon/{marathonId}/donation")
+@RequestMapping("/marathon/{marathonId}/donation")
 @Api(value = "/marathon/{marathonId}/donation")
 public class DonationController {
 

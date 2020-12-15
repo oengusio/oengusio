@@ -22,7 +22,7 @@ import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/marathon/{marathonId}/submission")
+@RequestMapping("/marathon/{marathonId}/submission")
 public class SubmissionController {
 
 	@Autowired

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @Api(value = "/user")
 public class UserController {
 

@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/marathon/{marathonId}/schedule")
+@RequestMapping("/marathon/{marathonId}/schedule")
 @Api(value = "/marathon/{marathonId}/schedule")
 public class ScheduleController {
 

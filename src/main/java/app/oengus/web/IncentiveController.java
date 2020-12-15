@@ -18,7 +18,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/marathon/{marathonId}/incentive")
+@RequestMapping("/marathon/{marathonId}/incentive")
 @Api(value = "/marathon/{marathonId}/incentive")
 public class IncentiveController {
 

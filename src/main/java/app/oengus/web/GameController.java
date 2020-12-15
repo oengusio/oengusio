@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/marathon/{marathonId}/game")
+@RequestMapping("/marathon/{marathonId}/game")
 @Api(value = "/marathon/{marathonId}/game")
 public class GameController {
 
