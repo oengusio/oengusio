@@ -18,4 +18,4 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
                   registry: docker.pkg.github.com
                   repository: esamarathon/oengusio/oengus-backend
-                  tag_with_ref: true
+                  tags: latest
