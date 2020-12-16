@@ -125,7 +125,6 @@ public class DonationService {
 	}
 
 	public void approveDonation(final String marathonId, final String orderId) {
-		Order order = null;
 		final OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
 
 		try {
@@ -135,11 +134,13 @@ public class DonationService {
 
 			// If call returns body in response, you can get the de-serialized version by
 			// calling result() on the response
-			order = response.result();
+			final Order order = response.result();
+
 			if (order.purchaseUnits().get(0).payments().captures().get(0).status().equals("COMPLETED")) {
 				final Donation donation = this.donationRepositoryService.findByFunctionalId(order.id());
 				donation.setApproved(true);
 				this.donationRepositoryService.save(donation);
+
 				if (StringUtils.isNotEmpty(marathon.getDonationWebhook())) {
 					this.sendDonationEvent(marathon.getDonationWebhook(), donation);
 				}
