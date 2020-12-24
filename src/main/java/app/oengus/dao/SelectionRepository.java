@@ -33,5 +33,5 @@ public interface SelectionRepository extends CrudRepository<Selection, Integer> 
 	void rejectTodos(@Param("marathon") Marathon marathon);
 
 	@Query("SELECT s FROM Selection s WHERE s.category.id IN :categories")
-	List<Selection> findAllByCategory(Iterable<Integer> categories);
+	List<Selection> findAllByCategory(@Param("categories") Iterable<Integer> categories);
 }
