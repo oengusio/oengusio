@@ -59,10 +59,7 @@ dependencies {
     implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.5.0")
     implementation(group = "org.hibernate", name = "hibernate-ehcache", version = "5.3.9.Final")
 
-    // JAVERS
-    implementation(group = "org.javers", name = "javers-core", version = "5.6.2")
-    implementation(group = "org.javers", name = "javers-persistence-sql", version = "5.6.2")
-    implementation(group = "org.javers", name = "javers-spring-boot-starter-sql", version = "5.6.2")
+    // GUAVA
     implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
 
     // SWAGGER

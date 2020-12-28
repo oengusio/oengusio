@@ -1,7 +1,6 @@
 package app.oengus.dao;
 
 import app.oengus.entity.model.Game;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
@@ -12,7 +11,6 @@ import javax.persistence.QueryHint;
 import java.util.List;
 
 @Repository
-@JaversSpringDataAuditable
 public interface GameRepository extends CrudRepository<Game, Integer> {
 
 	@Query(value = "SELECT g FROM Game g WHERE g.submission.marathon.id = :marathonId ORDER BY g.id ASC")

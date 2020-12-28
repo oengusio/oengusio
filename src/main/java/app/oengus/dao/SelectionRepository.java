@@ -4,7 +4,6 @@ import app.oengus.entity.model.Category;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -16,7 +15,6 @@ import javax.persistence.QueryHint;
 import java.util.List;
 
 @Repository
-@JaversSpringDataAuditable
 public interface SelectionRepository extends CrudRepository<Selection, Integer> {
 
 	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))

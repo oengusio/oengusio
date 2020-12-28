@@ -2,7 +2,6 @@ package app.oengus.dao;
 
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +16,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
-@JaversSpringDataAuditable
 public interface MarathonRepository extends JpaRepository<Marathon, String> {
 
 	@Query(value = "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.isPrivate = FALSE " +

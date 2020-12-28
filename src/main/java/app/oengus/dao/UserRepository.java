@@ -1,7 +1,6 @@
 package app.oengus.dao;
 
 import app.oengus.entity.model.User;
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,6 @@ import javax.persistence.QueryHint;
 import java.util.List;
 
 @Repository
-@JaversSpringDataAuditable
 public interface UserRepository extends CrudRepository<User, Integer> {
 
 	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
