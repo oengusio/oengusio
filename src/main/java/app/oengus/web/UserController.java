@@ -89,7 +89,13 @@ public class UserController {
 	@ApiOperation(value = "Get a user profile",
 			response = UserProfileDto.class)
 	public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) {
-        return ResponseEntity.ok(this.userService.getUserProfile(name));
+        final UserProfileDto userProfile = this.userService.getUserProfile(name);
+
+        if (userProfile == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(userProfile);
 	}
 
 	@PatchMapping("/{id}")

@@ -1,7 +1,7 @@
 name: Publish Docker image
 on:
-    release:
-        types: [published]
+    push:
+         branches: [master]
 jobs:
     push_to_registry:
         name: Push Docker image to GitHub Packages
@@ -18,4 +18,8 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
                   registry: docker.pkg.github.com
                   repository: esamarathon/oengusio/oengus-backend
-                  tags: latest
+                  tags: dev
+            - name: Trigger dev webhook
+              uses: zzzze/webhook-trigger@v1.0.0
+              with:
+                webhook_url: ${{ secrets.DEV_WEBHOOK_URL }}
