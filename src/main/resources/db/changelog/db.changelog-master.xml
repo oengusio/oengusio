@@ -685,4 +685,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20210102-01" author="duncte123">
+        <modifyDataType tableName="game" columnName="console" newDataType="varchar(100)"/>
+    </changeSet>
+
 </databaseChangeLog>
