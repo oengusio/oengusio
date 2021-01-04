@@ -11,10 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 import javax.security.auth.login.LoginException;
 import javax.transaction.Transactional;
@@ -27,18 +29,45 @@ public class TwitterLoginService {
 	@Autowired
 	private UserRepositoryService userRepositoryService;
 
+    @Value("${twitter.oauth.consumerKey}")
+    private String consumerKey;
+
+    @Value("${twitter.oauth.consumerSecret}")
+    private String consumerSecret;
+
 	@Value("${twitter.loginCallback}")
 	private String loginCallback;
 
 	@Value("${twitter.syncCallback}")
 	private String syncCallback;
 
-	TwitterFactory twitterFactory = new TwitterFactory();
+	private Twitter twitterInstance;
+	private TwitterFactory twitterFactory;
+
+	private Twitter getTwitter() {
+	    if (this.twitterInstance == null) {
+	        this.twitterInstance = this.getTwitterFactory().getInstance();
+        }
+
+	    return this.twitterInstance;
+    }
+
+	private TwitterFactory getTwitterFactory() {
+	    if (this.twitterFactory == null) {
+            final ConfigurationBuilder cb = new ConfigurationBuilder();
+            cb.setOAuthConsumerKey(this.consumerKey)
+                .setOAuthConsumerSecret(this.consumerSecret)
+                .setDebugEnabled(true);
+
+            this.twitterFactory = new TwitterFactory(cb.build());
+        }
+
+	    return this.twitterFactory;
+    }
 
 	public String generateAuthUrlForLogin() {
 		try {
-			final RequestToken requestToken =
-					this.twitterFactory.getInstance().getOAuthRequestToken(this.loginCallback);
+			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.loginCallback);
 			return requestToken.getAuthenticationURL();
 		} catch (final TwitterException e) {
 			throw new OengusBusinessException("TWITTER_ERROR");
@@ -47,8 +76,7 @@ public class TwitterLoginService {
 
 	public String generateAuthUrlForSync() {
 		try {
-			final RequestToken requestToken =
-					this.twitterFactory.getInstance().getOAuthRequestToken(this.syncCallback);
+			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.syncCallback);
 			return requestToken.getAuthenticationURL();
 		} catch (final TwitterException e) {
 			throw new OengusBusinessException("TWITTER_ERROR");
@@ -58,10 +86,8 @@ public class TwitterLoginService {
 	@Transactional
 	public User login(final String oauthToken, final String oauthVerifier) throws LoginException {
 		try {
-			final AccessToken accessToken =
-					this.twitterFactory.getInstance()
-					                   .getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
-			final twitter4j.User twitterUser = this.twitterFactory.getInstance(accessToken).verifyCredentials();
+			final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
+			final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
 			User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
 			if (user == null) {
 				user = new User();
@@ -87,9 +113,8 @@ public class TwitterLoginService {
 
 	public SyncDto sync(final String oauthToken, final String oauthVerifier) throws LoginException {
 		try {
-			final AccessToken accessToken =
-					TwitterFactory.getSingleton().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
-			final twitter4j.User twitterUser = this.twitterFactory.getInstance(accessToken).verifyCredentials();
+			final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
+			final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
 			final User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
 			if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
 				throw new LoginException("ACCOUNT_ALREADY_SYNCED");
