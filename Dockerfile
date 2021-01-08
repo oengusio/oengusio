@@ -1,4 +1,4 @@
-FROM openjdk:12.0.2 AS builder
+FROM adoptopenjdk:12-jdk-hotspot AS builder
 
 WORKDIR /oengus-backend
 COPY gradle ./gradle
@@ -7,7 +7,7 @@ RUN ./gradlew --no-daemon dependencies
 COPY . .
 RUN ./gradlew --no-daemon bootJar
 
-FROM openjdk:12.0.2
+FROM adoptopenjdk:12-jre-hotspot
 
 WORKDIR /oengus-backend
 COPY --from=builder /oengus-backend/build/libs/oengusio-*.jar ./oengusio.jar
