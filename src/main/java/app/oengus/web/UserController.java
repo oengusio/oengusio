@@ -6,6 +6,7 @@ import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import app.oengus.service.UserService;
 import app.oengus.spring.model.LoginRequest;
+import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
@@ -121,10 +122,37 @@ public class UserController {
 	@ApiIgnore
 	public ResponseEntity<User> me(final Principal principal) {
 		try {
-			return ResponseEntity.ok(this.userService.getUser(
-					((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId()));
+		    final int id = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+
+			return ResponseEntity.ok(this.userService.getUser(id));
 		} catch (final NotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
+    @PostMapping("/ban/{id}")
+    @PreAuthorize("isAdmin()")
+    @ApiIgnore
+	public ResponseEntity<?> ban(@PathVariable Integer id) {
+        try {
+            this.userService.addRole(id, Role.ROLE_BANNED);
+
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/ban/{id}")
+    @PreAuthorize("isAdmin()")
+    @ApiIgnore
+	public ResponseEntity<?> unban(@PathVariable Integer id) {
+        try {
+            this.userService.removeRole(id, Role.ROLE_BANNED);
+
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

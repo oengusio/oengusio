@@ -5,6 +5,7 @@ import java.util.List;
 
 public class UserProfileDto {
 
+	private int id;
 	private String username;
 	private String usernameJapanese;
 	private Boolean enabled;
@@ -13,13 +14,22 @@ public class UserProfileDto {
 	private String speedruncomName;
 	private List<UserHistoryDto> history;
 	private List<MarathonBasicInfoDto> moderatedMarathons;
+	private boolean banned;
 
 	public UserProfileDto() {
 		this.history = new ArrayList<>();
 		this.moderatedMarathons = new ArrayList<>();
 	}
 
-	public String getUsername() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
 		return this.username;
 	}
 
@@ -82,4 +92,12 @@ public class UserProfileDto {
 	public void setModeratedMarathons(final List<MarathonBasicInfoDto> moderatedMarathons) {
 		this.moderatedMarathons = moderatedMarathons;
 	}
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
+    }
 }

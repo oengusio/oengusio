@@ -21,10 +21,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	private final MarathonService marathonService;
 
 	public CustomMethodSecurityExpressionRoot(final Authentication authentication,
-	                                          final MarathonService marathonService) {
+                                              final MarathonService marathonService) {
 		super(authentication);
 		this.marathonService = marathonService;
-	}
+    }
 
 	public boolean isSelf(final Integer id) {
 		final User user = this.getUser();
@@ -79,8 +79,9 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	public User getUser() {
 		final Object principal = this.getPrincipal();
 		if (principal instanceof User) {
-			return (User) principal;
-		}
+		    return (User) principal;
+        }
+
 		return null;
 	}
 

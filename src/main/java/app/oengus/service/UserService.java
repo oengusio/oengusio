@@ -13,6 +13,7 @@ import app.oengus.service.login.TwitterLoginService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
+import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,30 @@ public class UserService {
 		this.userRepositoryService.update(user);
 	}
 
+    @Transactional
+    public void addRole(final int id, final Role role) throws NotFoundException {
+        final User user = this.userRepositoryService.findById(id);
+
+        // only update if the user does not have the role yet
+        if (!user.getRoles().contains(role)) {
+            user.getRoles().add(role);
+
+            this.userRepositoryService.update(user);
+        }
+    }
+
+    @Transactional
+    public void removeRole(final int id, final Role role) throws NotFoundException {
+        final User user = this.userRepositoryService.findById(id);
+
+        // only update if the user does have the role
+        if (user.getRoles().contains(role)) {
+            user.getRoles().remove(role);
+
+            this.userRepositoryService.update(user);
+        }
+    }
+
 	@Transactional
 	public User getUser(final Integer id) throws NotFoundException {
 		final User user =
@@ -121,6 +146,7 @@ public class UserService {
 		if (user != null) {
 			userProfileDto = new UserProfileDto();
 			BeanUtils.copyProperties(user, userProfileDto);
+			userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
 			final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
 			if (submissions != null && !submissions.isEmpty()) {
 				final List<Submission> filteredSubmissions = submissions.stream()
