@@ -19,7 +19,11 @@ jobs:
                   registry: docker.pkg.github.com
                   repository: esamarathon/oengusio/oengus-backend
                   tags: latest
-#            - name: Trigger dev webhook
-#              uses: zzzze/webhook-trigger@v1.0.0
-#              with:
-#                webhook_url: ${{ secrets.PROD_WEBHOOK_URL }}
+            - name: Trigger prod webhook
+              uses: zzzze/webhook-trigger@v1.0.0
+              with:
+                webhook_url: ${{ secrets.PROD_WEBHOOK_URL }}
+            - name: Trigger sandbox webhook
+              uses: zzzze/webhook-trigger@v1.0.0
+              with:
+                webhook_url: ${{ secrets.SANDBOX_WEBHOOK_URL }}
