@@ -15,10 +15,12 @@ import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,13 +43,51 @@ public class SubmissionService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
+    @Autowired
+    private OengusWebhookService webhookService;
+
 	private final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP, RunType.COOP_RACE, RunType.RACE);
 
+    @Transactional
+    public Submission save(final Submission submission, final User submitter, final String marathonId)
+        throws NotFoundException {
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final Submission saved = this.saveInternal(submission, submitter, marathon);
+
+        // send webhook
+        if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+            try {
+                this.webhookService.sendNewSubmissionEvent(marathon.getWebhook(), submission);
+            } catch (IOException e) {
+                LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
+            }
+        }
+
+        return saved;
+    }
+
+    @Transactional
+    public Submission update(final Submission newSubmission, final User submitter, final String marathonId)
+        throws NotFoundException {
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        // submission id is never null here
+        final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
+        final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
+
+        // send webhook
+        if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+            try {
+                this.webhookService.sendSubmissionUpdateEvent(marathon.getWebhook(), newSubmission, oldSubmission);
+            } catch (IOException e) {
+                LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
+            }
+        }
+
+        return saved;
+    }
+
 	@Transactional
-	public Submission save(final Submission submission, final User submitter, final String marathonId)
-			throws NotFoundException {
-		final Marathon marathon =
-				this.marathonRepositoryService.findById(marathonId);
+	private Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
 		submission.setUser(submitter);
 		submission.setMarathon(marathon);
 		submission.getAvailabilities().forEach(availability -> {
@@ -97,6 +137,7 @@ public class SubmissionService {
 				submission.getOpponents().add(opponent);
 			});
 		}
+
 		return this.submissionRepositoryService.save(submission);
 	}
 

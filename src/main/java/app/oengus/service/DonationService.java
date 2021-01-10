@@ -136,8 +136,8 @@ public class DonationService {
 				donation.setApproved(true);
 				this.donationRepositoryService.save(donation);
 
-				if (StringUtils.isNotEmpty(marathon.getDonationWebhook())) {
-					this.sendDonationEvent(marathon.getDonationWebhook(), donation);
+				if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+					this.sendDonationEvent(marathon.getWebhook(), donation);
 				}
 			}
 		} catch (final IOException ioe) {
