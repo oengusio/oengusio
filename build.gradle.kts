@@ -74,6 +74,9 @@ dependencies {
 
     // Twitter
     implementation(group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7")
+
+    // OKHTTP
+    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.0")
 }
 
 val wrapper: Wrapper by tasks
