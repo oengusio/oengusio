@@ -1,6 +1,12 @@
 # Webhook information
 
 ## JSON structure
+### Events
+- Ping: Ping event is sent to test the webhook (must respond with 2xx status code).
+- Donation: Donation event is sent for donations.
+- Submission add: Submission add event is sent when a user made a submission.
+- Submission edit: submission edit event is sent when a user edits their submission.
+
 ```json5
 {
     "event": "PING | DONATION | SUBMISSION_ADD | SUBMISSION_EDIT",
@@ -16,7 +22,8 @@
         "comment": "I like trains",
         "approved": false,
         "donationIncentiveLinks": [],
-        "answers": [] 
+        "answers": [],
+        "test": false
     },
     // ONLY WITH ANY SUBMISSION* EVENT
     "submission": {
