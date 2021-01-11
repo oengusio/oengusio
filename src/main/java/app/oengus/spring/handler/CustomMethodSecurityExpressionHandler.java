@@ -1,6 +1,7 @@
 package app.oengus.spring.handler;
 
 import app.oengus.service.MarathonService;
+import app.oengus.service.UserService;
 import app.oengus.spring.security.CustomMethodSecurityExpressionRoot;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,14 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
 	@Autowired
 	private MarathonService marathonService;
 
+	@Autowired
+	private UserService userService;
+
 	@Override
 	protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
 			final Authentication authentication, final MethodInvocation invocation) {
 		final CustomMethodSecurityExpressionRoot root =
-				new CustomMethodSecurityExpressionRoot(authentication, this.marathonService);
+				new CustomMethodSecurityExpressionRoot(authentication, this.marathonService, this.userService);
 		root.setPermissionEvaluator(this.getPermissionEvaluator());
 		root.setTrustResolver(this.trustResolver);
 		root.setRoleHierarchy(this.getRoleHierarchy());

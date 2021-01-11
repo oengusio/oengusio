@@ -3,6 +3,7 @@ package app.oengus.spring.security;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import app.oengus.service.MarathonService;
+import app.oengus.service.UserService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -19,11 +20,14 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	private Object returnObject;
 
 	private final MarathonService marathonService;
+	private final UserService userService;
 
 	public CustomMethodSecurityExpressionRoot(final Authentication authentication,
-                                              final MarathonService marathonService) {
+                                              final MarathonService marathonService,
+                                              final UserService userService) {
 		super(authentication);
 		this.marathonService = marathonService;
+		this.userService = userService;
     }
 
 	public boolean isSelf(final Integer id) {
@@ -79,7 +83,14 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 	public User getUser() {
 		final Object principal = this.getPrincipal();
 		if (principal instanceof User) {
-		    return (User) principal;
+		    final User tmp = (User) principal;
+
+            try {
+                // fetch an up-to-date user to make sure we have the correct roles
+                return this.userService.getUser(tmp.getId());
+            } catch (NotFoundException ignored) {
+                return null;
+            }
         }
 
 		return null;

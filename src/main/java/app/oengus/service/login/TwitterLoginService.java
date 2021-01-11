@@ -41,15 +41,11 @@ public class TwitterLoginService {
 	@Value("${twitter.syncCallback}")
 	private String syncCallback;
 
-	private Twitter twitterInstance;
 	private TwitterFactory twitterFactory;
 
 	private Twitter getTwitter() {
-	    if (this.twitterInstance == null) {
-	        this.twitterInstance = this.getTwitterFactory().getInstance();
-        }
-
-	    return this.twitterInstance;
+	    // always return a new instance because it has state :/
+	    return this.getTwitterFactory().getInstance();
     }
 
 	private TwitterFactory getTwitterFactory() {
@@ -70,7 +66,7 @@ public class TwitterLoginService {
 			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.loginCallback);
 			return requestToken.getAuthenticationURL();
 		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR");
+			throw new OengusBusinessException("TWITTER_ERROR", e);
 		}
 	}
 
@@ -79,7 +75,7 @@ public class TwitterLoginService {
 			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.syncCallback);
 			return requestToken.getAuthenticationURL();
 		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR");
+			throw new OengusBusinessException("TWITTER_ERROR", e);
 		}
 	}
 
@@ -107,7 +103,7 @@ public class TwitterLoginService {
 
 			return user;
 		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR");
+			throw new OengusBusinessException("TWITTER_ERROR", e);
 		}
 	}
 
@@ -122,7 +118,7 @@ public class TwitterLoginService {
 
 			return new SyncDto(Long.toString(twitterUser.getId()), twitterUser.getScreenName());
 		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR");
+			throw new OengusBusinessException("TWITTER_ERROR", e);
 		}
 	}
 
