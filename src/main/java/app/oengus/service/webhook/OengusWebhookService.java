@@ -68,7 +68,13 @@ public class OengusWebhookService extends AbstractWebhookService {
         final Submission hookSubmission = new Submission();
 
         // Ignore properties that we are copying manually
-        BeanHelper.copyProperties(submission, hookSubmission, "games", "answers", "opponents");
+        BeanHelper.copyProperties(submission, hookSubmission,
+            "user", "games", "answers", "opponents");
+
+        final User hookUser = new User();
+        BeanHelper.copyProperties(submission.getUser(), hookUser, "mail");
+
+        hookSubmission.setUser(hookUser);
 
         final Set<Game> games = submission.getGames().stream().map((game) -> {
             final Game g = new Game();
@@ -76,7 +82,7 @@ public class OengusWebhookService extends AbstractWebhookService {
 
             final List<Category> categories = game.getCategories().stream().map((category) -> {
                 final Category c = new Category();
-                BeanHelper.copyProperties(category, c, "selection");
+                BeanHelper.copyProperties(category, c, "selection", "code");
 
                 return c;
             }).collect(Collectors.toList());
@@ -104,6 +110,7 @@ public class OengusWebhookService extends AbstractWebhookService {
         }).collect(Collectors.toSet());
 
         hookSubmission.setOpponents(opponents);
+        hookSubmission.setOpponentDtos(null);
 
         return hookSubmission;
     }

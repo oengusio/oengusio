@@ -2,10 +2,7 @@ package app.oengus.entity.model;
 
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
@@ -20,6 +17,7 @@ import java.util.List;
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Cacheable
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Category {
 
@@ -70,7 +68,7 @@ public class Category {
 	@JsonView(Views.Internal.class)
 	private Selection selection;
 
-	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
 	private List<Opponent> opponents;

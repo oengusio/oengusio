@@ -6,6 +6,7 @@ import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.helper.BeanHelper;
 import app.oengus.helper.OengusConstants;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +49,9 @@ public class SubmissionService {
     @Autowired
     private AbstractWebhookService webhookService;
 
+    @Autowired
+    private EntityManager entityManager;
+
 	private final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP, RunType.COOP_RACE, RunType.RACE);
 
     @Transactional
@@ -73,6 +78,11 @@ public class SubmissionService {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
+
+        // uncache the old submission
+        entityManager.detach(oldSubmission);
+
+        // save before sending so we catch the error if saving fails
         final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
 
         // send webhook

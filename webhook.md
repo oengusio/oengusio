@@ -15,9 +15,10 @@ NOTE: Webhooks will only fire the ping event on the sandbox environment.
     "donation": {
         "id": 0,
         "nickname": "duncte123",
-        "date": "2021-01-01T15:10:00Z",
+        "date": "2021-01-11T19:50:40.390608+01:00",
         "amount": 1000,
-        "comment": "I like trains"
+        "comment": "I like trains",
+        "test": false // this is always false, idk why it's there
     },
     // ONLY WITH ANY SUBMISSION* EVENT
     "submission": {
@@ -26,7 +27,7 @@ NOTE: Webhooks will only fire the ping event on the sandbox environment.
     // original submission info, ONLY WITH SUBMISSION_EDIT EVENT
     "original_submission": {
       // SUBMISSION MODEL //
-      // This moel contains the old submission data in case of an edit event
+      // This model contains the old submission data in case of an edit event
     }
 }
 ```

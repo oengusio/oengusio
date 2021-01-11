@@ -3,10 +3,7 @@ package app.oengus.entity.model;
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -22,6 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "submission")
 @Cacheable
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Submission {
 
@@ -43,13 +41,13 @@ public class Submission {
 	@JsonView(Views.Public.class)
 	private Marathon marathon;
 
-	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
 	private Set<Game> games;
 
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "availability", joinColumns = @JoinColumn(name = "submission_id"))
 	@AttributeOverrides({
 			@AttributeOverride(name = "from", column = @Column(name = "date_from")),
@@ -60,14 +58,14 @@ public class Submission {
 	@JsonView(Views.Public.class)
 	private List<Availability> availabilities;
 
-	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "answersReference")
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@SortComparator(AnswerComparator.class)
 	@JsonView(Views.Public.class)
 	private SortedSet<Answer> answers;
 
-	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "opponentReference")
 	@JsonView(Views.Public.class)
 	private Set<Opponent> opponents;
