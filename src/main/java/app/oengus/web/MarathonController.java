@@ -4,7 +4,6 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
-import app.oengus.service.OengusWebhookService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
@@ -22,7 +21,6 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.time.ZonedDateTime;
@@ -38,9 +36,6 @@ public class MarathonController {
 
 	@Autowired
 	private MarathonService marathonService;
-
-	@Autowired
-	private OengusWebhookService webhookService;
 
 	@PutMapping
 	@RolesAllowed({"ROLE_USER"})
@@ -137,16 +132,4 @@ public class MarathonController {
 		}
 	}
 
-    @GetMapping("/webhook")
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
-    @ApiIgnore
-    public ResponseEntity<?> isWebhookOnline(@PathVariable("marathonId") final String marathonId,
-                                             @RequestParam("url") final String url) throws IOException {
-        final boolean isOnline = this.webhookService.isWebhookOnline(url);
-        if (isOnline) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

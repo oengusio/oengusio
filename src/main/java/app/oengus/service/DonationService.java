@@ -5,8 +5,10 @@ import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.Incentive;
 import app.oengus.entity.model.Marathon;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.helper.BeanHelper;
 import app.oengus.service.repository.BidRepositoryService;
 import app.oengus.service.repository.DonationRepositoryService;
+import app.oengus.service.webhook.AbstractWebhookService;
 import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
 import com.paypal.http.exceptions.HttpException;
@@ -41,7 +43,7 @@ public class DonationService {
 	private PayPalHttpClient payPalHttpClient;
 
 	@Autowired
-	private OengusWebhookService donationWebhook;
+	private AbstractWebhookService donationWebhook;
 
 	public Page<Donation> findForMarathon(final String marathonId, final Integer page, final Integer size) {
 		return this.donationRepositoryService.findByMarathon(marathonId,
@@ -169,33 +171,21 @@ public class DonationService {
 		return donationStatsDto;
 	}
 
-	// TODO: change to send TEST event
-	public boolean isWebhookOnline(final String url) {
-		/*final Donation donation = new Donation();
-		donation.setNickname("TEST");
-		donation.setDate(ZonedDateTime.now());
-		donation.setAmount(BigDecimal.valueOf(Math.random()));
-		donation.setTest(true);
-		try {
-			final Response response = this.donationWebhook.sendDonationEvent(url, donation);
-			return response.isSuccessful();
-		} catch (final IOException e) {
-			return false;
-		}*/
-
-        return this.donationWebhook.isWebhookOnline(url);
-	}
-
 	private void sendDonationEvent(final String url, final Donation donation) {
-		donation.setFunctionalId(null);
-		donation.setMarathon(null);
-		donation.setPaymentSource(null);
-		donation.setApproved(null);
-		donation.setAnswers(null);
-		donation.setDonationIncentiveLinks(null);
-		donation.setTest(false);
+	    // copy the donation to prevent modifying a real donation
+	    final Donation parsedDonation = new Donation();
+
+        BeanHelper.copyProperties(donation, parsedDonation);
+
+        parsedDonation.setFunctionalId(null);
+        parsedDonation.setMarathon(null);
+        parsedDonation.setPaymentSource(null);
+        parsedDonation.setApproved(null);
+        parsedDonation.setAnswers(null);
+        parsedDonation.setDonationIncentiveLinks(null);
+        parsedDonation.setTest(false);
 		try {
-			this.donationWebhook.sendDonationEvent(url, donation);
+			this.donationWebhook.sendDonationEvent(url, parsedDonation);
 		} catch (final IOException e) {
 			LoggerFactory.getLogger(DonationService.class).error(e.getLocalizedMessage());
 		}

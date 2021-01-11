@@ -130,7 +130,7 @@ public class UserController {
 		}
 	}
 
-    @PostMapping("/ban/{id}")
+    @PostMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
 	public ResponseEntity<?> ban(@PathVariable Integer id) {
@@ -143,7 +143,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/ban/{id}")
+    @DeleteMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
 	public ResponseEntity<?> unban(@PathVariable Integer id) {

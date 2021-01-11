@@ -1,4 +1,5 @@
 # Webhook information
+NOTE: Webhooks will only fire the ping event on the sandbox environment.
 
 ## JSON structure
 ### Events
@@ -13,17 +14,10 @@
     // ONLY SEND WHEN EVENT IS DONATION
     "donation": {
         "id": 0,
-        "marathon": {},
-        "functionalId": "",
-        "paymentSource": "",
         "nickname": "duncte123",
         "date": "2021-01-01T15:10:00Z",
         "amount": 1000,
-        "comment": "I like trains",
-        "approved": false,
-        "donationIncentiveLinks": [],
-        "answers": [],
-        "test": false
+        "comment": "I like trains"
     },
     // ONLY WITH ANY SUBMISSION* EVENT
     "submission": {

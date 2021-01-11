@@ -43,7 +43,6 @@ public class SubmissionController {
 			this.submissionService.save(submission,
 					PrincipalHelper.getUserFromPrincipal(principal),
 					marathonId);
-//			this.webhookService.sendNewSubmissionEvent();
 			return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submission/me")).build();
 		} catch (final NotFoundException e) {
 			return ResponseEntity.notFound().build();

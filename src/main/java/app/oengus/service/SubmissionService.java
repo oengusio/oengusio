@@ -11,6 +11,7 @@ import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
+import app.oengus.service.webhook.AbstractWebhookService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -44,7 +45,7 @@ public class SubmissionService {
 	private CategoryRepository categoryRepository;
 
     @Autowired
-    private OengusWebhookService webhookService;
+    private AbstractWebhookService webhookService;
 
 	private final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP, RunType.COOP_RACE, RunType.RACE);
 
@@ -87,7 +88,7 @@ public class SubmissionService {
     }
 
 	@Transactional
-	private Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
+	public Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
 		submission.setUser(submitter);
 		submission.setMarathon(marathon);
 		submission.getAvailabilities().forEach(availability -> {

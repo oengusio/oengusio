@@ -115,17 +115,4 @@ public class DonationController {
 		response.getWriter().write(this.exportService.exportDonationsToCsv(marathonId, zoneId, null).toString());
 	}
 
-	@GetMapping("/webhook")
-	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
-	@ApiIgnore
-	public ResponseEntity<?> isWebhookOnline(@PathVariable("marathonId") final String marathonId,
-	                                      @RequestParam("url") final String url) throws IOException {
-		final boolean isOnline = this.donationService.isWebhookOnline(url);
-		if (isOnline) {
-			return ResponseEntity.ok().build();
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-
 }
