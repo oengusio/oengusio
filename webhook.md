@@ -1,5 +1,4 @@
 # Webhook information
-NOTE: Webhooks will only fire the ping event on the sandbox environment.
 
 ## JSON structure
 ### Events

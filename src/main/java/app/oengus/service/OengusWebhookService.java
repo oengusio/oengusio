@@ -1,4 +1,4 @@
-package app.oengus.service.webhook;
+package app.oengus.service;
 
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
@@ -20,15 +20,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
-@Profile("prod")
-public class OengusWebhookService extends AbstractWebhookService {
+public class OengusWebhookService {
 
     @Autowired
     private ObjectMapper mapper;
 
     private final OkHttpClient client = new OkHttpClient();
 
-    @Override
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
         final JsonNode data = mapper.createObjectNode()
             .put("event", "DONATION")
@@ -40,7 +38,6 @@ public class OengusWebhookService extends AbstractWebhookService {
         callAsync(url, data);
     }
 
-    @Override
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
         final JsonNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_ADD")
@@ -49,7 +46,6 @@ public class OengusWebhookService extends AbstractWebhookService {
         callAsync(url, data);
     }
 
-    @Override
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
             data.set("submission", mapper.valueToTree(fixSubmission(newSubmission)));

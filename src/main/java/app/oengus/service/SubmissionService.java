@@ -6,13 +6,11 @@ import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.helper.BeanHelper;
 import app.oengus.helper.OengusConstants;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
-import app.oengus.service.webhook.AbstractWebhookService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -47,7 +45,7 @@ public class SubmissionService {
 	private CategoryRepository categoryRepository;
 
     @Autowired
-    private AbstractWebhookService webhookService;
+    private OengusWebhookService webhookService;
 
     @Autowired
     private EntityManager entityManager;

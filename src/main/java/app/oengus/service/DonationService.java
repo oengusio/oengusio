@@ -8,7 +8,6 @@ import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.BeanHelper;
 import app.oengus.service.repository.BidRepositoryService;
 import app.oengus.service.repository.DonationRepositoryService;
-import app.oengus.service.webhook.AbstractWebhookService;
 import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
 import com.paypal.http.exceptions.HttpException;
@@ -43,7 +42,7 @@ public class DonationService {
 	private PayPalHttpClient payPalHttpClient;
 
 	@Autowired
-	private AbstractWebhookService donationWebhook;
+	private OengusWebhookService donationWebhook;
 
 	public Page<Donation> findForMarathon(final String marathonId, final Integer page, final Integer size) {
 		return this.donationRepositoryService.findByMarathon(marathonId,
