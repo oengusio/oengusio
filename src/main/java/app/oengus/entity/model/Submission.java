@@ -36,7 +36,6 @@ public class Submission {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @NotNull
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     private User user;
