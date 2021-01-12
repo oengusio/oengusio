@@ -105,7 +105,6 @@ public class UserService {
 		this.userRepositoryService.update(user);
 	}
 
-    @Transactional
     public void addRole(final int id, final Role role) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
@@ -117,7 +116,6 @@ public class UserService {
         }
     }
 
-    @Transactional
     public void removeRole(final int id, final Role role) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 

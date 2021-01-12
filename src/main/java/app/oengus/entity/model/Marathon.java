@@ -209,10 +209,10 @@ public class Marathon {
 	@Size(max = 3)
 	private String donationCurrency;
 
-	@Column(name = "donation_webhook")
+	@Column(name = "webhook")
 	@JsonView(Views.Public.class)
 	@Size(max = 200)
-	private String donationWebhook;
+	private String webhook;
 
 	@Column(name = "youtube")
 	@JsonView(Views.Public.class)
@@ -475,12 +475,12 @@ public class Marathon {
 		this.cleared = cleared;
 	}
 
-	public String getDonationWebhook() {
-		return this.donationWebhook;
+	public String getWebhook() {
+		return this.webhook;
 	}
 
-	public void setDonationWebhook(final String donationWebhook) {
-		this.donationWebhook = donationWebhook;
+	public void setWebhook(final String donationWebhook) {
+		this.webhook = donationWebhook;
 	}
 
 	public boolean isDonationsOpen() {

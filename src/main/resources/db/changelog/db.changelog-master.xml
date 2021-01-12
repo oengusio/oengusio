@@ -689,10 +689,23 @@
         <modifyDataType tableName="game" columnName="console" newDataType="varchar(100)"/>
     </changeSet>
 
+    <changeSet id="20210110-01" author="duncte123">
+        <renameColumn columnDataType="varchar(200)"
+                      newColumnName="webhook"
+                      oldColumnName="donation_webhook"
+                      remarks="A change in names"
+                      schemaName="public"
+                      tableName="marathon"/>
+    </changeSet>
+
     <changeSet id="20210111-01" author="duncte123">
         <addNotNullConstraint columnDataType="int"
                               columnName="user_id"
                               tableName="submission"/>
+    </changeSet>
+
+    <changeSet id="20210112-01" author="duncte123">
+        <modifyDataType tableName="schedule_line" columnName="console" newDataType="varchar(100)"/>
     </changeSet>
 
 </databaseChangeLog>

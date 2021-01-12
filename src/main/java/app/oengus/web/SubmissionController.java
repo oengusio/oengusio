@@ -65,7 +65,7 @@ public class SubmissionController {
 			return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
 		}
 		try {
-			this.submissionService.save(submission,
+			this.submissionService.update(submission,
 					PrincipalHelper.getUserFromPrincipal(principal),
 					marathonId);
 			return ResponseEntity.noContent().build();

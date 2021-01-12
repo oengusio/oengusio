@@ -4,6 +4,7 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
+import app.oengus.service.OengusWebhookService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
@@ -36,6 +37,9 @@ public class MarathonController {
 
 	@Autowired
 	private MarathonService marathonService;
+
+	@Autowired
+	private OengusWebhookService webhookService;
 
 	@PutMapping
 	@RolesAllowed({"ROLE_USER"})
@@ -131,4 +135,18 @@ public class MarathonController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
+	// we're checking the webhook on the backend to ensure "localhost" will fail
+    @GetMapping("/{id}/webhook")
+    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @ApiIgnore
+    public ResponseEntity<?> isWebhookOnline(@PathVariable("id") final String id,
+                                             @RequestParam("url") final String url) {
+        final boolean isOnline = this.webhookService.sendPingEvent(url);
+        if (isOnline) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

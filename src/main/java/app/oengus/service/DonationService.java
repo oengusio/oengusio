@@ -1,18 +1,17 @@
 package app.oengus.service;
 
-import app.oengus.api.DonationWebhook;
 import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.Incentive;
 import app.oengus.entity.model.Marathon;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.helper.BeanHelper;
 import app.oengus.service.repository.BidRepositoryService;
 import app.oengus.service.repository.DonationRepositoryService;
 import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
 import com.paypal.http.exceptions.HttpException;
 import com.paypal.orders.*;
-import feign.FeignException;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -20,13 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -46,7 +42,7 @@ public class DonationService {
 	private PayPalHttpClient payPalHttpClient;
 
 	@Autowired
-	private DonationWebhook donationWebhook;
+	private OengusWebhookService donationWebhook;
 
 	public Page<Donation> findForMarathon(final String marathonId, final Integer page, final Integer size) {
 		return this.donationRepositoryService.findByMarathon(marathonId,
@@ -141,8 +137,8 @@ public class DonationService {
 				donation.setApproved(true);
 				this.donationRepositoryService.save(donation);
 
-				if (StringUtils.isNotEmpty(marathon.getDonationWebhook())) {
-					this.sendDonationEvent(marathon.getDonationWebhook(), donation);
+				if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+					this.sendDonationEvent(marathon.getWebhook(), donation);
 				}
 			}
 		} catch (final IOException ioe) {
@@ -174,31 +170,22 @@ public class DonationService {
 		return donationStatsDto;
 	}
 
-	public boolean isWebhookOnline(final String url) {
-		final Donation donation = new Donation();
-		donation.setNickname("TEST");
-		donation.setDate(ZonedDateTime.now());
-		donation.setAmount(BigDecimal.valueOf(Math.random()));
-		donation.setTest(true);
-		try {
-			final ResponseEntity<?> response = this.donationWebhook.sendDonationEvent(URI.create(url), donation);
-			return response.getStatusCode().is2xxSuccessful();
-		} catch (final FeignException e) {
-			return false;
-		}
-	}
-
 	private void sendDonationEvent(final String url, final Donation donation) {
-		donation.setFunctionalId(null);
-		donation.setMarathon(null);
-		donation.setPaymentSource(null);
-		donation.setApproved(null);
-		donation.setAnswers(null);
-		donation.setDonationIncentiveLinks(null);
-		donation.setTest(false);
+	    // copy the donation to prevent modifying a real donation
+	    final Donation parsedDonation = new Donation();
+
+        BeanHelper.copyProperties(donation, parsedDonation);
+
+        parsedDonation.setFunctionalId(null);
+        parsedDonation.setMarathon(null);
+        parsedDonation.setPaymentSource(null);
+        parsedDonation.setApproved(null);
+        parsedDonation.setAnswers(null);
+        parsedDonation.setDonationIncentiveLinks(null);
+        parsedDonation.setTest(false);
 		try {
-			this.donationWebhook.sendDonationEvent(URI.create(url), donation);
-		} catch (final FeignException e) {
+			this.donationWebhook.sendDonationEvent(url, parsedDonation);
+		} catch (final IOException e) {
 			LoggerFactory.getLogger(DonationService.class).error(e.getLocalizedMessage());
 		}
 	}
