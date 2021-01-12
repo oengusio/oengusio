@@ -3,7 +3,7 @@ package app.oengus.service.login;
 import app.oengus.api.DiscordApi;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.User;
-import app.oengus.entity.model.api.DiscordUser;
+import app.oengus.entity.model.api.discord.DiscordUser;
 import app.oengus.helper.OauthHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.repository.UserRepositoryService;

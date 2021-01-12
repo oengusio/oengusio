@@ -1,6 +1,7 @@
 package app.oengus.api;
 
-import app.oengus.entity.model.api.DiscordUser;
+import app.oengus.entity.model.api.discord.DiscordMember;
+import app.oengus.entity.model.api.discord.DiscordUser;
 import app.oengus.spring.CoreFeignConfiguration;
 import app.oengus.spring.model.AccessToken;
 import feign.Headers;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
-@FeignClient(value = "discord", url = "https://discordapp.com/api/v6", configuration = CoreFeignConfiguration.class)
+@FeignClient(value = "discord", url = "https://discordapp.com/api/v8", configuration = CoreFeignConfiguration.class)
 public interface DiscordApi {
 
 	@Headers("Content-Type: application/x-www-form-urlencoded")
@@ -23,6 +24,9 @@ public interface DiscordApi {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/users/{id}")
 	DiscordUser getUser(@RequestHeader("Authorization") String token, @PathVariable("id") String id);
+
+	@RequestMapping(method = RequestMethod.GET, value = "/guilds/{guildId}/members/{userId}")
+    DiscordMember getGuildMember(@RequestHeader("Authorization") String token, @PathVariable("guildId") String guildId, @PathVariable("userId") String userId);
 
 
 }
