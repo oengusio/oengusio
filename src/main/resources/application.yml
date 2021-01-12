@@ -12,7 +12,7 @@ discord:
   syncRedirectUri: '${BASE_URL}/user/settings/sync/discord'
   scope:
     - identify
-  botToken: ${DISCORD_BOT_TOKEN}
+  botToken: 'Bot ${DISCORD_BOT_TOKEN}'
 
 twitter:
   loginCallback: '${BASE_URL}/login/twitter'

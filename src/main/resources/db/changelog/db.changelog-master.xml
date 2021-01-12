@@ -708,4 +708,11 @@
         <modifyDataType tableName="schedule_line" columnName="console" newDataType="varchar(100)"/>
     </changeSet>
 
+    <changeSet id="20210221-02" author="duncte123">
+        <addColumn tableName="marathon">
+            <column name="discord_guild_id" type="varchar(20)"/>
+            <column name="discord_guild_name" type="varchar(100)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -1,5 +1,6 @@
 package app.oengus.api;
 
+import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.entity.model.api.discord.DiscordUser;
 import app.oengus.spring.CoreFeignConfiguration;
@@ -25,8 +26,9 @@ public interface DiscordApi {
 	@RequestMapping(method = RequestMethod.GET, value = "/users/{id}")
 	DiscordUser getUser(@RequestHeader("Authorization") String token, @PathVariable("id") String id);
 
+	@RequestMapping(method = RequestMethod.GET, value = "/guilds/{guildId}")
+    DiscordGuild getGuild(@RequestHeader("Authorization") String token, @PathVariable("guildId") String guildId);
+
 	@RequestMapping(method = RequestMethod.GET, value = "/guilds/{guildId}/members/{userId}")
     DiscordMember getGuildMember(@RequestHeader("Authorization") String token, @PathVariable("guildId") String guildId, @PathVariable("userId") String userId);
-
-
 }

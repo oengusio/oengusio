@@ -81,6 +81,6 @@ public class DiscordService {
 	}
 
 	public DiscordUser getUser(final String id) {
-		return this.discordApi.getUser("Bot " + this.botToken, id);
+		return this.discordApi.getUser(this.botToken, id);
 	}
 }
