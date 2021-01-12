@@ -67,7 +67,7 @@ public class Category {
 	@JsonView(Views.Internal.class)
 	private Selection selection;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
 	private List<Opponent> opponents;

@@ -15,6 +15,7 @@ import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,18 @@ public class SubmissionService {
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
 
+        // load all the items needed from the old submission
+        Hibernate.initialize(oldSubmission.getAvailabilities());
+        Hibernate.initialize(oldSubmission.getOpponents());
+        Hibernate.initialize(oldSubmission.getAnswers());
+        Hibernate.initialize(oldSubmission.getGames());
+        oldSubmission.getGames().forEach((game) -> {
+            Hibernate.initialize(game.getCategories());
+            game.getCategories().forEach((category) -> {
+                Hibernate.initialize(category.getOpponents());
+            });
+        });
+
         // uncache the old submission
         entityManager.detach(oldSubmission);
 
@@ -93,7 +106,6 @@ public class SubmissionService {
         return saved;
     }
 
-    @Transactional
     public Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
         submission.setUser(submitter);
         submission.setMarathon(marathon);

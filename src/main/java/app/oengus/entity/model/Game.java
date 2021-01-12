@@ -59,7 +59,7 @@ public class Game {
 	@JsonView(Views.Public.class)
 	private boolean emulated;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@OrderBy("id ASC")
 	@JsonView(Views.Public.class)
