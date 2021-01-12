@@ -17,7 +17,6 @@ import java.util.List;
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Cacheable
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Category {
 

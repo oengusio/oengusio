@@ -704,4 +704,8 @@
                               tableName="submission"/>
     </changeSet>
 
+    <changeSet id="20210112-01" author="duncte123">
+        <modifyDataType tableName="schedule_line" columnName="console" newDataType="varchar(100)"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -8,6 +8,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
@@ -40,7 +41,8 @@ public class ScheduleLine {
 
 	@Column(name = "console")
 	@JsonView(Views.Public.class)
-	@Size(max = 10)
+    @NotBlank
+    @Size(max = 20) // can grow upto 100 due to db type being varchar(100)
 	private String console;
 
 	@Column(name = "emulated")

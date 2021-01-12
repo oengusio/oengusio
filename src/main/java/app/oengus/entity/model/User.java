@@ -3,7 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -23,7 +22,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Cacheable
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements UserDetails {
 

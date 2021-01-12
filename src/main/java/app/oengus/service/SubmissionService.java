@@ -52,7 +52,6 @@ public class SubmissionService {
 
 	private final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP, RunType.COOP_RACE, RunType.RACE);
 
-    @Transactional
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
@@ -70,7 +69,6 @@ public class SubmissionService {
         return saved;
     }
 
-    @Transactional
     public Submission update(final Submission newSubmission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);

@@ -11,6 +11,7 @@ import org.hibernate.annotations.SortComparator;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "submission")
 @Cacheable
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Submission {
 
@@ -30,6 +30,7 @@ public class Submission {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+    @NotNull
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonView(Views.Public.class)
 	private User user;
