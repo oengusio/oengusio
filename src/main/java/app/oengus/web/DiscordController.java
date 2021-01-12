@@ -1,28 +1,88 @@
 package app.oengus.web;
 
+import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.api.discord.DiscordGuild;
+import app.oengus.entity.model.api.discord.DiscordInvite;
+import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.service.DiscordApiService;
+import app.oengus.service.MarathonService;
 import feign.FeignException;
+import javassist.NotFoundException;
+import liquibase.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/marathon/{marathonId}/discord")
+@ApiIgnore
 public class DiscordController {
     @Autowired
     private DiscordApiService discordApiService;
 
-    @GetMapping("/lookup")
+    @Autowired
+    private MarathonService marathonService;
+
+    @GetMapping("/lookup-invite")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    public ResponseEntity<?> lookupInvite(@PathVariable("marathonId") final String marathonId,
+                                                  @RequestParam("invite_code") final String inviteCode) {
+        try {
+            final DiscordInvite invite = this.discordApiService.fetchInvite(inviteCode);
+
+            return ResponseEntity.ok().body(invite.getGuild());
+        } catch (FeignException e) {
+            if (e.status() == 404) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    // TODO: remove? Is needed to see if the bot is in the guild
+    @GetMapping("/check/{guildId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupGuild(@PathVariable("marathonId") final String marathonId,
-                                                  @RequestParam("guild_id") final String guildId) {
+                                                  @PathVariable("guildId") final String guildId) {
         try {
             final DiscordGuild guildById = this.discordApiService.getGuildById(guildId);
 
             return ResponseEntity.ok().body(guildById);
+        } catch (FeignException e) {
+            if (e.status() == 404) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/in-guild/{userId}")
+    @PreAuthorize("!isBanned()")
+    public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId, @PathVariable("userId") final String userId) {
+        try {
+            final Marathon marathon = this.marathonService.findOne(marathonId);
+            final String guildId = marathon.getDiscordGuildId();
+
+            if (StringUtils.isEmpty(guildId)) {
+                return ResponseEntity.badRequest().body("NO_GUILD_ID_SET");
+            }
+
+            final DiscordMember memberById = this.discordApiService.getMemberById(guildId, userId);
+
+            // pending members have not yet accepted the rules
+            // and are not in the guild technically
+            if (memberById.isPending()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
             if (e.status() == 404) {
                 return ResponseEntity.notFound().build();

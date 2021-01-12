@@ -219,6 +219,16 @@ public class Marathon {
 	@Size(max = 100)
 	private String youtube;
 
+	@Column(name = "discord_guild_id")
+	@JsonView(Views.Public.class)
+	@Size(max = 20)
+	private String discordGuildId;
+
+	@Column(name = "discord_guild_name")
+	@JsonView(Views.Public.class)
+	@Size(max = 100)
+	private String discordGuildName;
+
 	public String getId() {
 		return this.id;
 	}
@@ -531,7 +541,23 @@ public class Marathon {
 		this.youtube = youtube;
 	}
 
-	public ZonedDateTime getSubmissionsStartDate() {
+    public String getDiscordGuildId() {
+        return discordGuildId;
+    }
+
+    public void setDiscordGuildId(String discordGuildId) {
+        this.discordGuildId = discordGuildId;
+    }
+
+    public String getDiscordGuildName() {
+        return discordGuildName;
+    }
+
+    public void setDiscordGuildName(String discordGuildName) {
+        this.discordGuildName = discordGuildName;
+    }
+
+    public ZonedDateTime getSubmissionsStartDate() {
 		return this.submissionsStartDate;
 	}
 
