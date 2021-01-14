@@ -90,7 +90,7 @@ public class DiscordController {
             if (e.status() == 404) { // member not in guild
                 return ResponseEntity.notFound().build();
             } else if (e.status() == 403) { // bot not in guild
-                return ResponseEntity.badRequest().body("BOT_NOT_IN_GUILD");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
