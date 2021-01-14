@@ -712,6 +712,7 @@
         <addColumn tableName="marathon">
             <column name="discord_guild_id" type="varchar(20)"/>
             <column name="discord_guild_name" type="varchar(100)"/>
+            <column name="discord_required" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
 

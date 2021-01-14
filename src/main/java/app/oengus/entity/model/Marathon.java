@@ -229,6 +229,10 @@ public class Marathon {
 	@Size(max = 100)
 	private String discordGuildName;
 
+    @Column(name = "discord_required")
+    @JsonView(Views.Public.class)
+    private boolean discordRequired = false;
+
 	public String getId() {
 		return this.id;
 	}
@@ -555,6 +559,14 @@ public class Marathon {
 
     public void setDiscordGuildName(String discordGuildName) {
         this.discordGuildName = discordGuildName;
+    }
+
+    public boolean isDiscordRequired() {
+        return discordRequired;
+    }
+
+    public void setDiscordRequired(boolean discordRequired) {
+        this.discordRequired = discordRequired;
     }
 
     public ZonedDateTime getSubmissionsStartDate() {

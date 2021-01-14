@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.security.RolesAllowed;
+
 @RestController
 @RequestMapping("/marathon/{marathonId}/discord")
 @ApiIgnore
@@ -43,7 +45,7 @@ public class DiscordController {
         }
     }
 
-    // TODO: remove? Is needed to see if the bot is in the guild
+    // TODO: remove? Is needed to see if the bot is in the guild, but the use check will throw a 403
     @GetMapping("/check/{guildId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupGuild(@PathVariable("marathonId") final String marathonId,
@@ -62,6 +64,7 @@ public class DiscordController {
     }
 
     @GetMapping("/in-guild/{userId}")
+    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId, @PathVariable("userId") final String userId) {
         try {
@@ -84,8 +87,10 @@ public class DiscordController {
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (FeignException e) {
-            if (e.status() == 404) {
+            if (e.status() == 404) { // member not in guild
                 return ResponseEntity.notFound().build();
+            } else if (e.status() == 403) { // bot not in guild
+                return ResponseEntity.badRequest().body("BOT_NOT_IN_GUILD");
             }
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
