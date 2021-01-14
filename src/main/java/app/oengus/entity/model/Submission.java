@@ -14,7 +14,6 @@ import org.hibernate.annotations.SortComparator;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -47,7 +46,7 @@ public class Submission {
     @JsonView(Views.Public.class)
     private Marathon marathon;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonManagedReference
     @JsonView(Views.Public.class)
@@ -64,14 +63,14 @@ public class Submission {
     @JsonView(Views.Public.class)
     private List<Availability> availabilities;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "answersReference")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @SortComparator(AnswerComparator.class)
     @JsonView(Views.Public.class)
     private SortedSet<Answer> answers;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "opponentReference")
     @JsonView(Views.Public.class)
     private Set<Opponent> opponents;

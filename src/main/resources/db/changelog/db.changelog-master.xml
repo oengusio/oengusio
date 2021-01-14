@@ -698,8 +698,9 @@
                       tableName="marathon"/>
     </changeSet>
 
-    <changeSet id="20210111-01" author="duncte123">
+    <changeSet id="20210111-02" author="duncte123">
         <addNotNullConstraint columnDataType="int"
+                              defaultNullValue="1"
                               columnName="user_id"
                               tableName="submission"/>
     </changeSet>
