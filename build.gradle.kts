@@ -77,6 +77,11 @@ dependencies {
 
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
+
+    // JDA
+    implementation(group = "net.dv8tion", name = "JDA", version = "4.2.0_227") {
+        exclude(module = "opus-java")
+    }
 }
 
 val wrapper: Wrapper by tasks

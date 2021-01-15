@@ -1,14 +1,18 @@
 package app.oengus.service;
 
 import app.oengus.entity.model.Donation;
+import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Submission;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import net.dv8tion.jda.api.EmbedBuilder;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -71,6 +75,32 @@ public class OengusWebhookService {
         return mapper.readTree(json);
     }
 
+    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation) {
+        if (!rawUrl.startsWith("oengus-bot")) {
+            return false;
+        }
+
+        // parse the url
+        final OengusBotUrl url = new OengusBotUrl(rawUrl);
+
+        if (url.isEmpty()) {
+            return false;
+        }
+
+        if (oldSubmission != null && url.has("editsub")) {
+            //
+        } else if (submission != null && url.has("newsub")) {
+            //
+            if (url.has("editsub")) {
+                // also send it to the edit channel
+            }
+        } else if (url.has("donation")) {
+            // donation is never null here
+        }
+
+        return true;
+    }
+
     private void callAsync(final String url, final JsonNode data) throws IOException {
         final RequestBody body = RequestBody.create(null, mapper.writeValueAsBytes(data));
         final Request request = new Request.Builder()
@@ -91,5 +121,60 @@ public class OengusWebhookService {
                 response.close();
             }
         });
+    }
+
+    private void sendEditSubmission(final String channel, final Submission submission, final Submission oldSubmission) {
+        for (final Game newGame : submission.getGames()) {
+            // loop over categories
+
+            final EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("A run has been updated")
+                ;
+        }
+    }
+
+    private static class OengusBotUrl {
+        private final String donation;
+        private final String newSubmission;
+        private final String editSubmission;
+
+        OengusBotUrl(String url) {
+            final MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(url)
+                .build().getQueryParams();
+
+            this.donation = queryParams.getFirst("donation");
+            this.newSubmission = queryParams.getFirst("newsub");
+            this.editSubmission = queryParams.getFirst("editsub");
+        }
+
+        boolean isEmpty() {
+            return this.donation == null && this.newSubmission == null && this.editSubmission == null;
+        }
+
+        boolean has(String type) {
+            switch (type) {
+                case "donation":
+                    return this.donation != null;
+                case "newsub":
+                    return this.newSubmission != null;
+                case "editsub":
+                    return this.editSubmission != null;
+                default:
+                    return false;
+            }
+        }
+
+        String get(String type) {
+            switch (type) {
+                case "donation":
+                    return this.donation;
+                case "newsub":
+                    return this.newSubmission;
+                case "editsub":
+                    return this.editSubmission;
+                default:
+                    return null;
+            }
+        }
     }
 }
