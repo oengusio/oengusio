@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.model.Category;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Submission;
@@ -10,18 +11,25 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.dv8tion.jda.api.EmbedBuilder;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class OengusWebhookService {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Value("${oengus.baseUrl}")
+    private String baseUrl;
 
     private final OkHttpClient client = new OkHttpClient();
 
@@ -123,20 +131,64 @@ public class OengusWebhookService {
         });
     }
 
-    private void sendEditSubmission(final String channel, final Submission submission, final Submission oldSubmission) {
-        for (final Game newGame : submission.getGames()) {
-            // loop over categories
-
-            final EmbedBuilder builder = new EmbedBuilder()
-                .setTitle("A run has been updated")
-                ;
+    private void sendEditSubmission(final String marathon, final String channel, final Submission submission, final Submission oldSubmission) {
+        // if the subssions is the same, ignore it
+        if (Objects.equals(submission, oldSubmission)) {
+            return;
         }
+
+        for (final Game newGame : submission.getGames()) {
+            final Game oldGame = oldSubmission.getGames()
+                .stream()
+                .filter((g) -> g.getId().equals(newGame.getId()))
+                .findFirst()
+                .orElse(null);
+
+            // The game was just added
+            if (oldGame == null) {
+                sendNewGame(marathon, channel, newGame);
+                continue;
+            }
+
+            // ignore the game if they are equal
+            if (Objects.equals(newGame, oldGame)) {
+                continue;
+            }
+
+            for (final Category newCategory : newGame.getCategories()) {
+                final Category oldCategory = oldGame.getCategories()
+                    .stream()
+                    .filter((c) -> c.getId().equals(newCategory.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+                if (oldCategory == null) {
+                    sendNewCategory(marathon, channel, newCategory);
+                    continue;
+                }
+            }
+        }
+    }
+
+    // send all categories
+    private void sendNewGame(final String marathon, final String channel, final Game newGame) {
+    }
+
+    private void sendNewCategory(final String marathon, final String channel, final Category category) {
+        //
+    }
+
+    private void sendUpdatedCategory(final String marathon, final String channel, final Category category) {
+        final EmbedBuilder builder = new EmbedBuilder()
+            .setTitle("A run has been updated", this.baseUrl + "/marathon/"+marathon+"/submissions")
+            ;
     }
 
     private static class OengusBotUrl {
         private final String donation;
         private final String newSubmission;
         private final String editSubmission;
+        private final String marathonId;
 
         OengusBotUrl(String url) {
             final MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(url)
@@ -145,6 +197,7 @@ public class OengusWebhookService {
             this.donation = queryParams.getFirst("donation");
             this.newSubmission = queryParams.getFirst("newsub");
             this.editSubmission = queryParams.getFirst("editsub");
+            this.marathonId = queryParams.getFirst("marathon");
         }
 
         boolean isEmpty() {
@@ -172,6 +225,8 @@ public class OengusWebhookService {
                     return this.newSubmission;
                 case "editsub":
                     return this.editSubmission;
+                case "marathon":
+                    return this.marathonId;
                 default:
                     return null;
             }

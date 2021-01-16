@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "game")
@@ -129,4 +130,17 @@ public class Game {
 	public void setEmulated(final boolean emulated) {
 		this.emulated = emulated;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio) && Objects.equals(categories, game.categories);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, console, ratio, emulated, categories);
+    }
 }
