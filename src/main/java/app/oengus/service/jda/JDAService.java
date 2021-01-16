@@ -1,8 +1,12 @@
 package app.oengus.service.jda;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
@@ -39,9 +43,15 @@ public class JDAService {
         this.jda = new JDAImpl(authConfig, sessionConfig, threadConfig, metaConfig);
     }
 
-    public MessageAction sendMessage(final String channelId, final MessageEmbed embed) {
+    public RestAction<Message> sendMessage(final String channelId, final MessageEmbed embed) {
+        try {
+            MiscUtil.parseSnowflake(channelId);
+        } catch (final NumberFormatException ignored) {
+            return new CompletedRestAction<>(this.jda, (Message) null);
+        }
+
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channelId);
 
-        return new MessageActionImpl(jda, route, null).embed(embed);
+        return new MessageActionImpl(this.jda, route, null).embed(embed);
     }
 }

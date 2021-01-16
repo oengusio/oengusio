@@ -5,8 +5,9 @@ import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.service.jda.JDAService;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class DiscordApiService {
         return this.discordApi.getGuildMember(this.botToken, guildId, userId);
     }
 
-    public MessageAction sendMessage(final String channelId, final MessageEmbed embed) {
+    public RestAction<Message> sendMessage(final String channelId, final MessageEmbed embed) {
         return this.jda.sendMessage(channelId, embed);
     }
 }

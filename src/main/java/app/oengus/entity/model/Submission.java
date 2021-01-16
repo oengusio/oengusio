@@ -2,13 +2,13 @@ package app.oengus.entity.model;
 
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortComparator;
 import org.springframework.util.CollectionUtils;
@@ -183,7 +183,7 @@ public class Submission {
             record.add(category.getName());
             record.add(StringUtils.normalizeSpace(category.getDescription()));
             record.add(resourceBundle.getString("run.type." + category.getType().name()));
-            record.add(DurationFormatUtils.formatDuration(category.getEstimate().toMillis(), "H:mm:ss", true));
+            record.add(TimeHelpers.formatDuration(category.getEstimate()));
             if (category.getOpponents() == null || category.getOpponents().isEmpty()) {
                 record.add(category.getVideo());
             } else {

@@ -1,8 +1,8 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.model.ScheduleLine;
+import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,8 +48,8 @@ public class ScheduleLineDto extends ScheduleLine {
 		record.add(this.getCategoryName());
 		record.add(resourceBundle.getString("run.type." + this.getType().name()));
 		record.add(this.getConsole());
-		record.add(DurationFormatUtils.formatDuration(this.getEstimate().toMillis(), "H:mm:ss", true));
-		record.add(DurationFormatUtils.formatDuration(this.getSetupTime().toMillis(), "H:mm:ss", true));
+		record.add(TimeHelpers.formatDuration(this.getEstimate()));
+		record.add(TimeHelpers.formatDuration(this.getSetupTime()));
 		return List.of(record);
 	}
 }
