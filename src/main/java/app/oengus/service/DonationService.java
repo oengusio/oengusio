@@ -145,10 +145,7 @@ public class DonationService {
 			if (ioe instanceof HttpException) {
 				// Something went wrong server-side
 				final HttpException he = (HttpException) ioe;
-				LoggerFactory.getLogger(DonationService.class).error(he.getMessage());
-				he.headers()
-				  .forEach(
-						  x -> LoggerFactory.getLogger(DonationService.class).error(x + " :" + he.headers().header(x)));
+				LoggerFactory.getLogger(DonationService.class).error(he.getMessage(), he);
 			}
 			throw new OengusBusinessException("ERROR_DONATION_VALIDATION");
 		} catch (final NotFoundException e) {

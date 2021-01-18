@@ -28,8 +28,10 @@ public class OengusWebhookService {
     private final OkHttpClient client = new OkHttpClient();
     @Autowired
     private ObjectMapper mapper;
+
     @Value("${oengus.baseUrl}")
     private String baseUrl;
+
     @Autowired
     private DiscordApiService jda;
 
@@ -83,7 +85,8 @@ public class OengusWebhookService {
             try (final Response response = this.client.newCall(request).execute()) {
                 return response.isSuccessful();
             }
-        } catch (IOException ignored) {
+            // IllegalArgumentException in case of an invalid url
+        } catch (IOException | IllegalArgumentException ignored) {
             return false;
         }
     }
@@ -104,7 +107,8 @@ public class OengusWebhookService {
         final OengusBotUrl url = new OengusBotUrl(rawUrl);
 
         if (url.isEmpty()) {
-            return false;
+            // still returning true since oengus-bot is no valid domain
+            return true;
         }
 
         final String marathon = url.get("marathon");
@@ -182,6 +186,7 @@ public class OengusWebhookService {
             // The game was just added
             if (oldGame == null) {
                 sendNewGame(marathon, newSubChannel, newGame);
+                sendNewGame(marathon, channel, newGame);
                 continue;
             }
 
@@ -199,6 +204,12 @@ public class OengusWebhookService {
 
                 if (oldCategory == null) {
                     sendNewCategory(marathon, newSubChannel, newCategory);
+                    sendNewCategory(marathon, channel, newCategory);
+                    continue;
+                }
+
+                // ignore the category if they are equal
+                if (Objects.equals(newCategory, oldCategory)) {
                     continue;
                 }
 
@@ -266,7 +277,7 @@ public class OengusWebhookService {
             return current;
         }
 
-        return current + "(was " + old + ')';
+        return current + " (was " + old + ')';
     }
 
     private void sendDonationEvent(final String marathon, final String channel, final Donation donation) {
@@ -300,7 +311,12 @@ public class OengusWebhookService {
             this.marathonId = queryParams.getFirst("marathon");
         }
 
-        boolean isEmpty() { // marathon is always there so we check for that
+        boolean isEmpty() {
+            // marathon is required
+            if (this.marathonId == null) {
+                return true;
+            }
+
             return this.donation == null && this.newSubmission == null && this.editSubmission == null;
         }
 

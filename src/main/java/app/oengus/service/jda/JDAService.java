@@ -52,6 +52,6 @@ public class JDAService {
 
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channelId);
 
-        return new MessageActionImpl(this.jda, route, null).embed(embed);
+        return new CustomMessageActionImpl(this.jda, route).embed(embed);
     }
 }

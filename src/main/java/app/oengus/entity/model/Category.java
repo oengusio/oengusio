@@ -192,7 +192,7 @@ public class Category {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, game, name, estimate, description, video, type);
+        return Objects.hash(id, name, estimate, description, video, type);
     }
 }
 
