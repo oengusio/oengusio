@@ -27,15 +27,13 @@ public class JDAService {
     public JDAService(
         @Value("${discord.botTokenRaw}") final String botToken
     ) {
-        System.out.println("JDA SERVICE INIT: " + botToken);
-
         final AuthorizationConfig authConfig = new AuthorizationConfig(botToken);
         final SessionConfig sessionConfig = SessionConfig.getDefault();
         final ThreadingConfig threadConfig = ThreadingConfig.getDefault();
         final MetaConfig metaConfig = MetaConfig.getDefault();
 
         threadConfig.setRateLimitPool(Executors.newScheduledThreadPool(5, (r) -> {
-            final Thread t = new Thread(r, "dunctebot-rest-thread");
+            final Thread t = new Thread(r, "JDA-rest-thread");
             t.setDaemon(true);
             return t;
         }), true);

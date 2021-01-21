@@ -1,7 +1,6 @@
 package app.oengus.web;
 
 import app.oengus.entity.model.Marathon;
-import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.service.DiscordApiService;
@@ -36,24 +35,6 @@ public class DiscordController {
             final DiscordInvite invite = this.discordApiService.fetchInvite(inviteCode);
 
             return ResponseEntity.ok().body(invite.getGuild());
-        } catch (FeignException e) {
-            if (e.status() == 404) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    // TODO: remove? Is needed to see if the bot is in the guild, but the use check will throw a 403
-    @GetMapping("/check/{guildId}")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-    public ResponseEntity<?> lookupGuild(@PathVariable("marathonId") final String marathonId,
-                                                  @PathVariable("guildId") final String guildId) {
-        try {
-            final DiscordGuild guildById = this.discordApiService.getGuildById(guildId);
-
-            return ResponseEntity.ok().body(guildById);
         } catch (FeignException e) {
             if (e.status() == 404) {
                 return ResponseEntity.notFound().build();
