@@ -289,7 +289,7 @@ public class OengusWebhookService {
             .setDescription(String.format(
                 "**Amount:** %s\n**Comment:** %s",
                 formattedAmount,
-                donation.getComment()
+                donation.getComment() == null ? "None" : donation.getComment()
             ));
 
         this.jda.sendMessage(channel, builder.build()).queue();
