@@ -118,7 +118,7 @@ public class DonationService {
 
         try {
             return this.payPalHttpClient.execute(request).result();
-        } catch (final IOException | NullPointerException e) {
+        } catch (final IOException e) {
             if (e instanceof HttpException) {
                 // Something went wrong server-side
                 final HttpException he = (HttpException) e;
