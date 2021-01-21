@@ -70,13 +70,18 @@ dependencies {
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.0.11")
 
     // Paypal
-    implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.2")
+    implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
 
     // Twitter
     implementation(group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7")
 
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
+
+    // JDA
+    implementation(group = "net.dv8tion", name = "JDA", version = "4.2.0_227") {
+        exclude(module = "opus-java")
+    }
 }
 
 val wrapper: Wrapper by tasks

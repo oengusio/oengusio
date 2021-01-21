@@ -2,7 +2,10 @@ package app.oengus.entity.model;
 
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
@@ -12,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "category")
@@ -175,5 +179,20 @@ public class Category {
 	public void setStatus(final Status status) {
 		this.status = status;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category category = (Category) o;
+        return Objects.equals(id, category.id) && Objects.equals(name, category.name) &&
+            Objects.equals(estimate, category.estimate) && Objects.equals(description, category.description) &&
+            Objects.equals(video, category.video) && type == category.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, estimate, description, video, type);
+    }
 }
 

@@ -35,9 +35,6 @@ public class TwitchLoginService {
 	@Autowired
 	private UserRepositoryService userRepositoryService;
 
-	@Value("${discord.botToken}")
-	private String botToken;
-
 	@Transactional
 	public User login(final String code) throws LoginException {
 		final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.twitchLoginParams, code);

@@ -5,7 +5,7 @@ import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.dto.UserHistoryDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.*;
-import app.oengus.entity.model.api.DiscordUser;
+import app.oengus.entity.model.api.discord.DiscordUser;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchLoginService;
 import app.oengus.service.login.TwitchSyncService;

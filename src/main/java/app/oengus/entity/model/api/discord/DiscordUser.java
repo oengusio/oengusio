@@ -1,4 +1,4 @@
-package app.oengus.entity.model.api;
+package app.oengus.entity.model.api.discord;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
