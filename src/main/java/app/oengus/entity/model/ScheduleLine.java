@@ -41,7 +41,6 @@ public class ScheduleLine {
 
     @Column(name = "console")
     @JsonView(Views.Public.class)
-    @NotBlank
     @Size(max = 20) // can grow upto 100 due to db type being varchar(100)
     private String console;
 
