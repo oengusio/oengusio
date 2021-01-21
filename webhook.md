@@ -5,9 +5,9 @@ There is a special url format that oengus accepts to make the oengus bot send em
 
 The format is as following: `oengus-bot?marathon={shortcode}&donation={channelId}&newsub={channelId}&editsub={channelId}`.
 
-You can use this tool to generate the urls: (todo)
+You can use this tool to generate url format: https://duncte123.me/oengus
 
-Parameter explination:
+Parameter explanation:
 1. marathon: this must hold the marathon short name that you specified when creating the marathon. This is the only required parameter (but the bot won't work without any of the other ones)
 2. donation: New donations are being sent to the channel specified. This is the ID of a **text channel on discord that the bot can talk in**
 3. newsub: New submissions are sent to the channel specified. This is the ID of a **text channel on discord that the bot can talk in**
