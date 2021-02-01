@@ -48,12 +48,12 @@ public class SubmissionsController {
 
     ///////// GameController.java ////////
 
-    @GetMapping
+    @GetMapping("/games")
     @JsonView(Views.Public.class)
     @ApiOperation(value = "Find all submitted games by marathon",
         response = GameDto.class,
         responseContainer = "List")
-    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
+    public ResponseEntity<?> findAllSubmittedGames(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
             .body(this.gameService.findByMarathon(marathonId));
@@ -74,7 +74,7 @@ public class SubmissionsController {
         response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
     }
 
-    @DeleteMapping("/game/{id}")
+    @DeleteMapping("/games/{id}")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
@@ -85,7 +85,15 @@ public class SubmissionsController {
 
     ///////// SubmissionController.java ////////
 
-    @PostMapping("/create")
+    @GetMapping
+    @JsonView(Views.Public.class)
+    public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.submissionService.findByMarathon(marathonId));
+    }
+
+    @PostMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
     @ApiIgnore
@@ -105,7 +113,7 @@ public class SubmissionsController {
             this.submissionService.save(submission,
                     PrincipalHelper.getUserFromPrincipal(principal),
                     marathonId);
-            return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submission/me")).build();
+            return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
         } catch (final NotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (final SubmissionsClosedException e) {
@@ -113,7 +121,7 @@ public class SubmissionsController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
             "&& #submission.id != null " +
