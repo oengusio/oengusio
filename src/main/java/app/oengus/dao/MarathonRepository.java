@@ -69,7 +69,7 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
 
 	@Modifying
 	@Query("UPDATE Marathon m SET m.cleared = true WHERE m = :marathon")
-	void clearMarathon(Marathon marathon);
+	void clearMarathon(@Param("marathon") Marathon marathon);
 
 	@Query(value = "SELECT m from Marathon m WHERE m.submissionsEndDate > current_timestamp " +
 			"ORDER BY m.submissionsStartDate ASC")
@@ -81,10 +81,10 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
 
 	@Modifying
 	@Query("UPDATE Marathon m SET m.submitsOpen = true WHERE m = :marathon")
-	void openSubmissions(Marathon marathon);
+	void openSubmissions(@Param("marathon") Marathon marathon);
 
 	@Modifying
 	@Query("UPDATE Marathon m SET m.submitsOpen = false WHERE m = :marathon")
-	void closeSubmissions(Marathon marathon);
+	void closeSubmissions(@Param("marathon") Marathon marathon);
 
 }
