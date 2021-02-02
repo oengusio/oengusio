@@ -7,10 +7,7 @@ import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.OengusConstants;
-import app.oengus.service.repository.MarathonRepositoryService;
-import app.oengus.service.repository.SelectionRepositoryService;
-import app.oengus.service.repository.SubmissionRepositoryService;
-import app.oengus.service.repository.UserRepositoryService;
+import app.oengus.service.repository.*;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -44,6 +41,9 @@ public class SubmissionService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private GameRepositoryService gameRepositoryService;
 
     @Autowired
     private OengusWebhookService webhookService;
@@ -313,6 +313,10 @@ public class SubmissionService {
         if (submission.getUser().getId().equals(user.getId()) || user.getRoles().contains(Role.ROLE_ADMIN) ||
                 marathon.getCreator().getId().equals(user.getId()) ||
                 marathon.getModerators().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach(this.categoryRepository::delete);
+                this.gameRepositoryService.delete(game.getId());
+            });
             this.submissionRepositoryService.delete(id);
         } else {
             throw new OengusBusinessException("NOT_AUTHORIZED");
