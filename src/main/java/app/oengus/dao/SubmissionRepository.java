@@ -33,7 +33,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
 	List<Submission> findByUser(User user);
 
 	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Submission> findByMarathon(Marathon marathon);
+	List<Submission> findByMarathonOrderByIdAsc(Marathon marathon);
 
 	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
 	Boolean existsByMarathonAndUser(Marathon marathon, User user);

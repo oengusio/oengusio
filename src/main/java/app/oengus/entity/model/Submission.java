@@ -48,6 +48,7 @@ public class Submission {
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OrderBy("id ASC")
     @JsonManagedReference
     @JsonView(Views.Public.class)
     private Set<Game> games;

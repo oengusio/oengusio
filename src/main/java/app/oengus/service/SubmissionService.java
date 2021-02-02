@@ -288,7 +288,28 @@ public class SubmissionService {
     public List<Submission> findByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        return this.submissionRepositoryService.findByMarathon(marathon);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+
+        // load opponents
+        byMarathon.forEach((submission) -> {
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    if (category.getOpponents() != null) {
+                        category.setOpponentDtos(new ArrayList<>());
+                        category.getOpponents().forEach(opponent -> {
+                            final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
+                            opponentCategoryDto.setId(opponent.getId());
+                            opponentCategoryDto.setVideo(opponent.getVideo());
+                            opponentCategoryDto.setUser(opponent.getSubmission().getUser());
+                            opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
+                            category.getOpponentDtos().add(opponentCategoryDto);
+                        });
+                    }
+                });
+            });
+        });
+
+        return byMarathon;
     }
 
     @Transactional
