@@ -2,13 +2,13 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "2.1.4.RELEASE"
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("org.springframework.boot") version "2.4.2"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:Greenwich.RELEASE")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.1")
     }
 }
 
@@ -93,6 +93,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "6.7.1"
+    gradleVersion = "6.8.1"
     distributionType = Wrapper.DistributionType.ALL
 }

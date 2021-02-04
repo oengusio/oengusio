@@ -3,12 +3,17 @@ package app.oengus.web;
 import app.oengus.entity.model.Submission;
 import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.PrincipalHelper;
+import app.oengus.service.ExportService;
+import app.oengus.service.GameService;
 import app.oengus.service.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -16,17 +21,66 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/submission")
-public class SubmissionController {
+@RequestMapping("/marathon/{marathonId}/submissions")
+@Api(value = "/marathon/{marathonId}/submissions")
+public class SubmissionsController {
+
+    @Autowired
+    private GameService gameService;
+
+    @Autowired
+    private ExportService exportService;
 
     @Autowired
     private SubmissionService submissionService;
+
+    ///////// GameController.java ////////
+
+    @GetMapping("/export")
+    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    @JsonView(Views.Public.class)
+    @ApiOperation(value = "Export all submitted games by marathon to CSV")
+    public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                     @RequestParam("locale") final String locale,
+                                     @RequestParam("zoneId") final String zoneId,
+                                     final HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + marathonId + "-submissions.csv\"");
+        response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
+    }
+
+    @DeleteMapping("/games/{id}")
+    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
+    @ApiIgnore
+    public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
+                                    @PathVariable("id") final Integer id) {
+        this.gameService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    ///////// SubmissionController.java ////////
+
+    @GetMapping
+    @JsonView(Views.Public.class)
+    @ApiOperation(value = "Find all submissions by marathon",
+        response = Submission.class,
+        responseContainer = "List")
+    public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.submissionService.findByMarathon(marathonId));
+    }
 
     @PostMapping
     @RolesAllowed({"ROLE_USER"})
@@ -48,7 +102,7 @@ public class SubmissionController {
             this.submissionService.save(submission,
                     PrincipalHelper.getUserFromPrincipal(principal),
                     marathonId);
-            return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submission/me")).build();
+            return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
         } catch (final NotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (final SubmissionsClosedException e) {

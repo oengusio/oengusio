@@ -30,7 +30,7 @@ public class SubmissionRepositoryService {
 	}
 
 	public List<Submission> findByMarathon(final Marathon marathon) {
-		return this.submissionRepository.findByMarathon(marathon);
+		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 	}
 
 	public List<Submission> findByUser(final User user) {
@@ -38,7 +38,7 @@ public class SubmissionRepositoryService {
 	}
 
 	public List<Submission> findCustomAnswersByMarathon(final Marathon marathon) {
-		final List<Submission> submissions = this.submissionRepository.findByMarathon(marathon);
+		final List<Submission> submissions = this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 		final List<Submission> clearedSubmissions = new ArrayList<>();
 		submissions.forEach(submission -> {
 			final Submission copy = new Submission();
