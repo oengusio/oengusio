@@ -29,7 +29,7 @@ public class JWTUtil implements Serializable {
 		           .getBody();
 	}
 
-	private Boolean isTokenExpired(final String token) {
+	private boolean isTokenExpired(final String token) {
 		try {
 			this.getAllClaimsFromToken(token);
 			return false;
@@ -46,8 +46,8 @@ public class JWTUtil implements Serializable {
 		return this.doGenerateToken(claims, user.getUsername(), user.getId());
 	}
 
-	private String doGenerateToken(final Map<String, Object> claims, final String username, final Integer id) {
-		final Long expirationTimeLong = Long.parseLong(this.expirationTime); //in second
+	private String doGenerateToken(final Map<String, Object> claims, final String username, final int id) {
+		final long expirationTimeLong = Long.parseLong(this.expirationTime); //in second
 
 		final Date createdDate = new Date();
 		final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
@@ -61,7 +61,7 @@ public class JWTUtil implements Serializable {
 		           .compact();
 	}
 
-	public Boolean validateToken(final String token) {
+	public boolean validateToken(final String token) {
 		return !this.isTokenExpired(token);
 	}
 

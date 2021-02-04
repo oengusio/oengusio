@@ -24,7 +24,7 @@ public class ClearSandboxService {
     @Autowired
     private UserRepository userRepository;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "@weekly")
     public void purgeEntries() {
         LOG.info("Deleting marathons");
 

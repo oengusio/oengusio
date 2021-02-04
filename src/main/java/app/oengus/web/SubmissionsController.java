@@ -1,6 +1,5 @@
 package app.oengus.web;
 
-import app.oengus.entity.dto.GameDto;
 import app.oengus.entity.model.Submission;
 import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.PrincipalHelper;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 @Api(value = "/marathon/{marathonId}/submissions")
 public class SubmissionsController {
 
-    // TODO: keep services split?
     @Autowired
     private GameService gameService;
 
@@ -45,19 +43,7 @@ public class SubmissionsController {
     @Autowired
     private SubmissionService submissionService;
 
-
     ///////// GameController.java ////////
-
-    @GetMapping("/games")
-    @JsonView(Views.Public.class)
-    @ApiOperation(value = "Find all submitted games by marathon",
-        response = GameDto.class,
-        responseContainer = "List")
-    public ResponseEntity<?> findAllSubmittedGames(@PathVariable("marathonId") final String marathonId) {
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-            .body(this.gameService.findByMarathon(marathonId));
-    }
 
     @GetMapping("/export")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
@@ -87,6 +73,9 @@ public class SubmissionsController {
 
     @GetMapping
     @JsonView(Views.Public.class)
+    @ApiOperation(value = "Find all submissions by marathon",
+        response = Submission.class,
+        responseContainer = "List")
     public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
