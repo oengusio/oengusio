@@ -23,6 +23,10 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
 	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
 	List<Marathon> findNext(Pageable pageable);
 
+    @Query(value = "SELECT m.name FROM Marathon m WHERE m.id = :id")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    String getNameById(@Param("id") String id);
+
 	default List<Marathon> findNext() {
 		return this.findNext(PageRequest.of(0, 5));
 	}

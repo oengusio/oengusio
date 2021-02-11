@@ -5,12 +5,13 @@ import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.service.jda.JDAService;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.requests.RestAction;
+import club.minnced.discord.webhook.receive.ReadonlyMessage;
+import club.minnced.discord.webhook.send.WebhookEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DiscordApiService {
@@ -35,7 +36,7 @@ public class DiscordApiService {
         return this.discordApi.getGuildMember(this.botToken, guildId, userId);
     }
 
-    public RestAction<Message> sendMessage(final String channelId, final MessageEmbed embed) {
+    public CompletableFuture<ReadonlyMessage> sendMessage(final String channelId, final WebhookEmbed embed) {
         return this.jda.sendMessage(channelId, embed);
     }
 }

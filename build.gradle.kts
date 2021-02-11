@@ -25,7 +25,10 @@ application {
 }
 
 repositories {
+    mavenCentral()
     jcenter()
+
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -78,10 +81,8 @@ dependencies {
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
-    // JDA
-    implementation(group = "net.dv8tion", name = "JDA", version = "4.2.0_227") {
-        exclude(module = "opus-java")
-    }
+    // WEBHOOKS
+    implementation(group = "com.github.esamarathon", name = "oengus-discord-webhooks", version = "5b092a1")
 }
 
 val wrapper: Wrapper by tasks

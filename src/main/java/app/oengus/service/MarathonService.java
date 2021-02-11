@@ -71,6 +71,10 @@ public class MarathonService {
 		marathonsWithScheduleDone.forEach(this.eventSchedulerService::scheduleMarathonStartAlert);
 	}
 
+	public String getNameForCode(String code) {
+	    return this.marathonRepositoryService.getNameById(code);
+    }
+
 	@Transactional
 	public Marathon create(final Marathon marathon, final User creator) {
 		marathon.setCreator(creator);

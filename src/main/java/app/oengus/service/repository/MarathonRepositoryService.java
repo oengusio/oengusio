@@ -34,6 +34,10 @@ public class MarathonRepositoryService {
 		                              .orElseThrow(() -> new NotFoundException("Marathon not found"));
 	}
 
+	public String getNameById(String id) {
+	    return this.marathonRepository.getNameById(id);
+    }
+
 	public void delete(final Marathon marathon) {
 		this.marathonRepository.delete(marathon);
 	}

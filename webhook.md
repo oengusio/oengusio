@@ -13,7 +13,7 @@ Parameter explanation:
 3. newsub: New submissions are sent to the channel specified. This is the ID of a **text channel on discord that the bot can talk in**
 4. editsub: Edited submissions are sent to the channel specified. **New submissions will also be sent to this channel.** This is the ID of a **text channel on discord that the bot can talk in**
 
-TIP: for the best result with logging of submissions, set bot the `newsub` and `editsub` fields as the `editsub` field detects new categories/games on a submission as well.
+TIP: for the best result with logging of submissions, set both the `newsub` and `editsub` fields as the `editsub` field detects new categories/games on a submission as well.
 
 How to get these text channel ids: [https://support.discord.com/hc/en-us/articles/206346498](https://support.discord.com/hc/en-us/articles/206346498)
 
