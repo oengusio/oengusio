@@ -76,17 +76,7 @@ public class SubmissionService {
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
 
-        // load all the items needed from the old submission
-        Hibernate.initialize(oldSubmission.getAvailabilities());
-        Hibernate.initialize(oldSubmission.getOpponents());
-        Hibernate.initialize(oldSubmission.getAnswers());
-        Hibernate.initialize(oldSubmission.getGames());
-        oldSubmission.getGames().forEach((game) -> {
-            Hibernate.initialize(game.getCategories());
-            game.getCategories().forEach((category) -> {
-                Hibernate.initialize(category.getOpponents());
-            });
-        });
+        Submission.initialize(oldSubmission);
 
         // uncache the old submission
         entityManager.detach(oldSubmission);
@@ -328,12 +318,29 @@ public class SubmissionService {
         return this.submissionRepositoryService.existsByMarathonAndUser(marathon, user);
     }
 
+    // User is the person deleting the submission
     public void delete(final Integer id, final User user) throws NotFoundException {
         final Submission submission = this.submissionRepositoryService.findById(id);
         final Marathon marathon = submission.getMarathon();
         if (submission.getUser().getId().equals(user.getId()) || user.getRoles().contains(Role.ROLE_ADMIN) ||
                 marathon.getCreator().getId().equals(user.getId()) ||
                 marathon.getModerators().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
+
+            // load the submission so we can send it
+            Submission.initialize(submission);
+
+            // Detach it from the manager
+            entityManager.detach(submission);
+
+            // send webhook
+            if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+                try {
+                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission, user);
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
+                }
+            }
+
             submission.getGames().forEach((game) -> {
                 game.getCategories().forEach(this.categoryRepository::delete);
                 this.gameRepositoryService.delete(game.getId());

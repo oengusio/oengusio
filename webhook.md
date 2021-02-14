@@ -26,7 +26,7 @@ How to get these text channel ids: [https://support.discord.com/hc/en-us/article
 
 ```json5
 {
-    "event": "PING | DONATION | SUBMISSION_ADD | SUBMISSION_EDIT",
+    "event": "PING | DONATION | SUBMISSION_ADD | SUBMISSION_EDIT | SUBMISSION_DELETE",
     // ONLY SEND WHEN EVENT IS DONATION
     "donation": {
         "id": 0,
@@ -44,6 +44,10 @@ How to get these text channel ids: [https://support.discord.com/hc/en-us/article
     "original_submission": {
       // SUBMISSION MODEL //
       // This model contains the old submission data in case of an edit event
+    },
+    // ONLY SEND WHEN EVENT IS SUBMISSION_DELETE
+    "deleted_by": {
+        // USER MODEL //
     }
 }
 ```

@@ -1,11 +1,9 @@
 package app.oengus.service;
 
-import app.oengus.entity.model.Category;
-import app.oengus.entity.model.Donation;
-import app.oengus.entity.model.Game;
-import app.oengus.entity.model.Submission;
+import app.oengus.entity.model.*;
 import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
+import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,6 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -40,7 +40,7 @@ public class OengusWebhookService {
     private MarathonService marathonService;
 
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
-        if (handleOnBot(url, null, null, donation)) {
+        if (handleOnBot(url, null, null, donation, null)) {
             return;
         }
 
@@ -52,7 +52,7 @@ public class OengusWebhookService {
     }
 
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
-        if (handleOnBot(url, submission, null, null)) {
+        if (handleOnBot(url, submission, null, null, null)) {
             return;
         }
 
@@ -64,13 +64,26 @@ public class OengusWebhookService {
     }
 
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
-        if (handleOnBot(url, newSubmission, oldSubmission, null)) {
+        if (handleOnBot(url, newSubmission, oldSubmission, null, null)) {
             return;
         }
 
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
         data.set("submission", parseJson(newSubmission));
         data.set("original_submission", parseJson(oldSubmission));
+
+        callAsync(url, data);
+    }
+
+    public void sendSubmissionDeleteEvent(final String url, final Submission submission, final User deletedBy) throws IOException {
+        if (handleOnBot(url, null, submission, null, deletedBy)) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "SUBMISSION_DELETE");
+        data.set("submission", parseJson(submission));
+        data.set("deleted_by", parseJson(deletedBy));
 
         callAsync(url, data);
     }
@@ -95,14 +108,14 @@ public class OengusWebhookService {
         }
     }
 
-    private JsonNode parseJson(final Submission submission) throws IOException {
+    private JsonNode parseJson(final Object submission) throws IOException {
         // hacky work around so we can use views
         final String json = mapper.writerWithView(Views.Public.class).writeValueAsString(submission);
 
         return mapper.readTree(json);
     }
 
-    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation) {
+    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation, User user) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
         }
@@ -118,6 +131,16 @@ public class OengusWebhookService {
         final String marathon = url.get("marathon");
 
         if (oldSubmission != null && url.has("editsub")) {
+            if (submission == null) {
+                sendSubmissionDelete(
+                    marathon,
+                    url.get("editsub"),
+                    oldSubmission,
+                    user
+                );
+                return true;
+            }
+
             sendEditSubmission(
                 marathon,
                 url.get("editsub"),
@@ -247,12 +270,11 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " submitted a run",
+                username + " submitted a run to " + marathonName,
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ))
             .setDescription(String.format(
-                "**Event:** %s\n\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                marathonName,
+                "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
                 game.getName(),
                 category.getName(),
                 game.getConsole(),
@@ -269,14 +291,13 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " updated a run",
+                username + " updated a run in " + marathonName,
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ));
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "**Event:** %s\n\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-            marathonName,
+            "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
             parseUpdatedString(game.getName(), oldGame.getName()),
             parseUpdatedString(category.getName(), oldCategory.getName()),
             parseUpdatedString(game.getConsole(), oldGame.getConsole()),
@@ -285,6 +306,11 @@ public class OengusWebhookService {
 
         if (!category.getVideo().equals(oldCategory.getVideo())) {
             sb.append("\n**Video:** ").append(parseUpdatedString(category.getVideo(), oldCategory.getVideo()));
+        }
+
+        if (category.getType() != oldCategory.getType()) {
+            sb.append("\n**Type:** ")
+                .append(parseUpdatedString(category.getType().name(), oldCategory.getType().name()));
         }
 
         builder.setDescription(sb.toString());
@@ -306,17 +332,48 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                donation.getNickname() + " donated",
+                donation.getNickname() + " donated to " + this.marathonService.getNameForCode(marathon),
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ))
             .setDescription(String.format(
-                "**Event:** %s\n\n**Amount:** %s\n**Comment:** %s",
-                this.marathonService.getNameForCode(marathon),
+                "**Amount:** %s\n**Comment:** %s",
                 formattedAmount,
                 donation.getComment() == null ? "None" : donation.getComment()
             ));
 
         this.jda.sendMessage(channel, builder.build());
+    }
+
+    private void sendSubmissionDelete(final String marathon, final String channel, final Submission submission, final User user) {
+        final List<WebhookEmbed> messages = new ArrayList<>();
+        final String marathonName = this.marathonService.getNameForCode(marathon);
+
+        for (final Game game : submission.getGames()) {
+            for (final Category category : game.getCategories()) {
+                final String username = submission.getUser().getUsername();
+
+                final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
+                    .setTitle(new WebhookEmbed.EmbedTitle(
+                        user.getUsername() + " deleted a run by " + username + " in " + marathonName,
+                        this.baseUrl + "/marathon/" + marathon + "/submissions"
+                    ))
+                    .setDescription(String.format(
+                        "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
+                        game.getName(),
+                        category.getName(),
+                        game.getConsole(),
+                        TimeHelpers.formatDuration(category.getEstimate())
+                    ));
+
+                messages.add(builder.build());
+            }
+        }
+
+        try (WebhookClient client = this.jda.forChannel(channel)) {
+            for (WebhookEmbed embed : messages) {
+                client.send(embed);
+            }
+        }
     }
 
     private static class OengusBotUrl {
