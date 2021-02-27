@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,12 +95,34 @@ public class UserService {
 		}
 	}
 
-	@Transactional
 	public void update(final Integer id, final User userPatch) throws NotFoundException {
 		final User user = this.userRepositoryService.findById(id);
 		BeanUtils.copyProperties(userPatch, user);
 		this.userRepositoryService.update(user);
 	}
+
+    public void markDeleted(final int id) throws NotFoundException {
+        final User user = this.userRepositoryService.findById(id);
+
+        user.setUsernameJapanese(null);
+        user.setDiscordId(null);
+        user.setDiscordName(null);
+        user.setTwitchId(null);
+        user.setTwitchName(null);
+        user.setTwitterId(null);
+        user.setTwitterName(null);
+        user.setSpeedruncomName(null);
+        user.setMail(null);
+//        user.setMail("deleted-user@oengus.io");
+        user.setEnabled(false);
+
+        final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
+
+        // "Deleted" is 7 in length
+        user.setUsername("Deleted" + randomHash.substring(0, Math.min(7, randomHash.length())));
+
+        this.userRepositoryService.save(user);
+    }
 
     public void addRole(final int id, final Role role) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);

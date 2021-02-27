@@ -116,6 +116,18 @@ public class UserController {
 		}
 	}
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("(isSelf(#id) && !isBanned()) || isAdmin()")
+    @ApiIgnore
+    public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) {
+        try {
+            this.userService.markDeleted(id);
+            return ResponseEntity.noContent().build();
+        } catch (final NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 	@GetMapping("/me")
 	@RolesAllowed({"ROLE_USER"})
 	@JsonView(Views.Internal.class)

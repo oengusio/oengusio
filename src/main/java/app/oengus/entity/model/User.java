@@ -137,15 +137,22 @@ public class User implements UserDetails {
 
 	@AssertTrue
 	public boolean isAtLeastOneAccountSynchronized() {
-		return !StringUtils.isEmpty(this.discordId) || !StringUtils.isEmpty(this.twitchId) ||
-				!StringUtils.isEmpty(this.twitterId);
+	    // ignore for disabled users
+	    if (!this.enabled) {
+	        return true;
+        }
+
+		return StringUtils.isNotEmpty(this.discordId) ||
+            StringUtils.isNotEmpty(this.twitchId) ||
+			StringUtils.isNotEmpty(this.twitterId);
 	}
 
 	@AssertTrue
 	public boolean isEmailPresentForExistingUser() {
-		if (this.id != null) {
-			return !StringUtils.isEmpty(this.mail);
+		if (this.id != null && this.enabled) {
+			return StringUtils.isNotEmpty(this.mail);
 		}
+
 		return true;
 	}
 
