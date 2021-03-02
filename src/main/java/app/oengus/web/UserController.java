@@ -167,4 +167,21 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/{id}/enabled")
+    @PreAuthorize("isAdmin()")
+    @ApiIgnore
+	public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) {
+        try {
+            final User patch = this.userService.getUser(id);
+
+            patch.setEnabled(status);
+
+            this.userService.update(id, patch);
+
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

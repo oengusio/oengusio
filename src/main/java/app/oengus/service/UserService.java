@@ -147,7 +147,7 @@ public class UserService {
     }
 
 	@Transactional
-	public User getUser(final Integer id) throws NotFoundException {
+	public User getUser(final int id) throws NotFoundException {
 		final User user =
 				this.userRepositoryService.findById(id);
 		if (user.getDiscordId() != null) {
