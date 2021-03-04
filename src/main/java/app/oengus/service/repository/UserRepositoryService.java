@@ -32,7 +32,7 @@ public class UserRepositoryService {
 	}
 
 	public Boolean existsByUsername(final String name) {
-		return this.userRepository.existsByUsername(name) || this.userRepository.existsByUsernameJapanese(name);
+		return this.userRepository.existsByUsernameIgnoreCase(name) || this.userRepository.existsByUsernameJapanese(name);
 	}
 
 	public Boolean existsByDiscordId(final String discordId) {
