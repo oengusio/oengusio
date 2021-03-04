@@ -116,6 +116,18 @@ public class UserController {
 		}
 	}
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("(isSelf(#id) && !isBanned()) || isAdmin()")
+    @ApiIgnore
+    public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) {
+        try {
+            this.userService.markDeleted(id);
+            return ResponseEntity.noContent().build();
+        } catch (final NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 	@GetMapping("/me")
 	@RolesAllowed({"ROLE_USER"})
 	@JsonView(Views.Internal.class)
@@ -149,6 +161,23 @@ public class UserController {
 	public ResponseEntity<?> unban(@PathVariable Integer id) {
         try {
             this.userService.removeRole(id, Role.ROLE_BANNED);
+
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/enabled")
+    @PreAuthorize("isAdmin()")
+    @ApiIgnore
+	public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) {
+        try {
+            final User patch = this.userService.getUser(id);
+
+            patch.setEnabled(status);
+
+            this.userService.update(id, patch);
 
             return ResponseEntity.noContent().build();
         } catch (NotFoundException e) {
