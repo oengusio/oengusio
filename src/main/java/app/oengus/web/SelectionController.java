@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/selection")
-@Api(value = "/marathon/{marathonId}/selection")
+@RequestMapping({"/marathons/{marathonId}/selection", "/marathon/{marathonId}/selection"})
+@Api(value = "/marathons/{marathonId}/selection")
 public class SelectionController {
 
 	@Autowired

@@ -18,7 +18,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.security.RolesAllowed;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/discord")
+@RequestMapping({"/marathons/{marathonId}/discord", "/marathon/{marathonId}/discord"})
 @ApiIgnore
 public class DiscordController {
     @Autowired

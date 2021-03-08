@@ -56,6 +56,10 @@ public class UserService {
 
 	public Token login(final String service, final String code, final String oauthToken, final String oauthVerifier)
 			throws LoginException {
+	    if (code == null || code.isBlank()) {
+            throw new LoginException("Missing code in request");
+        }
+
 		final User user;
 		switch (service) {
 			case "discord":

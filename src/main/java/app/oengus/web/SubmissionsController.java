@@ -30,8 +30,8 @@ import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/submissions")
-@Api(value = "/marathon/{marathonId}/submissions")
+@RequestMapping({"/marathons/{marathonId}/submissions", "/marathon/{marathonId}/submissions"})
+@Api(value = "/marathons/{marathonId}/submissions")
 public class SubmissionsController {
 
     @Autowired

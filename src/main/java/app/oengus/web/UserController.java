@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
-@Api(value = "/user")
+@RequestMapping({"/users", "/user"})
+@Api(value = "/users")
 public class UserController {
 
 	@Autowired

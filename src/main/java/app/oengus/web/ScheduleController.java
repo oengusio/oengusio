@@ -22,8 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/schedule")
-@Api(value = "/marathon/{marathonId}/schedule")
+@RequestMapping({"/marathons/{marathonId}/schedule", "/marathon/{marathonId}/schedule"})
+@Api(value = "/marathons/{marathonId}/schedule")
 public class ScheduleController {
 
 	@Autowired

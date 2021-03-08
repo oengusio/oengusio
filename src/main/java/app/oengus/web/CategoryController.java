@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/category")
-@Api(value = "/marathon/{marathonId}/category")
+@RequestMapping({"/marathons/{marathonId}/categories", "/marathon/{marathonId}/category"})
+@Api(value = "/marathons/{marathonId}/categories")
 public class CategoryController {
 
 	@Autowired

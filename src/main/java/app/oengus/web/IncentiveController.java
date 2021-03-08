@@ -18,8 +18,8 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/incentive")
-@Api(value = "/marathon/{marathonId}/incentive")
+@RequestMapping({"/marathons/{marathonId}/incentives", "/marathon/{marathonId}/incentive"})
+@Api(value = "/marathons/{marathonId}/incentives")
 public class IncentiveController {
 
 	@Autowired

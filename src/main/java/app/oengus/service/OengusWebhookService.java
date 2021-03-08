@@ -115,7 +115,7 @@ public class OengusWebhookService {
         return mapper.readTree(json);
     }
 
-    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation, User user) {
+    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation, User deletedBy) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
         }
@@ -136,7 +136,7 @@ public class OengusWebhookService {
                     marathon,
                     url.get("editsub"),
                     oldSubmission,
-                    user
+                    deletedBy
                 );
                 return true;
             }
@@ -344,28 +344,20 @@ public class OengusWebhookService {
         this.jda.sendMessage(channel, builder.build());
     }
 
-    private void sendSubmissionDelete(final String marathon, final String channel, final Submission submission, final User user) {
+    private void sendSubmissionDelete(final String marathonId, final String channel, final Submission submission, final User deletedBy) {
         final List<WebhookEmbed> messages = new ArrayList<>();
-        final String marathonName = this.marathonService.getNameForCode(marathon);
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
 
         for (final Game game : submission.getGames()) {
             for (final Category category : game.getCategories()) {
-                final String username = submission.getUser().getUsername();
-
-                final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
-                    .setTitle(new WebhookEmbed.EmbedTitle(
-                        user.getUsername() + " deleted a run by " + username + " in " + marathonName,
-                        this.baseUrl + "/marathon/" + marathon + "/submissions"
-                    ))
-                    .setDescription(String.format(
-                        "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                        game.getName(),
-                        category.getName(),
-                        game.getConsole(),
-                        TimeHelpers.formatDuration(category.getEstimate())
-                    ));
-
-                messages.add(builder.build());
+                messages.add(categoryToEmbed(
+                    category,
+                    deletedBy,
+                    submission.getUser(),
+                    marathonId,
+                    marathonName,
+                    game
+                ));
             }
         }
 
@@ -374,6 +366,67 @@ public class OengusWebhookService {
                 client.send(embed);
             }
         }
+    }
+
+    private void sendGameDelete(final String marathonId, final String channel, final Game game, final User deletedBy) {
+        final List<WebhookEmbed> messages = new ArrayList<>();
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
+
+        for (final Category category : game.getCategories()) {
+            messages.add(categoryToEmbed(
+                category,
+                deletedBy,
+                game.getSubmission().getUser(),
+                marathonId,
+                marathonName,
+                game
+            ));
+        }
+
+        try (WebhookClient client = this.jda.forChannel(channel)) {
+            for (WebhookEmbed embed : messages) {
+                client.send(embed);
+            }
+        }
+    }
+
+    private void sendCategoryDelete(final String marathonId, final String channel, final Category category, final User deletedBy) {
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
+
+        final Game game = category.getGame();
+
+        final WebhookEmbed webhookEmbed = categoryToEmbed(
+            category,
+            deletedBy,
+            game.getSubmission().getUser(),
+            marathonId,
+            marathonName,
+            game
+        );
+
+        this.jda.sendMessage(channel, webhookEmbed);
+    }
+
+    private WebhookEmbed categoryToEmbed(final Category category, final User deletedBy, final User owner,
+                                         final String marathonId, final String marathonName, final Game game) {
+        final String username = owner.getUsername();
+        final String headerText = deletedBy.equals(owner) ?
+            username + " deleted their own run" :
+            deletedBy.getUsername() + " deleted a run by " + username;
+
+        return new WebhookEmbedBuilder()
+            .setTitle(new WebhookEmbed.EmbedTitle(
+                headerText + " in " + marathonName,
+                this.baseUrl + "/marathon/" + marathonId + "/submissions"
+            ))
+            .setDescription(String.format(
+                "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
+                game.getName(),
+                category.getName(),
+                game.getConsole(),
+                TimeHelpers.formatDuration(category.getEstimate())
+            ))
+            .build();
     }
 
     private static class OengusBotUrl {

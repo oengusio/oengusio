@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/marathon")
-@Api(value = "/marathon")
+@RequestMapping({"/marathons", "/marathon"})
+@Api(value = "/marathons")
 public class MarathonController {
 
 	@Autowired
