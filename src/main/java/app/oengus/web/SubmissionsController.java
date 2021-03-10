@@ -64,9 +64,14 @@ public class SubmissionsController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final Integer id) {
-        this.gameService.delete(id);
-        return ResponseEntity.ok().build();
+                                    @PathVariable("id") final int id) {
+        try {
+            this.gameService.delete(id);
+
+            return ResponseEntity.ok().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     ///////// SubmissionController.java ////////

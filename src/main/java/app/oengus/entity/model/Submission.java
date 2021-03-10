@@ -230,17 +230,16 @@ public class Submission {
         return Objects.hash(id, user, marathon, games, opponents);
     }
 
-    public static void initialize(Submission submission) {
+    public static void initialize(Submission submission, boolean withGames) {
         // load all the items needed from the old submission
         Hibernate.initialize(submission.getAvailabilities());
         Hibernate.initialize(submission.getOpponents());
         Hibernate.initialize(submission.getAnswers());
-        Hibernate.initialize(submission.getGames());
-        submission.getGames().forEach((game) -> {
-            Hibernate.initialize(game.getCategories());
-            game.getCategories().forEach((category) -> {
-                Hibernate.initialize(category.getOpponents());
-            });
-        });
+
+        // only load the game if we say so
+        // might cause issues if we load the submission from a game otherwise
+        if (withGames) {
+            submission.getGames().forEach(Game::initialize);
+        }
     }
 }

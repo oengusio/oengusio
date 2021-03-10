@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -142,5 +143,13 @@ public class Game {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, console, ratio, emulated, categories);
+    }
+
+    public static void initialize(Game game) {
+        // load all the items needed from the old game
+        Hibernate.initialize(game.getCategories());
+        game.getCategories().forEach((category) -> {
+            Hibernate.initialize(category.getOpponents());
+        });
     }
 }

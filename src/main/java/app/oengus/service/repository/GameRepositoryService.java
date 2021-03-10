@@ -2,6 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.GameRepository;
 import app.oengus.entity.model.Game;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,12 @@ public class GameRepositoryService {
 		return this.gameRepository.findByMarathon(marathonId);
 	}
 
-	public void delete(final Integer id) {
+	public Game findById(final int id) throws NotFoundException {
+	    return this.gameRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Game not found"));
+    }
+
+	public void delete(final int id) {
 		this.gameRepository.deleteById(id);
 	}
 

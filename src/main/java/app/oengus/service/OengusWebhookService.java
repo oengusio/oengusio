@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,16 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
+
+import static app.oengus.helper.WebhookHelper.createParameters;
 
 @Service
 public class OengusWebhookService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OengusWebhookService.class);
 
     private final OkHttpClient client = new OkHttpClient();
     @Autowired
@@ -40,7 +48,7 @@ public class OengusWebhookService {
     private MarathonService marathonService;
 
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
-        if (handleOnBot(url, null, null, donation, null)) {
+        if (handleOnBot(url, () -> createParameters("donation", donation))) {
             return;
         }
 
@@ -52,7 +60,7 @@ public class OengusWebhookService {
     }
 
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
-        if (handleOnBot(url, submission, null, null, null)) {
+        if (handleOnBot(url, () -> createParameters("submission", submission))) {
             return;
         }
 
@@ -64,7 +72,7 @@ public class OengusWebhookService {
     }
 
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
-        if (handleOnBot(url, newSubmission, oldSubmission, null, null)) {
+        if (handleOnBot(url, () -> createParameters("submission", newSubmission, "oldSubmission", oldSubmission))) {
             return;
         }
 
@@ -76,7 +84,7 @@ public class OengusWebhookService {
     }
 
     public void sendSubmissionDeleteEvent(final String url, final Submission submission, final User deletedBy) throws IOException {
-        if (handleOnBot(url, null, submission, null, deletedBy)) {
+        if (handleOnBot(url, () -> createParameters("oldSubmission", submission, "deletedBy", deletedBy))) {
             return;
         }
 
@@ -178,6 +186,73 @@ public class OengusWebhookService {
         return true;
     }
 
+    private boolean handleOnBot(final String rawUrl, final Supplier<Map<String, Object>> argsSupplier) {
+        if (!rawUrl.startsWith("oengus-bot")) {
+            return false;
+        }
+
+        // parse the url
+        final OengusBotUrl url = new OengusBotUrl(rawUrl);
+
+        if (url.isEmpty()) {
+            // still returning true since oengus-bot is no valid domain
+            return true;
+        }
+
+        // don't create the map if we don't need to
+        final Map<String, Object> args = argsSupplier.get();
+        final String marathon = url.get("marathon");
+
+        if (args.containsKey("oldSubmission") && url.has("editsub")) {
+            final Submission oldSubmission = (Submission) args.get("oldSubmission");
+
+            if (!args.containsKey("submission")) {
+                sendSubmissionDelete(
+                    marathon,
+                    url.get("editsub"),
+                    oldSubmission,
+                    (User) args.get("deletedBy")
+                );
+                return true;
+            }
+
+            sendEditSubmission(
+                marathon,
+                url.get("editsub"),
+                // get the new submission channel for when there's a new game added, or get the edit channel
+                url.has("newsub") ? url.get("newsub") : url.get("editsub"),
+                (Submission) args.get("submission"),
+                oldSubmission
+            );
+        } else if (args.containsKey("submission") && url.has("newsub")) {
+            final String marathonName = this.marathonService.getNameForCode(marathon);
+
+            sendNewSubmission(
+                marathon,
+                url.get("newsub"),
+                (Submission) args.get("submission"),
+                marathonName
+            );
+
+            if (url.has("editsub")) {
+                sendNewSubmission(
+                    marathon,
+                    url.get("editsub"),
+                    (Submission) args.get("submission"),
+                    marathonName
+                );
+            }
+        } else if (url.has("donation")) {
+            sendDonationEvent(
+                marathon,
+                url.get("donation"),
+                (Donation) args.get("donation")
+            );
+        }
+
+        return true;
+    }
+
     private void callAsync(final String url, final JsonNode data) throws IOException {
         final RequestBody body = RequestBody.create(null, mapper.writeValueAsBytes(data));
         final Request request = new Request.Builder()
@@ -190,7 +265,7 @@ public class OengusWebhookService {
         this.client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                //
+                LOG.error("Failed to send hook event to " + url, e);
             }
 
             @Override
