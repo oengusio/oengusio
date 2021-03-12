@@ -47,6 +47,7 @@ public class OengusWebhookService {
     @Autowired
     private MarathonService marathonService;
 
+    /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
         if (handleOnBot(url, () -> createParameters("donation", donation))) {
             return;
@@ -96,6 +97,19 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
+    public void sendGameDeleteEvent(final String url, final Game game, final User deletedBy) throws IOException {
+        if (handleOnBot(url, () -> createParameters("delGame", game, "deletedBy", deletedBy))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "GAME_DELETE");
+        data.set("game", parseJson(game));
+        data.set("deleted_by", parseJson(deletedBy));
+
+        callAsync(url, data);
+    }
+
     public boolean sendPingEvent(final String url) {
         try {
             final JsonNode data = mapper.createObjectNode().put("event", "PING");
@@ -115,6 +129,7 @@ public class OengusWebhookService {
             return false;
         }
     }
+    /// </editor-fold>
 
     private JsonNode parseJson(final Object submission) throws IOException {
         // hacky work around so we can use views
@@ -203,27 +218,38 @@ public class OengusWebhookService {
         final Map<String, Object> args = argsSupplier.get();
         final String marathon = url.get("marathon");
 
-        if (args.containsKey("oldSubmission") && url.has("editsub")) {
-            final Submission oldSubmission = (Submission) args.get("oldSubmission");
+        if (url.has("editsub")) {
+            final String editsub = url.get("editsub");
 
-            if (!args.containsKey("submission")) {
-                sendSubmissionDelete(
+            if(args.containsKey("oldSubmission")) {
+                final Submission oldSubmission = (Submission) args.get("oldSubmission");
+
+                if (!args.containsKey("submission")) {
+                    sendSubmissionDelete(
+                        marathon,
+                        editsub,
+                        oldSubmission,
+                        (User) args.get("deletedBy")
+                    );
+                    return true;
+                }
+
+                sendEditSubmission(
                     marathon,
-                    url.get("editsub"),
-                    oldSubmission,
+                    editsub,
+                    // get the new submission channel for when there's a new game added, or get the edit channel
+                    url.has("newsub") ? url.get("newsub") : editsub,
+                    (Submission) args.get("submission"),
+                    oldSubmission
+                );
+            } else if (args.containsKey("delGame")) {
+                sendGameDelete(
+                    marathon,
+                    editsub,
+                    (Game) args.get("delGame"),
                     (User) args.get("deletedBy")
                 );
-                return true;
             }
-
-            sendEditSubmission(
-                marathon,
-                url.get("editsub"),
-                // get the new submission channel for when there's a new game added, or get the edit channel
-                url.has("newsub") ? url.get("newsub") : url.get("editsub"),
-                (Submission) args.get("submission"),
-                oldSubmission
-            );
         } else if (args.containsKey("submission") && url.has("newsub")) {
             final String marathonName = this.marathonService.getNameForCode(marathon);
 
@@ -253,6 +279,7 @@ public class OengusWebhookService {
         return true;
     }
 
+    /// <editor-fold desc="sending functions" defaultstate="collapsed">
     private void callAsync(final String url, final JsonNode data) throws IOException {
         final RequestBody body = RequestBody.create(null, mapper.writeValueAsBytes(data));
         final Request request = new Request.Builder()
@@ -503,6 +530,7 @@ public class OengusWebhookService {
             ))
             .build();
     }
+    /// </editor-fold>
 
     private static class OengusBotUrl {
         private final String donation;

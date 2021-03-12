@@ -319,7 +319,7 @@ public class SubmissionService {
     }
 
     // User is the person deleting the submission
-    public void delete(final Integer id, final User user) throws NotFoundException {
+    public void delete(final int id, final User user) throws NotFoundException {
         final Submission submission = this.submissionRepositoryService.findById(id);
         final Marathon marathon = submission.getMarathon();
         if (submission.getUser().getId().equals(user.getId()) || user.getRoles().contains(Role.ROLE_ADMIN) ||

@@ -64,9 +64,9 @@ public class SubmissionsController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final int id) {
+                                    @PathVariable("id") final int id, final Principal principal) {
         try {
-            this.gameService.delete(id);
+            this.gameService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
 
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
@@ -186,8 +186,7 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> delete(@PathVariable("id") final Integer id,
-                                 final Principal principal) {
+    public ResponseEntity<?> delete(@PathVariable("id") final int id, final Principal principal) {
         try {
             this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
             return ResponseEntity.ok().build();
