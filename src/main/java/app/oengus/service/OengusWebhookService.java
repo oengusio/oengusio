@@ -249,6 +249,13 @@ public class OengusWebhookService {
                     (Game) args.get("delGame"),
                     (User) args.get("deletedBy")
                 );
+            } else if (args.containsKey("delCategory")) {
+                sendCategoryDelete(
+                    marathon,
+                    editsub,
+                    (Category) args.get("delCategory"),
+                    (User) args.get("deletedBy")
+                );
             }
         } else if (args.containsKey("submission") && url.has("newsub")) {
             final String marathonName = this.marathonService.getNameForCode(marathon);
