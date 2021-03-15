@@ -1,16 +1,20 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.CategoryService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping({"/marathons/{marathonId}/categories", "/marathon/{marathonId}/category"})
@@ -33,9 +37,14 @@ public class CategoryController {
 	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
 	@ApiIgnore
 	public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-	                             @PathVariable("id") final Integer id) {
-		this.categoryService.delete(id);
-		return ResponseEntity.ok().build();
+	                             @PathVariable("id") final int id, final Principal principal) {
+		try {
+            this.categoryService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+            return ResponseEntity.ok().build();
+        } catch (final NotFoundException e) {
+            return ResponseEntity.notFound().build();
+
+        }
 	}
 
 }

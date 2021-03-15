@@ -2,6 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.model.Category;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,12 @@ public class CategoryRepositoryService {
 		return this.categoryRepository.findByCode(code);
 	}
 
-	public void delete(final Integer id) {
+	public Category findById(final int id) throws NotFoundException {
+		return this.categoryRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Category not found"));
+	}
+
+	public void delete(final int id) {
 		this.categoryRepository.deleteById(id);
 	}
 

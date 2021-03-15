@@ -1,15 +1,17 @@
 package app.oengus.service;
 
 import app.oengus.entity.dto.OpponentSubmissionDto;
-import app.oengus.entity.model.Category;
-import app.oengus.entity.model.RunType;
-import app.oengus.entity.model.User;
+import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.repository.CategoryRepositoryService;
+import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,12 @@ public class CategoryService {
 
 	@Autowired
 	private CategoryRepositoryService categoryRepositoryService;
+
+    @Autowired
+    private OengusWebhookService webhookService;
+
+    @Autowired
+    private EntityManager entityManager;
 
 	private static final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP_RACE, RunType.COOP, RunType.RACE);
 
@@ -66,7 +74,24 @@ public class CategoryService {
 		throw new OengusBusinessException("CODE_NOT_FOUND");
 	}
 
-	public void delete(final Integer id) {
+	public void delete(final int id, final User deletedBy) throws NotFoundException {
+        final Category category = this.categoryRepositoryService.findById(id);
+        final Submission submission = category.getGame().getSubmission();
+        final String webhook = submission.getMarathon().getWebhook();
+
+        if (StringUtils.isNotEmpty(webhook)) {
+            Submission.initialize(submission, false);
+
+            this.entityManager.detach(submission);
+            this.entityManager.detach(category);
+
+            try {
+                this.webhookService.sendCategoryDeleteEvent(webhook, category, deletedBy);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(GameService.class).error("Error when handling webhook", e);
+            }
+        }
+
 		this.categoryRepositoryService.delete(id);
 	}
 

@@ -110,6 +110,19 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
+    public void sendCategoryDeleteEvent(final String url, final Category category, final User deletedBy) throws IOException {
+        if (handleOnBot(url, () -> createParameters("delCategory", category, "deletedBy", deletedBy))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "CATEGORY_DELETE");
+        data.set("category", parseJson(category));
+        data.set("deleted_by", parseJson(deletedBy));
+
+        callAsync(url, data);
+    }
+
     public boolean sendPingEvent(final String url) {
         try {
             final JsonNode data = mapper.createObjectNode().put("event", "PING");
