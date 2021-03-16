@@ -11,20 +11,20 @@ import java.util.List;
 @Service
 public class GameRepositoryService {
 
-	@Autowired
-	private GameRepository gameRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
-	public List<Game> findByMarathon(final String marathonId) {
-		return this.gameRepository.findByMarathon(marathonId);
-	}
+    public List<Game> findByMarathon(final String marathonId) {
+        return this.gameRepository.findByMarathon(marathonId);
+    }
 
-	public Game findById(final int id) throws NotFoundException {
-	    return this.gameRepository.findById(id)
+    public Game findById(final int id) throws NotFoundException {
+        return this.gameRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Game not found"));
     }
 
-	public void delete(final int id) {
-		this.gameRepository.deleteById(id);
-	}
+    public void delete(final int id) {
+        this.gameRepository.deleteById(id);
+    }
 
 }

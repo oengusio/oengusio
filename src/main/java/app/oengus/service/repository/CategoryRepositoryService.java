@@ -11,24 +11,24 @@ import java.util.List;
 @Service
 public class CategoryRepositoryService {
 
-	@Autowired
-	private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-	public Iterable<Category> findAllById(final List<Integer> ids) {
-		return this.categoryRepository.findAllById(ids);
-	}
+    public Iterable<Category> findAllById(final List<Integer> ids) {
+        return this.categoryRepository.findAllById(ids);
+    }
 
-	public Category findByCode(final String code) {
-		return this.categoryRepository.findByCode(code);
-	}
+    public Category findByCode(final String code) {
+        return this.categoryRepository.findByCode(code);
+    }
 
-	public Category findById(final int id) throws NotFoundException {
-		return this.categoryRepository.findById(id)
+    public Category findById(final int id) throws NotFoundException {
+        return this.categoryRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Category not found"));
-	}
+    }
 
-	public void delete(final int id) {
-		this.categoryRepository.deleteById(id);
-	}
+    public void delete(final int id) {
+        this.categoryRepository.deleteById(id);
+    }
 
 }
