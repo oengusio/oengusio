@@ -11,9 +11,9 @@ import javax.persistence.QueryHint;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	Schedule findByMarathon(Marathon marathon);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    Schedule findByMarathon(Marathon marathon);
 
-	void deleteByMarathon(Marathon marathon);
+    void deleteByMarathon(Marathon marathon);
 
 }

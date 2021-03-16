@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortComparator;
 import org.springframework.util.CollectionUtils;
@@ -227,5 +228,18 @@ public class Submission {
     @Override
     public int hashCode() {
         return Objects.hash(id, user, marathon, games, opponents);
+    }
+
+    public static void initialize(Submission submission, boolean withGames) {
+        // load all the items needed from the old submission
+        Hibernate.initialize(submission.getAvailabilities());
+        Hibernate.initialize(submission.getOpponents());
+        Hibernate.initialize(submission.getAnswers());
+
+        // only load the game if we say so
+        // might cause issues if we load the submission from a game otherwise
+        if (withGames) {
+            submission.getGames().forEach(Game::initialize);
+        }
     }
 }

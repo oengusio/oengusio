@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Integer> {
 
-	@Query("SELECT b.id, SUM(dil.amount) FROM Bid b LEFT JOIN b.donationIncentiveLinks dil " +
-			"WHERE b.incentive.marathon = :marathon AND dil.donation.approved = true GROUP BY b.id")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Object[]> findAmountsByMarathon(@Param(value = "marathon") Marathon marathon);
+    @Query("SELECT b.id, SUM(dil.amount) FROM Bid b LEFT JOIN b.donationIncentiveLinks dil " +
+        "WHERE b.incentive.marathon = :marathon AND dil.donation.approved = true GROUP BY b.id")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Object[]> findAmountsByMarathon(@Param(value = "marathon") Marathon marathon);
 
 }

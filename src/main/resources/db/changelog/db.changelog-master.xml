@@ -717,4 +717,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20210316-1" author="duncte123">
+        <addColumn tableName="users">
+            <column name="discord_name" type="varchar(37)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

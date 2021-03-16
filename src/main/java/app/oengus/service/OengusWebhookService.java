@@ -1,17 +1,17 @@
 package app.oengus.service;
 
-import app.oengus.entity.model.Category;
-import app.oengus.entity.model.Donation;
-import app.oengus.entity.model.Game;
-import app.oengus.entity.model.Submission;
+import app.oengus.entity.model.*;
 import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
+import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
+
+import static app.oengus.helper.WebhookHelper.createParameters;
 
 @Service
 public class OengusWebhookService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OengusWebhookService.class);
 
     private final OkHttpClient client = new OkHttpClient();
     @Autowired
@@ -39,8 +47,9 @@ public class OengusWebhookService {
     @Autowired
     private MarathonService marathonService;
 
+    /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
-        if (handleOnBot(url, null, null, donation)) {
+        if (handleOnBot(url, () -> createParameters("donation", donation))) {
             return;
         }
 
@@ -52,7 +61,7 @@ public class OengusWebhookService {
     }
 
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
-        if (handleOnBot(url, submission, null, null)) {
+        if (handleOnBot(url, () -> createParameters("submission", submission))) {
             return;
         }
 
@@ -64,13 +73,52 @@ public class OengusWebhookService {
     }
 
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
-        if (handleOnBot(url, newSubmission, oldSubmission, null)) {
+        if (handleOnBot(url, () -> createParameters("submission", newSubmission, "oldSubmission", oldSubmission))) {
             return;
         }
 
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
         data.set("submission", parseJson(newSubmission));
         data.set("original_submission", parseJson(oldSubmission));
+
+        callAsync(url, data);
+    }
+
+    public void sendSubmissionDeleteEvent(final String url, final Submission submission, final User deletedBy) throws IOException {
+        if (handleOnBot(url, () -> createParameters("oldSubmission", submission, "deletedBy", deletedBy))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "SUBMISSION_DELETE");
+        data.set("submission", parseJson(submission));
+        data.set("deleted_by", parseJson(deletedBy));
+
+        callAsync(url, data);
+    }
+
+    public void sendGameDeleteEvent(final String url, final Game game, final User deletedBy) throws IOException {
+        if (handleOnBot(url, () -> createParameters("delGame", game, "deletedBy", deletedBy))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "GAME_DELETE");
+        data.set("game", parseJson(game));
+        data.set("deleted_by", parseJson(deletedBy));
+
+        callAsync(url, data);
+    }
+
+    public void sendCategoryDeleteEvent(final String url, final Category category, final User deletedBy) throws IOException {
+        if (handleOnBot(url, () -> createParameters("delCategory", category, "deletedBy", deletedBy))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "CATEGORY_DELETE");
+        data.set("category", parseJson(category));
+        data.set("deleted_by", parseJson(deletedBy));
 
         callAsync(url, data);
     }
@@ -94,15 +142,16 @@ public class OengusWebhookService {
             return false;
         }
     }
+    /// </editor-fold>
 
-    private JsonNode parseJson(final Submission submission) throws IOException {
+    private JsonNode parseJson(final Object submission) throws IOException {
         // hacky work around so we can use views
         final String json = mapper.writerWithView(Views.Public.class).writeValueAsString(submission);
 
         return mapper.readTree(json);
     }
 
-    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation) {
+    private boolean handleOnBot(final String rawUrl, final Supplier<Map<String, Object>> argsSupplier) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
         }
@@ -115,24 +164,58 @@ public class OengusWebhookService {
             return true;
         }
 
+        // don't create the map if we don't need to
+        final Map<String, Object> args = argsSupplier.get();
         final String marathon = url.get("marathon");
 
-        if (oldSubmission != null && url.has("editsub")) {
-            sendEditSubmission(
-                marathon,
-                url.get("editsub"),
-                // get the new submission channel for when there's a new game added, or get the edit channel
-                url.has("newsub") ? url.get("newsub") : url.get("editsub"),
-                submission,
-                oldSubmission
-            );
-        } else if (submission != null && url.has("newsub")) {
+        if (url.has("editsub")) {
+            final String editsub = url.get("editsub");
+
+            if(args.containsKey("oldSubmission")) {
+                final Submission oldSubmission = (Submission) args.get("oldSubmission");
+
+                if (!args.containsKey("submission")) {
+                    sendSubmissionDelete(
+                        marathon,
+                        editsub,
+                        oldSubmission,
+                        (User) args.get("deletedBy")
+                    );
+                    return true;
+                }
+
+                sendEditSubmission(
+                    marathon,
+                    editsub,
+                    // get the new submission channel for when there's a new game added, or get the edit channel
+                    url.has("newsub") ? url.get("newsub") : editsub,
+                    (Submission) args.get("submission"),
+                    oldSubmission
+                );
+            } else if (args.containsKey("delGame")) {
+                sendGameDelete(
+                    marathon,
+                    editsub,
+                    (Game) args.get("delGame"),
+                    (User) args.get("deletedBy")
+                );
+            } else if (args.containsKey("delCategory")) {
+                sendCategoryDelete(
+                    marathon,
+                    editsub,
+                    (Category) args.get("delCategory"),
+                    (User) args.get("deletedBy")
+                );
+            }
+        }
+
+        if (args.containsKey("submission") && !args.containsKey("oldSubmission") && url.has("newsub")) {
             final String marathonName = this.marathonService.getNameForCode(marathon);
 
             sendNewSubmission(
                 marathon,
                 url.get("newsub"),
-                submission,
+                (Submission) args.get("submission"),
                 marathonName
             );
 
@@ -140,7 +223,7 @@ public class OengusWebhookService {
                 sendNewSubmission(
                     marathon,
                     url.get("editsub"),
-                    submission,
+                    (Submission) args.get("submission"),
                     marathonName
                 );
             }
@@ -148,13 +231,14 @@ public class OengusWebhookService {
             sendDonationEvent(
                 marathon,
                 url.get("donation"),
-                donation
+                (Donation) args.get("donation")
             );
         }
 
         return true;
     }
 
+    /// <editor-fold desc="sending functions" defaultstate="collapsed">
     private void callAsync(final String url, final JsonNode data) throws IOException {
         final RequestBody body = RequestBody.create(null, mapper.writeValueAsBytes(data));
         final Request request = new Request.Builder()
@@ -167,7 +251,7 @@ public class OengusWebhookService {
         this.client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-                //
+                LOG.error("Failed to send hook event to " + url, e);
             }
 
             @Override
@@ -247,12 +331,11 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " submitted a run",
+                username + " submitted a run to " + marathonName,
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ))
             .setDescription(String.format(
-                "**Event:** %s\n\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                marathonName,
+                "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
                 game.getName(),
                 category.getName(),
                 game.getConsole(),
@@ -269,14 +352,13 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " updated a run",
+                username + " updated a run in " + marathonName,
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ));
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format(
-            "**Event:** %s\n\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-            marathonName,
+            "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
             parseUpdatedString(game.getName(), oldGame.getName()),
             parseUpdatedString(category.getName(), oldCategory.getName()),
             parseUpdatedString(game.getConsole(), oldGame.getConsole()),
@@ -285,6 +367,11 @@ public class OengusWebhookService {
 
         if (!category.getVideo().equals(oldCategory.getVideo())) {
             sb.append("\n**Video:** ").append(parseUpdatedString(category.getVideo(), oldCategory.getVideo()));
+        }
+
+        if (category.getType() != oldCategory.getType()) {
+            sb.append("\n**Type:** ")
+                .append(parseUpdatedString(category.getType().name(), oldCategory.getType().name()));
         }
 
         builder.setDescription(sb.toString());
@@ -306,18 +393,103 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                donation.getNickname() + " donated",
+                donation.getNickname() + " donated to " + this.marathonService.getNameForCode(marathon),
                 this.baseUrl + "/marathon/" + marathon + "/submissions"
             ))
             .setDescription(String.format(
-                "**Event:** %s\n\n**Amount:** %s\n**Comment:** %s",
-                this.marathonService.getNameForCode(marathon),
+                "**Amount:** %s\n**Comment:** %s",
                 formattedAmount,
                 donation.getComment() == null ? "None" : donation.getComment()
             ));
 
         this.jda.sendMessage(channel, builder.build());
     }
+
+    private void sendSubmissionDelete(final String marathonId, final String channel, final Submission submission, final User deletedBy) {
+        final List<WebhookEmbed> messages = new ArrayList<>();
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
+
+        for (final Game game : submission.getGames()) {
+            for (final Category category : game.getCategories()) {
+                messages.add(categoryToEmbed(
+                    category,
+                    deletedBy,
+                    submission.getUser(),
+                    marathonId,
+                    marathonName,
+                    game
+                ));
+            }
+        }
+
+        try (WebhookClient client = this.jda.forChannel(channel)) {
+            for (WebhookEmbed embed : messages) {
+                client.send(embed);
+            }
+        }
+    }
+
+    private void sendGameDelete(final String marathonId, final String channel, final Game game, final User deletedBy) {
+        final List<WebhookEmbed> messages = new ArrayList<>();
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
+
+        for (final Category category : game.getCategories()) {
+            messages.add(categoryToEmbed(
+                category,
+                deletedBy,
+                game.getSubmission().getUser(),
+                marathonId,
+                marathonName,
+                game
+            ));
+        }
+
+        try (WebhookClient client = this.jda.forChannel(channel)) {
+            for (WebhookEmbed embed : messages) {
+                client.send(embed);
+            }
+        }
+    }
+
+    private void sendCategoryDelete(final String marathonId, final String channel, final Category category, final User deletedBy) {
+        final String marathonName = this.marathonService.getNameForCode(marathonId);
+
+        final Game game = category.getGame();
+
+        final WebhookEmbed webhookEmbed = categoryToEmbed(
+            category,
+            deletedBy,
+            game.getSubmission().getUser(),
+            marathonId,
+            marathonName,
+            game
+        );
+
+        this.jda.sendMessage(channel, webhookEmbed);
+    }
+
+    private WebhookEmbed categoryToEmbed(final Category category, final User deletedBy, final User owner,
+                                         final String marathonId, final String marathonName, final Game game) {
+        final String username = owner.getUsername();
+        final String headerText = deletedBy.equals(owner) ?
+            username + " deleted their own run" :
+            deletedBy.getUsername() + " deleted a run by " + username;
+
+        return new WebhookEmbedBuilder()
+            .setTitle(new WebhookEmbed.EmbedTitle(
+                headerText + " in " + marathonName,
+                this.baseUrl + "/marathon/" + marathonId + "/submissions"
+            ))
+            .setDescription(String.format(
+                "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
+                game.getName(),
+                category.getName(),
+                game.getConsole(),
+                TimeHelpers.formatDuration(category.getEstimate())
+            ))
+            .build();
+    }
+    /// </editor-fold>
 
     private static class OengusBotUrl {
         private final String donation;

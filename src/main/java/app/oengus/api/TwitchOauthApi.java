@@ -15,9 +15,9 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 @FeignClient(value = "twitchOauth", url = "https://id.twitch.tv", configuration = CoreFeignConfiguration.class)
 public interface TwitchOauthApi {
 
-	@Headers("Content-Type: application/x-www-form-urlencoded")
-	@RequestMapping(method = RequestMethod.POST, value = "/oauth2/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
-	AccessToken getAccessToken(@RequestBody Map<String, ?> body);
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @RequestMapping(method = RequestMethod.POST, value = "/oauth2/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    AccessToken getAccessToken(@RequestBody Map<String, ?> body);
 
 
 }

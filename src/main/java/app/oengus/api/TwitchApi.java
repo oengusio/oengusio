@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(value = "twitch", url = "https://api.twitch.tv/helix", configuration = CoreFeignConfiguration.class)
 public interface TwitchApi {
 
-	@RequestMapping(method = RequestMethod.GET, value = "/users")
-	DataList<TwitchUser> getCurrentUser(@RequestHeader("Authorization") String token,
-	                                    @RequestHeader("Client-ID") String clientId);
+    @RequestMapping(method = RequestMethod.GET, value = "/users")
+    DataList<TwitchUser> getCurrentUser(@RequestHeader("Authorization") String token,
+                                        @RequestHeader("Client-ID") String clientId);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/users/{id}")
-	DataList<TwitchUser> getUser(@RequestHeader("Authorization") String token,
-	                             @RequestHeader("Client-ID") String clientId, @PathVariable("id") String id);
+    @RequestMapping(method = RequestMethod.GET, value = "/users/{id}")
+    DataList<TwitchUser> getUser(@RequestHeader("Authorization") String token,
+                                 @RequestHeader("Client-ID") String clientId, @PathVariable("id") String id);
 
 
 }

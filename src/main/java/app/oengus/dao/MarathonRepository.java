@@ -18,77 +18,77 @@ import java.util.List;
 @Repository
 public interface MarathonRepository extends JpaRepository<Marathon, String> {
 
-	@Query(value = "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.isPrivate = FALSE " +
-			"ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findNext(Pageable pageable);
+    @Query(value = "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.isPrivate = FALSE " +
+        "ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findNext(Pageable pageable);
 
     @Query(value = "SELECT m.name FROM Marathon m WHERE m.id = :id")
     @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     String getNameById(@Param("id") String id);
 
-	default List<Marathon> findNext() {
-		return this.findNext(PageRequest.of(0, 5));
-	}
+    default List<Marathon> findNext() {
+        return this.findNext(PageRequest.of(0, 5));
+    }
 
-	@Query(value =
-			"SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.submitsOpen = TRUE " +
-					"AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findBySubmitsOpenTrue();
+    @Query(value =
+        "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.submitsOpen = TRUE " +
+            "AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findBySubmitsOpenTrue();
 
-	@Query(value =
-			"SELECT m from Marathon m WHERE m.startDate < current_timestamp AND m.endDate > current_timestamp " +
-					"AND m.scheduleDone = TRUE AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findLive();
+    @Query(value =
+        "SELECT m from Marathon m WHERE m.startDate < current_timestamp AND m.endDate > current_timestamp " +
+            "AND m.scheduleDone = TRUE AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findLive();
 
-	@Query(value =
-			"SELECT m from Marathon m WHERE (m.startDate > :start AND m.endDate < :end " +
-					"OR m.startDate < :start AND m.endDate > :end " +
-					"OR m.startDate < :start AND m.endDate > :start AND m.endDate < :end " +
-					"OR m.startDate > :start AND m.startDate < :end AND m.endDate > :end)" +
-					"AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findBetween(@Param("start") ZonedDateTime start, @Param("end") ZonedDateTime end);
+    @Query(value =
+        "SELECT m from Marathon m WHERE (m.startDate > :start AND m.endDate < :end " +
+            "OR m.startDate < :start AND m.endDate > :end " +
+            "OR m.startDate < :start AND m.endDate > :start AND m.endDate < :end " +
+            "OR m.startDate > :start AND m.startDate < :end AND m.endDate > :end)" +
+            "AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findBetween(@Param("start") ZonedDateTime start, @Param("end") ZonedDateTime end);
 
-	List<Marathon> findByClearedFalseAndEndDateBefore(ZonedDateTime endDate);
+    List<Marathon> findByClearedFalseAndEndDateBefore(ZonedDateTime endDate);
 
-	@Query(value =
-			"SELECT DISTINCT m from Marathon m " +
-					"LEFT JOIN m.moderators u " +
-					"WHERE m.endDate > current_timestamp " +
-					"AND (m.creator = :user OR u = :user)" +
-					"ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findActiveMarathonsByCreatorOrModerator(@Param("user") User user);
+    @Query(value =
+        "SELECT DISTINCT m from Marathon m " +
+            "LEFT JOIN m.moderators u " +
+            "WHERE m.endDate > current_timestamp " +
+            "AND (m.creator = :user OR u = :user)" +
+            "ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findActiveMarathonsByCreatorOrModerator(@Param("user") User user);
 
-	@Query(value =
-			"SELECT DISTINCT m from Marathon m " +
-					"LEFT JOIN m.moderators u " +
-					"WHERE (m.creator = :user OR u = :user)" +
-					"ORDER BY m.startDate ASC")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<Marathon> findAllMarathonsByCreatorOrModerator(@Param("user") User user);
+    @Query(value =
+        "SELECT DISTINCT m from Marathon m " +
+            "LEFT JOIN m.moderators u " +
+            "WHERE (m.creator = :user OR u = :user)" +
+            "ORDER BY m.startDate ASC")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<Marathon> findAllMarathonsByCreatorOrModerator(@Param("user") User user);
 
-	@Modifying
-	@Query("UPDATE Marathon m SET m.cleared = true WHERE m = :marathon")
-	void clearMarathon(@Param("marathon") Marathon marathon);
+    @Modifying
+    @Query("UPDATE Marathon m SET m.cleared = true WHERE m = :marathon")
+    void clearMarathon(@Param("marathon") Marathon marathon);
 
-	@Query(value = "SELECT m from Marathon m WHERE m.submissionsEndDate > current_timestamp " +
-			"ORDER BY m.submissionsStartDate ASC")
-	List<Marathon> findFutureMarathonsWithScheduledSubmissions();
+    @Query(value = "SELECT m from Marathon m WHERE m.submissionsEndDate > current_timestamp " +
+        "ORDER BY m.submissionsStartDate ASC")
+    List<Marathon> findFutureMarathonsWithScheduledSubmissions();
 
-	@Query(value = "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.scheduleDone = TRUE " +
-			"ORDER BY m.startDate ASC")
-	List<Marathon> findFutureMarathonsWithScheduleDone();
+    @Query(value = "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.scheduleDone = TRUE " +
+        "ORDER BY m.startDate ASC")
+    List<Marathon> findFutureMarathonsWithScheduleDone();
 
-	@Modifying
-	@Query("UPDATE Marathon m SET m.submitsOpen = true WHERE m = :marathon")
-	void openSubmissions(@Param("marathon") Marathon marathon);
+    @Modifying
+    @Query("UPDATE Marathon m SET m.submitsOpen = true WHERE m = :marathon")
+    void openSubmissions(@Param("marathon") Marathon marathon);
 
-	@Modifying
-	@Query("UPDATE Marathon m SET m.submitsOpen = false WHERE m = :marathon")
-	void closeSubmissions(@Param("marathon") Marathon marathon);
+    @Modifying
+    @Query("UPDATE Marathon m SET m.submitsOpen = false WHERE m = :marathon")
+    void closeSubmissions(@Param("marathon") Marathon marathon);
 
 }

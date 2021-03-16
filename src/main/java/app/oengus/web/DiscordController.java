@@ -18,7 +18,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.security.RolesAllowed;
 
 @RestController
-@RequestMapping("/marathon/{marathonId}/discord")
+@RequestMapping({"/marathons/{marathonId}/discord", "/marathon/{marathonId}/discord"})
 @ApiIgnore
 public class DiscordController {
     @Autowired
@@ -30,7 +30,7 @@ public class DiscordController {
     @GetMapping("/lookup-invite")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupInvite(@PathVariable("marathonId") final String marathonId,
-                                                  @RequestParam("invite_code") final String inviteCode) {
+                                          @RequestParam("invite_code") final String inviteCode) {
         try {
             final DiscordInvite invite = this.discordApiService.fetchInvite(inviteCode);
 

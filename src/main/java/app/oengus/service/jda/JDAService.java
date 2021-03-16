@@ -14,6 +14,10 @@ public class JDAService {
     @Value("${discord.botTokenRaw}")
     private String botToken;
 
+    public WebhookClient forChannel(String channelId) {
+        return WebhookClient.create(Long.parseLong(channelId), this.botToken);
+    }
+
     public CompletableFuture<ReadonlyMessage> sendMessage(final String channelId, final WebhookEmbed embed) {
         try (WebhookClient client = WebhookClient.create(Long.parseLong(channelId), this.botToken)) {
             return client.send(WebhookMessage.embeds(embed));

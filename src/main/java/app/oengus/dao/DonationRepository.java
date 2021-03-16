@@ -16,25 +16,25 @@ import java.math.BigDecimal;
 @Repository
 public interface DonationRepository extends PagingAndSortingRepository<Donation, Integer> {
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	Page<Donation> findByMarathonAndApprovedIsTrue(Marathon marathon, Pageable pageable);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    Page<Donation> findByMarathonAndApprovedIsTrue(Marathon marathon, Pageable pageable);
 
-	Donation findByFunctionalId(String functionalId);
+    Donation findByFunctionalId(String functionalId);
 
-	@Query("SELECT SUM(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	BigDecimal findTotalAmountByMarathon(@Param("marathon") Marathon marathon);
+    @Query("SELECT SUM(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    BigDecimal findTotalAmountByMarathon(@Param("marathon") Marathon marathon);
 
-	@Query("SELECT AVG(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	BigDecimal findAverageAmountByMarathon(@Param("marathon") Marathon marathon);
+    @Query("SELECT AVG(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    BigDecimal findAverageAmountByMarathon(@Param("marathon") Marathon marathon);
 
-	@Query("SELECT MAX(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	BigDecimal findMaxAmountByMarathon(@Param("marathon") Marathon marathon);
+    @Query("SELECT MAX(d.amount) FROM Donation d WHERE d.marathon = :marathon AND d.approved = true")
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    BigDecimal findMaxAmountByMarathon(@Param("marathon") Marathon marathon);
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	Integer countByMarathonAndApprovedIsTrue(Marathon marathon);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    Integer countByMarathonAndApprovedIsTrue(Marathon marathon);
 
-	void deleteByFunctionalId(String functionalId);
+    void deleteByFunctionalId(String functionalId);
 }

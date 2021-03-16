@@ -5,6 +5,7 @@ import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.service.jda.JDAService;
+import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.receive.ReadonlyMessage;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ public class DiscordApiService {
 
     public DiscordMember getMemberById(final String guildId, final String userId) {
         return this.discordApi.getGuildMember(this.botToken, guildId, userId);
+    }
+
+    public WebhookClient forChannel(String channelId) {
+        return this.jda.forChannel(channelId);
     }
 
     public CompletableFuture<ReadonlyMessage> sendMessage(final String channelId, final WebhookEmbed embed) {

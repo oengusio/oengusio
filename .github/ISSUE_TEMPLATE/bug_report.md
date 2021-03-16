@@ -1,8 +1,8 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: DEPRECATED Bug report
+about: Please only select this one if the other bug report form is not working
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---

@@ -76,17 +76,7 @@ public class SubmissionService {
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
 
-        // load all the items needed from the old submission
-        Hibernate.initialize(oldSubmission.getAvailabilities());
-        Hibernate.initialize(oldSubmission.getOpponents());
-        Hibernate.initialize(oldSubmission.getAnswers());
-        Hibernate.initialize(oldSubmission.getGames());
-        oldSubmission.getGames().forEach((game) -> {
-            Hibernate.initialize(game.getCategories());
-            game.getCategories().forEach((category) -> {
-                Hibernate.initialize(category.getOpponents());
-            });
-        });
+        Submission.initialize(oldSubmission, true);
 
         // uncache the old submission
         entityManager.detach(oldSubmission);
@@ -237,6 +227,7 @@ public class SubmissionService {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final Submission submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+
         if (submission != null) {
             if (submission.getOpponents() != null) {
                 submission.setOpponentDtos(new HashSet<>());
@@ -244,6 +235,7 @@ public class SubmissionService {
                     submission.getOpponentDtos().add(this.mapOpponent(opponent, user));
                 });
             }
+
             if (submission.getGames() != null) {
                 submission.getGames().forEach(game -> {
                     game.getCategories().forEach(category -> {
@@ -261,6 +253,7 @@ public class SubmissionService {
                 });
             }
         }
+
         return submission;
     }
 
@@ -328,12 +321,29 @@ public class SubmissionService {
         return this.submissionRepositoryService.existsByMarathonAndUser(marathon, user);
     }
 
-    public void delete(final Integer id, final User user) throws NotFoundException {
+    // User is the person deleting the submission
+    public void delete(final int id, final User user) throws NotFoundException {
         final Submission submission = this.submissionRepositoryService.findById(id);
         final Marathon marathon = submission.getMarathon();
         if (submission.getUser().getId().equals(user.getId()) || user.getRoles().contains(Role.ROLE_ADMIN) ||
                 marathon.getCreator().getId().equals(user.getId()) ||
                 marathon.getModerators().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
+
+            // send webhook
+            if (StringUtils.isNotEmpty(marathon.getWebhook())) {
+                try {
+                    // load the submission so we can send it
+                    Submission.initialize(submission, true);
+
+                    // Detach it from the manager
+                    this.entityManager.detach(submission);
+
+                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission, user);
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
+                }
+            }
+
             submission.getGames().forEach((game) -> {
                 game.getCategories().forEach(this.categoryRepository::delete);
                 this.gameRepositoryService.delete(game.getId());
