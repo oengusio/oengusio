@@ -32,4 +32,8 @@ public class DiscordUser {
 	public void setId(final String id) {
 		this.id = id;
 	}
+
+	public String getAsTag() {
+	    return this.getUsername() + '#' + this.getDiscriminator();
+    }
 }

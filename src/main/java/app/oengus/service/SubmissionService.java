@@ -227,6 +227,7 @@ public class SubmissionService {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final Submission submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+
         if (submission != null) {
             if (submission.getOpponents() != null) {
                 submission.setOpponentDtos(new HashSet<>());
@@ -234,6 +235,7 @@ public class SubmissionService {
                     submission.getOpponentDtos().add(this.mapOpponent(opponent, user));
                 });
             }
+
             if (submission.getGames() != null) {
                 submission.getGames().forEach(game -> {
                     game.getCategories().forEach(category -> {
@@ -251,6 +253,7 @@ public class SubmissionService {
                 });
             }
         }
+
         return submission;
     }
 
@@ -333,11 +336,11 @@ public class SubmissionService {
                     Submission.initialize(submission, true);
 
                     // Detach it from the manager
-                    entityManager.detach(submission);
+                    this.entityManager.detach(submission);
 
                     this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission, user);
                 } catch (IOException e) {
-                    LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
+                    LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
                 }
             }
 

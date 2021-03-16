@@ -151,69 +151,6 @@ public class OengusWebhookService {
         return mapper.readTree(json);
     }
 
-    private boolean handleOnBot(final String rawUrl, Submission submission, Submission oldSubmission, Donation donation, User deletedBy) {
-        if (!rawUrl.startsWith("oengus-bot")) {
-            return false;
-        }
-
-        // parse the url
-        final OengusBotUrl url = new OengusBotUrl(rawUrl);
-
-        if (url.isEmpty()) {
-            // still returning true since oengus-bot is no valid domain
-            return true;
-        }
-
-        final String marathon = url.get("marathon");
-
-        if (oldSubmission != null && url.has("editsub")) {
-            if (submission == null) {
-                sendSubmissionDelete(
-                    marathon,
-                    url.get("editsub"),
-                    oldSubmission,
-                    deletedBy
-                );
-                return true;
-            }
-
-            sendEditSubmission(
-                marathon,
-                url.get("editsub"),
-                // get the new submission channel for when there's a new game added, or get the edit channel
-                url.has("newsub") ? url.get("newsub") : url.get("editsub"),
-                submission,
-                oldSubmission
-            );
-        } else if (submission != null && url.has("newsub")) {
-            final String marathonName = this.marathonService.getNameForCode(marathon);
-
-            sendNewSubmission(
-                marathon,
-                url.get("newsub"),
-                submission,
-                marathonName
-            );
-
-            if (url.has("editsub")) {
-                sendNewSubmission(
-                    marathon,
-                    url.get("editsub"),
-                    submission,
-                    marathonName
-                );
-            }
-        } else if (url.has("donation")) {
-            sendDonationEvent(
-                marathon,
-                url.get("donation"),
-                donation
-            );
-        }
-
-        return true;
-    }
-
     private boolean handleOnBot(final String rawUrl, final Supplier<Map<String, Object>> argsSupplier) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
@@ -270,7 +207,9 @@ public class OengusWebhookService {
                     (User) args.get("deletedBy")
                 );
             }
-        } else if (args.containsKey("submission") && url.has("newsub")) {
+        }
+
+        if (args.containsKey("submission") && !args.containsKey("oldSubmission") && url.has("newsub")) {
             final String marathonName = this.marathonService.getNameForCode(marathon);
 
             sendNewSubmission(

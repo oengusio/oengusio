@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,14 +19,14 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryService {
 
+    @Autowired
+    private GameService gameService;
+
 	@Autowired
 	private CategoryRepositoryService categoryRepositoryService;
 
     @Autowired
     private OengusWebhookService webhookService;
-
-    @Autowired
-    private EntityManager entityManager;
 
 	private static final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP_RACE, RunType.COOP, RunType.RACE);
 
@@ -76,15 +75,18 @@ public class CategoryService {
 
 	public void delete(final int id, final User deletedBy) throws NotFoundException {
         final Category category = this.categoryRepositoryService.findById(id);
-        final Submission submission = category.getGame().getSubmission();
+        final Game game = category.getGame();
+
+        // only have one category, delete the game
+        if (game.getCategories().size() == 1) {
+            this.gameService.delete(game.getId(), deletedBy);
+            return;
+        }
+
+        final Submission submission = game.getSubmission();
         final String webhook = submission.getMarathon().getWebhook();
 
         if (StringUtils.isNotEmpty(webhook)) {
-            Submission.initialize(submission, false);
-
-            this.entityManager.detach(submission);
-            this.entityManager.detach(category);
-
             try {
                 this.webhookService.sendCategoryDeleteEvent(webhook, category, deletedBy);
             } catch (Exception e) {
@@ -92,7 +94,9 @@ public class CategoryService {
             }
         }
 
-		this.categoryRepositoryService.delete(id);
+        category.setGame(null);
+        game.getCategories().remove(category);
+        this.categoryRepositoryService.delete(id);
 	}
 
 }

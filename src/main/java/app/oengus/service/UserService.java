@@ -150,14 +150,14 @@ public class UserService {
         }
     }
 
-	@Transactional
 	public User getUser(final int id) throws NotFoundException {
-		final User user =
-				this.userRepositoryService.findById(id);
+		final User user = this.userRepositoryService.findById(id);
+
 		if (user.getDiscordId() != null) {
 			final DiscordUser discordUser = this.discordService.getUser(user.getDiscordId());
-			user.setDiscordName(discordUser.getUsername() + "#" + discordUser.getDiscriminator());
+			user.setDiscordName(discordUser.getAsTag());
 		}
+
 		return user;
 	}
 
@@ -167,6 +167,12 @@ public class UserService {
 		if (user != null) {
 			userProfileDto = new UserProfileDto();
 			BeanUtils.copyProperties(user, userProfileDto);
+
+            if (user.getDiscordId() != null) {
+                final DiscordUser discordUser = this.discordService.getUser(user.getDiscordId());
+                userProfileDto.setDiscordName(discordUser.getAsTag());
+            }
+
 			userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
 			final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
 			if (submissions != null && !submissions.isEmpty()) {

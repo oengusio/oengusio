@@ -1,7 +1,6 @@
 package app.oengus.service;
 
 import app.oengus.entity.model.Game;
-import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import app.oengus.service.repository.GameRepositoryService;
@@ -11,10 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-
 @Service
 public class GameService {
+
+    @Autowired
+    private SubmissionService submissionService;
 
 	@Autowired
 	private GameRepositoryService gameRepositoryService;
@@ -22,22 +22,20 @@ public class GameService {
     @Autowired
     private OengusWebhookService webhookService;
 
-    @Autowired
-    private EntityManager entityManager;
-
     // IMPORTANT: the hook is sent here so that it only triggers once for submission delete
 	public void delete(final int id, final User deletedBy) throws NotFoundException {
 	    final Game game = this.gameRepositoryService.findById(id);
         final Submission submission = game.getSubmission();
+
+        // only one game, delete the submission
+        if (submission.getGames().size() == 1) {
+            this.submissionService.delete(submission.getId(), deletedBy);
+            return;
+        }
+
         final String webhook = submission.getMarathon().getWebhook();
 
         if (StringUtils.isNotEmpty(webhook)) {
-            Game.initialize(game);
-            Submission.initialize(submission, false);
-
-            this.entityManager.detach(submission);
-            this.entityManager.detach(game);
-
             try {
                 this.webhookService.sendGameDeleteEvent(webhook, game, deletedBy);
             } catch (Exception e) {
@@ -45,6 +43,8 @@ public class GameService {
             }
         }
 
+        game.setSubmission(null);
+        submission.getGames().remove(game);
 		this.gameRepositoryService.delete(id);
 	}
 
