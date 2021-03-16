@@ -5,7 +5,6 @@ import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.dto.UserHistoryDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.*;
-import app.oengus.entity.model.api.discord.DiscordUser;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchLoginService;
 import app.oengus.service.login.TwitchSyncService;
@@ -18,7 +17,6 @@ import javassist.NotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -85,6 +83,10 @@ public class UserService {
 
 	public Object sync(final String service, final String code, final String oauthToken, final String oauthVerifier)
 			throws LoginException {
+        if (code == null || code.isBlank()) {
+            throw new LoginException("Missing code in request");
+        }
+
 		switch (service) {
 			case "discord":
 				return this.discordService.sync(code);
@@ -151,14 +153,7 @@ public class UserService {
     }
 
 	public User getUser(final int id) throws NotFoundException {
-		final User user = this.userRepositoryService.findById(id);
-
-		if (user.getDiscordId() != null) {
-			final DiscordUser discordUser = this.discordService.getUser(user.getDiscordId());
-			user.setDiscordName(discordUser.getAsTag());
-		}
-
-		return user;
+        return this.userRepositoryService.findById(id);
 	}
 
 	public UserProfileDto getUserProfile(final String username) {
@@ -167,12 +162,6 @@ public class UserService {
 		if (user != null) {
 			userProfileDto = new UserProfileDto();
 			BeanUtils.copyProperties(user, userProfileDto);
-
-            if (user.getDiscordId() != null) {
-                final DiscordUser discordUser = this.discordService.getUser(user.getDiscordId());
-                userProfileDto.setDiscordName(discordUser.getAsTag());
-            }
-
 			userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
 			final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
 			if (submissions != null && !submissions.isEmpty()) {

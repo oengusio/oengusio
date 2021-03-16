@@ -72,8 +72,9 @@ public class User implements UserDetails {
 	@JsonView(Views.Internal.class)
 	private String twitterId;
 
-	@JsonView(Views.Internal.class)
-	@Transient
+    @Column(name = "discord_name")
+	@JsonView(Views.Public.class)
+    @Size(max = 37)
 	private String discordName;
 
 	@Column(name = "twitter_name")

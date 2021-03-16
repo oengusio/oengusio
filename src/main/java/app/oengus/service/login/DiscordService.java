@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +36,6 @@ public class DiscordService {
 	@Value("${discord.botToken}")
 	private String botToken;
 
-	@Transactional
 	public User login(final String code) throws LoginException {
 		final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code);
 		final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
@@ -59,9 +57,9 @@ public class DiscordService {
 				user.setUsername("user" + RandomUtils.nextInt(0, 999999));
 			}
 			user.setDiscordId(discordUser.getId());
+			user.setDiscordName(discordUser.getAsTag());
 			user = this.userRepositoryService.save(user);
 		}
-		user.setDiscordName(discordUser.getUsername() + "#" + discordUser.getDiscriminator());
 
 		return user;
 	}
@@ -70,14 +68,15 @@ public class DiscordService {
 		final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.discordParams, code);
 		final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
 		final DiscordUser discordUser = this.discordApi.getCurrentUser(
-				String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken()));
-
+				String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken())
+        );
 		final User user = this.userRepositoryService.findByDiscordId(discordUser.getId());
+
 		if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
 			throw new LoginException("ACCOUNT_ALREADY_SYNCED");
 		}
 
-		return new SyncDto(discordUser.getId(), discordUser.getUsername() + "#" + discordUser.getDiscriminator());
+		return new SyncDto(discordUser.getId(), discordUser.getAsTag());
 	}
 
 	public DiscordUser getUser(final String id) {
