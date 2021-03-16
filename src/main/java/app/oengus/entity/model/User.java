@@ -73,7 +73,7 @@ public class User implements UserDetails {
 	private String twitterId;
 
     @Column(name = "discord_name")
-	@JsonView(Views.Public.class)
+    @JsonView(Views.Public.class)
     @Size(max = 37)
 	private String discordName;
 
