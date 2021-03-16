@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
 
-	boolean existsByCode(String code);
+    boolean existsByCode(String code);
 
-	Category findByCode(String code);
+    Category findByCode(String code);
 
 }

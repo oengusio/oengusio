@@ -22,34 +22,34 @@ import java.util.List;
 @Api(value = "/marathons/{marathonId}/incentives")
 public class IncentiveController {
 
-	@Autowired
-	private IncentiveService incentiveService;
+    @Autowired
+    private IncentiveService incentiveService;
 
-	@GetMapping
-	@JsonView(Views.Public.class)
-	@ApiOperation(value = "Get all incentives for a marathon",
-			response = Incentive.class,
-			responseContainer = "List")
-	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-	                                         @RequestParam(required = false, defaultValue = "true") final Boolean withLocked,
-	                                         @RequestParam(required = false, defaultValue = "false") final Boolean withUnapproved) {
-		try {
-			return ResponseEntity.ok()
-			                     .cacheControl(CacheControl.noCache())
-			                     .body(this.incentiveService.findByMarathon(marathonId, withLocked, withUnapproved));
-		} catch (final NotFoundException e) {
-			return ResponseEntity.notFound().build();
-		}
-	}
+    @GetMapping
+    @JsonView(Views.Public.class)
+    @ApiOperation(value = "Get all incentives for a marathon",
+        response = Incentive.class,
+        responseContainer = "List")
+    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(required = false, defaultValue = "true") final Boolean withLocked,
+                                                @RequestParam(required = false, defaultValue = "false") final Boolean withUnapproved) {
+        try {
+            return ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .body(this.incentiveService.findByMarathon(marathonId, withLocked, withUnapproved));
+        } catch (final NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-	@PostMapping
-	@JsonView(Views.Public.class)
-	@RolesAllowed({"ROLE_USER"})
-	@PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
-	@ApiIgnore
-	public ResponseEntity<?> save(@PathVariable("marathonId") final String marathonId,
-	                           @RequestBody final List<Incentive> incentives) {
-		return ResponseEntity.ok(this.incentiveService.saveAll(incentives, marathonId));
-	}
+    @PostMapping
+    @JsonView(Views.Public.class)
+    @RolesAllowed({"ROLE_USER"})
+    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    @ApiIgnore
+    public ResponseEntity<?> save(@PathVariable("marathonId") final String marathonId,
+                                  @RequestBody final List<Incentive> incentives) {
+        return ResponseEntity.ok(this.incentiveService.saveAll(incentives, marathonId));
+    }
 
 }

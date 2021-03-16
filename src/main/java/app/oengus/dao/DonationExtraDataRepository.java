@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DonationExtraDataRepository extends JpaRepository<DonationExtraData, Integer> {
 
-	@Modifying
-	@Query("DELETE FROM DonationExtraData ded WHERE ded.id IN (SELECT sded.id FROM DonationExtraData sded WHERE sded" +
-			".donation.marathon = :marathon)")
-	void deleteByMarathon(@Param(value = "marathon") Marathon marathon);
+    @Modifying
+    @Query("DELETE FROM DonationExtraData ded WHERE ded.id IN (SELECT sded.id FROM DonationExtraData sded WHERE sded" +
+        ".donation.marathon = :marathon)")
+    void deleteByMarathon(@Param(value = "marathon") Marathon marathon);
 
 }

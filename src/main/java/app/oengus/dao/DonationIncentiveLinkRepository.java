@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DonationIncentiveLinkRepository extends JpaRepository<DonationIncentiveLink, Integer> {
 
-	void deleteByIncentive(Incentive incentive);
+    void deleteByIncentive(Incentive incentive);
 
-	void deleteByBid(Bid bid);
+    void deleteByBid(Bid bid);
 
 }

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TwitterAuditRepository extends CrudRepository<TwitterAudit, Integer> {
 
-	boolean existsByMarathonAndAction(Marathon marathon, String action);
+    boolean existsByMarathonAndAction(Marathon marathon, String action);
 
-	@Modifying
-	void deleteByMarathon(Marathon marathon);
+    @Modifying
+    void deleteByMarathon(Marathon marathon);
 
 }

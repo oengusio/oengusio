@@ -92,9 +92,9 @@ public class SubmissionsController {
     @PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> create(@RequestBody @Valid final Submission submission,
-                                 @PathVariable("marathonId") final String marathonId,
-                                 final Principal principal,
-                                 final BindingResult bindingResult) {
+                                    @PathVariable("marathonId") final String marathonId,
+                                    final Principal principal,
+                                    final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
@@ -105,8 +105,8 @@ public class SubmissionsController {
 
         try {
             this.submissionService.save(submission,
-                    PrincipalHelper.getUserFromPrincipal(principal),
-                    marathonId);
+                PrincipalHelper.getUserFromPrincipal(principal),
+                marathonId);
             return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
         } catch (final NotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -118,20 +118,20 @@ public class SubmissionsController {
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
-            "&& #submission.id != null " +
-            "&& (#submission.user.id == principal.id || isAdmin())")
+        "&& #submission.id != null " +
+        "&& (#submission.user.id == principal.id || isAdmin())")
     @ApiIgnore
     public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
-                                 @PathVariable("marathonId") final String marathonId,
-                                 final Principal principal,
-                                 final BindingResult bindingResult) {
+                                    @PathVariable("marathonId") final String marathonId,
+                                    final Principal principal,
+                                    final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
         try {
             this.submissionService.update(submission,
-                    PrincipalHelper.getUserFromPrincipal(principal),
-                    marathonId);
+                PrincipalHelper.getUserFromPrincipal(principal),
+                marathonId);
             return ResponseEntity.noContent().build();
         } catch (final NotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -145,8 +145,8 @@ public class SubmissionsController {
     @ApiIgnore
     public ResponseEntity<?> getAvailabilities(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
-                             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-                             .body(this.submissionService.getRunnersAvailabilitiesForMarathon(marathonId));
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.submissionService.getRunnersAvailabilitiesForMarathon(marathonId));
     }
 
     @GetMapping("/answers")
@@ -154,15 +154,15 @@ public class SubmissionsController {
     @ApiIgnore
     public ResponseEntity<?> getAnswers(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
-                             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-                             .body(this.submissionService.findCustomAnswersByMarathon(marathonId));
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.submissionService.findCustomAnswersByMarathon(marathonId));
     }
 
     @GetMapping("/availabilities/{userId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
-                                                   @PathVariable("userId") final Integer userId) {
+                                                      @PathVariable("userId") final Integer userId) {
         try {
             return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
         } catch (final NotFoundException e) {
@@ -177,8 +177,8 @@ public class SubmissionsController {
     public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId,
                                                       final Principal principal) {
         final Submission submission =
-                this.submissionService.findByUserAndMarathon(PrincipalHelper.getUserFromPrincipal(principal),
-                        marathonId);
+            this.submissionService.findByUserAndMarathon(PrincipalHelper.getUserFromPrincipal(principal),
+                marathonId);
         return ResponseEntity.ok(submission);
     }
 

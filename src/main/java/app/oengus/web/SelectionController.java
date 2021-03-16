@@ -23,29 +23,29 @@ import java.util.concurrent.TimeUnit;
 @Api(value = "/marathons/{marathonId}/selection")
 public class SelectionController {
 
-	@Autowired
-	private SelectionService selectionService;
+    @Autowired
+    private SelectionService selectionService;
 
-	@GetMapping
-	@PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId) || isSelectionDone(#marathonId))")
-	@JsonView(Views.Public.class)
-	@ApiOperation(value = "Get all selection statuses a marathon",
-			response = Schedule.class)
-	public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-	                                         @RequestParam(name = "status", required = false) final List<Status> statuses) {
-		return ResponseEntity.ok()
-		                     .cacheControl(
-				                     CacheControl.maxAge(1, TimeUnit.MINUTES))
-		                     .body(this.selectionService.findByMarathon(marathonId, statuses));
-	}
+    @GetMapping
+    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId) || isSelectionDone(#marathonId))")
+    @JsonView(Views.Public.class)
+    @ApiOperation(value = "Get all selection statuses a marathon",
+        response = Schedule.class)
+    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(name = "status", required = false) final List<Status> statuses) {
+        return ResponseEntity.ok()
+            .cacheControl(
+                CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.selectionService.findByMarathon(marathonId, statuses));
+    }
 
-	@PutMapping
-	@PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-	@ApiIgnore
-	public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
-	                                   @RequestBody final List<SelectionDto> selections) {
-		this.selectionService.saveOrUpdate(marathonId, selections);
-		return ResponseEntity.noContent().build();
-	}
+    @PutMapping
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @ApiIgnore
+    public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
+                                          @RequestBody final List<SelectionDto> selections) {
+        this.selectionService.saveOrUpdate(marathonId, selections);
+        return ResponseEntity.noContent().build();
+    }
 
 }

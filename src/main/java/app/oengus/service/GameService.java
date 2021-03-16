@@ -16,15 +16,15 @@ public class GameService {
     @Autowired
     private SubmissionService submissionService;
 
-	@Autowired
-	private GameRepositoryService gameRepositoryService;
+    @Autowired
+    private GameRepositoryService gameRepositoryService;
 
     @Autowired
     private OengusWebhookService webhookService;
 
     // IMPORTANT: the hook is sent here so that it only triggers once for submission delete
-	public void delete(final int id, final User deletedBy) throws NotFoundException {
-	    final Game game = this.gameRepositoryService.findById(id);
+    public void delete(final int id, final User deletedBy) throws NotFoundException {
+        final Game game = this.gameRepositoryService.findById(id);
         final Submission submission = game.getSubmission();
 
         // only one game, delete the submission
@@ -45,7 +45,7 @@ public class GameService {
 
         game.setSubmission(null);
         submission.getGames().remove(game);
-		this.gameRepositoryService.delete(id);
-	}
+        this.gameRepositoryService.delete(id);
+    }
 
 }

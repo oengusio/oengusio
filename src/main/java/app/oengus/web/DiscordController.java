@@ -30,7 +30,7 @@ public class DiscordController {
     @GetMapping("/lookup-invite")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupInvite(@PathVariable("marathonId") final String marathonId,
-                                                  @RequestParam("invite_code") final String inviteCode) {
+                                          @RequestParam("invite_code") final String inviteCode) {
         try {
             final DiscordInvite invite = this.discordApiService.fetchInvite(inviteCode);
 

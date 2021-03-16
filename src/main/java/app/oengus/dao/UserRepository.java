@@ -11,26 +11,26 @@ import java.util.List;
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer> {
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	User findByDiscordId(String discordId);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    User findByDiscordId(String discordId);
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	User findByTwitchId(String twitchId);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    User findByTwitchId(String twitchId);
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	User findByTwitterId(String twitterId);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    User findByTwitterId(String twitterId);
 
-	User findByUsername(String username);
+    User findByUsername(String username);
 
-	Boolean existsByUsernameIgnoreCase(String username);
+    Boolean existsByUsernameIgnoreCase(String username);
 
-	Boolean existsByUsernameJapanese(String username);
+    Boolean existsByUsernameJapanese(String username);
 
-	Boolean existsByDiscordId(String discordId);
+    Boolean existsByDiscordId(String discordId);
 
-	Boolean existsByTwitchId(String twitchId);
+    Boolean existsByTwitchId(String twitchId);
 
-	@QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-	List<User> findByUsernameContainingIgnoreCaseAndEnabledTrue(String username);
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    List<User> findByUsernameContainingIgnoreCaseAndEnabledTrue(String username);
 
 }
