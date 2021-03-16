@@ -26,241 +26,241 @@ import java.util.Objects;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonView(Views.Public.class)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.Public.class)
+    private Integer id;
 
-	@Column
-	@JsonView(Views.Public.class)
-	@Size(min = 3, max = 16)
-	@Pattern(regexp = "^[\\w\\-]{3,16}$")
-	private String username;
+    @Column
+    @JsonView(Views.Public.class)
+    @Size(min = 3, max = 16)
+    @Pattern(regexp = "^[\\w\\-]{3,16}$")
+    private String username;
 
-	@Column(name = "username_ja")
-	@JsonView(Views.Public.class)
-	@Size(max = 16)
-	private String usernameJapanese;
+    @Column(name = "username_ja")
+    @JsonView(Views.Public.class)
+    @Size(max = 16)
+    private String usernameJapanese;
 
-	@Column(name = "active")
-	@JsonView(Views.Public.class)
-	private Boolean enabled;
+    @Column(name = "active")
+    @JsonView(Views.Public.class)
+    private Boolean enabled;
 
-	@ElementCollection
-	@CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@Column(name = "role")
-	@JsonView(Views.Public.class)
-	private List<Role> roles;
+    @ElementCollection
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Column(name = "role")
+    @JsonView(Views.Public.class)
+    private List<Role> roles;
 
-	@Column
-	@JsonView(Views.Internal.class)
-	@Email
-	private String mail;
+    @Column
+    @JsonView(Views.Internal.class)
+    @Email
+    private String mail;
 
-	@Column(name = "discord_id")
-	@JsonView(Views.Internal.class)
-	private String discordId;
+    @Column(name = "discord_id")
+    @JsonView(Views.Internal.class)
+    private String discordId;
 
-	@Column(name = "twitch_id")
-	@JsonView(Views.Internal.class)
-	private String twitchId;
+    @Column(name = "twitch_id")
+    @JsonView(Views.Internal.class)
+    private String twitchId;
 
-	@Column(name = "twitter_id")
-	@JsonView(Views.Internal.class)
-	private String twitterId;
+    @Column(name = "twitter_id")
+    @JsonView(Views.Internal.class)
+    private String twitterId;
 
     @Column(name = "discord_name")
     @JsonView(Views.Public.class)
     @Size(max = 37)
-	private String discordName;
+    private String discordName;
 
-	@Column(name = "twitter_name")
-	@JsonView(Views.Public.class)
-	@Size(max = 15)
-	private String twitterName;
+    @Column(name = "twitter_name")
+    @JsonView(Views.Public.class)
+    @Size(max = 15)
+    private String twitterName;
 
-	@Column(name = "twitch_name")
-	@JsonView(Views.Public.class)
-	@Size(max = 25)
-	private String twitchName;
+    @Column(name = "twitch_name")
+    @JsonView(Views.Public.class)
+    @Size(max = 25)
+    private String twitchName;
 
-	@Column(name = "speedruncom_name")
-	@JsonView(Views.Public.class)
-	@Size(max = 20)
-	@Pattern(regexp = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$")
-	private String speedruncomName;
+    @Column(name = "speedruncom_name")
+    @JsonView(Views.Public.class)
+    @Size(max = 20)
+    @Pattern(regexp = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$")
+    private String speedruncomName;
 
-	@Override
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	@Override
-	@JsonIgnore
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		final List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		for (final Role r : this.roles) {
-			authorities.add(new SimpleGrantedAuthority(r.toString()));
-		}
-		return authorities;
-	}
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        final List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (final Role r : this.roles) {
+            authorities.add(new SimpleGrantedAuthority(r.toString()));
+        }
+        return authorities;
+    }
 
-	@Override
-	@JsonIgnore
-	public String getPassword() {
-		return null;
-	}
+    @Override
+    @JsonIgnore
+    public String getPassword() {
+        return null;
+    }
 
-	@Override
-	public String getUsername() {
-		return this.username;
-	}
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
 
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonExpired() {
-		return false;
-	}
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return false;
+    }
 
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonLocked() {
-		return false;
-	}
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return false;
+    }
 
-	@Override
-	@JsonIgnore
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
 
-	@AssertTrue
-	public boolean isAtLeastOneAccountSynchronized() {
-	    // ignore for disabled users
-	    if (!this.enabled) {
-	        return true;
+    @AssertTrue
+    public boolean isAtLeastOneAccountSynchronized() {
+        // ignore for disabled users
+        if (!this.enabled) {
+            return true;
         }
 
-		return StringUtils.isNotEmpty(this.discordId) ||
+        return StringUtils.isNotEmpty(this.discordId) ||
             StringUtils.isNotEmpty(this.twitchId) ||
-			StringUtils.isNotEmpty(this.twitterId);
-	}
+            StringUtils.isNotEmpty(this.twitterId);
+    }
 
-	@AssertTrue
-	public boolean isEmailPresentForExistingUser() {
-		if (this.id != null && this.enabled) {
-			return StringUtils.isNotEmpty(this.mail);
-		}
+    @AssertTrue
+    public boolean isEmailPresentForExistingUser() {
+        if (this.id != null && this.enabled) {
+            return StringUtils.isNotEmpty(this.mail);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public void setUsername(final String username) {
-		this.username = username;
-	}
+    public void setUsername(final String username) {
+        this.username = username;
+    }
 
-	public void setEnabled(final Boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(final Boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	public List<Role> getRoles() {
-		return this.roles;
-	}
+    public List<Role> getRoles() {
+        return this.roles;
+    }
 
-	public void setRoles(final List<Role> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(final List<Role> roles) {
+        this.roles = roles;
+    }
 
-	public Integer getId() {
-		return this.id;
-	}
+    public Integer getId() {
+        return this.id;
+    }
 
-	public void setId(final Integer id) {
-		this.id = id;
-	}
+    public void setId(final Integer id) {
+        this.id = id;
+    }
 
-	public String getMail() {
-		return this.mail;
-	}
+    public String getMail() {
+        return this.mail;
+    }
 
-	public void setMail(final String mail) {
-		this.mail = mail;
-	}
+    public void setMail(final String mail) {
+        this.mail = mail;
+    }
 
-	public String getDiscordId() {
-		return this.discordId;
-	}
+    public String getDiscordId() {
+        return this.discordId;
+    }
 
-	public void setDiscordId(final String discordId) {
-		this.discordId = discordId;
-	}
+    public void setDiscordId(final String discordId) {
+        this.discordId = discordId;
+    }
 
-	public String getTwitchId() {
-		return this.twitchId;
-	}
+    public String getTwitchId() {
+        return this.twitchId;
+    }
 
-	public void setTwitchId(final String twitchId) {
-		this.twitchId = twitchId;
-	}
+    public void setTwitchId(final String twitchId) {
+        this.twitchId = twitchId;
+    }
 
-	public String getDiscordName() {
-		return this.discordName;
-	}
+    public String getDiscordName() {
+        return this.discordName;
+    }
 
-	public void setDiscordName(final String discordName) {
-		this.discordName = discordName;
-	}
+    public void setDiscordName(final String discordName) {
+        this.discordName = discordName;
+    }
 
-	public String getTwitterName() {
-		return this.twitterName;
-	}
+    public String getTwitterName() {
+        return this.twitterName;
+    }
 
-	public void setTwitterName(final String twitterName) {
-		this.twitterName = twitterName;
-	}
+    public void setTwitterName(final String twitterName) {
+        this.twitterName = twitterName;
+    }
 
-	public String getTwitchName() {
-		return this.twitchName;
-	}
+    public String getTwitchName() {
+        return this.twitchName;
+    }
 
-	public void setTwitchName(final String twitchName) {
-		this.twitchName = twitchName;
-	}
+    public void setTwitchName(final String twitchName) {
+        this.twitchName = twitchName;
+    }
 
-	public String getSpeedruncomName() {
-		return this.speedruncomName;
-	}
+    public String getSpeedruncomName() {
+        return this.speedruncomName;
+    }
 
-	public void setSpeedruncomName(final String speedruncomName) {
-		this.speedruncomName = speedruncomName;
-	}
+    public void setSpeedruncomName(final String speedruncomName) {
+        this.speedruncomName = speedruncomName;
+    }
 
-	public String getUsernameJapanese() {
-		return this.usernameJapanese;
-	}
+    public String getUsernameJapanese() {
+        return this.usernameJapanese;
+    }
 
-	public void setUsernameJapanese(final String usernameJapanese) {
-		this.usernameJapanese = usernameJapanese;
-	}
+    public void setUsernameJapanese(final String usernameJapanese) {
+        this.usernameJapanese = usernameJapanese;
+    }
 
-	public String getTwitterId() {
-		return this.twitterId;
-	}
+    public String getTwitterId() {
+        return this.twitterId;
+    }
 
-	public void setTwitterId(final String twitterId) {
-		this.twitterId = twitterId;
-	}
+    public void setTwitterId(final String twitterId) {
+        this.twitterId = twitterId;
+    }
 
-	@JsonIgnore
-	public String getUsername(final String locale) {
-		if ("ja".equals(locale) && StringUtils.isNotEmpty(this.usernameJapanese)) {
-			return this.usernameJapanese;
-		}
-		return this.username;
-	}
+    @JsonIgnore
+    public String getUsername(final String locale) {
+        if ("ja".equals(locale) && StringUtils.isNotEmpty(this.usernameJapanese)) {
+            return this.usernameJapanese;
+        }
+        return this.username;
+    }
 
     @Override
     public boolean equals(Object o) {
