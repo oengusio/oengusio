@@ -37,9 +37,7 @@ public class DonationController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Get the donations for a marathon",
-        response = Donation.class,
-        responseContainer = "List")
+    @ApiIgnore
     public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
                                              @RequestParam("page") final Integer page,
                                              @RequestParam("size") final Integer size) {
