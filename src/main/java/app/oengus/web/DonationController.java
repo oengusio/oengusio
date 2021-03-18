@@ -1,5 +1,6 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.dto.OrderDto;
 import app.oengus.entity.model.Donation;
 import app.oengus.exception.OengusBusinessException;
@@ -36,7 +37,9 @@ public class DonationController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @ApiIgnore
+    @ApiOperation(value = "Get the donations for a marathon",
+        response = Donation.class,
+        responseContainer = "List")
     public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
                                              @RequestParam("page") final Integer page,
                                              @RequestParam("size") final Integer size) {
@@ -51,7 +54,8 @@ public class DonationController {
 
     @GetMapping("/stats")
     @JsonView(Views.Public.class)
-    @ApiIgnore
+    @ApiOperation(value = "Get the donation stats for a marathon, you probably want this one",
+        response = DonationStatsDto.class)
     public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) {
         try {
             return ResponseEntity.ok()
