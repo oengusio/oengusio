@@ -82,7 +82,7 @@ dependencies {
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
     // WEBHOOKS
-    implementation(group = "com.github.esamarathon", name = "oengus-discord-webhooks", version = "5b092a1")
+    implementation(group = "com.github.esamarathon", name = "oengus-discord-webhooks", version = "b9bd477")
 }
 
 val wrapper: Wrapper by tasks
