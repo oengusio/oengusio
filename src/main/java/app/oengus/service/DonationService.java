@@ -132,7 +132,7 @@ public class DonationService {
     }
 
     public void approveDonation(final String marathonId, final String orderId) {
-        final OrdersCaptureRequest request = new OrdersCaptureRequest(orderId).prefer("return=representation");
+        final OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
 
         try {
             // should we fetch the marathon here?
