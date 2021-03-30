@@ -201,7 +201,6 @@ public class DonationService {
         parsedDonation.setApproved(null);
         parsedDonation.setAnswers(null);
         parsedDonation.setDonationIncentiveLinks(null);
-        parsedDonation.setTest(false);
         try {
             this.donationWebhook.sendDonationEvent(url, parsedDonation);
         } catch (final IOException e) {

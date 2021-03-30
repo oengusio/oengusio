@@ -97,6 +97,7 @@ public class CategoryService {
         category.setGame(null);
         game.getCategories().remove(category);
         this.categoryRepositoryService.delete(id);
+        this.gameService.update(game);
     }
 
 }

@@ -55,7 +55,7 @@ public class OengusWebhookService {
 
         final JsonNode data = mapper.createObjectNode()
             .put("event", "DONATION")
-            .set("donation", mapper.valueToTree(donation));
+            .set("donation", parseJson(donation));
 
         callAsync(url, data);
     }
@@ -144,9 +144,9 @@ public class OengusWebhookService {
     }
     /// </editor-fold>
 
-    private JsonNode parseJson(final Object submission) throws IOException {
+    private JsonNode parseJson(final Object model) throws IOException {
         // hacky work around so we can use views
-        final String json = mapper.writerWithView(Views.Public.class).writeValueAsString(submission);
+        final byte[] json = mapper.writerWithView(Views.Public.class).writeValueAsBytes(model);
 
         return mapper.readTree(json);
     }

@@ -80,9 +80,6 @@ public class Donation {
 	@JsonView(Views.Public.class)
 	private SortedSet<DonationExtraData> answers;
 
-	@Transient
-	private boolean test;
-
 	@AssertTrue
 	@JsonIgnore
 	public boolean isIncentiveTotalInferiorToAmount() {
@@ -180,14 +177,6 @@ public class Donation {
 
 	public void setAnswers(final SortedSet<DonationExtraData> answers) {
 		this.answers = answers;
-	}
-
-	public boolean isTest() {
-		return this.test;
-	}
-
-	public void setTest(final boolean test) {
-		this.test = test;
 	}
 
 	private static final List<String> DEFAULT_HEADERS =

@@ -22,6 +22,10 @@ public class GameService {
     @Autowired
     private OengusWebhookService webhookService;
 
+    public void update(final Game game) {
+        this.gameRepositoryService.update(game);
+    }
+
     // IMPORTANT: the hook is sent here so that it only triggers once for submission delete
     public void delete(final int id, final User deletedBy) throws NotFoundException {
         final Game game = this.gameRepositoryService.findById(id);
