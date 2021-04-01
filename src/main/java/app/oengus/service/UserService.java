@@ -54,7 +54,7 @@ public class UserService {
 
     public Token login(final String service, final String code, final String oauthToken, final String oauthVerifier)
             throws LoginException {
-        if (code == null || code.isBlank()) {
+        if ((code == null || code.isBlank()) && !"twitterAuth".equals(service)) {
             throw new LoginException("Missing code in request");
         }
 
@@ -83,7 +83,7 @@ public class UserService {
 
     public Object sync(final String service, final String code, final String oauthToken, final String oauthVerifier)
             throws LoginException {
-        if (code == null || code.isBlank()) {
+        if ((code == null || code.isBlank()) && !"twitterAuth".equals(service)) {
             throw new LoginException("Missing code in request");
         }
 
