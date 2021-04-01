@@ -17,8 +17,8 @@ public abstract class AbstractTwitterService {
 	@Autowired
 	private TwitterAuditRepositoryService twitterAuditRepositoryService;
 
-	@Value("${oengus.baseUrl}")
-	private String baseUrl;
+	@Value("${oengus.shortUrl}")
+	private String shortUrl;
 
 	abstract void send(String message);
 
@@ -100,7 +100,7 @@ public abstract class AbstractTwitterService {
 	}
 
 	private void appendMarathonLink(final StringBuilder sb, final Marathon marathon, final String subPage) {
-		sb.append(this.baseUrl)
+		sb.append(this.shortUrl)
 		  .append("/marathon/")
 		  .append(marathon.getId());
 		if (subPage != null) {

@@ -3,6 +3,7 @@ oengus:
     secret: ${JWT_SECRET}
     expiration: 604800
   baseUrl: ${BASE_URL}
+  shortUrl: "https://oengus.fun"
 
 discord:
   clientId: ${DISCORD_CLIENT_ID}
