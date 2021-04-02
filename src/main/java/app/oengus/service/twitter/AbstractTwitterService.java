@@ -101,10 +101,10 @@ public abstract class AbstractTwitterService {
 
 	private void appendMarathonLink(final StringBuilder sb, final Marathon marathon, final String subPage) {
 		sb.append(this.shortUrl)
-		  .append("/marathon/")
+		  .append('/')
 		  .append(marathon.getId());
 		if (subPage != null) {
-			sb.append("/").append(subPage);
+			sb.append('/').append(subPage);
 		}
 	}
 
