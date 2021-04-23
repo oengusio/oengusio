@@ -1,6 +1,5 @@
 name: Feature request
 description: Is oengus missing something? Suggest it here
-title: ''
 labels: [feature]
 body:
     - type: textarea

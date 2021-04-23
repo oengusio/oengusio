@@ -1,6 +1,5 @@
 name: Bug Report
 description: Something is not working correctly on Oengus, tell us about it
-title: ""
 labels: [bug]
 body:
     - type: textarea
