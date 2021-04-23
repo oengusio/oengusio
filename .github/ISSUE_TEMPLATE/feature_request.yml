@@ -2,7 +2,6 @@ name: Feature request
 description: Is oengus missing something? Suggest it here
 title: ''
 labels: [feature]
-issue_body: true
 body:
     - type: textarea
       attributes:
