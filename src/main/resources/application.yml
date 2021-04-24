@@ -93,24 +93,6 @@ management:
                     - prometheus
                     - health
 
-javers:
-    mappingStyle: FIELD
-    algorithm: SIMPLE
-    commitIdGenerator: synchronized_sequence
-    prettyPrint: true
-    typeSafeValues: false
-    newObjectSnapshot: false
-    packagesToScan:
-    auditableAspectEnabled: true
-    springDataAuditableRepositoryAspectEnabled: true
-    sqlSchema: public
-    sqlSchemaManagementEnabled: true
-    prettyPrintDateFormats:
-        localDateTime: "dd MMM yyyy, HH:mm:ss"
-        zonedDateTime: "dd MMM yyyy, HH:mm:ssZ"
-        localDate: "dd MMM yyyy"
-        localTime: "HH:mm:ss"
-
 log4j:
     logger:
         org:
