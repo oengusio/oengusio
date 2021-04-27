@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class Submission {
     private static final List<String> DEFAULT_HEADERS =
         Arrays.asList("runner", "game_name", "game_description", "game_console", "game_ratio", "category_name",
-            "category_description", "category_type", "category_estimate", "category_video");
+            "category_description", "category_type", "category_estimate", "category_video", "status");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -169,11 +169,10 @@ public class Submission {
             if (category.getOpponents() != null) {
                 opponents = category.getOpponents()
                     .stream()
-                    .map(opponent -> opponent.getSubmission()
-                        .getUser()
-                        .getUsername(locale.toLanguageTag()))
-                    .collect(
-                        Collectors.joining(", "));
+                    .map(
+                        opponent -> opponent.getSubmission().getUser().getUsername(locale.toLanguageTag())
+                    )
+                    .collect(Collectors.joining(", "));
             }
             record.add(
                 this.user.getUsername(locale.toLanguageTag()) +
@@ -201,10 +200,10 @@ public class Submission {
                 });
                 record.add(videos.toString());
             }
+            final String statusName = category.getSelection().getStatus().name();
+            record.add(resourceBundle.getString("run.status." + statusName));
             if (!CollectionUtils.isEmpty(this.getAnswers())) {
-                this.getAnswers().forEach(answer -> {
-                    record.add(answer.getAnswer());
-                });
+                this.getAnswers().forEach(answer -> record.add(answer.getAnswer()));
             }
             this.getAvailabilities().forEach(availability -> {
                 record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(availability.getFrom().withZoneSameInstant(
