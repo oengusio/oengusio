@@ -350,7 +350,8 @@ public class OengusWebhookService {
                 }
 
                 // ignore the category if they are equal
-                if (Objects.equals(newCategory, oldCategory)) {
+                // also check for the game in case a description got changed
+                if (Objects.equals(newCategory, oldCategory) && Objects.equals(newGame, oldGame)) {
                     continue;
                 }
 

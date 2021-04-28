@@ -1,9 +1,10 @@
 package app.oengus.entity.model;
 
-import org.hibernate.Hibernate;
+import app.oengus.helper.BeanHelper;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "selection")
@@ -60,9 +61,24 @@ public class Selection {
 		this.marathon = marathon;
 	}
 
-	public static void initialize(Selection selection) {
-        Hibernate.initialize(selection.getCategory());
-        Hibernate.initialize(selection.getMarathon());
-        Hibernate.initialize(selection.getStatus());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Selection selection = (Selection) o;
+        return id == selection.id && marathon.equals(selection.marathon) && status == selection.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, marathon, status);
+    }
+
+    public static Selection createDetached(Selection selection) {
+        final Selection fresh = new Selection();
+
+        BeanHelper.copyProperties(selection, fresh);
+
+        return fresh;
     }
 }

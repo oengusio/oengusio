@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
@@ -30,9 +29,6 @@ public class SelectionService {
 
     @Autowired
     private MarathonRepositoryService marathonRepositoryService;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Autowired
     private OengusWebhookService webhookService;
@@ -99,15 +95,10 @@ public class SelectionService {
 		});
 
         // send webhook
-        // TODO: remove selection done check?
-        if (marathon.isSelectionDone() && marathon.hasWebhook()) {
+        if (marathon.hasWebhook()) {
             try {
-                final List<Selection> oldSelections = this.selectionRepository.findByMarathon(marathon);
-
-                oldSelections.forEach((selection) -> {
-                    Selection.initialize(selection);
-                    this.entityManager.detach(selection);
-                });
+                final List<Selection> oldSelections = this.selectionRepository.findByMarathon(marathon)
+                    .stream().map(Selection::createDetached).collect(Collectors.toList());
 
                 final List<Selection> savedSelections = this.selectionRepository.saveAll(newSelections);
 
