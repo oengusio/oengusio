@@ -25,7 +25,7 @@ public class SelectionRepositoryService {
 		return this.selectionRepository.findByMarathonAndStatusIn(marathon, statuses);
 	}
 
-	public void saveAll(final List<Selection> selections, final String marathonId) {
+	public void saveAll(final List<Selection> selections) {
 		this.selectionRepository.saveAll(selections);
 	}
 

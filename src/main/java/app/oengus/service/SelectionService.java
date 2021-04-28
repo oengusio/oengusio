@@ -6,10 +6,13 @@ import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
 import app.oengus.service.repository.CategoryRepositoryService;
+import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +28,12 @@ public class SelectionService {
 
 	@Autowired
 	private CategoryRepositoryService categoryRepositoryService;
+
+    @Autowired
+    private MarathonRepositoryService marathonRepositoryService;
+
+    @Autowired
+    private EntityManager entityManager;
 
 	public Map<Integer, SelectionDto> findByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
@@ -64,24 +73,19 @@ public class SelectionService {
 	}
 
 	@Transactional
-	public void saveOrUpdate(final String marathonId, final List<SelectionDto> dtos) {
-		final Marathon marathon = new Marathon();
-		marathon.setId(marathonId);
-
+	public void saveOrUpdate(final String marathonId, final List<SelectionDto> dtos) throws NotFoundException {
+		final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 		final List<Selection> selections = new ArrayList<>();
-
-		final Iterable<Category> categories =
-				this.categoryRepositoryService.findAllById(dtos.stream().map(SelectionDto::getCategoryId).collect(
-						Collectors.toList()));
+		final Iterable<Category> categories = this.categoryRepositoryService.findAllById(
+		    dtos.stream().map(SelectionDto::getCategoryId).collect(Collectors.toList())
+        );
 
 		final Map<Integer, Category> categoryMap = new HashMap<>();
-		categories.forEach(category -> {
-			categoryMap.put(category.getId(), category);
-		});
+		categories.forEach((category) -> categoryMap.put(category.getId(), category));
 
-		dtos.forEach(dto -> {
-			final Category category;
-			category = categoryMap.get(dto.getCategoryId());
+		dtos.forEach((dto) -> {
+			final Category category = categoryMap.get(dto.getCategoryId());
+
 			if (category != null) {
 				final Selection selection = new Selection();
 				selection.setId(dto.getId());
@@ -91,7 +95,8 @@ public class SelectionService {
 				selections.add(selection);
 			}
 		});
-		this.selectionRepository.saveAll(selections, marathonId);
+
+		this.selectionRepository.saveAll(selections);
 
 	}
 

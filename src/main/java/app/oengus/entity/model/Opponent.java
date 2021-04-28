@@ -21,7 +21,7 @@ public class Opponent {
 	@JsonView(Views.Public.class)
 	private Integer id;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference

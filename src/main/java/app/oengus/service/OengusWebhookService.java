@@ -1,6 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.model.*;
+import app.oengus.helper.OengusBotUrl;
 import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
 import club.minnced.discord.webhook.WebhookClient;
@@ -9,6 +10,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javassist.NotFoundException;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +40,17 @@ public class OengusWebhookService {
     @Autowired
     private ObjectMapper mapper;
 
-    @Value("${oengus.baseUrl}")
-    private String baseUrl;
+    @Value("${oengus.shortUrl}")
+    private String shortUrl;
 
     @Autowired
     private DiscordApiService jda;
 
     @Autowired
     private MarathonService marathonService;
+
+    @Autowired
+    private UserService userService;
 
     /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
@@ -123,8 +128,17 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendUpdatedSelectionEvent(final String url) {
-        //
+    public void sendUpdatedSelectionEvent(final String url, final Selection newSelection, final Selection oldSelection) throws IOException {
+        if (handleOnBot(url, () -> createParameters("selection", newSelection, "old_selection", oldSelection))) {
+            return;
+        }
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "CATEGORY_DELETE");
+        data.set("selection", parseJson(newSelection));
+        data.set("old_selection", parseJson(oldSelection));
+
+        callAsync(url, data);
     }
 
     public boolean sendPingEvent(final String url) {
@@ -172,6 +186,16 @@ public class OengusWebhookService {
         final Map<String, Object> args = argsSupplier.get();
         final String marathon = url.get("marathon");
 
+        if (url.has("donation")) {
+            sendDonationEvent(
+                marathon,
+                url.get("donation"),
+                (Donation) args.get("donation")
+            );
+
+            return true;
+        }
+
         if (url.has("editsub")) {
             final String editsub = url.get("editsub");
 
@@ -213,30 +237,36 @@ public class OengusWebhookService {
             }
         }
 
-        if (args.containsKey("submission") && !args.containsKey("oldSubmission") && url.has("newsub")) {
-            final String marathonName = this.marathonService.getNameForCode(marathon);
+        if (url.has("newsub")) {
+            final String newsub = url.get("newsub");
 
-            sendNewSubmission(
-                marathon,
-                url.get("newsub"),
-                (Submission) args.get("submission"),
-                marathonName
-            );
+            if (args.containsKey("submission") && !args.containsKey("oldSubmission")) {
+                final String marathonName = this.marathonService.getNameForCode(marathon);
 
-            if (url.has("editsub")) {
                 sendNewSubmission(
                     marathon,
-                    url.get("editsub"),
+                    newsub,
                     (Submission) args.get("submission"),
                     marathonName
                 );
+
+                if (url.has("editsub")) {
+                    sendNewSubmission(
+                        marathon,
+                        url.get("editsub"),
+                        (Submission) args.get("submission"),
+                        marathonName
+                    );
+                }
+            } else if (args.containsKey("selection") && args.containsKey("old_selection")) {
+                final Selection selection = (Selection) args.get("selection");
+                final Selection oldSelection = (Selection) args.get("old_selection");
+
+                // only send an update if the selection was updated to validated
+                if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
+                    this.sendSelectionApproved(newsub, selection);
+                }
             }
-        } else if (url.has("donation")) {
-            sendDonationEvent(
-                marathon,
-                url.get("donation"),
-                (Donation) args.get("donation")
-            );
         }
 
         return true;
@@ -265,6 +295,7 @@ public class OengusWebhookService {
         });
     }
 
+    // TODO: extract to classes
     private void sendEditSubmission(final String marathon, final String channel, final String newSubChannel,
                                     final Submission submission, final Submission oldSubmission) {
         final String marathonName = this.marathonService.getNameForCode(marathon);
@@ -336,7 +367,7 @@ public class OengusWebhookService {
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
                 username + " submitted a run to " + marathonName,
-                this.baseUrl + "/marathon/" + marathon + "/submissions"
+                this.shortUrl + '/' + marathon + "/submissions"
             ))
             .setDescription(String.format(
                 "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
@@ -357,7 +388,7 @@ public class OengusWebhookService {
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
                 username + " updated a run in " + marathonName,
-                this.baseUrl + "/marathon/" + marathon + "/submissions"
+                this.shortUrl + '/' + marathon + "/submissions"
             ));
         final StringBuilder sb = new StringBuilder();
 
@@ -376,6 +407,16 @@ public class OengusWebhookService {
         if (category.getType() != oldCategory.getType()) {
             sb.append("\n**Type:** ")
                 .append(parseUpdatedString(category.getType().name(), oldCategory.getType().name()));
+        }
+
+        if (!category.getDescription().equals(oldCategory.getDescription())) {
+            sb.append("\n**Category Description:** ")
+                .append(parseUpdatedString(category.getDescription(), oldCategory.getDescription()));
+        }
+
+        if (!game.getDescription().equals(oldGame.getDescription())) {
+            sb.append("\n**Game Description:** ")
+                .append(parseUpdatedString(game.getDescription(), oldGame.getDescription()));
         }
 
         builder.setDescription(sb.toString());
@@ -398,7 +439,7 @@ public class OengusWebhookService {
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
                 donation.getNickname() + " donated to " + this.marathonService.getNameForCode(marathon),
-                this.baseUrl + "/marathon/" + marathon + "/submissions"
+                this.shortUrl + '/' + marathon + "/donations"
             ))
             .setDescription(String.format(
                 "**Amount:** %s\n**Comment:** %s",
@@ -482,7 +523,7 @@ public class OengusWebhookService {
         return new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
                 headerText + " in " + marathonName,
-                this.baseUrl + "/marathon/" + marathonId + "/submissions"
+                this.shortUrl + '/' + marathonId + "/submissions"
             ))
             .setDescription(String.format(
                 "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
@@ -493,59 +534,41 @@ public class OengusWebhookService {
             ))
             .build();
     }
-    /// </editor-fold>
 
-    private static class OengusBotUrl {
-        private final String donation;
-        private final String newSubmission;
-        private final String editSubmission;
-        private final String marathonId;
+    private void sendSelectionApproved(final String channel, final Selection selection) {
+        final Category category = selection.getCategory();
+        final Game game = category.getGame();
+        final String submitter = game.getSubmission().getUser().getUsername();
+        final List<String> runners = new ArrayList<>();
 
-        OengusBotUrl(String url) {
-            final MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(url)
-                .build().getQueryParams();
+        runners.add(submitter);
 
-            this.donation = queryParams.getFirst("donation");
-            this.newSubmission = queryParams.getFirst("newsub");
-            this.editSubmission = queryParams.getFirst("editsub");
-            this.marathonId = queryParams.getFirst("marathon");
-        }
+        if (!category.getOpponents().isEmpty()) {
+            for (Opponent opponent : category.getOpponents()) {
+                try {
+                    final User user = this.userService.getUser(opponent.getId());
 
-        boolean isEmpty() {
-            // marathon is required
-            if (this.marathonId == null) {
-                return true;
-            }
-
-            return this.donation == null && this.newSubmission == null && this.editSubmission == null;
-        }
-
-        boolean has(String type) {
-            switch (type) {
-                case "donation":
-                    return this.donation != null;
-                case "newsub":
-                    return this.newSubmission != null;
-                case "editsub":
-                    return this.editSubmission != null;
-                default:
-                    return false;
+                    runners.add(user.getUsername());
+                } catch (NotFoundException ignored) {}
             }
         }
 
-        String get(String type) {
-            switch (type) {
-                case "donation":
-                    return this.donation;
-                case "newsub":
-                    return this.newSubmission;
-                case "editsub":
-                    return this.editSubmission;
-                case "marathon":
-                    return this.marathonId;
-                default:
-                    return null;
-            }
-        }
+        final WebhookEmbed embed = new WebhookEmbedBuilder()
+            .setTitle(new WebhookEmbed.EmbedTitle(
+                "A run has been Accepted!",
+                this.shortUrl + '/' + selection.getMarathon().getId()
+            ))
+            .setDescription(String.format(
+                "**Submitted by:** %s\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Runners:** %s",
+                submitter,
+                game.getName(),
+                category.getName(),
+                game.getConsole(),
+                String.join(", ", runners)
+            ))
+            .build();
+
+        this.jda.sendMessage(channel, embed);
     }
+    /// </editor-fold>
 }
