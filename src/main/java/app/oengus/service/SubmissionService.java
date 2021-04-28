@@ -96,6 +96,7 @@ public class SubmissionService {
         return saved;
     }
 
+    @Transactional
     public Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
         submission.setUser(submitter);
         submission.setMarathon(marathon);

@@ -123,6 +123,10 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
+    public void sendUpdatedSelectionEvent(final String url) {
+        //
+    }
+
     public boolean sendPingEvent(final String url) {
         try {
             final JsonNode data = mapper.createObjectNode().put("event", "PING");
