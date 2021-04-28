@@ -78,6 +78,7 @@ public class MarathonRepositoryService {
 		return this.marathonRepository.findFutureMarathonsWithScheduleDone();
 	}
 
+    @Transactional
 	public void clearMarathon(final Marathon marathon) {
 		this.marathonRepository.clearMarathon(marathon);
 	}
