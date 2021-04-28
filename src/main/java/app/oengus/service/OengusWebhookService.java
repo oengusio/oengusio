@@ -261,23 +261,7 @@ public class OengusWebhookService {
                 final List<Selection> selections = (List<Selection>) args.get("selections");
                 final List<Selection> oldSelections = (List<Selection>) args.get("old_selections");
 
-                try (final WebhookClient client = this.jda.forChannel(newsub)) {
-                    for (int i = 0; i < selections.size(); i++) {
-                        final Selection selection = selections.get(i);
-                        final Selection oldSelection = oldSelections.get(i);
-
-                        if (selection.getId() != oldSelection.getId()) {
-                            // Skip the selection if they are not the same
-                            LOG.error("Two selections do not have the same id: {}, {}", selection.getId(), oldSelection.getId());
-                            continue;
-                        }
-
-                        // only send an update if the selection was updated to validated
-                        if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
-                            this.sendSelectionApproved(client, selection);
-                        }
-                    }
-                }
+                this.sendApprovedSelections(newsub, selections, oldSelections);
             }
         }
 
@@ -548,7 +532,27 @@ public class OengusWebhookService {
             .build();
     }
 
-    private void sendSelectionApproved(final WebhookClient client, final Selection selection) {
+    private void sendApprovedSelections(final String channel, final List<Selection> selections, final List<Selection> oldSelections) {
+        try (final WebhookClient client = this.jda.forChannel(channel)) {
+            for (int i = 0; i < selections.size(); i++) {
+                final Selection selection = selections.get(i);
+                final Selection oldSelection = oldSelections.get(i);
+
+                if (selection.getId() != oldSelection.getId()) {
+                    // Skip the selection if they are not the same
+                    LOG.error("Two selections do not have the same id: {}, {}", selection.getId(), oldSelection.getId());
+                    continue;
+                }
+
+                // only send an update if the selection was updated to validated
+                if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
+                    this.sendSelectionApprovedEmbed(client, selection);
+                }
+            }
+        }
+    }
+
+    private void sendSelectionApprovedEmbed(final WebhookClient client, final Selection selection) {
         final Category category = selection.getCategory();
         final Game game = category.getGame();
         final String submitter = game.getSubmission().getUser().getUsername();
