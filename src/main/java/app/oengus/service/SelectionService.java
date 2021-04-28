@@ -9,11 +9,14 @@ import app.oengus.service.repository.CategoryRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +37,9 @@ public class SelectionService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private OengusWebhookService webhookService;
 
 	public Map<Integer, SelectionDto> findByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
@@ -60,7 +66,7 @@ public class SelectionService {
 	}
 
 	private Map<Integer, SelectionDto> modelToDtos(final List<Selection> selections) {
-		final HashMap<Integer, SelectionDto> dtos = new HashMap<>();
+		final Map<Integer, SelectionDto> dtos = new HashMap<>();
 		selections.forEach(selection -> {
 			final SelectionDto dto = new SelectionDto();
 			dto.setId(selection.getId());
@@ -75,7 +81,7 @@ public class SelectionService {
 	@Transactional
 	public void saveOrUpdate(final String marathonId, final List<SelectionDto> dtos) throws NotFoundException {
 		final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
-		final List<Selection> selections = new ArrayList<>();
+		final List<Selection> newSelections = new ArrayList<>();
 		final Iterable<Category> categories = this.categoryRepositoryService.findAllById(
 		    dtos.stream().map(SelectionDto::getCategoryId).collect(Collectors.toList())
         );
@@ -92,11 +98,24 @@ public class SelectionService {
 				selection.setCategory(category);
 				selection.setMarathon(marathon);
 				selection.setStatus(dto.getStatus());
-				selections.add(selection);
+                newSelections.add(selection);
 			}
 		});
 
-		this.selectionRepository.saveAll(selections);
+        // send webhook
+        if (marathon.hasWebhook()) {
+            try {
+                final List<Selection> oldSelections = this.selectionRepository.findByMarathon(marathon);
+
+                // TODO: initialize the old selections and detach them
+
+                this.webhookService.sendUpdatedSelectionEvent(marathon.getWebhook(), newSelections, oldSelections);
+            } catch (IOException e) {
+                LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
+            }
+        }
+
+		this.selectionRepository.saveAll(newSelections);
 
 	}
 

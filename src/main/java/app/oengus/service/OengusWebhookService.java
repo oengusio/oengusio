@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -128,15 +126,15 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendUpdatedSelectionEvent(final String url, final Selection newSelection, final Selection oldSelection) throws IOException {
-        if (handleOnBot(url, () -> createParameters("selection", newSelection, "old_selection", oldSelection))) {
+    public void sendUpdatedSelectionEvent(final String url, final List<Selection> newSelections, final List<Selection> oldSelections) throws IOException {
+        if (handleOnBot(url, () -> createParameters("selections", newSelections, "old_selections", oldSelections))) {
             return;
         }
 
         final ObjectNode data = mapper.createObjectNode()
-            .put("event", "CATEGORY_DELETE");
-        data.set("selection", parseJson(newSelection));
-        data.set("old_selection", parseJson(oldSelection));
+            .put("event", "SELECTION_UPDATE");
+        data.set("selections", parseJson(newSelections));
+        data.set("old_selections", parseJson(oldSelections));
 
         callAsync(url, data);
     }
@@ -169,6 +167,7 @@ public class OengusWebhookService {
         return mapper.readTree(json);
     }
 
+    @SuppressWarnings("unchecked")
     private boolean handleOnBot(final String rawUrl, final Supplier<Map<String, Object>> argsSupplier) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
@@ -258,13 +257,20 @@ public class OengusWebhookService {
                         marathonName
                     );
                 }
-            } else if (args.containsKey("selection") && args.containsKey("old_selection")) {
-                final Selection selection = (Selection) args.get("selection");
-                final Selection oldSelection = (Selection) args.get("old_selection");
+            } else if (args.containsKey("selections") && args.containsKey("old_selections")) {
+                final List<Selection> selections = (List<Selection>) args.get("selection");
+                final List<Selection> oldSelections = (List<Selection>) args.get("old_selection");
 
-                // only send an update if the selection was updated to validated
-                if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
-                    this.sendSelectionApproved(newsub, selection);
+                try (final WebhookClient client = this.jda.forChannel(newsub)) {
+                    for (int i = 0; i < selections.size(); i++) {
+                        final Selection selection = selections.get(i);
+                        final Selection oldSelection = oldSelections.get(i);
+
+                        // only send an update if the selection was updated to validated
+                        if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
+                            this.sendSelectionApproved(client, selection);
+                        }
+                    }
                 }
             }
         }
@@ -535,7 +541,7 @@ public class OengusWebhookService {
             .build();
     }
 
-    private void sendSelectionApproved(final String channel, final Selection selection) {
+    private void sendSelectionApproved(final WebhookClient client, final Selection selection) {
         final Category category = selection.getCategory();
         final Game game = category.getGame();
         final String submitter = game.getSubmission().getUser().getUsername();
@@ -568,7 +574,7 @@ public class OengusWebhookService {
             ))
             .build();
 
-        this.jda.sendMessage(channel, embed);
+        client.send(embed);
     }
     /// </editor-fold>
 }

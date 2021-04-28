@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
@@ -583,5 +584,9 @@ public class Marathon {
 
     public void setSubmissionsEndDate(final ZonedDateTime submissionsEndDate) {
         this.submissionsEndDate = submissionsEndDate;
+    }
+
+    public boolean hasWebhook() {
+        return StringUtils.isNotEmpty(this.getWebhook());
     }
 }
