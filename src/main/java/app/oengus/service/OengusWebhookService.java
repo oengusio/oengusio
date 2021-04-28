@@ -185,7 +185,7 @@ public class OengusWebhookService {
         final Map<String, Object> args = argsSupplier.get();
         final String marathon = url.get("marathon");
 
-        if (url.has("donation")) {
+        if (url.has("donation") && args.containsKey("donation")) {
             sendDonationEvent(
                 marathon,
                 url.get("donation"),
@@ -258,8 +258,8 @@ public class OengusWebhookService {
                     );
                 }
             } else if (args.containsKey("selections") && args.containsKey("old_selections")) {
-                final List<Selection> selections = (List<Selection>) args.get("selection");
-                final List<Selection> oldSelections = (List<Selection>) args.get("old_selection");
+                final List<Selection> selections = (List<Selection>) args.get("selections");
+                final List<Selection> oldSelections = (List<Selection>) args.get("old_selections");
 
                 try (final WebhookClient client = this.jda.forChannel(newsub)) {
                     for (int i = 0; i < selections.size(); i++) {

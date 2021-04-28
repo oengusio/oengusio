@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -58,4 +59,10 @@ public class Selection {
 	public void setMarathon(final Marathon marathon) {
 		this.marathon = marathon;
 	}
+
+	public static void initialize(Selection selection) {
+        Hibernate.initialize(selection.getCategory());
+        Hibernate.initialize(selection.getMarathon());
+        Hibernate.initialize(selection.getStatus());
+    }
 }

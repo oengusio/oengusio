@@ -17,6 +17,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -67,7 +69,8 @@ public class Category {
 	@Size(max = 6)
 	private String code;
 
-	@OneToOne(mappedBy = "category", cascade = {CascadeType.ALL}, orphanRemoval = true)
+	// Don't cascade persist
+	@OneToOne(mappedBy = "category", cascade = {MERGE, REMOVE, REFRESH, DETACH}, orphanRemoval = true)
 	@JsonView(Views.Internal.class)
 	private Selection selection;
 

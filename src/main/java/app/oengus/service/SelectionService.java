@@ -9,7 +9,6 @@ import app.oengus.service.repository.CategoryRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
 import javassist.NotFoundException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,19 +99,29 @@ public class SelectionService {
 		});
 
         // send webhook
-        if (marathon.hasWebhook()) {
+        // TODO: remove selection done check?
+        if (marathon.isSelectionDone() && marathon.hasWebhook()) {
             try {
                 final List<Selection> oldSelections = this.selectionRepository.findByMarathon(marathon);
 
-                // TODO: initialize the old selections and detach them
+                oldSelections.forEach((selection) -> {
+                    Selection.initialize(selection);
+                    this.entityManager.detach(selection);
+                });
 
-                this.webhookService.sendUpdatedSelectionEvent(marathon.getWebhook(), newSelections, oldSelections);
+                final List<Selection> savedSelections = this.selectionRepository.saveAll(newSelections);
+
+                // make sure they are in the same order
+                oldSelections.sort(Comparator.comparingInt(a -> a.getCategory().getId()));
+                savedSelections.sort(Comparator.comparingInt(a -> a.getCategory().getId()));
+
+                this.webhookService.sendUpdatedSelectionEvent(marathon.getWebhook(), savedSelections, oldSelections);
             } catch (IOException e) {
                 LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
             }
+        } else {
+            this.selectionRepository.saveAll(newSelections);
         }
-
-		this.selectionRepository.saveAll(newSelections);
 
 	}
 
