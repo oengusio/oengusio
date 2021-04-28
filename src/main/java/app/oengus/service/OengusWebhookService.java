@@ -266,6 +266,12 @@ public class OengusWebhookService {
                         final Selection selection = selections.get(i);
                         final Selection oldSelection = oldSelections.get(i);
 
+                        if (selection.getId() != oldSelection.getId()) {
+                            // Skip the selection if they are not the same
+                            LOG.error("Two selections do not have the same id: {}, {}", selection.getId(), oldSelection.getId());
+                            continue;
+                        }
+
                         // only send an update if the selection was updated to validated
                         if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
                             this.sendSelectionApproved(client, selection);
