@@ -12,6 +12,7 @@ import app.oengus.service.repository.DonationRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.twitter.AbstractTwitterService;
 import javassist.NotFoundException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -61,6 +63,9 @@ public class MarathonService {
 	@Autowired
 	private SelectionService selectionService;
 
+	@Autowired
+    private OengusWebhookService webhookService;
+
 	@PostConstruct
 	public void initScheduledEvents() {
 		final List<Marathon> marathonsWithScheduledSubmissions =
@@ -70,6 +75,10 @@ public class MarathonService {
 		marathonsWithScheduledSubmissions.forEach(this.eventSchedulerService::scheduleSubmissions);
 		marathonsWithScheduleDone.forEach(this.eventSchedulerService::scheduleMarathonStartAlert);
 	}
+
+	public Marathon getById(String id) throws NotFoundException {
+	    return this.marathonRepositoryService.findById(id);
+    }
 
 	public String getNameForCode(String code) {
 	    return this.marathonRepositoryService.getNameById(code);
@@ -107,13 +116,30 @@ public class MarathonService {
 	public void update(final String id, final Marathon patch) throws NotFoundException {
 		final Marathon marathon = this.marathonRepositoryService.findById(id);
 		this.entityManager.detach(marathon);
+
 		final boolean openedSubmissions = !marathon.isSubmitsOpen() && patch.isSubmitsOpen();
+		final boolean selectionDone = !marathon.isSelectionDone() && patch.isSelectionDone();
+
 		BeanHelper.copyProperties(patch, marathon, "creator");
+
 		marathon.setStartDate(marathon.getStartDate().withSecond(0));
 		marathon.setEndDate(marathon.getEndDate().withSecond(0));
-		if (marathon.isSelectionDone()) {
+
+		if (selectionDone) {
 			this.twitterService.sendSelectionDoneTweet(marathon);
+			// send accepted submissions
+            if (marathon.hasWebhook()) {
+                try {
+                    this.webhookService.sendSelectionDoneEvent(
+                        marathon.getWebhook(),
+                        this.selectionService.findByMarathon(marathon)
+                    );
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(MarathonService.class).error("Sending selection done event failed", e);
+                }
+            }
 		}
+
 		if (marathon.isScheduleDone()) {
 			final Schedule schedule = this.scheduleService.findByMarathon(marathon.getId());
 			this.scheduleService.computeEndDate(marathon, schedule);
@@ -122,12 +148,15 @@ public class MarathonService {
 			marathon.setSelectionDone(true);
 			marathon.setCanEditSubmissions(false);
 		}
+
 		if (marathon.isSubmitsOpen()) {
 			marathon.setCanEditSubmissions(true);
 		}
+
 		if (openedSubmissions) {
 			this.twitterService.sendSubmissionsOpenTweet(marathon);
 		}
+
 		if (marathon.getSubmissionsStartDate() != null && marathon.getSubmissionsEndDate() != null) {
 			marathon.setSubmissionsStartDate(marathon.getSubmissionsStartDate().withSecond(0));
 			marathon.setSubmissionsEndDate(marathon.getSubmissionsEndDate().withSecond(0));

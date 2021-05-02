@@ -71,7 +71,7 @@ dependencies {
 
     // SWAGGER
     implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")
-    implementation(group = "io.springfox", name = "springfox-swagger-ui", version = "2.9.2")
+    // implementation(group = "io.springfox", name = "springfox-swagger-ui", version = "2.9.2")
 
     // iCal4J
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.0.11")

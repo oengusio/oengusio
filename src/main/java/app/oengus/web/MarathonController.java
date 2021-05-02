@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping({"/marathons", "/marathon"})
-@Api(value = "/marathons")
+@RequestMapping({"/marathons"})
+@Api
 public class MarathonController {
 
     @Autowired
@@ -146,6 +146,23 @@ public class MarathonController {
         if (isOnline) {
             return ResponseEntity.ok().build();
         } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/selections/publish")
+    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @ApiIgnore
+    public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) {
+        try {
+            final Marathon marathon = this.marathonService.getById(id);
+
+            marathon.setSelectionDone(true);
+
+            this.marathonService.update(id, marathon);
+
+            return ResponseEntity.ok().build();
+        } catch (final NotFoundException ignored) {
             return ResponseEntity.notFound().build();
         }
     }

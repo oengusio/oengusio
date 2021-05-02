@@ -9,13 +9,14 @@ import app.oengus.service.repository.CategoryRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.SelectionRepositoryService;
 import javassist.NotFoundException;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,9 +31,6 @@ public class SelectionService {
     @Autowired
     private MarathonRepositoryService marathonRepositoryService;
 
-    @Autowired
-    private OengusWebhookService webhookService;
-
 	public Map<Integer, SelectionDto> findByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
@@ -41,6 +39,10 @@ public class SelectionService {
 
 		return this.modelToDtos(selections);
 	}
+
+    public List<Selection> findByMarathon(final Marathon marathon) {
+        return this.selectionRepository.findByMarathon(marathon);
+    }
 
 	public Map<Integer, SelectionDto> findByMarathon(final String marathonId, final List<Status> statuses) {
 		final Marathon marathon = new Marathon();
@@ -94,25 +96,7 @@ public class SelectionService {
 			}
 		});
 
-        // send webhook
-        if (marathon.hasWebhook()) {
-            try {
-                final List<Selection> oldSelections = this.selectionRepository.findByMarathon(marathon)
-                    .stream().map(Selection::createDetached).collect(Collectors.toList());
-
-                final List<Selection> savedSelections = this.selectionRepository.saveAll(newSelections);
-
-                // make sure they are in the same order
-                oldSelections.sort(Comparator.comparingInt(a -> a.getCategory().getId()));
-                savedSelections.sort(Comparator.comparingInt(a -> a.getCategory().getId()));
-
-                this.webhookService.sendUpdatedSelectionEvent(marathon.getWebhook(), savedSelections, oldSelections);
-            } catch (IOException e) {
-                LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
-            }
-        } else {
-            this.selectionRepository.saveAll(newSelections);
-        }
+        this.selectionRepository.saveAll(newSelections);
 
 	}
 

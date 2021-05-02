@@ -62,9 +62,53 @@ Mentioned models are available on this page under the models section at the bott
 ```json5
 {
     "event": "SUBMISSION_EDIT",
-    "submission": {
-        // SUBMISSION MODEL //
+    "submission": { // submission
         // This is the updated submission
+        "id": 0,
+        "user": { // user
+            "id": 0,
+            "username": "duncte123",
+            "usernameJapanese": null, // string
+            "enabled": true,
+            "roles": [
+                "ROLE_USER"
+            ],
+            "discordName": "duncte123#1245",
+            "twitterName": "duncte123",
+            "twitchName": "duncte123",
+            "speedruncomName": "duncte123"
+        },
+        "marathon": null,
+        "games": [
+            { // game
+                "id": 0,
+                "submission": null,
+                "name": "Portal",
+                "description": "The cake is a lie",
+                "console": "PC",
+                "ratio": "16:9",
+                "emulated": false,
+                "categories": [
+                    { // category
+                        "id": 0,
+                        "game": null,
+                        "name": "Glitchless",
+                        "estimate": "PT25M", // iso-8601 duration format
+                        "description": "Don't cheat :)",
+                        "video": "https://youtu.be/9_N3c_WW6rI",
+                        "code": "",
+                        "selection": null,
+                        "opponents": [],
+                        "opponentDtos": [],
+                        "status": null,
+                    }
+                ]
+            }
+        ],
+        "availabilities": [],
+        "answers": [],
+        "opponents": [],
+        "opponentDtos": []
     },
     "original_submission": {
         // SUBMISSION MODEL //
@@ -76,11 +120,21 @@ Mentioned models are available on this page under the models section at the bott
 ```json5
 {
     "event": "SUBMISSION_DELETE",
-    "submission": {
+    "submission": { // submission
         // SUBMISSION MODEL //
     },
-    "deleted_by": {
-        // USER MODEL //
+    "deleted_by": { // user
+        "id": 0,
+        "username": "duncte123",
+        "usernameJapanese": null, // string
+        "enabled": true,
+        "roles": [
+            "ROLE_USER"
+        ],
+        "discordName": "duncte123#1245",
+        "twitterName": "duncte123",
+        "twitchName": "duncte123",
+        "speedruncomName": "duncte123"
     }
 }
 ```
@@ -91,8 +145,18 @@ Mentioned models are available on this page under the models section at the bott
     "game": {
         // GAME MODEL //
     },
-    "deleted_by": {
-        // USER MODEL //
+    "deleted_by": { // user
+        "id": 0,
+        "username": "duncte123",
+        "usernameJapanese": null, // string
+        "enabled": true,
+        "roles": [
+            "ROLE_USER"
+        ],
+        "discordName": "duncte123#1245",
+        "twitterName": "duncte123",
+        "twitchName": "duncte123",
+        "speedruncomName": "duncte123"
     }
 }
 ```
@@ -103,8 +167,18 @@ Mentioned models are available on this page under the models section at the bott
     "category": {
         // category MODEL //
     },
-    "deleted_by": {
-        // USER MODEL //
+    "deleted_by": { // user
+        "id": 0,
+        "username": "duncte123",
+        "usernameJapanese": null, // string
+        "enabled": true,
+        "roles": [
+            "ROLE_USER"
+        ],
+        "discordName": "duncte123#1245",
+        "twitterName": "duncte123",
+        "twitchName": "duncte123",
+        "speedruncomName": "duncte123"
     }
 }
 ```

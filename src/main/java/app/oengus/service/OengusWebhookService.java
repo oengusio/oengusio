@@ -126,15 +126,14 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendUpdatedSelectionEvent(final String url, final List<Selection> newSelections, final List<Selection> oldSelections) throws IOException {
-        if (handleOnBot(url, () -> createParameters("selections", newSelections, "old_selections", oldSelections))) {
+    public void sendSelectionDoneEvent(final String url, final List<Selection> selections) throws IOException {
+        if (handleOnBot(url, () -> createParameters("selections", selections))) {
             return;
         }
 
         final ObjectNode data = mapper.createObjectNode()
-            .put("event", "SELECTION_UPDATE");
-        data.set("selections", parseJson(newSelections));
-        data.set("old_selections", parseJson(oldSelections));
+            .put("event", "SELECTION_DONE");
+        data.set("selections", parseJson(selections));
 
         callAsync(url, data);
     }
@@ -257,11 +256,10 @@ public class OengusWebhookService {
                         marathonName
                     );
                 }
-            } else if (args.containsKey("selections") && args.containsKey("old_selections")) {
+            } else if (args.containsKey("selections")) {
                 final List<Selection> selections = (List<Selection>) args.get("selections");
-                final List<Selection> oldSelections = (List<Selection>) args.get("old_selections");
 
-                this.sendApprovedSelections(newsub, selections, oldSelections);
+                this.sendApprovedSelections(newsub, selections);
             }
         }
 
@@ -532,20 +530,11 @@ public class OengusWebhookService {
             .build();
     }
 
-    private void sendApprovedSelections(final String channel, final List<Selection> selections, final List<Selection> oldSelections) {
+    private void sendApprovedSelections(final String channel, final List<Selection> selections) {
         try (final WebhookClient client = this.jda.forChannel(channel)) {
-            for (int i = 0; i < selections.size(); i++) {
-                final Selection selection = selections.get(i);
-                final Selection oldSelection = oldSelections.get(i);
-
-                if (selection.getId() != oldSelection.getId()) {
-                    // Skip the selection if they are not the same
-                    LOG.error("Two selections do not have the same id: {}, {}", selection.getId(), oldSelection.getId());
-                    continue;
-                }
-
+            for (Selection selection : selections) {
                 // only send an update if the selection was updated to validated
-                if (selection.getStatus() != oldSelection.getStatus() && selection.getStatus() == Status.VALIDATED) {
+                if (selection.getStatus() == Status.VALIDATED) {
                     this.sendSelectionApprovedEmbed(client, selection);
                 }
             }
