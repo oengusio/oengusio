@@ -35,7 +35,7 @@ public class User implements UserDetails {
 
     @Column
     @JsonView(Views.Public.class)
-    @Size(min = 3, max = 16)
+    @Size(min = 3, max = 37)
     @Pattern(regexp = "^[\\w\\-]{3,16}$")
     private String username;
 
