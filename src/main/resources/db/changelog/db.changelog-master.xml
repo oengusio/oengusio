@@ -727,4 +727,9 @@
         <modifyDataType tableName="users" columnName="username" newDataType="varchar(37)"/>
     </changeSet>
 
+    <changeSet id="20210503-1" author="duncte123">
+        <!-- it should be 32 instead whoops XD -->
+        <modifyDataType tableName="users" columnName="username" newDataType="varchar(32)"/>
+    </changeSet>
+
 </databaseChangeLog>
