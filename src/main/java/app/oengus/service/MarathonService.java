@@ -128,7 +128,7 @@ public class MarathonService {
 		if (selectionDone) {
 			this.twitterService.sendSelectionDoneTweet(marathon);
 			// send accepted submissions
-            if (marathon.hasWebhook()) {
+            if (marathon.isAnnounceAcceptedSubmissions() && marathon.hasWebhook()) {
                 try {
                     this.webhookService.sendSelectionDoneEvent(
                         marathon.getWebhook(),

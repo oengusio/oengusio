@@ -234,6 +234,10 @@ public class Marathon {
     @JsonView(Views.Public.class)
     private boolean discordRequired = false;
 
+    @Column(name = "announce_accepted_submissions")
+    @JsonView(Views.Public.class)
+    private boolean announceAcceptedSubmissions = false;
+
     public String getId() {
         return this.id;
     }
@@ -588,5 +592,13 @@ public class Marathon {
 
     public boolean hasWebhook() {
         return StringUtils.isNotEmpty(this.getWebhook());
+    }
+
+    public boolean isAnnounceAcceptedSubmissions() {
+        return announceAcceptedSubmissions;
+    }
+
+    public void setAnnounceAcceptedSubmissions(boolean announceAcceptedRuns) {
+        this.announceAcceptedSubmissions = announceAcceptedRuns;
     }
 }
