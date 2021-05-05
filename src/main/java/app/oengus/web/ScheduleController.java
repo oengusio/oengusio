@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
+@CrossOrigin
 @RestController
 @RequestMapping({"/marathons/{marathonId}/schedule", "/marathon/{marathonId}/schedule"})
 @Api(value = "/marathons/{marathonId}/schedule")

@@ -17,6 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping({"/marathons/{marathonId}/incentives", "/marathon/{marathonId}/incentive"})
 @Api(value = "/marathons/{marathonId}/incentives")

@@ -17,6 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
 
+@CrossOrigin
 @RestController
 @RequestMapping({"/marathons/{marathonId}/discord", "/marathon/{marathonId}/discord"})
 @ApiIgnore
