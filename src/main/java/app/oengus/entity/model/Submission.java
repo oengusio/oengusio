@@ -32,7 +32,7 @@ public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private Integer id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -81,11 +81,11 @@ public class Submission {
     @JsonView(Views.Public.class)
     private Set<OpponentSubmissionDto> opponentDtos;
 
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(final Integer id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -221,7 +221,7 @@ public class Submission {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Submission that = (Submission) o;
-        return id.equals(that.id) && user.equals(that.user) && marathon.equals(that.marathon) && games.equals(that.games);
+        return id == that.id && user.equals(that.user) && marathon.equals(that.marathon) && games.equals(that.games);
     }
 
     @Override

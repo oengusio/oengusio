@@ -108,7 +108,7 @@ public class SubmissionService {
             game.setSubmission(submission);
             game.getCategories().forEach(category -> {
                 category.setGame(game);
-                if (category.getId() == null) {
+                if (category.getId() > 0) {
                     this.createSelection(category, marathon);
                 } else {
                     final Selection selection = this.selectionRepositoryService.findByCategory(category);
@@ -193,7 +193,7 @@ public class SubmissionService {
 
     @Transactional
     public Map<String, List<AvailabilityDto>> getRunnerAvailabilitiesForMarathon(final String marathonId,
-                                                                                 final Integer runnerId)
+                                                                                 final int runnerId)
             throws NotFoundException {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
@@ -318,7 +318,7 @@ public class SubmissionService {
         this.submissionRepositoryService.deleteByMarathon(marathon);
     }
 
-    public Boolean userHasSubmitted(final Marathon marathon, final User user) {
+    public boolean userHasSubmitted(final Marathon marathon, final User user) {
         return this.submissionRepositoryService.existsByMarathonAndUser(marathon, user);
     }
 
@@ -326,9 +326,9 @@ public class SubmissionService {
     public void delete(final int id, final User user) throws NotFoundException {
         final Submission submission = this.submissionRepositoryService.findById(id);
         final Marathon marathon = submission.getMarathon();
-        if (submission.getUser().getId().equals(user.getId()) || user.getRoles().contains(Role.ROLE_ADMIN) ||
-                marathon.getCreator().getId().equals(user.getId()) ||
-                marathon.getModerators().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
+        if (submission.getUser().getId() == user.getId() || user.getRoles().contains(Role.ROLE_ADMIN) ||
+                marathon.getCreator().getId() == user.getId() ||
+                marathon.getModerators().stream().anyMatch(u -> u.getId() == user.getId())) {
 
             // send webhook
             if (StringUtils.isNotEmpty(marathon.getWebhook())) {

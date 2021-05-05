@@ -33,8 +33,8 @@ public class IncentiveService {
 	@Autowired
 	private DonationIncentiveLinkRepositoryService donationIncentiveLinkRepositoryService;
 
-	public List<Incentive> findByMarathon(final String marathonId, final Boolean withLocked,
-	                                      final Boolean withUnapproved) throws NotFoundException {
+	public List<Incentive> findByMarathon(final String marathonId, final boolean withLocked,
+	                                      final boolean withUnapproved) throws NotFoundException {
 		final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 		final List<Incentive> incentives;
 		if (withLocked) {
@@ -90,7 +90,7 @@ public class IncentiveService {
 			}
 		});
 		incentives.stream()
-		          .filter(incentive -> incentive.getId() != null && incentive.isToDelete())
+		          .filter(incentive -> incentive.getId() > 0 && incentive.isToDelete())
 		          .forEach(i -> {
 			          if (i.isBidWar()) {
 				          i.getBids().forEach(bid -> this.donationIncentiveLinkRepositoryService.deleteByBid(bid));

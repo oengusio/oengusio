@@ -321,7 +321,7 @@ public class OengusWebhookService {
         for (final Game newGame : submission.getGames()) {
             final Game oldGame = oldSubmission.getGames()
                 .stream()
-                .filter((g) -> g.getId().equals(newGame.getId()))
+                .filter((g) -> g.getId() == newGame.getId())
                 .findFirst()
                 .orElse(null);
 
@@ -340,7 +340,7 @@ public class OengusWebhookService {
             for (final Category newCategory : newGame.getCategories()) {
                 final Category oldCategory = oldGame.getCategories()
                     .stream()
-                    .filter((c) -> c.getId().equals(newCategory.getId()))
+                    .filter((c) -> c.getId() == newCategory.getId())
                     .findFirst()
                     .orElse(null);
 

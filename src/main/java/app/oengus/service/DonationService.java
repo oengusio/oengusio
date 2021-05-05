@@ -44,7 +44,7 @@ public class DonationService {
     @Autowired
     private OengusWebhookService donationWebhook;
 
-    public Page<Donation> findForMarathon(final String marathonId, final Integer page, final Integer size) {
+    public Page<Donation> findForMarathon(final String marathonId, final int page, final int size) {
         return this.donationRepositoryService.findByMarathon(marathonId,
             PageRequest.of(page, size, Sort.by(List.of(Sort.Order.desc("date")))));
     }
@@ -68,7 +68,7 @@ public class DonationService {
             donation.getDonationIncentiveLinks()
                 .forEach(donationIncentiveLink -> {
                     donationIncentiveLink.setDonation(donation);
-                    if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() == null) {
+                    if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() > 0) {
                         final Incentive incentive = new Incentive();
                         incentive.setId(donationIncentiveLink.getBid().getIncentiveId());
                         donationIncentiveLink.getBid().setIncentive(incentive);

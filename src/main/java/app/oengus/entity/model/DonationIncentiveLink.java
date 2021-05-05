@@ -19,7 +19,7 @@ public class DonationIncentiveLink {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "donation_id")
@@ -44,11 +44,11 @@ public class DonationIncentiveLink {
 	@JsonView(Views.Public.class)
 	private BigDecimal amount;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

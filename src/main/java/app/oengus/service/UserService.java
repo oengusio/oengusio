@@ -101,7 +101,7 @@ public class UserService {
         }
     }
 
-    public void update(final Integer id, final User userPatch) throws NotFoundException {
+    public void update(final int id, final User userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
         BeanUtils.copyProperties(userPatch, user);
         this.userRepositoryService.update(user);
@@ -223,7 +223,7 @@ public class UserService {
         return this.userRepositoryService.findByUsernameContainingIgnoreCase(username);
     }
 
-    public Boolean exists(final String name) {
+    public boolean exists(final String name) {
         return this.userRepositoryService.existsByUsername(name) || "new".equalsIgnoreCase(name) ||
                 "settings".equalsIgnoreCase(name);
     }

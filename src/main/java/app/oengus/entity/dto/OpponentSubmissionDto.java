@@ -10,7 +10,7 @@ public class OpponentSubmissionDto {
 
 
 	@JsonView(Views.Public.class)
-	private Integer id;
+	private int id;
 
 	@JsonView(Views.Public.class)
 	private List<User> users;
@@ -19,7 +19,7 @@ public class OpponentSubmissionDto {
 	private String gameName;
 
 	@JsonView(Views.Public.class)
-	private Integer categoryId;
+	private int categoryId;
 
 	@JsonView(Views.Public.class)
 	private String categoryName;
@@ -27,11 +27,11 @@ public class OpponentSubmissionDto {
 	@JsonView(Views.Public.class)
 	private String video;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -51,11 +51,11 @@ public class OpponentSubmissionDto {
 		this.gameName = gameName;
 	}
 
-	public Integer getCategoryId() {
+	public int getCategoryId() {
 		return this.categoryId;
 	}
 
-	public void setCategoryId(final Integer categoryId) {
+	public void setCategoryId(final int categoryId) {
 		this.categoryId = categoryId;
 	}
 

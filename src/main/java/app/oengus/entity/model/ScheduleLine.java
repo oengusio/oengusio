@@ -25,7 +25,7 @@ public class ScheduleLine {
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
@@ -83,7 +83,7 @@ public class ScheduleLine {
 
     @Column(name = "category_id")
     @JsonView(Views.Public.class)
-    private Integer categoryId;
+    private int categoryId;
 
     @Column(name = "run_type")
     @JsonView(Views.Public.class)
@@ -108,11 +108,11 @@ public class ScheduleLine {
     @Transient
     private ZonedDateTime date;
 
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(final Integer id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -196,11 +196,11 @@ public class ScheduleLine {
         this.runners = runners;
     }
 
-    public Integer getCategoryId() {
+    public int getCategoryId() {
         return this.categoryId;
     }
 
-    public void setCategoryId(final Integer categoryId) {
+    public void setCategoryId(final int categoryId) {
         this.categoryId = categoryId;
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class OpponentCategoryDto {
 	@JsonView(Views.Public.class)
-	private Integer id;
+	private int id;
 
 	@JsonView(Views.Public.class)
 	private User user;
@@ -20,11 +20,11 @@ public class OpponentCategoryDto {
 	@JsonView(Views.Public.class)
 	private List<Availability> availabilities;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

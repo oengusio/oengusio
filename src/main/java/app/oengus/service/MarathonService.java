@@ -93,7 +93,7 @@ public class MarathonService {
 		return this.marathonRepositoryService.save(marathon);
 	}
 
-	public Boolean exists(final String name) {
+	public boolean exists(final String name) {
 		return this.marathonRepositoryService.existsById(name);
 	}
 

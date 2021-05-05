@@ -34,7 +34,7 @@ public interface DonationRepository extends PagingAndSortingRepository<Donation,
     BigDecimal findMaxAmountByMarathon(@Param("marathon") Marathon marathon);
 
     @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
-    Integer countByMarathonAndApprovedIsTrue(Marathon marathon);
+    int countByMarathonAndApprovedIsTrue(Marathon marathon);
 
     void deleteByFunctionalId(String functionalId);
 }

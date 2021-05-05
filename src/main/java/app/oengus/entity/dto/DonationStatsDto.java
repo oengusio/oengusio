@@ -7,7 +7,7 @@ public class DonationStatsDto {
 	private BigDecimal total;
 	private BigDecimal average;
 	private BigDecimal max;
-	private Integer count;
+	private int count;
 
 	public BigDecimal getTotal() {
 		return this.total;
@@ -33,11 +33,11 @@ public class DonationStatsDto {
 		this.max = max;
 	}
 
-	public Integer getCount() {
+	public int getCount() {
 		return this.count;
 	}
 
-	public void setCount(final Integer count) {
+	public void setCount(final int count) {
 		this.count = count;
 	}
 }

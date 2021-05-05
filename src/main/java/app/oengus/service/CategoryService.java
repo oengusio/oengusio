@@ -48,7 +48,7 @@ public class CategoryService {
                 if (category.getOpponents()
                             .stream()
                             .map(opponent -> opponent.getSubmission().getUser())
-                            .anyMatch(user1 -> user1.getId().equals(user.getId()))) {
+                            .anyMatch(user1 -> user1.getId() == user.getId())) {
                     throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
                 }
             }

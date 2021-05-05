@@ -66,7 +66,7 @@ public class Marathon {
 
     @Column(name = "is_onsite")
     @JsonView(Views.Public.class)
-    private Boolean onsite = false;
+    private boolean onsite = false;
 
     @Column(name = "location")
     @JsonView(Views.Public.class)
@@ -80,22 +80,22 @@ public class Marathon {
     @Column(name = "max_games_per_runner")
     @JsonView(Views.Public.class)
     @Min(value = 1)
-    private Integer maxGamesPerRunner = 5;
+    private int maxGamesPerRunner = 5;
 
     @Column(name = "max_categories_per_game")
     @JsonView(Views.Public.class)
     @Min(value = 1)
     @Max(value = 10)
-    private Integer maxCategoriesPerGame = 3;
+    private int maxCategoriesPerGame = 3;
 
     @Column(name = "has_multiplayer")
     @JsonView(Views.Public.class)
-    private Boolean hasMultiplayer = true;
+    private boolean hasMultiplayer = true;
 
     @Column(name = "max_number_of_screens")
     @JsonView(Views.Public.class)
     @Min(value = 1)
-    private Integer maxNumberOfScreens = 4;
+    private int maxNumberOfScreens = 4;
 
     @Column(name = "twitch")
     @JsonView(Views.Public.class)
@@ -119,7 +119,7 @@ public class Marathon {
 
     @Column(name = "discord_privacy")
     @JsonView(Views.Public.class)
-    private Boolean discordPrivacy = false;
+    private boolean discordPrivacy = false;
 
     @Column(name = "submits_open")
     @JsonView(Views.Public.class)
@@ -148,7 +148,7 @@ public class Marathon {
 
     @Column(name = "is_private")
     @JsonView(Views.Public.class)
-    private Boolean isPrivate = false;
+    private boolean isPrivate = false;
 
     @Column(name = "video_required")
     @JsonView(Views.Public.class)
@@ -286,11 +286,11 @@ public class Marathon {
         this.description = description;
     }
 
-    public Boolean getOnsite() {
+    public boolean getOnsite() {
         return this.onsite;
     }
 
-    public void setOnsite(final Boolean onsite) {
+    public void setOnsite(final boolean onsite) {
         this.onsite = onsite;
     }
 
@@ -310,35 +310,35 @@ public class Marathon {
         this.language = language;
     }
 
-    public Integer getMaxGamesPerRunner() {
+    public int getMaxGamesPerRunner() {
         return this.maxGamesPerRunner;
     }
 
-    public void setMaxGamesPerRunner(final Integer maxGamesPerRunner) {
+    public void setMaxGamesPerRunner(final int maxGamesPerRunner) {
         this.maxGamesPerRunner = maxGamesPerRunner;
     }
 
-    public Integer getMaxCategoriesPerGame() {
+    public int getMaxCategoriesPerGame() {
         return this.maxCategoriesPerGame;
     }
 
-    public void setMaxCategoriesPerGame(final Integer maxCategoriesPerGame) {
+    public void setMaxCategoriesPerGame(final int maxCategoriesPerGame) {
         this.maxCategoriesPerGame = maxCategoriesPerGame;
     }
 
-    public Boolean getHasMultiplayer() {
+    public boolean getHasMultiplayer() {
         return this.hasMultiplayer;
     }
 
-    public void setHasMultiplayer(final Boolean hasMultiplayer) {
+    public void setHasMultiplayer(final boolean hasMultiplayer) {
         this.hasMultiplayer = hasMultiplayer;
     }
 
-    public Integer getMaxNumberOfScreens() {
+    public int getMaxNumberOfScreens() {
         return this.maxNumberOfScreens;
     }
 
-    public void setMaxNumberOfScreens(final Integer maxNumberOfScreens) {
+    public void setMaxNumberOfScreens(final int maxNumberOfScreens) {
         this.maxNumberOfScreens = maxNumberOfScreens;
     }
 
@@ -382,11 +382,11 @@ public class Marathon {
         this.country = country;
     }
 
-    public Boolean getDiscordPrivacy() {
+    public boolean getDiscordPrivacy() {
         return this.discordPrivacy;
     }
 
-    public void setDiscordPrivacy(final Boolean discordPrivacy) {
+    public void setDiscordPrivacy(final boolean discordPrivacy) {
         this.discordPrivacy = discordPrivacy;
     }
 
@@ -422,11 +422,11 @@ public class Marathon {
         this.scheduleDone = scheduleDone;
     }
 
-    public Boolean getIsPrivate() {
+    public boolean getIsPrivate() {
         return this.isPrivate;
     }
 
-    public void setIsPrivate(final Boolean aPrivate) {
+    public void setIsPrivate(final boolean aPrivate) {
         this.isPrivate = aPrivate;
     }
 

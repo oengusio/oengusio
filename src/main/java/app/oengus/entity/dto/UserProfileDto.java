@@ -8,7 +8,7 @@ public class UserProfileDto {
     private int id;
     private String username;
     private String usernameJapanese;
-    private Boolean enabled;
+    private boolean enabled;
     private String twitterName;
     private String discordName;
     private String twitchName;
@@ -46,11 +46,11 @@ public class UserProfileDto {
         this.usernameJapanese = usernameJapanese;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return this.enabled;
     }
 
-    public void setEnabled(final Boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 

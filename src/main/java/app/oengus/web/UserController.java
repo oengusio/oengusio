@@ -102,7 +102,7 @@ public class UserController {
     @PatchMapping("/{id}")
     @PreAuthorize("isSelf(#id) && !isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> updateUser(@PathVariable("id") final Integer id,
+    public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final User userPatch,
                                         final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -145,7 +145,7 @@ public class UserController {
     @PostMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> ban(@PathVariable Integer id) {
+    public ResponseEntity<?> ban(@PathVariable int id) {
         try {
             this.userService.addRole(id, Role.ROLE_BANNED);
 
@@ -158,7 +158,7 @@ public class UserController {
     @DeleteMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> unban(@PathVariable Integer id) {
+    public ResponseEntity<?> unban(@PathVariable int id) {
         try {
             this.userService.removeRole(id, Role.ROLE_BANNED);
 

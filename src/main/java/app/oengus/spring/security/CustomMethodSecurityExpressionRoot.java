@@ -30,7 +30,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 		this.userService = userService;
     }
 
-	public boolean isSelf(final Integer id) {
+	public boolean isSelf(final int id) {
 		final User user = this.getUser();
 		return user != null && Objects.equals(user.getId(), id);
 	}
@@ -59,8 +59,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 			return true;
 		}
 		final Marathon marathon = this.marathonService.findOne(id);
-		return (marathon.getCreator().getId().equals(user.getId()) ||
-				marathon.getModerators().stream().anyMatch(u -> u.getId().equals(user.getId()))) &&
+		return (marathon.getCreator().getId() == user.getId() ||
+				marathon.getModerators().stream().anyMatch(u -> u.getId() == user.getId())) &&
 				ZonedDateTime.now().isBefore(marathon.getEndDate());
 	}
 

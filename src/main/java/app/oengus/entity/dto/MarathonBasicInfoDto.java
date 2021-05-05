@@ -8,8 +8,8 @@ public class MarathonBasicInfoDto {
 	private String name;
 	private ZonedDateTime startDate;
 	private ZonedDateTime endDate;
-	private Boolean onsite;
-	private Boolean isPrivate;
+	private boolean onsite;
+	private boolean isPrivate;
 	private String location;
 	private String country;
 	private String language;
@@ -46,11 +46,11 @@ public class MarathonBasicInfoDto {
 		this.endDate = endDate;
 	}
 
-	public Boolean getOnsite() {
+	public boolean getOnsite() {
 		return this.onsite;
 	}
 
-	public void setOnsite(final Boolean onsite) {
+	public void setOnsite(final boolean onsite) {
 		this.onsite = onsite;
 	}
 
@@ -78,11 +78,11 @@ public class MarathonBasicInfoDto {
 		this.country = country;
 	}
 
-	public Boolean getPrivate() {
+	public boolean getPrivate() {
 		return this.isPrivate;
 	}
 
-	public void setPrivate(final Boolean aPrivate) {
+	public void setPrivate(final boolean aPrivate) {
 		this.isPrivate = aPrivate;
 	}
 }

@@ -20,7 +20,7 @@ public class Question {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
@@ -63,13 +63,13 @@ public class Question {
 
 	@Column(name = "position")
 	@JsonView(Views.Public.class)
-	private Integer position;
+	private int position;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -129,11 +129,11 @@ public class Question {
 		this.description = description;
 	}
 
-	public Integer getPosition() {
+	public int getPosition() {
 		return this.position;
 	}
 
-	public void setPosition(final Integer position) {
+	public void setPosition(final int position) {
 		this.position = position;
 	}
 }

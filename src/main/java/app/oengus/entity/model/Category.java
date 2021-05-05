@@ -27,7 +27,7 @@ public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonView(Views.Public.class)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "game_id")
@@ -84,11 +84,11 @@ public class Category {
 	@JsonView(Views.Public.class)
 	private Status status;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

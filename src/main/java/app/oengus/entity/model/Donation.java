@@ -29,7 +29,7 @@ public class Donation {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
@@ -65,7 +65,7 @@ public class Donation {
 
 	@Column(name = "approved")
 	@JsonView(Views.Internal.class)
-	private Boolean approved;
+	private boolean approved;
 
 	@OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -139,19 +139,19 @@ public class Donation {
 		this.comment = comment;
 	}
 
-	public Boolean getApproved() {
+	public boolean getApproved() {
 		return this.approved;
 	}
 
-	public void setApproved(final Boolean approved) {
+	public void setApproved(final boolean approved) {
 		this.approved = approved;
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

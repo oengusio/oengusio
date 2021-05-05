@@ -22,13 +22,13 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     User findByUsername(String username);
 
-    Boolean existsByUsernameIgnoreCase(String username);
+    boolean existsByUsernameIgnoreCase(String username);
 
-    Boolean existsByUsernameJapanese(String username);
+    boolean existsByUsernameJapanese(String username);
 
-    Boolean existsByDiscordId(String discordId);
+    boolean existsByDiscordId(String discordId);
 
-    Boolean existsByTwitchId(String twitchId);
+    boolean existsByTwitchId(String twitchId);
 
     @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     List<User> findByUsernameContainingIgnoreCaseAndEnabledTrue(String username);

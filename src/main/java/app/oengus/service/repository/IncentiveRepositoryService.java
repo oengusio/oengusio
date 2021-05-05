@@ -36,7 +36,7 @@ public class IncentiveRepositoryService {
 		final List<Object[]> results = this.incentiveRepository.findAmountsByMarathon(marathon);
 		final Map<Integer, BigDecimal> map = new HashMap<>();
 		results.forEach(result -> {
-			map.put((Integer) result[0], MathUtils.getBigDecimal(result[1]));
+			map.put((int) result[0], MathUtils.getBigDecimal(result[1]));
 		});
 		return map;
 	}
@@ -45,7 +45,7 @@ public class IncentiveRepositoryService {
 		return this.incentiveRepository.saveAll(incentive);
 	}
 
-	public void delete(final Integer incentiveId) {
+	public void delete(final int incentiveId) {
 		this.incentiveRepository.deleteById(incentiveId);
 	}
 

@@ -48,7 +48,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 				try {
 					final Claims claims = this.jwtUtil.getAllClaimsFromToken(token);
 					final List<String> rolesString = claims.get("role", List.class);
-					final Boolean enabled = claims.get("enabled", Boolean.class);
+					final boolean enabled = claims.get("enabled", Boolean.class);
 
 					final List<Role> roles = new ArrayList<>();
 					for (final String r : rolesString) {

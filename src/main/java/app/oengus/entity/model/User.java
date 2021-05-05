@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private Integer id;
+    private int id;
 
     @Column
     @JsonView(Views.Public.class)
@@ -46,7 +46,7 @@ public class User implements UserDetails {
 
     @Column(name = "active")
     @JsonView(Views.Public.class)
-    private Boolean enabled;
+    private boolean enabled;
 
     @ElementCollection
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -151,7 +151,7 @@ public class User implements UserDetails {
 
     @AssertTrue
     public boolean isEmailPresentForExistingUser() {
-        if (this.id != null && this.enabled) {
+        if (this.id > 0 && this.enabled) {
             return StringUtils.isNotEmpty(this.mail);
         }
 
@@ -162,7 +162,7 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    public void setEnabled(final Boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -174,11 +174,11 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
-    public void setId(final Integer id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -267,7 +267,7 @@ public class User implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id.equals(user.id) && username.equals(user.username);
+        return id == user.id && username.equals(user.username);
     }
 
     @Override
