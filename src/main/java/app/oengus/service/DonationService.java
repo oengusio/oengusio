@@ -198,7 +198,7 @@ public class DonationService {
         parsedDonation.setFunctionalId(null);
         parsedDonation.setMarathon(null);
         parsedDonation.setPaymentSource(null);
-        parsedDonation.setApproved(null);
+        parsedDonation.setApproved(false);
         parsedDonation.setAnswers(null);
         parsedDonation.setDonationIncentiveLinks(null);
         try {
