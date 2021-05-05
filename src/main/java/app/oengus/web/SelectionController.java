@@ -8,6 +8,7 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping({"/marathons/{marathonId}/selection", "/marathon/{marathonId}/selection"})
-@Api(value = "/marathons/{marathonId}/selection")
+@RequestMapping("/marathons/{marathonId}/selections")
+@Api
 public class SelectionController {
 
     @Autowired
@@ -44,8 +45,12 @@ public class SelectionController {
     @ApiIgnore
     public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
                                           @RequestBody final List<SelectionDto> selections) {
-        this.selectionService.saveOrUpdate(marathonId, selections);
-        return ResponseEntity.noContent().build();
+        try {
+            this.selectionService.saveOrUpdate(marathonId, selections);
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException ignored) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

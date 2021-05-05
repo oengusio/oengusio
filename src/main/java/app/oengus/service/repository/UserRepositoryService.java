@@ -14,7 +14,7 @@ public class UserRepositoryService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public User findById(final Integer runnerId) throws NotFoundException {
+	public User findById(final int runnerId) throws NotFoundException {
 		return this.userRepository.findById(runnerId)
 		                          .orElseThrow(() -> new NotFoundException("User not found"));
 	}
@@ -31,15 +31,15 @@ public class UserRepositoryService {
 		return this.userRepository.findByUsernameContainingIgnoreCaseAndEnabledTrue(username);
 	}
 
-	public Boolean existsByUsername(final String name) {
+	public boolean existsByUsername(final String name) {
 		return this.userRepository.existsByUsernameIgnoreCase(name) || this.userRepository.existsByUsernameJapanese(name);
 	}
 
-	public Boolean existsByDiscordId(final String discordId) {
+	public boolean existsByDiscordId(final String discordId) {
 		return this.userRepository.existsByDiscordId(discordId);
 	}
 
-	public Boolean existsByTwitchId(final String twitchId) {
+	public boolean existsByTwitchId(final String twitchId) {
 		return this.userRepository.existsByTwitchId(twitchId);
 	}
 

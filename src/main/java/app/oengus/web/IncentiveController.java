@@ -31,8 +31,8 @@ public class IncentiveController {
         response = Incentive.class,
         responseContainer = "List")
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-                                                @RequestParam(required = false, defaultValue = "true") final Boolean withLocked,
-                                                @RequestParam(required = false, defaultValue = "false") final Boolean withUnapproved) {
+                                                @RequestParam(required = false, defaultValue = "true") final boolean withLocked,
+                                                @RequestParam(required = false, defaultValue = "false") final boolean withUnapproved) {
         try {
             return ResponseEntity.ok()
                 .cacheControl(CacheControl.noCache())

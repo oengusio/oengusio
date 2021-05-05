@@ -727,4 +727,12 @@
         <modifyDataType tableName="users" columnName="username" newDataType="varchar(37)"/>
     </changeSet>
 
+    <changeSet id="20210503-1" author="duncte123">
+        <!-- it should be 32 instead of 37 whoops XD -->
+        <modifyDataType tableName="users" columnName="username" newDataType="varchar(32)"/>
+        <addColumn tableName="marathon">
+            <column name="announce_accepted_submissions" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

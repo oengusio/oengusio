@@ -21,7 +21,7 @@ public class Incentive {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
@@ -84,11 +84,11 @@ public class Incentive {
 	@Transient
 	private boolean toDelete = false;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

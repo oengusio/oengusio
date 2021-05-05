@@ -39,8 +39,8 @@ public class DonationController {
     @JsonView(Views.Public.class)
     @ApiIgnore
     public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
-                                             @RequestParam("page") final Integer page,
-                                             @RequestParam("size") final Integer size) {
+                                             @RequestParam("page") final int page,
+                                             @RequestParam("size") final int size) {
         try {
             return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))

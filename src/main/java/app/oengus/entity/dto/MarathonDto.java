@@ -8,7 +8,7 @@ public class MarathonDto extends Marathon {
 
 	private BigDecimal donationsTotal;
 
-	private Boolean hasSubmitted;
+	private boolean hasSubmitted;
 
 	public BigDecimal getDonationsTotal() {
 		return this.donationsTotal;
@@ -18,11 +18,11 @@ public class MarathonDto extends Marathon {
 		this.donationsTotal = donationsTotal;
 	}
 
-	public Boolean getHasSubmitted() {
+	public boolean getHasSubmitted() {
 		return this.hasSubmitted;
 	}
 
-	public void setHasSubmitted(final Boolean hasSubmitted) {
+	public void setHasSubmitted(final boolean hasSubmitted) {
 		this.hasSubmitted = hasSubmitted;
 	}
 }

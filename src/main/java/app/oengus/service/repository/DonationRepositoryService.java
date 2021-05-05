@@ -65,7 +65,7 @@ public class DonationRepositoryService {
 		return result;
 	}
 
-	public Integer countByMarathon(final String marathonId) {
+	public int countByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		return this.donationRepository.countByMarathonAndApprovedIsTrue(marathon);

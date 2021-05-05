@@ -35,7 +35,7 @@ public class HoraroSchedule {
     @JsonProperty("start")
     private String start;
     @JsonProperty("start_t")
-    private Integer startT;
+    private int startT;
     @JsonProperty("website")
     private String website;
     @JsonProperty("twitter")
@@ -104,12 +104,12 @@ public class HoraroSchedule {
     }
 
     @JsonProperty("start_t")
-    public Integer getStartT() {
+    public int getStartT() {
         return this.startT;
     }
 
     @JsonProperty("start_t")
-    public void setStartT(final Integer startT) {
+    public void setStartT(final int startT) {
         this.startT = startT;
     }
 

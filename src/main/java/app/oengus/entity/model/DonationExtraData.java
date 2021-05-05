@@ -19,7 +19,7 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "question_id")
@@ -50,11 +50,11 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
 		return StringUtils.isNotEmpty(this.answer);
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -84,6 +84,6 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
 
 	@Override
 	public int compareTo(final DonationExtraData o) {
-		return this.getQuestion().getPosition().compareTo(o.getQuestion().getPosition());
+	    return Integer.compare(this.getQuestion().getPosition(), o.getQuestion().getPosition());
 	}
 }

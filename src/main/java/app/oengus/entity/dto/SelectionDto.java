@@ -7,19 +7,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class SelectionDto {
 
 	@JsonView(Views.Public.class)
-	private Integer id;
+	private int id;
 
 	@JsonView(Views.Public.class)
-	private Integer categoryId;
+	private int categoryId;
 
 	@JsonView(Views.Public.class)
 	private Status status;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -31,11 +31,11 @@ public class SelectionDto {
 		this.status = status;
 	}
 
-	public Integer getCategoryId() {
+	public int getCategoryId() {
 		return this.categoryId;
 	}
 
-	public void setCategoryId(final Integer categoryId) {
+	public void setCategoryId(final int categoryId) {
 		this.categoryId = categoryId;
 	}
 }

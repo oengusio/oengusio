@@ -19,9 +19,9 @@ public class Opponent {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonView(Views.Public.class)
-	private Integer id;
+	private int id;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
@@ -39,11 +39,11 @@ public class Opponent {
 	@Size(max = 100)
 	private String video;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

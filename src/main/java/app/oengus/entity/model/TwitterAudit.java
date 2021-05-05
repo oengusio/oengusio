@@ -9,7 +9,7 @@ public class TwitterAudit {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
@@ -30,11 +30,11 @@ public class TwitterAudit {
 		this.actionDate = ZonedDateTime.now();
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

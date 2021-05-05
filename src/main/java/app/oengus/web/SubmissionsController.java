@@ -162,7 +162,7 @@ public class SubmissionsController {
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
-                                                      @PathVariable("userId") final Integer userId) {
+                                                      @PathVariable("userId") final int userId) {
         try {
             return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
         } catch (final NotFoundException e) {

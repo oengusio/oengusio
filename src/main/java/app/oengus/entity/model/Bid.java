@@ -21,7 +21,7 @@ public class Bid {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private int id;
 
 	@ManyToOne
 	@JoinColumn(name = "incentive_id")
@@ -42,23 +42,23 @@ public class Bid {
 
 	@Column(name = "approved")
 	@JsonView(Views.Public.class)
-	private Boolean approved;
+	private boolean approved;
 
 	@OneToMany(mappedBy = "bid")
 	@JsonIgnore
 	private List<DonationIncentiveLink> donationIncentiveLinks;
 
 	@Transient
-	private Integer incentiveId;
+	private int incentiveId;
 
 	@Transient
 	private boolean toDelete;
 
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(final Integer id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 
@@ -86,19 +86,19 @@ public class Bid {
 		this.currentAmount = currentAmount;
 	}
 
-	public Boolean getApproved() {
+	public boolean getApproved() {
 		return this.approved;
 	}
 
-	public void setApproved(final Boolean approved) {
+	public void setApproved(final boolean approved) {
 		this.approved = approved;
 	}
 
-	public Integer getIncentiveId() {
+	public int getIncentiveId() {
 		return this.incentiveId;
 	}
 
-	public void setIncentiveId(final Integer incentiveId) {
+	public void setIncentiveId(final int incentiveId) {
 		this.incentiveId = incentiveId;
 	}
 

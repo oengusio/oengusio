@@ -54,15 +54,15 @@ public class SubmissionRepositoryService {
 		this.submissionRepository.deleteByMarathon(marathon);
 	}
 
-	public void delete(final Integer id) {
+	public void delete(final int id) {
 		this.submissionRepository.deleteById(id);
 	}
 
-	public Boolean existsByMarathonAndUser(final Marathon marathon, final User user) {
+	public boolean existsByMarathonAndUser(final Marathon marathon, final User user) {
 		return this.submissionRepository.existsByMarathonAndUser(marathon, user);
 	}
 
-	public Submission findById(final Integer id) throws NotFoundException {
+	public Submission findById(final int id) throws NotFoundException {
 		return this.submissionRepository.findById(id).orElseThrow(() -> new NotFoundException("Submission not found"));
 	}
 }

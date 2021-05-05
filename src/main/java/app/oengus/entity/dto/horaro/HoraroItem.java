@@ -19,11 +19,11 @@ public class HoraroItem {
     @JsonProperty("length")
     private String length;
     @JsonProperty("length_t")
-    private Integer lengthT;
+    private int lengthT;
     @JsonProperty("scheduled")
     private String scheduled;
     @JsonProperty("scheduled_t")
-    private Integer scheduledT;
+    private int scheduledT;
     /**
      * (Required)
      */
@@ -43,12 +43,12 @@ public class HoraroItem {
     }
 
     @JsonProperty("length_t")
-    public Integer getLengthT() {
+    public int getLengthT() {
         return this.lengthT;
     }
 
     @JsonProperty("length_t")
-    public void setLengthT(final Integer lengthT) {
+    public void setLengthT(final int lengthT) {
         this.lengthT = lengthT;
     }
 
@@ -63,12 +63,12 @@ public class HoraroItem {
     }
 
     @JsonProperty("scheduled_t")
-    public Integer getScheduledT() {
+    public int getScheduledT() {
         return this.scheduledT;
     }
 
     @JsonProperty("scheduled_t")
-    public void setScheduledT(final Integer scheduledT) {
+    public void setScheduledT(final int scheduledT) {
         this.scheduledT = scheduledT;
     }
 

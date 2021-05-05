@@ -25,7 +25,7 @@ public class MarathonRepositoryService {
 		return this.marathonRepository.save(marathon);
 	}
 
-	public Boolean existsById(final String name) {
+	public boolean existsById(final String name) {
 		return this.marathonRepository.existsById(name);
 	}
 
