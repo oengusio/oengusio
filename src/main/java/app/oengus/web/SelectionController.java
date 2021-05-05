@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping({"/marathons/{marathonId}/selection", "/marathon/{marathonId}/selection"})
-@Api(value = "/marathons/{marathonId}/selection")
+@RequestMapping("/marathons/{marathonId}/selections")
+@Api
 public class SelectionController {
 
     @Autowired

@@ -1,6 +1,7 @@
 package app.oengus.entity.model;
 
 import app.oengus.helper.BeanHelper;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -76,6 +77,10 @@ public class Selection {
 
     public static Selection createDetached(Selection selection) {
         final Selection fresh = new Selection();
+        Hibernate.initialize(selection.getCategory());
+        Hibernate.initialize(selection.getCategory().getGame());
+        Hibernate.initialize(selection.getCategory().getOpponents());
+        Hibernate.initialize(selection.getMarathon());
 
         BeanHelper.copyProperties(selection, fresh);
 

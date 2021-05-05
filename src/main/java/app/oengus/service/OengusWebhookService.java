@@ -25,7 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static app.oengus.helper.WebhookHelper.createParameters;
 
@@ -49,6 +56,13 @@ public class OengusWebhookService {
 
     @Autowired
     private UserService userService;
+
+    // NOTE: this can only do two at the same time
+    private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
+        final Thread t = new Thread(r, "selection announcement thread");
+        t.setDaemon(true);
+        return t;
+    });
 
     /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
@@ -257,7 +271,12 @@ public class OengusWebhookService {
                     );
                 }
             } else if (args.containsKey("selections")) {
-                final List<Selection> selections = (List<Selection>) args.get("selections");
+                // Detach the selections and filter on accepted ones
+                final List<Selection> selections = ((List<Selection>) args.get("selections"))
+                    .stream()
+                    .filter((it) -> it.getStatus() == Status.VALIDATED)
+                    .map(Selection::createDetached)
+                    .collect(Collectors.toList());
 
                 this.sendApprovedSelections(newsub, selections);
             }
@@ -531,14 +550,28 @@ public class OengusWebhookService {
     }
 
     private void sendApprovedSelections(final String channel, final List<Selection> selections) {
-        try (final WebhookClient client = this.jda.forChannel(channel)) {
-            for (Selection selection : selections) {
-                // only send an update if the selection was updated to validated
-                if (selection.getStatus() == Status.VALIDATED) {
-                    this.sendSelectionApprovedEmbed(client, selection);
+        final WebhookClient client = this.jda.forChannel(channel);
+        final AtomicInteger i = new AtomicInteger(0);
+        final AtomicReference<ScheduledFuture<?>> future = new AtomicReference<>();
+
+        client.send("Runs have been accepted, get ready for the announcements!");
+
+        future.set(this.selectionTImer.scheduleAtFixedRate(() -> {
+            try {
+                if (i.get() >= selections.size()) {
+                    client.send("Th-th-th-th-th-That's all, Folks.").thenRun(client::close);
+                    future.get().cancel(true);
+                    return;
                 }
+
+                final Selection selection = selections.get(i.get());
+
+                this.sendSelectionApprovedEmbed(client, selection);
+                i.incrementAndGet();
+            } catch (Exception e) {
+                LOG.error("Sending webhook failed", e);
             }
-        }
+        }, 30L, 30L, TimeUnit.SECONDS));
     }
 
     private void sendSelectionApprovedEmbed(final WebhookClient client, final Selection selection) {

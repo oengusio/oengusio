@@ -118,14 +118,14 @@ public class MarathonService {
 		this.entityManager.detach(marathon);
 
 		final boolean openedSubmissions = !marathon.isSubmitsOpen() && patch.isSubmitsOpen();
-		final boolean selectionDone = !marathon.isSelectionDone() && patch.isSelectionDone();
+		final boolean marakedSelectionDone = !marathon.isSelectionDone() && patch.isSelectionDone();
 
 		BeanHelper.copyProperties(patch, marathon, "creator");
 
 		marathon.setStartDate(marathon.getStartDate().withSecond(0));
 		marathon.setEndDate(marathon.getEndDate().withSecond(0));
 
-		if (selectionDone) {
+		if (marakedSelectionDone) {
 			this.twitterService.sendSelectionDoneTweet(marathon);
 			// send accepted submissions
             if (marathon.isAnnounceAcceptedSubmissions() && marathon.hasWebhook()) {
@@ -164,6 +164,7 @@ public class MarathonService {
 		} else {
 			this.eventSchedulerService.unscheduleSubmissions(marathon);
 		}
+
 		marathon.getQuestions().forEach(question -> question.setMarathon(marathon));
 		this.marathonRepositoryService.update(marathon);
 	}
