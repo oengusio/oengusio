@@ -126,7 +126,7 @@ Mentioned models are available on this page under the models section at the bott
 ```
 ### User
 ```json5
-{ // user
+{
     "id": 0,
     "username": "duncte123",
     "usernameJapanese": null, // string
