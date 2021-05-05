@@ -75,8 +75,8 @@ spring:
         username: ${DB_USERNAME}
         password: ${DB_PASSWORD}
         hikari:
-            # Use 5 connections and leave the 6th in case we need to connect manually
-            maximum-pool-size: 5
+            # Use 4 connections and leave the others for other applications
+            maximum-pool-size: 4
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
     jackson:
