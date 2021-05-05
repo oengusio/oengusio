@@ -101,6 +101,17 @@ Mentioned models are available on this page under the models section at the bott
     }
 }
 ```
+### Selection done event
+```json5
+{
+    "event": "SELECTION_DONE",
+    "selections": [
+        {
+            // SELECTION MODEL //
+        }
+    ]
+}
+```
 
 ## Models
 ### Donation
@@ -179,5 +190,14 @@ Mentioned models are available on this page under the models section at the bott
     "opponents": [],
     "opponentDtos": [],
     "status": null,
+}
+```
+### Selection
+```json5
+{
+    "id": 0,
+    "marathon": null,
+    "category": null,
+    "status": "TODO | REJECTED | BONUS | VALIDATED | BACKUP"
 }
 ```
