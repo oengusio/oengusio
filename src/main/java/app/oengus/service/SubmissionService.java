@@ -108,7 +108,7 @@ public class SubmissionService {
             game.setSubmission(submission);
             game.getCategories().forEach(category -> {
                 category.setGame(game);
-                if (category.getId() > 0) {
+                if (category.getId() <= 0) {
                     this.createSelection(category, marathon);
                 } else {
                     final Selection selection = this.selectionRepositoryService.findByCategory(category);

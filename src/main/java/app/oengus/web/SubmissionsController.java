@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 
 @CrossOrigin
 @RestController
-@RequestMapping({"/marathons/{marathonId}/submissions", "/marathon/{marathonId}/submissions"})
-@Api(value = "/marathons/{marathonId}/submissions")
+@RequestMapping("/marathons/{marathonId}/submissions")
+@Api
 public class SubmissionsController {
 
     @Autowired
