@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 @CrossOrigin
 @RestController
-@RequestMapping({"/marathons"})
+@RequestMapping("/marathons")
 @Api
 public class MarathonController {
 

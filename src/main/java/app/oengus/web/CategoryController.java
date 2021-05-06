@@ -18,8 +18,8 @@ import java.security.Principal;
 
 @CrossOrigin
 @RestController
-@RequestMapping({"/marathons/{marathonId}/categories", "/marathon/{marathonId}/category"})
-@Api(value = "/marathons/{marathonId}/categories")
+@RequestMapping("/marathons/{marathonId}/categories")
+@Api
 public class CategoryController {
 
     @Autowired

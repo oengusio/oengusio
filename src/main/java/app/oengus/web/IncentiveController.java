@@ -19,8 +19,8 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping({"/marathons/{marathonId}/incentives", "/marathon/{marathonId}/incentive"})
-@Api(value = "/marathons/{marathonId}/incentives")
+@RequestMapping("/marathons/{marathonId}/incentives")
+@Api
 public class IncentiveController {
 
     @Autowired

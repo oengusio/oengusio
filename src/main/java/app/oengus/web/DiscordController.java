@@ -19,7 +19,7 @@ import javax.annotation.security.RolesAllowed;
 
 @CrossOrigin
 @RestController
-@RequestMapping({"/marathons/{marathonId}/discord", "/marathon/{marathonId}/discord"})
+@RequestMapping("/marathons/{marathonId}/discord")
 @ApiIgnore
 public class DiscordController {
     @Autowired
