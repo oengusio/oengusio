@@ -159,6 +159,7 @@ public class MarathonController {
             final Marathon marathon = this.marathonService.getById(id);
 
             marathon.setSelectionDone(true);
+            marathon.setSubmitsOpen(false);
 
             this.marathonService.update(id, marathon);
 

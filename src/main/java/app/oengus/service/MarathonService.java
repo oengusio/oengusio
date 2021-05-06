@@ -12,6 +12,7 @@ import app.oengus.service.repository.DonationRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.twitter.AbstractTwitterService;
 import javassist.NotFoundException;
+import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +116,7 @@ public class MarathonService {
     @Transactional
     public void update(final String id, final Marathon patch) throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(id);
+        Hibernate.initialize(marathon.getQuestions());
         this.entityManager.detach(marathon);
 
         final boolean openedSubmissions = !marathon.isSubmitsOpen() && patch.isSubmitsOpen();
