@@ -28,7 +28,7 @@ public class CategoryService {
     @Autowired
     private OengusWebhookService webhookService;
 
-    private static final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP_RACE, RunType.COOP, RunType.RACE);
+    public static final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP_RACE, RunType.COOP, RunType.RACE, RunType.RELAY, RunType.RELAY_RACE);
 
     public OpponentSubmissionDto findCategoryByCode(final String marathonId, final String code) {
         final Category category = this.categoryRepositoryService.findByCode(code);

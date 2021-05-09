@@ -24,6 +24,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static app.oengus.service.CategoryService.MULTIPLAYER_RUN_TYPES;
+
 @Service
 public class SubmissionService {
 
@@ -50,8 +52,6 @@ public class SubmissionService {
 
     @Autowired
     private EntityManager entityManager;
-
-    private final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP, RunType.COOP_RACE, RunType.RACE);
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {
@@ -120,7 +120,7 @@ public class SubmissionService {
                 if (category.getEstimate().toSecondsPart() > 0) {
                     category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
                 }
-                if (this.MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
+                if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
                     if (StringUtils.isEmpty(category.getCode())) {
                         String code;
                         do {

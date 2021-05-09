@@ -6,6 +6,8 @@ public enum RunType {
 	RACE,
 	COOP,
 	COOP_RACE,
-	OTHER
+	OTHER,
+    RELAY,
+    RELAY_RACE
 
 }
