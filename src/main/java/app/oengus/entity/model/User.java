@@ -41,7 +41,7 @@ public class User implements UserDetails {
 
     @Column(name = "username_ja")
     @JsonView(Views.Public.class)
-    @Size(max = 32)
+    @Size(max = 16)
     private String usernameJapanese;
 
     @Column(name = "active")
