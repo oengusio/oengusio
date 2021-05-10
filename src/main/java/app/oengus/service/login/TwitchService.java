@@ -48,18 +48,21 @@ public class TwitchService {
                                                     .get(0);
 
         User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
+
         if (user == null) {
             user = new User();
             user.setRoles(List.of(Role.ROLE_USER));
             user.setEnabled(true);
-            user.setUsername(
-                    StringUtils.substring(twitchUser.getLogin(), 0, 16));
+            user.setUsername(StringUtils.substring(twitchUser.getLogin(), 0, 32));
+
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                 throw new LoginException("USERNAME_EXISTS");
             }
+
             if (StringUtils.length(user.getUsername()) < 3) {
                 user.setUsername("user" + RandomUtils.nextInt(0, 999999));
             }
+
             user.setTwitchId(twitchUser.getId());
             user.setTwitchName(twitchUser.getLogin());
             user = this.userRepositoryService.save(user);

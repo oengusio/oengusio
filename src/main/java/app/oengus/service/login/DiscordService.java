@@ -49,8 +49,12 @@ public class DiscordService {
             user.setRoles(List.of(Role.ROLE_USER));
             user.setEnabled(true);
             user.setUsername(
-                    StringUtils.substring(discordUser.getUsername().replace(' ', '_').replaceAll("[^\\w\\-]", ""), 0,
-                            16));
+                    StringUtils.substring(
+                        discordUser.getUsername().replace(' ', '_').replaceAll("[^\\w\\-]", ""),
+                        0, 32
+                    )
+            );
+
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                 throw new LoginException("USERNAME_EXISTS");
             }

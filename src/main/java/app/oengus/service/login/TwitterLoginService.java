@@ -94,12 +94,15 @@ public class TwitterLoginService {
                 user.setRoles(List.of(Role.ROLE_USER));
                 user.setEnabled(true);
                 user.setUsername(twitterUser.getScreenName());
+
                 if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                     throw new LoginException("USERNAME_EXISTS");
                 }
+
                 if (StringUtils.length(user.getUsername()) < 3) {
                     user.setUsername("user" + RandomUtils.nextInt(0, 999999));
                 }
+
                 user.setTwitterId(Long.toString(twitterUser.getId()));
                 user.setTwitterName(twitterUser.getScreenName());
                 user = this.userRepositoryService.save(user);
