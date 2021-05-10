@@ -25,101 +25,105 @@ import java.util.Objects;
 
 @Service
 public class TwitterLoginService {
+    private final UserRepositoryService userRepositoryService;
 
-	@Autowired
-	private UserRepositoryService userRepositoryService;
-
+    // TODO: move these values to the constructor
     @Value("${twitter.oauth.consumerKey}")
     private String consumerKey;
 
     @Value("${twitter.oauth.consumerSecret}")
     private String consumerSecret;
 
-	@Value("${twitter.loginCallback}")
-	private String loginCallback;
+    @Value("${twitter.loginCallback}")
+    private String loginCallback;
 
-	@Value("${twitter.syncCallback}")
-	private String syncCallback;
+    @Value("${twitter.syncCallback}")
+    private String syncCallback;
 
-	private TwitterFactory twitterFactory;
+    private TwitterFactory twitterFactory;
 
-	private Twitter getTwitter() {
-	    // always return a new instance because it has state :/
-	    return this.getTwitterFactory().getInstance();
+    @Autowired
+    public TwitterLoginService(UserRepositoryService userRepositoryService) {
+        this.userRepositoryService = userRepositoryService;
     }
 
-	private TwitterFactory getTwitterFactory() {
-	    if (this.twitterFactory == null) {
+    private Twitter getTwitter() {
+        // always return a new instance because it has state :/
+        return this.getTwitterFactory().getInstance();
+    }
+
+    private TwitterFactory getTwitterFactory() {
+        if (this.twitterFactory == null) {
             final ConfigurationBuilder cb = new ConfigurationBuilder();
             cb.setOAuthConsumerKey(this.consumerKey)
                 .setOAuthConsumerSecret(this.consumerSecret)
-                .setDebugEnabled(true);
+                .setDebugEnabled(false);
 
             this.twitterFactory = new TwitterFactory(cb.build());
         }
 
-	    return this.twitterFactory;
+        return this.twitterFactory;
     }
 
-	public String generateAuthUrlForLogin() {
-		try {
-			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.loginCallback);
-			return requestToken.getAuthenticationURL();
-		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR", e);
-		}
-	}
+    public String generateAuthUrlForLogin(final String host) {
+        try {
+            final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(host + this.loginCallback);
+            return requestToken.getAuthenticationURL();
+        } catch (final TwitterException e) {
+            throw new OengusBusinessException("TWITTER_ERROR", e);
+        }
+    }
 
-	public String generateAuthUrlForSync() {
-		try {
-			final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(this.syncCallback);
-			return requestToken.getAuthenticationURL();
-		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR", e);
-		}
-	}
+    public String generateAuthUrlForSync(final String host) {
+        try {
+            final RequestToken requestToken = this.getTwitter().getOAuthRequestToken(host + this.syncCallback);
+            return requestToken.getAuthenticationURL();
+        } catch (final TwitterException e) {
+            throw new OengusBusinessException("TWITTER_ERROR", e);
+        }
+    }
 
-	@Transactional
-	public User login(final String oauthToken, final String oauthVerifier) throws LoginException {
-		try {
-			final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
-			final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
-			User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
-			if (user == null) {
-				user = new User();
-				user.setRoles(List.of(Role.ROLE_USER));
-				user.setEnabled(true);
-				user.setUsername(twitterUser.getScreenName());
-				if (this.userRepositoryService.existsByUsername(user.getUsername())) {
-					throw new LoginException("USERNAME_EXISTS");
-				}
-				if (StringUtils.length(user.getUsername()) < 3) {
-					user.setUsername("user" + RandomUtils.nextInt(0, 999999));
-				}
-				user.setTwitterId(Long.toString(twitterUser.getId()));
-				user.setTwitterName(twitterUser.getScreenName());
-				user = this.userRepositoryService.save(user);
-			}
+    @Transactional
+    public User login(final String oauthToken, final String oauthVerifier) throws LoginException {
+        try {
+            final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
+            final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
+            User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
+            if (user == null) {
+                user = new User();
+                user.setRoles(List.of(Role.ROLE_USER));
+                user.setEnabled(true);
+                user.setUsername(twitterUser.getScreenName());
+                if (this.userRepositoryService.existsByUsername(user.getUsername())) {
+                    throw new LoginException("USERNAME_EXISTS");
+                }
+                if (StringUtils.length(user.getUsername()) < 3) {
+                    user.setUsername("user" + RandomUtils.nextInt(0, 999999));
+                }
+                user.setTwitterId(Long.toString(twitterUser.getId()));
+                user.setTwitterName(twitterUser.getScreenName());
+                user = this.userRepositoryService.save(user);
+            }
 
-			return user;
-		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR", e);
-		}
-	}
+            return user;
+        } catch (final TwitterException e) {
+            throw new OengusBusinessException("TWITTER_ERROR", e);
+        }
+    }
 
-	public SyncDto sync(final String oauthToken, final String oauthVerifier) throws LoginException {
-		try {
-			final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
-			final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
-			final User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
-			if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
-				throw new LoginException("ACCOUNT_ALREADY_SYNCED");
-			}
+    public SyncDto sync(final String oauthToken, final String oauthVerifier) throws LoginException {
+        try {
+            final AccessToken accessToken = this.getTwitter().getOAuthAccessToken(new RequestToken(oauthToken, ""), oauthVerifier);
+            final twitter4j.User twitterUser = this.getTwitterFactory().getInstance(accessToken).verifyCredentials();
+            final User user = this.userRepositoryService.findByTwitterId(Long.toString(twitterUser.getId()));
+            if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
+                throw new LoginException("ACCOUNT_ALREADY_SYNCED");
+            }
 
-			return new SyncDto(Long.toString(twitterUser.getId()), twitterUser.getScreenName());
-		} catch (final TwitterException e) {
-			throw new OengusBusinessException("TWITTER_ERROR", e);
-		}
-	}
+            return new SyncDto(Long.toString(twitterUser.getId()), twitterUser.getScreenName());
+        } catch (final TwitterException e) {
+            throw new OengusBusinessException("TWITTER_ERROR", e);
+        }
+    }
 
 }

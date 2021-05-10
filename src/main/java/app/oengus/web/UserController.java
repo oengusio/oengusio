@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,18 +35,25 @@ import java.util.Map;
 @RequestMapping("/users")
 @Api
 public class UserController {
+    private final UserService userService;
+    private final List<String> oauthOrigins;
 
     @Autowired
-    private UserService userService;
+    public UserController(final UserService userService, @Value("${oengus.oauthOrigins}") final List<String> oauthOrigins) {
+        this.userService = userService;
+        this.oauthOrigins = oauthOrigins;
+    }
 
     @PostMapping("/login")
     @PermitAll
     @ApiIgnore
-    public ResponseEntity<?> login(@RequestBody final LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) {
+        if (!this.oauthOrigins.contains(host)) {
+            return ResponseEntity.badRequest().body(new Error("ORIGIN_DISALLOWED"));
+        }
+
         try {
-            return ResponseEntity.ok(
-                this.userService.login(request.getService(), request.getCode(), request.getOauthToken(),
-                    request.getOauthVerifier()));
+            return ResponseEntity.ok(this.userService.login(host, request));
         } catch (final LoginException e) {
             return ResponseEntity.badRequest().body(new Error(e.getMessage()));
         }
@@ -55,11 +63,13 @@ public class UserController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> sync(@RequestBody final LoginRequest request) {
+    public ResponseEntity<?> sync(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) {
+        if (!this.oauthOrigins.contains(host)) {
+            return ResponseEntity.badRequest().body(new Error("ORIGIN_DISALLOWED"));
+        }
+
         try {
-            return ResponseEntity.ok(
-                this.userService.sync(request.getService(), request.getCode(), request.getOauthToken(),
-                    request.getOauthVerifier()));
+            return ResponseEntity.ok(this.userService.sync(host, request));
         } catch (final LoginException e) {
             return ResponseEntity.badRequest().body(new Error(e.getMessage()));
         }

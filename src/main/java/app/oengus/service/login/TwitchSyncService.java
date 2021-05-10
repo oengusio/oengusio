@@ -9,7 +9,7 @@ import app.oengus.helper.OauthHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.model.AccessToken;
-import app.oengus.spring.model.params.TwitchSyncParams;
+import app.oengus.spring.model.params.TwitchLoginParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,32 +21,32 @@ import java.util.Objects;
 
 @Service
 public class TwitchSyncService {
+    private final TwitchLoginParams twitchLoginParams;
+    private final TwitchOauthApi twitchOauthApi;
+    private final TwitchApi twitchApi;
+    private final UserRepositoryService userRepositoryService;
 
-	@Autowired
-	private TwitchSyncParams twitchLoginParams;
+    @Autowired
+    public TwitchSyncService(TwitchLoginParams twitchLoginParams, TwitchOauthApi twitchOauthApi, TwitchApi twitchApi, UserRepositoryService userRepositoryService) {
+        this.twitchLoginParams = twitchLoginParams;
+        this.twitchOauthApi = twitchOauthApi;
+        this.twitchApi = twitchApi;
+        this.userRepositoryService = userRepositoryService;
+    }
 
-	@Autowired
-	private TwitchOauthApi twitchOauthApi;
+    @Transactional
+    public SyncDto sync(final String code, final String host) throws LoginException {
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code, host);
+        final AccessToken accessToken = this.twitchOauthApi.getAccessToken(oauthParams);
+        final TwitchUser twitchUser = this.twitchApi.getCurrentUser(
+                String.join(" ", StringUtils.capitalize(accessToken.getTokenType()), accessToken.getAccessToken()),
+                this.twitchLoginParams.getClientId())
+                                                    .getData().get(0);
 
-	@Autowired
-	private TwitchApi twitchApi;
-
-	@Autowired
-	private UserRepositoryService userRepositoryService;
-
-	@Transactional
-	public SyncDto sync(final String code) throws LoginException {
-		final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code);
-		final AccessToken accessToken = this.twitchOauthApi.getAccessToken(oauthParams);
-		final TwitchUser twitchUser = this.twitchApi.getCurrentUser(
-				String.join(" ", StringUtils.capitalize(accessToken.getTokenType()), accessToken.getAccessToken()),
-				this.twitchLoginParams.getClientId())
-		                                            .getData().get(0);
-
-		final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
-		if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
-			throw new LoginException("ACCOUNT_ALREADY_SYNCED");
-		}
-		return new SyncDto(twitchUser.getId(), twitchUser.getLogin());
-	}
+        final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
+        if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
+            throw new LoginException("ACCOUNT_ALREADY_SYNCED");
+        }
+        return new SyncDto(twitchUser.getId(), twitchUser.getLogin());
+    }
 }

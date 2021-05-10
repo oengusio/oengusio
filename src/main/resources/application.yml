@@ -3,14 +3,15 @@ oengus:
         secret: ${JWT_SECRET}
         expiration: 604800
     baseUrl: ${BASE_URL}
+    oauthOrigins: ${OAUTH_ORIGINS}
     shortUrl: "https://oengus.fun"
 
 discord:
     clientId: ${DISCORD_CLIENT_ID}
     clientSecret: ${DISCORD_CLIENT_SECRET}
     grantType: 'authorization_code'
-    redirectUri: '${BASE_URL}/login/discord'
-    syncRedirectUri: '${BASE_URL}/user/settings/sync/discord'
+    redirectUri: '/login/discord'
+    syncRedirectUri: '/user/settings/sync/discord'
     scope:
         - identify
     botTokenRaw: ${DISCORD_BOT_TOKEN}
@@ -34,7 +35,8 @@ twitch:
         clientId: ${TWITCH_CLIENT_ID}
         clientSecret: ${TWITCH_CLIENT_SECRET}
         grantType: 'authorization_code'
-        redirectUri: '${BASE_URL}/login/twitch'
+        redirectUri: '/login/twitch'
+        syncRedirectUri: '/user/settings/sync/twitch'
         scope:
             - openid
     sync:

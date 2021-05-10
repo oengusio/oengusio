@@ -36,13 +36,14 @@ public class DiscordService {
     @Value("${discord.botToken}")
     private String botToken;
 
-    public User login(final String code) throws LoginException {
-        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code);
+    public User login(final String code, final String host) throws LoginException {
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, host);
         final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken()));
 
         User user = this.userRepositoryService.findByDiscordId(discordUser.getId());
+
         if (user == null) {
             user = new User();
             user.setRoles(List.of(Role.ROLE_USER));
@@ -53,9 +54,11 @@ public class DiscordService {
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                 throw new LoginException("USERNAME_EXISTS");
             }
+
             if (StringUtils.length(user.getUsername()) < 3) {
                 user.setUsername("user" + RandomUtils.nextInt(0, 999999));
             }
+
             user.setDiscordId(discordUser.getId());
             user.setDiscordName(discordUser.getAsTag());
             user = this.userRepositoryService.save(user);
@@ -64,8 +67,8 @@ public class DiscordService {
         return user;
     }
 
-    public SyncDto sync(final String code) throws LoginException {
-        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.discordParams, code);
+    public SyncDto sync(final String code, final String host) throws LoginException {
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.discordParams, code, host);
         final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken())

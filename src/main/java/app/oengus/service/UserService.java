@@ -6,12 +6,12 @@ import app.oengus.entity.dto.UserHistoryDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.*;
 import app.oengus.service.login.DiscordService;
-import app.oengus.service.login.TwitchLoginService;
-import app.oengus.service.login.TwitchSyncService;
+import app.oengus.service.login.TwitchService;
 import app.oengus.service.login.TwitterLoginService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
+import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -24,36 +24,36 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private final DiscordService discordService;
+    private final TwitterLoginService twitterLoginService;
+    private final TwitchService twitchService;
+    private final JWTUtil jwtUtil;
+    private final UserRepositoryService userRepositoryService;
+    private final SubmissionRepositoryService submissionRepositoryService;
+    private final MarathonService marathonService;
+    private final SelectionService selectionService;
 
     @Autowired
-    private DiscordService discordService;
+    public UserService(
+        final DiscordService discordService, final TwitterLoginService twitterLoginService,
+        final TwitchService twitchService, final JWTUtil jwtUtil, final UserRepositoryService userRepositoryService,
+        final SubmissionRepositoryService submissionRepositoryService, final MarathonService marathonService,
+        final SelectionService selectionService
+    ) {
+        this.discordService = discordService;
+        this.twitterLoginService = twitterLoginService;
+        this.twitchService = twitchService;
+        this.jwtUtil = jwtUtil;
+        this.userRepositoryService = userRepositoryService;
+        this.submissionRepositoryService = submissionRepositoryService;
+        this.marathonService = marathonService;
+        this.selectionService = selectionService;
+    }
 
-    @Autowired
-    private TwitterLoginService twitterLoginService;
+    public Token login(final String host, final LoginRequest request) throws LoginException {
+        final String service = request.getService();
+        final String code = request.getCode();
 
-    @Autowired
-    private TwitchSyncService twitchSyncService;
-
-    @Autowired
-    private TwitchLoginService twitchLoginService;
-
-    @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
-    private UserRepositoryService userRepositoryService;
-
-    @Autowired
-    private SubmissionRepositoryService submissionRepositoryService;
-
-    @Autowired
-    private MarathonService marathonService;
-
-    @Autowired
-    private SelectionService selectionService;
-
-    public Token login(final String service, final String code, final String oauthToken, final String oauthVerifier)
-            throws LoginException {
         if ((code == null || code.isBlank()) && !service.contains("twitter")) {
             throw new LoginException("Missing code in request");
         }
@@ -61,15 +61,15 @@ public class UserService {
         final User user;
         switch (service) {
             case "discord":
-                user = this.discordService.login(code);
+                user = this.discordService.login(code, host);
                 break;
             case "twitch":
-                user = this.twitchLoginService.login(code);
+                user = this.twitchService.login(code, host);
                 break;
             case "twitterAuth":
-                return new Token(this.twitterLoginService.generateAuthUrlForLogin());
+                return new Token(this.twitterLoginService.generateAuthUrlForLogin(host));
             case "twitter":
-                user = this.twitterLoginService.login(oauthToken, oauthVerifier);
+                user = this.twitterLoginService.login(request.getOauthToken(), request.getOauthVerifier());
                 break;
             default:
                 throw new LoginException();
@@ -77,25 +77,27 @@ public class UserService {
         if (!user.isEnabled()) {
             throw new LoginException("DISABLED_ACCOUNT");
         }
-        final String token = this.jwtUtil.generateToken(user);
-        return new Token(token);
+
+        return new Token(this.jwtUtil.generateToken(user));
     }
 
-    public Object sync(final String service, final String code, final String oauthToken, final String oauthVerifier)
-            throws LoginException {
+    public Object sync(final String host, final LoginRequest request) throws LoginException {
+        final String service = request.getService();
+        final String code = request.getCode();
+
         if ((code == null || code.isBlank()) && !service.contains("twitter")) {
             throw new LoginException("Missing code in request");
         }
 
         switch (service) {
             case "discord":
-                return this.discordService.sync(code);
+                return this.discordService.sync(code, host);
             case "twitch":
-                return this.twitchSyncService.sync(code);
+                return this.twitchService.sync(code, host);
             case "twitterAuth":
-                return new Token(this.twitterLoginService.generateAuthUrlForSync());
+                return new Token(this.twitterLoginService.generateAuthUrlForSync(host));
             case "twitter":
-                return this.twitterLoginService.sync(oauthToken, oauthVerifier);
+                return this.twitterLoginService.sync(request.getOauthToken(), request.getOauthVerifier());
             default:
                 throw new LoginException();
         }
