@@ -16,7 +16,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 
-@CrossOrigin
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/marathons/{marathonId}/categories")
 @Api

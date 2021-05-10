@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-@CrossOrigin
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/marathons/{marathonId}/schedule")
 @Api

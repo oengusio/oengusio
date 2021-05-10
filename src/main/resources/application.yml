@@ -18,8 +18,8 @@ discord:
     botToken: 'Bot ${DISCORD_BOT_TOKEN}'
 
 twitter:
-    loginCallback: '${BASE_URL}/login/twitter'
-    syncCallback: '${BASE_URL}/user/settings/sync/twitter'
+    loginCallback: '/login/twitter'
+    syncCallback: '/user/settings/sync/twitter'
     oauth:
         consumerKey: ${TWITTER_CONSUMER_KEY}
         consumerSecret: ${TWITTER_CONSUMER_SECRET}

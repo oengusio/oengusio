@@ -17,7 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
 
-@CrossOrigin
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/marathons/{marathonId}/discord")
 @ApiIgnore
