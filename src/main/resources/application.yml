@@ -72,7 +72,7 @@ spring:
                 current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
                 temp:
                     use_jdbc_metadata_defaults: false
-        open-in-view: false
+        open-in-view: true
     datasource:
         url: ${DB_URL}
         username: ${DB_USERNAME}
