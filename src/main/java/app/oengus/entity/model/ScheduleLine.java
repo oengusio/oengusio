@@ -197,6 +197,10 @@ public class ScheduleLine {
     }
 
     public int getCategoryId() {
+        if (this.categoryId == null) {
+            return 0;
+        }
+
         return this.categoryId;
     }
 
