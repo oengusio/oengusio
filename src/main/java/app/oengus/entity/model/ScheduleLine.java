@@ -8,7 +8,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
@@ -83,7 +82,8 @@ public class ScheduleLine {
 
     @Column(name = "category_id")
     @JsonView(Views.Public.class)
-    private int categoryId;
+    // nullable
+    private Integer categoryId;
 
     @Column(name = "run_type")
     @JsonView(Views.Public.class)
