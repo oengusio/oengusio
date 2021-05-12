@@ -739,4 +739,10 @@
         <modifyDataType tableName="users" columnName="username_ja" newDataType="varchar(32)"/>
     </changeSet>
 
+    <changeSet id="20210512-1" author="duncte123">
+        <dropColumn tableName="schedule_line" columnName="category_id" />
+        <dropForeignKeyConstraint baseTableName="schedule_line"
+                                  constraintName="fk_schedule_line_category" />
+    </changeSet>
+
 </databaseChangeLog>
