@@ -196,15 +196,11 @@ public class ScheduleLine {
         this.runners = runners;
     }
 
-    public int getCategoryId() {
-        if (this.categoryId == null) {
-            return 0;
-        }
-
+    public Integer getCategoryId() {
         return this.categoryId;
     }
 
-    public void setCategoryId(final int categoryId) {
+    public void setCategoryId(final Integer categoryId) {
         this.categoryId = categoryId;
     }
 
