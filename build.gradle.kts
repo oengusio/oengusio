@@ -16,8 +16,8 @@ project.group = "app.oengus"
 project.version = "2021.05.11"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_12
-    targetCompatibility = JavaVersion.VERSION_12
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }
 
 application {
@@ -63,11 +63,15 @@ dependencies {
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.9.8")
 
     // HIBERNATE
-    implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.5.0")
-    implementation(group = "org.hibernate", name = "hibernate-ehcache", version = "5.3.9.Final")
+    implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.11.1")
+    // implementation(group = "org.hibernate", name = "hibernate-ehcache", version = "5.3.9.Final")
+    implementation(group = "org.hibernate", name = "hibernate-core", version = "5.4.31.Final")
+    implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.4.31.Final")
+    implementation(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
-    // GUAVA
-    implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
+
+    // GUAVA (do we need this?)
+    // implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
 
     // SWAGGER
     implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")
@@ -97,6 +101,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "6.8.1"
+    gradleVersion = "7.0.1"
     distributionType = Wrapper.DistributionType.ALL
 }

@@ -63,11 +63,15 @@ spring:
                     sharedCache:
                         mode: ENABLE_SELECTIVE
             hibernate:
+                javax:
+                    cache:
+                        missing_cache_strategy: create
                 cache:
                     use_second_level_cache: true
                     use_query_cache: true
+                    provider: org.ehcache.jsr107.EhcacheCachingProvider
                     region:
-                        factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+                        factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
                 dialect: org.hibernate.dialect.PostgreSQL82Dialect
                 current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
                 temp:
