@@ -3,7 +3,6 @@ package app.oengus.web;
 import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.dto.OrderDto;
 import app.oengus.entity.model.Donation;
-import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.DonationService;
 import app.oengus.service.ExportService;
 import app.oengus.spring.model.Views;
@@ -42,13 +41,9 @@ public class DonationController {
     public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
                                              @RequestParam("page") final int page,
                                              @RequestParam("size") final int size) {
-        try {
-            return ResponseEntity.ok()
-                .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-                .body(this.donationService.findForMarathon(marathonId, page, size));
-        } catch (final OengusBusinessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.donationService.findForMarathon(marathonId, page, size));
     }
 
     @GetMapping("/stats")
@@ -56,13 +51,9 @@ public class DonationController {
     @ApiOperation(value = "Get the donation stats for a marathon, you probably want this one",
         response = DonationStatsDto.class)
     public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) {
-        try {
-            return ResponseEntity.ok()
-                .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-                .body(this.donationService.getStats(marathonId));
-        } catch (final OengusBusinessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.donationService.getStats(marathonId));
     }
 
     @PostMapping("/donate")
@@ -70,11 +61,7 @@ public class DonationController {
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> initDonation(@PathVariable("marathonId") final String marathonId,
                                           @RequestBody final Donation donation) {
-        try {
-            return ResponseEntity.ok(new OrderDto(this.donationService.initDonation(marathonId, donation).id()));
-        } catch (final OengusBusinessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        return ResponseEntity.ok(new OrderDto(this.donationService.initDonation(marathonId, donation).id()));
     }
 
     @PostMapping("/validate/{code}")
@@ -83,12 +70,8 @@ public class DonationController {
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> validateDonation(@PathVariable("marathonId") final String marathonId,
                                               @PathVariable("code") final String code) {
-        try {
-            this.donationService.approveDonation(marathonId, code);
-            return ResponseEntity.ok().build();
-        } catch (final OengusBusinessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        this.donationService.approveDonation(marathonId, code);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{code}")
@@ -96,12 +79,8 @@ public class DonationController {
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> deleteDonation(@PathVariable("marathonId") final String marathonId,
                                             @PathVariable("code") final String code) {
-        try {
-            this.donationService.deleteDonation(code);
-            return ResponseEntity.noContent().build();
-        } catch (final OengusBusinessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        this.donationService.deleteDonation(code);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/export")

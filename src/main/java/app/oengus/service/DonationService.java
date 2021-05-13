@@ -66,20 +66,26 @@ public class DonationService {
             donation.setPaymentSource("PAYPAL");
             donation.getAnswers().forEach(donationExtraData -> donationExtraData.setDonation(donation));
             donation.getDonationIncentiveLinks()
-                .forEach(donationIncentiveLink -> {
+                .forEach((donationIncentiveLink) -> {
                     donationIncentiveLink.setDonation(donation);
-                    if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() > 0) {
+
+                    if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() <= 0) {
                         final Incentive incentive = new Incentive();
+
                         incentive.setId(donationIncentiveLink.getBid().getIncentiveId());
                         donationIncentiveLink.getBid().setIncentive(incentive);
+
                         donationIncentiveLink.setBid(
-                            this.bidRepositoryService.save(donationIncentiveLink.getBid()));
+                            this.bidRepositoryService.save(donationIncentiveLink.getBid())
+                        );
                     }
                 });
+
             if (StringUtils.isEmpty(donation.getNickname())) {
                 donation.setNickname("Anonymous");
             }
             this.donationRepositoryService.save(donation);
+
             return order;
         } catch (final NotFoundException e) {
             throw new OengusBusinessException("MARATHON_NOT_FOUND");
@@ -119,9 +125,8 @@ public class DonationService {
         try {
             return this.payPalHttpClient.execute(request).result();
         } catch (final IOException e) {
-            if (e instanceof HttpException) {
+            if (e instanceof final HttpException he) {
                 // Something went wrong server-side
-                final HttpException he = (HttpException) e;
                 LoggerFactory.getLogger(DonationService.class).error(he.getMessage());
                 he.headers()
                     .forEach(
