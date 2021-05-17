@@ -38,10 +38,11 @@ public class ScheduleController {
     @JsonView(Views.Public.class)
     @ApiOperation(value = "Get schedule for a marathon",
         response = Schedule.class)
-    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId) {
+    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
-            .body(this.scheduleService.findByMarathon(marathonId));
+            .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }
 
     @PutMapping

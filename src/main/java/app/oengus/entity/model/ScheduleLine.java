@@ -108,6 +108,14 @@ public class ScheduleLine {
     @Transient
     private ZonedDateTime date;
 
+    @Column(name = "custom_data")
+    @JsonView(Views.Internal.class)
+    private String customData;
+
+    @Transient
+    @JsonView(Views.Public.class)
+    private String customDataDTO;
+
     public int getId() {
         return this.id;
     }
@@ -242,5 +250,21 @@ public class ScheduleLine {
 
     public void setSetupBlockText(final String setupBlockText) {
         this.setupBlockText = setupBlockText;
+    }
+
+    public String getCustomData() {
+        return customData;
+    }
+
+    public void setCustomData(String customData) {
+        this.customData = customData;
+    }
+
+    public String getCustomDataDTO() {
+        return customDataDTO;
+    }
+
+    public void setCustomDataDTO(String customDataDTO) {
+        this.customDataDTO = customDataDTO;
     }
 }

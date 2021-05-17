@@ -739,4 +739,10 @@
         <modifyDataType tableName="users" columnName="username_ja" newDataType="varchar(32)"/>
     </changeSet>
 
+    <changeSet id="20210517-1" author="duncte123">
+        <addColumn tableName="schedule_line">
+            <column name="custom_data" type="text"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
