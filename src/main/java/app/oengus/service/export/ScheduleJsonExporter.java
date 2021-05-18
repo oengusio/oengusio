@@ -107,9 +107,8 @@ public class ScheduleJsonExporter implements Exporter {
                 resourceBundle.getString("run.type." + scheduleLineDto.getType().name()),
                 StringUtils.defaultString(scheduleLineDto.getConsole()),
                 StringUtils.defaultString(scheduleLineDto.getCustomData()),
-                // set the setup time to 0 for setup blocks
-                setupBlock ? "{\"setup\": \"0h0m00s\"}" : this.objectMapper.writeValueAsString(
-                    Map.of("setup", this.formatCustomSetupTime(scheduleLineDto.getSetupTime()))
+                this.objectMapper.writeValueAsString(
+                    Map.of("setup", this.formatCustomSetupTime(scheduleLineDto.getEffectiveSetupTime()))
                 )
             ));
         } catch (final JsonProcessingException e) {
