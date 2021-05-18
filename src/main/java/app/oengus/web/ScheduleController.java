@@ -1,5 +1,6 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.model.Schedule;
 import app.oengus.service.ExportService;
 import app.oengus.service.ScheduleService;
@@ -26,12 +27,14 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/marathons/{marathonId}/schedule")
 @Api
 public class ScheduleController {
+    private final ScheduleService scheduleService;
+    private final ExportService exportService;
 
     @Autowired
-    private ScheduleService scheduleService;
-
-    @Autowired
-    private ExportService exportService;
+    public ScheduleController(ScheduleService scheduleService, ExportService exportService) {
+        this.scheduleService = scheduleService;
+        this.exportService = exportService;
+    }
 
     @GetMapping
     @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
@@ -43,6 +46,18 @@ public class ScheduleController {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
+    }
+
+    @GetMapping("/ticker")
+    @PreAuthorize("isScheduleDone(#marathonId)")
+    @JsonView(Views.Public.class)
+    @ApiOperation(value = "Get a ticker for this schedule, displaying the previous, current and next lines",
+        response = ScheduleTickerDto.class)
+    public ResponseEntity<?> getTicker(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .body(this.scheduleService.getForTicker(marathonId, withCustomData));
     }
 
     @PutMapping

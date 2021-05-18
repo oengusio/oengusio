@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
@@ -10,16 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class ScheduleService {
+    private final ScheduleRepositoryService scheduleRepository;
+    private final MarathonRepositoryService marathonRepositoryService;
 
     @Autowired
-    private ScheduleRepositoryService scheduleRepository;
-
-    @Autowired
-    private MarathonRepositoryService marathonRepositoryService;
+    public ScheduleService(ScheduleRepositoryService scheduleRepository, MarathonRepositoryService marathonRepositoryService) {
+        this.scheduleRepository = scheduleRepository;
+        this.marathonRepositoryService = marathonRepositoryService;
+    }
 
     @Transactional
     public Schedule findByMarathon(final String marathonId) {
@@ -64,6 +68,39 @@ public class ScheduleService {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         this.scheduleRepository.deleteByMarathon(marathon);
+    }
+
+    public ScheduleTickerDto getForTicker(final String marathonId, boolean withCustomData) {
+        final Schedule schedule = this.findByMarathonCustomDataControl(marathonId, withCustomData);
+        final ZonedDateTime endDate = schedule.getMarathon().getEndDate();
+        final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
+
+        // fast return if the marathon has ended
+        if (now.isAfter(endDate) || now.isEqual(endDate)) {
+            return new ScheduleTickerDto().setPrevious(
+                schedule.getLines().get(schedule.getLines().size() - 1)
+            );
+        }
+
+        ScheduleLine previous = null;
+        ScheduleLine current = null;
+        ScheduleLine next = null;
+
+        for (final ScheduleLine line : schedule.getLines()) {
+            if (now.isEqual(line.getDate()) || now.isAfter(line.getDate())) {
+                previous = current;
+                current = line;
+            } else {
+                next = line;
+                // we always will find the next one last
+                break;
+            }
+        }
+
+        return new ScheduleTickerDto()
+            .setPrevious(previous)
+            .setCurrent(current)
+            .setNext(next);
     }
 
     @Transactional
