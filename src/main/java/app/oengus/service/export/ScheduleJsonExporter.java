@@ -30,10 +30,14 @@ public class ScheduleJsonExporter implements Exporter {
     private static final List<String> COLUMNS =
         List.of("runners", "game", "category", "type", "console", "custom_data", "[[options]]");
 
+    private final ScheduleHelper scheduleHelper;
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    private ScheduleHelper scheduleHelper;
-    @Autowired
-    private ObjectMapper objectMapper;
+    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper) {
+        this.scheduleHelper = scheduleHelper;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
@@ -79,13 +83,16 @@ public class ScheduleJsonExporter implements Exporter {
 
     private HoraroItem mapLineToItem(final ScheduleLineDto scheduleLineDto, final ResourceBundle resourceBundle) {
         final HoraroItem horaroItem = new HoraroItem();
+        final boolean setupBlock = scheduleLineDto.isSetupBlock();
 
         // take the setup length for setup blocks
-        if (scheduleLineDto.isSetupBlock()) {
+        if (setupBlock) {
             horaroItem.setLength(scheduleLineDto.getSetupTime().toString());
         } else {
             horaroItem.setLength(scheduleLineDto.getEstimate().toString());
         }
+
+        final String gameName = setupBlock ? scheduleLineDto.getSetupBlockText() : scheduleLineDto.getGameName();
 
         try {
             horaroItem.setData(List.of(
@@ -95,12 +102,13 @@ public class ScheduleJsonExporter implements Exporter {
                         .map(user -> user.getUsername(resourceBundle.getLocale().toLanguageTag()))
                         .collect(Collectors.joining(", "))
                 ),
-                StringUtils.defaultString(scheduleLineDto.getGameName()),
+                StringUtils.defaultString(gameName),
                 StringUtils.defaultString(scheduleLineDto.getCategoryName()),
                 resourceBundle.getString("run.type." + scheduleLineDto.getType().name()),
                 StringUtils.defaultString(scheduleLineDto.getConsole()),
                 StringUtils.defaultString(scheduleLineDto.getCustomData()),
-                this.objectMapper.writeValueAsString(
+                // FIXME: very hacky, needs a proper fix so that horaro does not add the setup to the duration
+                setupBlock ? "{\"setup-block\": true}" : this.objectMapper.writeValueAsString(
                     Map.of("setup", this.formatCustomSetupTime(scheduleLineDto.getSetupTime()))
                 )
             ));
