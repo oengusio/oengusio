@@ -25,7 +25,7 @@ public class ScheduleLineDto extends ScheduleLine {
 	}
 
 	private static final List<String> DEFAULT_HEADERS =
-			List.of("time", "runners", "game", "category", "type", "console", "estimate", "setup_time");
+			List.of("time", "runners", "game", "category", "type", "console", "estimate", "setup_time", "custom_data");
 
 	@JsonIgnore
 	public String[] getCsvHeaders() {
@@ -50,6 +50,8 @@ public class ScheduleLineDto extends ScheduleLine {
 		record.add(this.getConsole());
 		record.add(TimeHelpers.formatDuration(this.getEstimate()));
 		record.add(TimeHelpers.formatDuration(this.getSetupTime()));
+		record.add(this.getCustomData());
+
 		return List.of(record);
 	}
 }

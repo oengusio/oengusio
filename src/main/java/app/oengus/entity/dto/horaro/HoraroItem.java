@@ -7,23 +7,24 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// TODO: remove commented out properties?
 @JsonPropertyOrder({
     "length",
-    "length_t",
-    "scheduled",
-    "scheduled_t",
+    //"length_t",
+    //"scheduled",
+    //"scheduled_t",
     "data"
 })
 public class HoraroItem {
 
     @JsonProperty("length")
     private String length;
-    @JsonProperty("length_t")
+    /*@JsonProperty("length_t")
     private int lengthT;
     @JsonProperty("scheduled")
     private String scheduled;
     @JsonProperty("scheduled_t")
-    private int scheduledT;
+    private int scheduledT;*/
     /**
      * (Required)
      */
@@ -42,7 +43,7 @@ public class HoraroItem {
         this.length = length;
     }
 
-    @JsonProperty("length_t")
+    /*@JsonProperty("length_t")
     public int getLengthT() {
         return this.lengthT;
     }
@@ -70,7 +71,7 @@ public class HoraroItem {
     @JsonProperty("scheduled_t")
     public void setScheduledT(final int scheduledT) {
         this.scheduledT = scheduledT;
-    }
+    }*/
 
     /**
      * (Required)
