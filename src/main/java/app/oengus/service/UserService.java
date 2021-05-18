@@ -105,6 +105,11 @@ public class UserService {
 
     public void update(final int id, final User userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
+
+        // overwrite the user's roles to make sure they can't set them themselves
+        final List<Role> currentRoles = user.getRoles();
+        userPatch.setRoles(currentRoles);
+
         BeanUtils.copyProperties(userPatch, user);
         this.userRepositoryService.update(user);
     }
