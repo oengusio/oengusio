@@ -53,6 +53,8 @@ server:
             enabled: false
 
 spring:
+#    cache:
+#        type: none
     jpa:
         hibernate:
             ddl-auto: none
@@ -67,8 +69,9 @@ spring:
                     cache:
                         missing_cache_strategy: create
                 cache:
-                    use_second_level_cache: true
-                    use_query_cache: true
+                    # disable database caching
+                    use_second_level_cache: false
+                    use_query_cache: false
                     provider: org.ehcache.jsr107.EhcacheCachingProvider
                     region:
                         factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
