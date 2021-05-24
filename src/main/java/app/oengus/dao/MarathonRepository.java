@@ -33,7 +33,7 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
 
     @Query(value =
         "SELECT m from Marathon m WHERE m.startDate > current_timestamp AND m.submitsOpen = TRUE " +
-            "AND m.isPrivate = FALSE ORDER BY m.startDate ASC")
+            "AND m.isPrivate = FALSE ORDER BY COALESCE(m.submissionsEndDate, m.startDate) ASC")
     @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     List<Marathon> findBySubmitsOpenTrue();
 
