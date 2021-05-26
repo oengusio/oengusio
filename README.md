@@ -10,7 +10,7 @@ Note that the front-end lives on this repository [https://github.com/esamarathon
 
 ### Requirements
 
-- Java JDK 12
+- Java JDK 16
 - PostgreSQL 10+
 
 ### Instructions
