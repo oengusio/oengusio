@@ -1,5 +1,7 @@
 package app.oengus.service;
 
+import app.oengus.dao.DonationIncentiveLinkRepository;
+import app.oengus.dao.DonationRepository;
 import app.oengus.dao.MarathonRepository;
 import app.oengus.dao.UserRepository;
 import javassist.NotFoundException;
@@ -15,18 +17,31 @@ import org.springframework.stereotype.Component;
 public class ClearSandboxService {
     private static final Logger LOG = LoggerFactory.getLogger(ClearSandboxService.class);
 
-    @Autowired
-    private MarathonRepository marathonRepository;
+    private final MarathonRepository marathonRepository;
+    private final MarathonService marathonService;
+    private final UserRepository userRepository;
+    private final DonationRepository donationRepository;
+    private final DonationIncentiveLinkRepository incentiveRepository;
 
     @Autowired
-    private MarathonService marathonService;
-
-    @Autowired
-    private UserRepository userRepository;
+    public ClearSandboxService(
+        MarathonRepository marathonRepository, MarathonService marathonService,
+        UserRepository userRepository, DonationRepository donationRepository,
+        DonationIncentiveLinkRepository incentiveRepository
+    ) {
+        this.marathonRepository = marathonRepository;
+        this.marathonService = marathonService;
+        this.userRepository = userRepository;
+        this.donationRepository = donationRepository;
+        this.incentiveRepository = incentiveRepository;
+    }
 
     @Scheduled(cron = "@weekly")
     public void purgeEntries() {
         LOG.info("Deleting marathons");
+
+        this.incentiveRepository.deleteAll();
+        this.donationRepository.deleteAll();
 
         this.marathonRepository.findAll().forEach((marathon) -> {
             try {
