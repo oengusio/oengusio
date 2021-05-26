@@ -3,86 +3,94 @@ package app.oengus.entity.dto;
 import java.time.ZonedDateTime;
 
 public class MarathonBasicInfoDto {
+    private String id;
+    private String name;
+    private ZonedDateTime startDate;
+    private ZonedDateTime endDate;
+    private ZonedDateTime submissionsEndDate;
+    private boolean onsite;
+    private boolean isPrivate;
+    private String location;
+    private String country;
+    private String language;
 
-	private String id;
-	private String name;
-	private ZonedDateTime startDate;
-	private ZonedDateTime endDate;
-	private boolean onsite;
-	private boolean isPrivate;
-	private String location;
-	private String country;
-	private String language;
+    public String getId() {
+        return this.id;
+    }
 
-	public String getId() {
-		return this.id;
-	}
+    public void setId(final String id) {
+        this.id = id;
+    }
 
-	public void setId(final String id) {
-		this.id = id;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public ZonedDateTime getStartDate() {
+        return this.startDate;
+    }
 
-	public ZonedDateTime getStartDate() {
-		return this.startDate;
-	}
+    public void setStartDate(final ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
 
-	public void setStartDate(final ZonedDateTime startDate) {
-		this.startDate = startDate;
-	}
+    public ZonedDateTime getEndDate() {
+        return this.endDate;
+    }
 
-	public ZonedDateTime getEndDate() {
-		return this.endDate;
-	}
+    public void setEndDate(final ZonedDateTime endDate) {
+        this.endDate = endDate;
+    }
 
-	public void setEndDate(final ZonedDateTime endDate) {
-		this.endDate = endDate;
-	}
+    public ZonedDateTime getSubmissionsEndDate() {
+        return submissionsEndDate;
+    }
 
-	public boolean getOnsite() {
-		return this.onsite;
-	}
+    public void setSubmissionsEndDate(final ZonedDateTime submissionsEndDate) {
+        this.submissionsEndDate = submissionsEndDate;
+    }
 
-	public void setOnsite(final boolean onsite) {
-		this.onsite = onsite;
-	}
+    public boolean getOnsite() {
+        return this.onsite;
+    }
 
-	public String getLocation() {
-		return this.location;
-	}
+    public void setOnsite(final boolean onsite) {
+        this.onsite = onsite;
+    }
 
-	public void setLocation(final String location) {
-		this.location = location;
-	}
+    public String getLocation() {
+        return this.location;
+    }
 
-	public String getLanguage() {
-		return this.language;
-	}
+    public void setLocation(final String location) {
+        this.location = location;
+    }
 
-	public void setLanguage(final String language) {
-		this.language = language;
-	}
+    public String getLanguage() {
+        return this.language;
+    }
 
-	public String getCountry() {
-		return this.country;
-	}
+    public void setLanguage(final String language) {
+        this.language = language;
+    }
 
-	public void setCountry(final String country) {
-		this.country = country;
-	}
+    public String getCountry() {
+        return this.country;
+    }
 
-	public boolean getPrivate() {
-		return this.isPrivate;
-	}
+    public void setCountry(final String country) {
+        this.country = country;
+    }
 
-	public void setPrivate(final boolean aPrivate) {
-		this.isPrivate = aPrivate;
-	}
+    public boolean getPrivate() {
+        return this.isPrivate;
+    }
+
+    public void setPrivate(final boolean aPrivate) {
+        this.isPrivate = aPrivate;
+    }
 }
