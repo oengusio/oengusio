@@ -75,7 +75,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
     public boolean areSubmissionsOpen(final String id) throws NotFoundException {
         final Marathon marathon = this.marathonService.findOne(id);
-        return marathon.isCanEditSubmissions() &&
+
+        return marathon.isCanEditSubmissions() && marathon.isSubmitsOpen() &&
             ZonedDateTime.now().isBefore(marathon.getEndDate());
     }
 
