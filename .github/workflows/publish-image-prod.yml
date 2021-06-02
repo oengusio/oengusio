@@ -1,7 +1,7 @@
 name: Publish prod
 on:
     release:
-        types: [published]
+        types: [ published ]
 jobs:
     push_to_registry:
         name: Push production image
@@ -45,7 +45,12 @@ jobs:
             -   name: Image digest
                 run: echo ${{ steps.docker_build.outputs.digest }}
 
-            -   name: Trigger dev webhook
+            -   name: Trigger prod webhook
                 uses: zzzze/webhook-trigger@v1.0.0
                 with:
-                    webhook_url: ${{ secrets.DEV_WEBHOOK_URL }}
+                    webhook_url: ${{ secrets.PROD_WEBHOOK_URL }}
+
+            -   name: Trigger sandbox webhook
+                uses: zzzze/webhook-trigger@v1.0.0
+                with:
+                    webhook_url: ${{ secrets.SANDBOX_WEBHOOK_URL }}
