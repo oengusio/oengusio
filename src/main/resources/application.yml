@@ -51,6 +51,9 @@ server:
     undertow:
         accesslog:
             enabled: false
+    error:
+        whitelabel:
+            enabled: true
 
 spring:
 #    cache:
@@ -94,6 +97,10 @@ spring:
             DEFAULT_VIEW_INCLUSION: true
         deserialization:
             USE_BIG_DECIMAL_FOR_FLOATS: true
+    mvc:
+        throw-exception-if-no-handler-found: true
+    web:
+        resources.add-mappings: false
 
 management:
     endpoints:

@@ -4,6 +4,7 @@ import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.Error;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
+import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.UserService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
@@ -49,12 +50,13 @@ public class UserController {
     @ApiIgnore
     public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) {
         if (!this.oauthOrigins.contains(host)) {
-            return ResponseEntity.badRequest().body(new Error("ORIGIN_DISALLOWED"));
+            throw new OengusBusinessException("ORIGIN_DISALLOWED");
         }
 
         try {
             return ResponseEntity.ok(this.userService.login(host, request));
         } catch (final LoginException e) {
+            // TODO: upgrade once v2 is released
             return ResponseEntity.badRequest().body(new Error(e.getMessage()));
         }
     }
@@ -65,12 +67,13 @@ public class UserController {
     @ApiIgnore
     public ResponseEntity<?> sync(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) {
         if (!this.oauthOrigins.contains(host)) {
-            return ResponseEntity.badRequest().body(new Error("ORIGIN_DISALLOWED"));
+            throw new OengusBusinessException("ORIGIN_DISALLOWED");
         }
 
         try {
             return ResponseEntity.ok(this.userService.sync(host, request));
         } catch (final LoginException e) {
+            // TODO: upgrade once v2 is released
             return ResponseEntity.badRequest().body(new Error(e.getMessage()));
         }
     }
@@ -100,12 +103,8 @@ public class UserController {
     @PermitAll
     @ApiOperation(value = "Get a user profile",
         response = UserProfileDto.class)
-    public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) {
+    public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) throws NotFoundException {
         final UserProfileDto userProfile = this.userService.getUserProfile(name);
-
-        if (userProfile == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(userProfile);
     }
@@ -115,84 +114,62 @@ public class UserController {
     @ApiIgnore
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final User userPatch,
-                                        final BindingResult bindingResult) {
+                                        final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        try {
-            this.userService.update(id, userPatch);
-            return ResponseEntity.noContent().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        this.userService.update(id, userPatch);
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("(isSelf(#id) && !isBanned()) || isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) {
-        try {
-            this.userService.markDeleted(id);
-            return ResponseEntity.noContent().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) throws NotFoundException {
+        this.userService.markDeleted(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Internal.class)
     @ApiIgnore
-    public ResponseEntity<User> me(final Principal principal) {
-        try {
-            final int id = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+    public ResponseEntity<User> me(final Principal principal) throws NotFoundException {
+        final int id = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
 
-            return ResponseEntity.ok(this.userService.getUser(id));
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(this.userService.getUser(id));
     }
 
     @PostMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> ban(@PathVariable int id) {
-        try {
-            this.userService.addRole(id, Role.ROLE_BANNED);
+    public ResponseEntity<?> ban(@PathVariable int id) throws NotFoundException {
+        this.userService.addRole(id, Role.ROLE_BANNED);
 
-            return ResponseEntity.noContent().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}/ban")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> unban(@PathVariable int id) {
-        try {
-            this.userService.removeRole(id, Role.ROLE_BANNED);
+    public ResponseEntity<?> unban(@PathVariable int id) throws NotFoundException {
+        this.userService.removeRole(id, Role.ROLE_BANNED);
 
-            return ResponseEntity.noContent().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/enabled")
     @PreAuthorize("isAdmin()")
     @ApiIgnore
-    public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) {
-        try {
-            final User patch = this.userService.getUser(id);
+    public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
+        final User patch = this.userService.getUser(id);
 
-            patch.setEnabled(status);
+        patch.setEnabled(status);
 
-            this.userService.update(id, patch);
+        this.userService.update(id, patch);
 
-            return ResponseEntity.noContent().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.noContent().build();
     }
 }

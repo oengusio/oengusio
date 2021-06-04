@@ -6,13 +6,13 @@ import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.OengusConstants;
 import app.oengus.service.repository.*;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +56,11 @@ public class SubmissionService {
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+
+        if (!marathon.isSubmitsOpen()) {
+            throw new SubmissionsClosedException();
+        }
+
         final Submission saved = this.saveInternal(submission, submitter, marathon);
 
         // send webhook
@@ -73,6 +78,11 @@ public class SubmissionService {
     public Submission update(final Submission newSubmission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+
+        if (!marathon.isSubmitsOpen()) {
+            throw new SubmissionsClosedException();
+        }
+
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
 

@@ -1,7 +1,6 @@
 package app.oengus.web;
 
 import app.oengus.entity.model.Submission;
-import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.ExportService;
 import app.oengus.service.GameService;
@@ -65,14 +64,10 @@ public class SubmissionsController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final int id, final Principal principal) {
-        try {
-            this.gameService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+                                    @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
+        this.gameService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
 
-            return ResponseEntity.ok().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().build();
     }
 
     ///////// SubmissionController.java ////////
@@ -95,7 +90,7 @@ public class SubmissionsController {
     public ResponseEntity<?> create(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
-                                    final BindingResult bindingResult) {
+                                    final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
@@ -104,16 +99,11 @@ public class SubmissionsController {
             return ResponseEntity.badRequest().build();
         }
 
-        try {
-            this.submissionService.save(submission,
-                PrincipalHelper.getUserFromPrincipal(principal),
-                marathonId);
-            return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (final SubmissionsClosedException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        this.submissionService.save(submission,
+            PrincipalHelper.getUserFromPrincipal(principal),
+            marathonId);
+
+        return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
     }
 
     @PutMapping
@@ -125,20 +115,16 @@ public class SubmissionsController {
     public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
-                                    final BindingResult bindingResult) {
+                                    final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        try {
-            this.submissionService.update(submission,
-                PrincipalHelper.getUserFromPrincipal(principal),
-                marathonId);
-            return ResponseEntity.noContent().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (final SubmissionsClosedException e) {
-            return ResponseEntity.badRequest().build();
-        }
+
+        this.submissionService.update(submission,
+            PrincipalHelper.getUserFromPrincipal(principal),
+            marathonId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/availabilities")
@@ -163,12 +149,8 @@ public class SubmissionsController {
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
-                                                      @PathVariable("userId") final int userId) {
-        try {
-            return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+                                                      @PathVariable("userId") final int userId) throws NotFoundException {
+        return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
     }
 
     @GetMapping("/me")
@@ -187,13 +169,10 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> delete(@PathVariable("id") final int id, final Principal principal) {
-        try {
-            this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
-            return ResponseEntity.ok().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> delete(@PathVariable("id") final int id, final Principal principal) throws NotFoundException {
+        this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+
+        return ResponseEntity.ok().build();
     }
 
 }

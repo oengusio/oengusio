@@ -87,7 +87,7 @@ public class DonationService {
             this.donationRepositoryService.save(donation);
 
             return order;
-        } catch (final NotFoundException e) {
+        } catch (final NotFoundException e) { // TODO: properly fix this?
             throw new OengusBusinessException("MARATHON_NOT_FOUND");
         }
     }
@@ -175,7 +175,7 @@ public class DonationService {
                 LoggerFactory.getLogger(DonationService.class).error(he.getMessage(), he);
             }
             throw new OengusBusinessException("ERROR_DONATION_VALIDATION");
-        } catch (final NotFoundException e) {
+        } catch (final NotFoundException e) { // TODO: properly fix this?
             throw new OengusBusinessException("MARATHON_NOT_FOUND");
         }
     }

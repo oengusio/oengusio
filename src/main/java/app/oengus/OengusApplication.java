@@ -12,8 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class OengusApplication {
 
-	public static void main(final String[] args) {
-		SpringApplication.run(OengusApplication.class, args);
-	}
-
+    public static void main(final String[] args) {
+        SpringApplication.run(OengusApplication.class, args);
+    }
 }

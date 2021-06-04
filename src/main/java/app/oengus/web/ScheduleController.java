@@ -64,13 +64,10 @@ public class ScheduleController {
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
-                                          @RequestBody final Schedule schedule) {
-        try {
-            this.scheduleService.saveOrUpdate(marathonId, schedule);
-            return ResponseEntity.noContent().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+                                          @RequestBody final Schedule schedule) throws NotFoundException {
+        this.scheduleService.saveOrUpdate(marathonId, schedule);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/export")

@@ -38,14 +38,10 @@ public class CategoryController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final int id, final Principal principal) {
-        try {
-            this.categoryService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
-            return ResponseEntity.ok().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
+                                    @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
+        this.categoryService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
 
-        }
+        return ResponseEntity.ok().build();
     }
 
 }

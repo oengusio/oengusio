@@ -76,13 +76,9 @@ public class MarathonController {
     @PermitAll
     @ApiOperation(value = "Get information about a marathon",
         response = Marathon.class)
-    public ResponseEntity<Marathon> get(@PathVariable("id") final String id) {
-        try {
-            final Marathon marathon = this.marathonService.findOne(id);
-            return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathon);
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Marathon> get(@PathVariable("id") final String id) throws NotFoundException {
+        final Marathon marathon = this.marathonService.findOne(id);
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathon);
 
     }
 
@@ -111,13 +107,10 @@ public class MarathonController {
     @DeleteMapping("/{id}")
     @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> delete(@PathVariable("id") final String id) {
-        try {
-            this.marathonService.delete(id);
-            return ResponseEntity.ok().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> delete(@PathVariable("id") final String id) throws NotFoundException {
+        this.marathonService.delete(id);
+
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
@@ -125,16 +118,14 @@ public class MarathonController {
     @ApiIgnore
     public ResponseEntity<?> update(@PathVariable("id") final String id,
                                     @RequestBody @Valid final Marathon patch,
-                                    final BindingResult bindingResult) {
+                                    final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        try {
-            this.marathonService.update(id, patch);
-            return ResponseEntity.noContent().build();
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+
+        this.marathonService.update(id, patch);
+
+        return ResponseEntity.noContent().build();
     }
 
     // we're checking the webhook on the backend to ensure "localhost" will fail
@@ -154,18 +145,14 @@ public class MarathonController {
     @PostMapping("/{id}/selections/publish")
     @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
-    public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) {
-        try {
-            final Marathon marathon = this.marathonService.getById(id);
+    public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
+        final Marathon marathon = this.marathonService.getById(id);
 
-            marathon.setSelectionDone(true);
-            marathon.setSubmitsOpen(false);
+        marathon.setSelectionDone(true);
+        marathon.setSubmitsOpen(false);
 
-            this.marathonService.update(id, marathon);
+        this.marathonService.update(id, marathon);
 
-            return ResponseEntity.ok().build();
-        } catch (final NotFoundException ignored) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().build();
     }
 }

@@ -45,13 +45,10 @@ public class SelectionController {
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @ApiIgnore
     public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
-                                          @RequestBody final List<SelectionDto> selections) {
-        try {
-            this.selectionService.saveOrUpdate(marathonId, selections);
-            return ResponseEntity.noContent().build();
-        } catch (NotFoundException ignored) {
-            return ResponseEntity.notFound().build();
-        }
+                                          @RequestBody final List<SelectionDto> selections) throws NotFoundException {
+        this.selectionService.saveOrUpdate(marathonId, selections);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

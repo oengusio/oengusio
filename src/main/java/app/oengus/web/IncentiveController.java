@@ -33,14 +33,10 @@ public class IncentiveController {
         responseContainer = "List")
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(required = false, defaultValue = "true") final boolean withLocked,
-                                                @RequestParam(required = false, defaultValue = "false") final boolean withUnapproved) {
-        try {
-            return ResponseEntity.ok()
-                .cacheControl(CacheControl.noCache())
-                .body(this.incentiveService.findByMarathon(marathonId, withLocked, withUnapproved));
-        } catch (final NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+                                                @RequestParam(required = false, defaultValue = "false") final boolean withUnapproved) throws NotFoundException {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.incentiveService.findByMarathon(marathonId, withLocked, withUnapproved));
     }
 
     @PostMapping

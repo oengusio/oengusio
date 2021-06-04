@@ -3,6 +3,7 @@ package app.oengus.web;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
+import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.DiscordApiService;
 import app.oengus.service.MarathonService;
 import feign.FeignException;
@@ -48,13 +49,14 @@ public class DiscordController {
     @GetMapping("/in-guild/{userId}")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
-    public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId, @PathVariable("userId") final String userId) {
+    public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
+                                           @PathVariable("userId") final String userId) throws NotFoundException {
         try {
             final Marathon marathon = this.marathonService.findOne(marathonId);
             final String guildId = marathon.getDiscordGuildId();
 
             if (StringUtils.isEmpty(guildId)) {
-                return ResponseEntity.badRequest().body("NO_GUILD_ID_SET");
+                throw new OengusBusinessException("NO_GUILD_ID_SET");
             }
 
             final DiscordMember memberById = this.discordApiService.getMemberById(guildId, userId);
@@ -66,8 +68,6 @@ public class DiscordController {
             }
 
             return ResponseEntity.ok().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
             if (e.status() == 404) { // member not in guild
                 return ResponseEntity.notFound().build();
