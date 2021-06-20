@@ -5,7 +5,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import javax.annotation.Nullable;
 import java.beans.FeatureDescriptor;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -17,7 +19,12 @@ public class BeanHelper {
 		final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
 		return Stream.of(wrappedSource.getPropertyDescriptors())
 		             .map(FeatureDescriptor::getName)
-		             .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+		             .filter(
+		                 // remove null values
+		                 (propertyName) -> wrappedSource.getPropertyValue(propertyName) == null &&
+                             // but only if they don't have the javax.annotation.Nullable annotation
+                             !wrappedSource.getPropertyTypeDescriptor(propertyName).hasAnnotation(Nullable.class)
+                     )
 		             .toArray(String[]::new);
 	}
 
