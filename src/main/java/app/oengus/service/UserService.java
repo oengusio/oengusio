@@ -5,6 +5,8 @@ import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.dto.UserHistoryDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.*;
+import app.oengus.helper.BeanHelper;
+import app.oengus.requests.user.UserUpdateRequest;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
 import app.oengus.service.login.TwitterLoginService;
@@ -99,6 +101,15 @@ public class UserService {
         };
     }
 
+    public void updateRequest(final int id, final UserUpdateRequest userPatch) throws NotFoundException {
+        final User user = this.userRepositoryService.findById(id);
+
+        BeanHelper.copyProperties(userPatch, user);
+
+        this.userRepositoryService.update(user);
+    }
+
+    @Deprecated
     public void update(final int id, final User userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 

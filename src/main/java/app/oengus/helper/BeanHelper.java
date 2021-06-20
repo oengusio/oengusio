@@ -8,6 +8,9 @@ import org.springframework.beans.BeanWrapperImpl;
 import java.beans.FeatureDescriptor;
 import java.util.stream.Stream;
 
+/**
+ * Helper class to copy properties while ignoring null properties
+ */
 public class BeanHelper {
 
 	public static String[] getNullPropertyNames(final Object source) {
@@ -18,6 +21,12 @@ public class BeanHelper {
 		             .toArray(String[]::new);
 	}
 
+    /**
+     * Copy properties from {@code src} to {@code target} while ignoring {@code null} properties in {@code src}
+     *
+     * @param src The source bean
+     * @param target The target bean, the properties from src will be copied to this
+     */
 	public static void copyProperties(final Object src, final Object target) {
 		BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
 	}

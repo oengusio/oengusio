@@ -20,13 +20,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static app.oengus.requests.user.IUserRequest.SPEEDRUN_COM_NAME_REGEX;
+import static app.oengus.requests.user.IUserRequest.USERNAME_REGEX;
+
 @Entity
 @Table(name = "users")
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements UserDetails {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +37,7 @@ public class User implements UserDetails {
     @Column
     @JsonView(Views.Public.class)
     @Size(min = 3, max = 32)
-    @Pattern(regexp = "^[\\w\\-]{3,32}$")
+    @Pattern(regexp = USERNAME_REGEX)
     private String username;
 
     @Column(name = "username_ja")
@@ -90,7 +91,7 @@ public class User implements UserDetails {
     @Column(name = "speedruncom_name")
     @JsonView(Views.Public.class)
     @Size(max = 20)
-    @Pattern(regexp = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$")
+    @Pattern(regexp = SPEEDRUN_COM_NAME_REGEX)
     private String speedruncomName;
 
     @Override

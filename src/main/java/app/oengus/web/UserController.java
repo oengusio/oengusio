@@ -5,6 +5,7 @@ import app.oengus.entity.model.Error;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.requests.user.UserUpdateRequest;
 import app.oengus.service.UserService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
@@ -113,12 +114,13 @@ public class UserController {
     @PreAuthorize("isSelf(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
-                                        @RequestBody @Valid final User userPatch,
+                                        @RequestBody @Valid final UserUpdateRequest userPatch,
                                         final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        this.userService.update(id, userPatch);
+
+        this.userService.updateRequest(id, userPatch);
 
         return ResponseEntity.noContent().build();
     }
