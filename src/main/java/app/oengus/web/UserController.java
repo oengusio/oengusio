@@ -2,7 +2,6 @@ package app.oengus.web;
 
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.Error;
-import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.requests.user.UserUpdateRequest;
@@ -94,7 +93,8 @@ public class UserController {
     @JsonView(Views.Public.class)
     @PermitAll
     @ApiOperation(value = "Get a list of users that include searched string in their username",
-        response = Marathon.class)
+        response = User.class,
+        responseContainer = "List")
     public ResponseEntity<List<User>> search(@PathVariable("name") final String name) {
         return ResponseEntity.ok(this.userService.findUsersWithUsername(name));
     }
