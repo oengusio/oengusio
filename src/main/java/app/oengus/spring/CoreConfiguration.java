@@ -18,7 +18,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class CoreConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
+        registry.addMapping("/**")
+            .maxAge(3600)
+            .allowedHeaders("*");
     }
 
     @Bean
