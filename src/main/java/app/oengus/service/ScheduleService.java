@@ -54,10 +54,15 @@ public class ScheduleService {
         final Schedule byMarathon = this.findByMarathon(marathonId);
 
         if (withCustomData) {
-            // Make the custom data public if requested
-            byMarathon.getLines().forEach(
-                (line) -> line.setCustomDataDTO(line.getCustomData())
-            );
+            final List<ScheduleLine> lines = byMarathon.getLines();
+
+            // lines can be null so we check if they are not
+            if (lines != null && !lines.isEmpty()) {
+                // Make the custom data public if requested
+                lines.forEach(
+                    (line) -> line.setCustomDataDTO(line.getCustomData())
+                );
+            }
         }
 
         return byMarathon;
