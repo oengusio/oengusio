@@ -90,6 +90,9 @@ spring:
         hikari:
             # Use 4 connections and leave the others for other applications
             maximum-pool-size: 4
+            connection-timeout: 30000
+            idle-timeout: 600000
+            max-lifetime: 1800000
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
     jackson:
