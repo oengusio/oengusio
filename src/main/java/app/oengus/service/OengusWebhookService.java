@@ -599,10 +599,11 @@ public class OengusWebhookService {
                 this.shortUrl + '/' + selection.getMarathon().getId()
             ))
             .setDescription(String.format(
-                "**Submitted by:** %s\n**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Runners:** %s",
+                "**Submitted by:** %s\n**Game:** %s\n**Category:** %s\n**Estimate:** %s\n**Platform:** %s\n**Runners:** %s",
                 submitter,
                 game.getName(),
                 category.getName(),
+                TimeHelpers.formatDuration(category.getEstimate()),
                 game.getConsole(),
                 String.join(", ", runners)
             ))
