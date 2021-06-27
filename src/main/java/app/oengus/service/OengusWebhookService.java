@@ -309,6 +309,7 @@ public class OengusWebhookService {
     }
 
     // TODO: extract to classes
+    // TODO: does currently not detect a category that was removed
     private void sendEditSubmission(final String marathon, final String channel, final String newSubChannel,
                                     final Submission submission, final Submission oldSubmission) {
         final String marathonName = this.marathonService.getNameForCode(marathon);

@@ -46,8 +46,9 @@ dependencies {
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
     
     // POSTGRESQL
-    runtimeOnly(group = "org.postgresql", name = "postgresql")
-    
+    implementation(group = "com.zaxxer", name = "HikariCP", version = "4.0.3")
+    implementation(group = "org.postgresql", name = "postgresql")
+
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
     implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
@@ -68,7 +69,6 @@ dependencies {
     implementation(group = "org.hibernate", name = "hibernate-core", version = "5.4.31.Final")
     implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.4.31.Final")
     implementation(group = "org.ehcache", name = "ehcache", version = "3.8.1")
-
 
     // GUAVA (do we need this?)
     // implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")

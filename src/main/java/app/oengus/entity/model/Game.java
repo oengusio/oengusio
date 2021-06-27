@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -143,6 +144,24 @@ public class Game {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, console, ratio, emulated, categories);
+    }
+
+    public Game fresh(boolean withSubmission) {
+        final Game game = new Game();
+        // load all the items needed from the old game
+        Hibernate.initialize(this.getCategories());
+
+        this.getCategories().forEach((category) -> {
+            Hibernate.initialize(category.getOpponents());
+        });
+
+        BeanUtils.copyProperties(this, game);
+
+        if (withSubmission) {
+            game.setSubmission(this.getSubmission().fresh(false));
+        }
+
+        return game;
     }
 
     public static void initialize(Game game) {

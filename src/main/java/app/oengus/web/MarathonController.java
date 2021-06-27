@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
@@ -146,7 +147,13 @@ public class MarathonController {
     @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(id);
+        // make a fake marathon so we don't update the real one
+        final Marathon marathon = new Marathon();
+
+        BeanUtils.copyProperties(
+            this.marathonService.getById(id),
+            marathon
+        );
 
         marathon.setSelectionDone(true);
         marathon.setSubmitsOpen(false);

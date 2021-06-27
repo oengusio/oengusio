@@ -4,6 +4,7 @@ import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import app.oengus.service.repository.GameRepositoryService;
+import app.oengus.service.repository.SubmissionRepositoryService;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,9 @@ public class GameService {
 
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private SubmissionRepositoryService submissionRepositoryService;
 
     @Autowired
     private GameRepositoryService gameRepositoryService;
@@ -41,7 +45,7 @@ public class GameService {
 
         if (StringUtils.isNotEmpty(webhook)) {
             try {
-                this.webhookService.sendGameDeleteEvent(webhook, game, deletedBy);
+                this.webhookService.sendGameDeleteEvent(webhook, game.fresh(true), deletedBy);
             } catch (Exception e) {
                 LoggerFactory.getLogger(GameService.class).error("Error when handling webhook", e);
             }
@@ -49,6 +53,8 @@ public class GameService {
 
         game.setSubmission(null);
         submission.getGames().remove(game);
+
+        this.submissionRepositoryService.save(submission);
         this.gameRepositoryService.delete(id);
     }
 

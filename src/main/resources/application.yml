@@ -73,7 +73,7 @@ spring:
                         missing_cache_strategy: create
                 cache:
                     # disable database caching
-                    use_second_level_cache: false
+                    use_second_level_cache: true
                     use_query_cache: false
                     provider: org.ehcache.jsr107.EhcacheCachingProvider
                     region:

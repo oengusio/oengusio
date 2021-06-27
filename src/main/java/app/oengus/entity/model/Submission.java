@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortComparator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
@@ -227,6 +228,32 @@ public class Submission {
     @Override
     public int hashCode() {
         return Objects.hash(id, user, marathon, games, opponents);
+    }
+
+    public Submission fresh(boolean withGames) {
+        final Submission submission = new Submission();
+
+        // load all the items needed from the old submission
+        Hibernate.initialize(this.getAvailabilities());
+        Hibernate.initialize(this.getOpponents());
+        Hibernate.initialize(this.getAnswers());
+
+        // the games will be copied separately
+        BeanUtils.copyProperties(this, submission);
+
+        // only load the game if we say so
+        // might cause issues if we load the submission from a game otherwise
+        if (withGames) {
+            final Set<Game> freshGames = new HashSet<>();
+
+            this.getGames().forEach(
+                (game) -> freshGames.add(game.fresh(false))
+            );
+
+            submission.setGames(freshGames);
+        }
+
+        return submission;
     }
 
     public static void initialize(Submission submission, boolean withGames) {

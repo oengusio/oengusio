@@ -84,12 +84,12 @@ public class SubmissionService {
         }
 
         // submission id is never null here
-        final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId());
+        final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
 
-        Submission.initialize(oldSubmission, true);
+        /*Submission.initialize(oldSubmission, true);
 
         // uncache the old submission
-        entityManager.detach(oldSubmission);
+        entityManager.detach(oldSubmission);*/
 
         // save before sending so we catch the error if saving fails
         final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
@@ -343,13 +343,13 @@ public class SubmissionService {
             // send webhook
             if (StringUtils.isNotEmpty(marathon.getWebhook())) {
                 try {
-                    // load the submission so we can send it
+                    /*// load the submission so we can send it
                     Submission.initialize(submission, true);
 
                     // Detach it from the manager
-                    this.entityManager.detach(submission);
+                    this.entityManager.detach(submission);*/
 
-                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission, user);
+                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission.fresh(true), user);
                 } catch (IOException e) {
                     LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
                 }
