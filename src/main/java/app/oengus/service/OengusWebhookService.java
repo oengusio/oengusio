@@ -10,7 +10,6 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javassist.NotFoundException;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static app.oengus.helper.StringHelper.escapeMarkdown;
 import static app.oengus.helper.WebhookHelper.createParameters;
 
 @Service
@@ -42,6 +42,7 @@ public class OengusWebhookService {
     private static final Logger LOG = LoggerFactory.getLogger(OengusWebhookService.class);
 
     private final OkHttpClient client = new OkHttpClient();
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -53,9 +54,6 @@ public class OengusWebhookService {
 
     @Autowired
     private MarathonService marathonService;
-
-    @Autowired
-    private UserService userService;
 
     // NOTE: this can only do two at the same time
     private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
@@ -381,14 +379,14 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " submitted a run to " + marathonName,
+                escapeMarkdown(username + " submitted a run to " + marathonName),
                 this.shortUrl + '/' + marathon + "/submissions"
             ))
             .setDescription(String.format(
                 "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                game.getName(),
-                category.getName(),
-                game.getConsole(),
+                escapeMarkdown(game.getName()),
+                escapeMarkdown(category.getName()),
+                escapeMarkdown(game.getConsole()),
                 TimeHelpers.formatDuration(category.getEstimate())
             ));
 
@@ -402,7 +400,7 @@ public class OengusWebhookService {
 
         final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                username + " updated a run in " + marathonName,
+                escapeMarkdown(username + " updated a run in " + marathonName),
                 this.shortUrl + '/' + marathon + "/submissions"
             ));
         final StringBuilder sb = new StringBuilder();
@@ -441,10 +439,10 @@ public class OengusWebhookService {
 
     private String parseUpdatedString(String current, String old) {
         if (current.equals(old)) {
-            return current;
+            return escapeMarkdown(current);
         }
 
-        return current + " (was " + old + ')';
+        return escapeMarkdown(current + " (was " + old + ')');
     }
 
     private void sendDonationEvent(final String marathon, final String channel, final Donation donation) {
@@ -537,14 +535,14 @@ public class OengusWebhookService {
 
         return new WebhookEmbedBuilder()
             .setTitle(new WebhookEmbed.EmbedTitle(
-                headerText + " in " + marathonName,
+                escapeMarkdown(headerText + " in " + marathonName),
                 this.shortUrl + '/' + marathonId + "/submissions"
             ))
             .setDescription(String.format(
                 "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                game.getName(),
-                category.getName(),
-                game.getConsole(),
+                escapeMarkdown(game.getName()),
+                escapeMarkdown(category.getName()),
+                escapeMarkdown(game.getConsole()),
                 TimeHelpers.formatDuration(category.getEstimate())
             ))
             .build();
@@ -584,12 +582,8 @@ public class OengusWebhookService {
         runners.add(submitter);
 
         if (!category.getOpponents().isEmpty()) {
-            for (Opponent opponent : category.getOpponents()) {
-                try {
-                    final User user = this.userService.getUser(opponent.getId());
-
-                    runners.add(user.getUsername());
-                } catch (NotFoundException ignored) {}
+            for (final Opponent opponent : category.getOpponents()) {
+                runners.add(opponent.getSubmission().getUser().getUsername());
             }
         }
 
@@ -600,12 +594,12 @@ public class OengusWebhookService {
             ))
             .setDescription(String.format(
                 "**Submitted by:** %s\n**Game:** %s\n**Category:** %s\n**Estimate:** %s\n**Platform:** %s\n**Runners:** %s",
-                submitter,
-                game.getName(),
-                category.getName(),
+                escapeMarkdown(submitter),
+                escapeMarkdown(game.getName()),
+                escapeMarkdown(category.getName()),
                 TimeHelpers.formatDuration(category.getEstimate()),
-                game.getConsole(),
-                String.join(", ", runners)
+                escapeMarkdown(game.getConsole()),
+                escapeMarkdown(String.join(", ", runners))
             ))
             .build();
 
