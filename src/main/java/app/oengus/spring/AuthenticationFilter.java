@@ -32,6 +32,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		//CORS
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Expose-Headers", "Location");
+        response.addHeader("Access-Control-Allow-Headers", "*");
 		if (request.getHeader("Access-Control-Request-Method") != null &&
 				"OPTIONS".equalsIgnoreCase(request.getMethod())) {
 			response.addHeader("Access-Control-Allow-Headers", "Authorization");
