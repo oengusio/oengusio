@@ -33,7 +33,7 @@ public class OengusExceptionHandler {
         mapper.put("method", req.getMethod());
         mapper.put("path", req.getServletPath());
 
-        return ResponseEntity.badRequest().body(mapper);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapper);
     }
 
     // TODO: find all parts that catch this exception and remove it
