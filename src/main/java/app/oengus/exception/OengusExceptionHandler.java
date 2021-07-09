@@ -19,21 +19,14 @@ import java.util.Map;
 public class OengusExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> notFoundException(final NotFoundException e, final HttpServletRequest req) {
+    public ResponseEntity<?> notFoundException(final NotFoundException exc, final HttpServletRequest req) {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
             return ResponseEntity.notFound().build();
         }
 
-        final Map<String, String> mapper = new HashMap<>();
-
-        mapper.put("type", e.getClass().getSimpleName());
-        mapper.put("message", e.getMessage());
-        mapper.put("method", req.getMethod());
-        mapper.put("path", req.getServletPath());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapper);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(toMap(req, exc));
     }
 
     // TODO: find all parts that catch this exception and remove it
@@ -46,14 +39,7 @@ public class OengusExceptionHandler {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
-        final Map<String, String> mapper = new HashMap<>();
-
-        mapper.put("type", e.getClass().getSimpleName());
-        mapper.put("message", e.getMessage());
-        mapper.put("method", req.getMethod());
-        mapper.put("path", req.getServletPath());
-
-        return ResponseEntity.badRequest().body(mapper);
+        return ResponseEntity.badRequest().body(toMap(req, e));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
@@ -66,6 +52,17 @@ public class OengusExceptionHandler {
         mapper.put("message", "The requested page was not found");
         mapper.put("method", e.getHttpMethod());
         mapper.put("path", e.getRequestURL());
+
+        return mapper;
+    }
+
+    private Map<String, String> toMap(final HttpServletRequest req, final Exception exception) {
+        final Map<String, String> mapper = new HashMap<>();
+
+        mapper.put("type", exception.getClass().getSimpleName());
+        mapper.put("message", exception.getMessage());
+        mapper.put("method", req.getMethod());
+        mapper.put("path", req.getServletPath());
 
         return mapper;
     }
