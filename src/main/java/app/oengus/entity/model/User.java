@@ -73,6 +73,10 @@ public class User implements UserDetails {
     @JsonView(Views.Internal.class)
     private String twitterId;
 
+    @Column(name = "patreon_id")
+    @JsonView(Views.Internal.class)
+    private String patreonId;
+
     @Column(name = "discord_name")
     @JsonView(Views.Public.class)
     @Size(max = 37)
@@ -93,6 +97,11 @@ public class User implements UserDetails {
     @Size(max = 20)
     @Pattern(regexp = SPEEDRUN_COM_NAME_REGEX)
     private String speedruncomName;
+
+    @Column(name = "pronouns")
+    @JsonView(Views.Public.class)
+    @Size(max = 20)
+    private String pronouns;
 
     @Override
     public boolean isEnabled() {

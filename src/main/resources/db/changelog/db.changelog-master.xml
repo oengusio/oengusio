@@ -745,4 +745,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20210712-1" author="duncte123">
+        <addColumn tableName="users"> <!-- Purposefully invalid so I can't accidentally commit this to the db -->
+            <column name="pronouns" type="varchar(20)"/>
+            <column name="patreon_id" type="varchar(20)"/>
+            <column name="nationality" type="varchar(20)"/>
+<!--        </addColumn>-->
+    </changeSet>
+
 </databaseChangeLog>

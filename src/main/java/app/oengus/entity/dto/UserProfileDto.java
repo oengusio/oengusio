@@ -15,6 +15,7 @@ public class UserProfileDto {
     private String speedruncomName;
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
+    private String pronouns;
     private boolean banned;
 
     public UserProfileDto() {
@@ -100,6 +101,14 @@ public class UserProfileDto {
 
     public void setModeratedMarathons(final List<MarathonBasicInfoDto> moderatedMarathons) {
         this.moderatedMarathons = moderatedMarathons;
+    }
+
+    public String getPronouns() {
+        return pronouns;
+    }
+
+    public void setPronouns(String pronouns) {
+        this.pronouns = pronouns;
     }
 
     public boolean isBanned() {
