@@ -41,6 +41,11 @@ public class UserUpdateRequest implements IUserRequest {
     private String twitterId;
 
     @Nullable
+    @Column(name = "patreon_id")
+    @JsonView(Views.Internal.class)
+    private String patreonId;
+
+    @Nullable
     @JsonView(Views.Public.class)
     @Size(max = 37)
     private String discordName;
@@ -60,6 +65,12 @@ public class UserUpdateRequest implements IUserRequest {
     @Size(max = 20)
     @Pattern(regexp = SPEEDRUN_COM_NAME_REGEX)
     private String speedruncomName;
+
+    @Nullable
+    @Column(name = "pronouns")
+    @JsonView(Views.Public.class)
+    @Size(max = 20)
+    private String pronouns;
 
     public String getUsername() {
         return username;
@@ -121,6 +132,15 @@ public class UserUpdateRequest implements IUserRequest {
     }
 
     @Nullable
+    public String getPatreonId() {
+        return patreonId;
+    }
+
+    public void setPatreonId(@Nullable String patreonId) {
+        this.patreonId = patreonId;
+    }
+
+    @Nullable
     public String getDiscordName() {
         return discordName;
     }
@@ -154,5 +174,14 @@ public class UserUpdateRequest implements IUserRequest {
 
     public void setSpeedruncomName(@Nullable String speedruncomName) {
         this.speedruncomName = speedruncomName;
+    }
+
+    @Nullable
+    public String getPronouns() {
+        return pronouns;
+    }
+
+    public void setPronouns(@Nullable String pronouns) {
+        this.pronouns = pronouns;
     }
 }

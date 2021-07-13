@@ -1,18 +1,18 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.model.SocialAccount;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class UserProfileDto {
 
     private int id;
     private String username;
     private String usernameJapanese;
     private boolean enabled;
-    private String twitterName;
-    private String discordName;
-    private String twitchName;
-    private String speedruncomName;
+    private List<SocialAccount> connections;
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
     private String pronouns;
@@ -55,38 +55,6 @@ public class UserProfileDto {
         this.enabled = enabled;
     }
 
-    public String getTwitterName() {
-        return this.twitterName;
-    }
-
-    public void setTwitterName(final String twitterName) {
-        this.twitterName = twitterName;
-    }
-
-    public String getTwitchName() {
-        return this.twitchName;
-    }
-
-    public void setTwitchName(final String twitchName) {
-        this.twitchName = twitchName;
-    }
-
-    public String getDiscordName() {
-        return this.discordName;
-    }
-
-    public void setDiscordName(String discordName) {
-        this.discordName = discordName;
-    }
-
-    public String getSpeedruncomName() {
-        return this.speedruncomName;
-    }
-
-    public void setSpeedruncomName(final String speedruncomName) {
-        this.speedruncomName = speedruncomName;
-    }
-
     public List<UserHistoryDto> getHistory() {
         return this.history;
     }
@@ -101,6 +69,14 @@ public class UserProfileDto {
 
     public void setModeratedMarathons(final List<MarathonBasicInfoDto> moderatedMarathons) {
         this.moderatedMarathons = moderatedMarathons;
+    }
+
+    public List<SocialAccount> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<SocialAccount> connections) {
+        this.connections = connections;
     }
 
     public String getPronouns() {
