@@ -104,7 +104,43 @@ public class UserService {
     public void updateRequest(final int id, final UserUpdateRequest userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
-        BeanHelper.copyProperties(userPatch, user);
+        BeanHelper.copyProperties(userPatch, user, "connections");
+
+        // TODO: extract method to request
+        if (userPatch.getConnections() == null || userPatch.getConnections().isEmpty()) {
+            user.getConnections().clear();
+        } else {
+            if (user.getConnections().isEmpty()) {
+                // newly added properties
+                for (final SocialAccount connection : userPatch.getConnections()) {
+                    connection.setUser(user);
+                }
+
+                user.setConnections(userPatch.getConnections());
+            } else {
+                final List<SocialAccount> connections = user.getConnections();
+
+                for (final SocialAccount connection : userPatch.getConnections()) {
+                    final SocialAccount socialAccount = connections.stream()
+                        .filter((c) -> c.getPlatform().equals(connection.getPlatform()))
+                        .findFirst()
+                        .orElse(null);
+
+                    if (socialAccount == null) {
+                        final SocialAccount fresh = new SocialAccount();
+
+                        fresh.setId(-1);
+                        fresh.setUser(user);
+                        fresh.setPlatform(connection.getPlatform());
+                        fresh.setUsername(connection.getUsername());
+
+                        connections.add(fresh);
+                    } else {
+                        socialAccount.setUsername(connection.getUsername());
+                    }
+                }
+            }
+        }
 
         this.userRepositoryService.update(user);
     }
@@ -126,7 +162,7 @@ public class UserService {
 
         // TODO: delete all connections
 
-        user.setConnections(null);
+        user.getConnections().clear();
         user.setUsernameJapanese(null);
         user.setDiscordId(null);
         user.setTwitchId(null);

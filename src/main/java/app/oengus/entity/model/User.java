@@ -209,7 +209,12 @@ public class User implements UserDetails {
     }
 
     public void setConnections(List<SocialAccount> connections) {
-        this.connections = connections;
+        if (this.connections == null) {
+            this.connections = new ArrayList<>();
+        }
+
+        this.connections.clear();
+        this.connections.addAll(connections);
     }
 
     public String getUsernameJapanese() {

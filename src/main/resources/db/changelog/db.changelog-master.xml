@@ -753,11 +753,14 @@
         </addColumn>
 
         <createTable tableName="social_accounts">
-            <column name="user_id" type="serial">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="user_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
             <column name="platform" type="varchar(20)">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <!-- email max length is 320 chars -->
             <column name="username" type="varchar(320)">

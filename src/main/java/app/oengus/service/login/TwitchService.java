@@ -88,9 +88,11 @@ public class TwitchService {
             .getData().get(0);
 
         final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
+
         if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
             throw new LoginException("ACCOUNT_ALREADY_SYNCED");
         }
+
         return new SyncDto(twitchUser.getId(), twitchUser.getLogin());
     }
 }
