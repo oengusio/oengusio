@@ -231,7 +231,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final UserProfileDto userProfileDto = new UserProfileDto();
+        final UserProfileDto userProfileDto = new UserProfileDto(user.getMail());
 
         BeanUtils.copyProperties(user, userProfileDto);
         userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));

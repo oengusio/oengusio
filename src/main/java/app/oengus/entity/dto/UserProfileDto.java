@@ -2,6 +2,9 @@ package app.oengus.entity.dto;
 
 import app.oengus.entity.model.SocialAccount;
 
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +19,26 @@ public class UserProfileDto {
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
     private String pronouns;
+    private final String avatarHash;
     private boolean banned;
 
-    public UserProfileDto() {
+    public UserProfileDto(String email) {
         this.history = new ArrayList<>();
         this.moderatedMarathons = new ArrayList<>();
+
+        String tmpHash = "00000000000000000000000000000000";
+
+        try {
+            final String emailLower = email.toLowerCase();
+            final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
+            tmpHash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
+            // should never happen
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        this.avatarHash = tmpHash;
+
     }
 
     public int getId() {
@@ -93,5 +111,9 @@ public class UserProfileDto {
 
     public void setBanned(boolean banned) {
         this.banned = banned;
+    }
+
+    public String getAvatarHash() {
+        return avatarHash;
     }
 }
