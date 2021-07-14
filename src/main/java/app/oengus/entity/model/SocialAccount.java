@@ -41,15 +41,16 @@ public class SocialAccount implements Serializable {
     @Column(name = "username")
     private String username;
 
-    @AssertTrue
-    public boolean isBlaBlaTest() {
+    // TODO: check
+    /*@AssertTrue
+    public boolean isUsernameValidForPlatform() {
         System.out.println("USERNAME " + this.username);
         System.out.println("PLATFORM " + this.platform);
         System.out.println("USER " + this.user);
 
 
         return true;
-    }
+    }*/
 
     public int getId() {
         return id;

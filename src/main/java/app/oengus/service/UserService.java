@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.dto.UserHistoryDto;
@@ -118,27 +119,44 @@ public class UserService {
 
                 user.setConnections(userPatch.getConnections());
             } else {
-                final List<SocialAccount> connections = user.getConnections();
+                final List<SocialAccount> currentConnections = new ArrayList<>(user.getConnections());
+                final List<SocialAccount> updateConnections = new ArrayList<>(userPatch.getConnections());
+                final List<SocialAccount> toInsert = new ArrayList<>();
 
-                for (final SocialAccount connection : userPatch.getConnections()) {
-                    final SocialAccount socialAccount = connections.stream()
-                        .filter((c) -> c.getPlatform().equals(connection.getPlatform()))
-                        .findFirst()
-                        .orElse(null);
+                for (final SocialPlatform platform : SocialPlatform.values()) {
+                    final List<SocialAccount> current = currentConnections.stream()
+                        .filter((c) -> c.getPlatform() == platform)
+                        .collect(Collectors.toList());
+                    final List<SocialAccount> update = updateConnections.stream()
+                        .filter((c) -> c.getPlatform() == platform)
+                        .collect(Collectors.toList());
 
-                    if (socialAccount == null) {
+                    for (final SocialAccount currentAcc : current) {
+                        if (update.isEmpty()) {
+                            break;
+                        }
+
+                        final SocialAccount updateAcc = update.get(0);
+
+                        currentAcc.setUsername(updateAcc.getUsername());
+                        toInsert.add(currentAcc);
+                        update.remove(0);
+                    }
+
+                    // accounts that are new
+                    update.forEach((account) -> {
                         final SocialAccount fresh = new SocialAccount();
 
                         fresh.setId(-1);
                         fresh.setUser(user);
-                        fresh.setPlatform(connection.getPlatform());
-                        fresh.setUsername(connection.getUsername());
+                        fresh.setPlatform(account.getPlatform());
+                        fresh.setUsername(account.getUsername());
 
-                        connections.add(fresh);
-                    } else {
-                        socialAccount.setUsername(connection.getUsername());
-                    }
+                        toInsert.add(fresh);
+                    });
                 }
+
+                user.setConnections(toInsert);
             }
         }
 
