@@ -1,5 +1,6 @@
 package app.oengus.spring;
 
+import feign.RequestInterceptor;
 import feign.form.FormEncoder;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CoreFeignConfiguration {
+
+    @Bean
+    public RequestInterceptor requestInterceptor() {
+        return (requestTemplate) -> requestTemplate.header("User-Agent", "oengus.io");
+    }
 
 	@Autowired
 	private ObjectFactory<HttpMessageConverters> messageConverters;
