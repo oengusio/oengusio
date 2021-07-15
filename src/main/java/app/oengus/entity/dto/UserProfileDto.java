@@ -21,7 +21,7 @@ public class UserProfileDto {
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
     @Nullable
-    private String pronouns = "he/him,they/them";
+    private String pronouns;
     private final String avatarHash;
     private boolean banned;
 
