@@ -93,6 +93,12 @@ public class User implements UserDetails {
     @Size(max = 20)
     private String pronouns;
 
+    @Nullable
+    @Column(name = "country")
+    @JsonView(Views.Public.class)
+    @Size(max = 3)
+    private String country;
+
     @Override
     public boolean isEnabled() {
         return this.enabled;
@@ -242,6 +248,15 @@ public class User implements UserDetails {
     @Nullable
     public String getPronouns() {
         return pronouns;
+    }
+
+    @Nullable
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(@Nullable String country) {
+        this.country = country;
     }
 
     @JsonIgnore

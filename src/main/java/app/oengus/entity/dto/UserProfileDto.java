@@ -24,6 +24,7 @@ public class UserProfileDto {
     private String pronouns;
     private final String avatarHash;
     private boolean banned;
+    private String country;
 
     public UserProfileDto(String email) {
         this.history = new ArrayList<>();
@@ -123,5 +124,13 @@ public class UserProfileDto {
 
     public String getAvatarHash() {
         return avatarHash;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

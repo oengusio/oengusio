@@ -5,7 +5,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -75,6 +74,11 @@ public class UserUpdateRequest implements IUserRequest {
     @JsonView(Views.Public.class)
     @Size(max = 20)
     private String pronouns;
+
+    @Nullable
+    @JsonView(Views.Public.class)
+    @Size(max = 3)
+    private String country;
 
     public String getUsername() {
         return username;
@@ -195,5 +199,14 @@ public class UserUpdateRequest implements IUserRequest {
 
     public void setConnections(List<SocialAccount> connections) {
         this.connections = connections;
+    }
+
+    @Nullable
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(@Nullable String country) {
+        this.country = country;
     }
 }
