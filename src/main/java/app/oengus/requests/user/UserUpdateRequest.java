@@ -72,7 +72,6 @@ public class UserUpdateRequest implements IUserRequest {
     private String speedruncomName;
 
     @Nullable
-    @Column(name = "pronouns")
     @JsonView(Views.Public.class)
     @Size(max = 20)
     private String pronouns;

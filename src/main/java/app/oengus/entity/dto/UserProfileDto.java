@@ -2,6 +2,8 @@ package app.oengus.entity.dto;
 
 import app.oengus.entity.model.SocialAccount;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +20,8 @@ public class UserProfileDto {
     private List<SocialAccount> connections;
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
-    private String pronouns;
+    @Nullable
+    private String pronouns = "he/him,they/them";
     private final String avatarHash;
     private boolean banned;
 
@@ -97,11 +100,16 @@ public class UserProfileDto {
         this.connections = connections;
     }
 
-    public String getPronouns() {
-        return pronouns;
+    @NotNull
+    public String[] getPronouns() {
+        if (pronouns == null) {
+            return new String[]{};
+        }
+
+        return pronouns.split(",");
     }
 
-    public void setPronouns(String pronouns) {
+    public void setPronouns(@Nullable String pronouns) {
         this.pronouns = pronouns;
     }
 

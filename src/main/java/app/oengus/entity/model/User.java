@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
@@ -58,16 +59,16 @@ public class User implements UserDetails {
     @JsonView(Views.Public.class)
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @OrderBy("platform ASC")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> connections;
 
+    @Email
     @Column
     @JsonView(Views.Internal.class)
-    @Email
     private String mail;
 
     @Column(name = "discord_id")
@@ -86,6 +87,7 @@ public class User implements UserDetails {
     @JsonView(Views.Internal.class)
     private String patreonId;
 
+    @Nullable
     @Column(name = "pronouns")
     @JsonView(Views.Public.class)
     @Size(max = 20)
@@ -231,6 +233,15 @@ public class User implements UserDetails {
 
     public void setTwitterId(final String twitterId) {
         this.twitterId = twitterId;
+    }
+
+    public void setPronouns(@Nullable String pronouns) {
+        this.pronouns = pronouns;
+    }
+
+    @Nullable
+    public String getPronouns() {
+        return pronouns;
     }
 
     @JsonIgnore

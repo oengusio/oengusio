@@ -11,7 +11,6 @@ public enum SocialPlatform {
     INSTAGRAM,
     SNAPCHAT,
     DISCORD,
-    IRC,
     EMAIL,
     PHONE
 }

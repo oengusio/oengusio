@@ -1,7 +1,9 @@
 package app.oengus.entity.model;
 
 import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -21,6 +23,7 @@ import java.util.Objects;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SocialAccount implements Serializable {
     @Id
+    @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -28,17 +31,20 @@ public class SocialAccount implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "user_id")
+    @JsonView(Views.Internal.class)
     private User user;
 
     @NotNull
     @Column(name = "platform")
     @Enumerated(EnumType.STRING) /* Default is ORDINAL */
+    @JsonView(Views.Public.class)
     private SocialPlatform platform;
 
     // TODO: platform based validation
     @NotNull
     @Size(max = 320)
     @Column(name = "username")
+    @JsonView(Views.Public.class)
     private String username;
 
     // TODO: check
