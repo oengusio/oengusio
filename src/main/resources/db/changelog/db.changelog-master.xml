@@ -913,6 +913,18 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_auditlog"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_auditlog_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="application_auditlog"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_application_auditlog_application"
+                                 referencedTableName="applications"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 
