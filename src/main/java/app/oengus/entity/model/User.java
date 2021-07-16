@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.requests.user.IUserRequest.SPEEDRUN_COM_NAME_REGEX;
 import static app.oengus.requests.user.IUserRequest.USERNAME_REGEX;
 
 @Entity

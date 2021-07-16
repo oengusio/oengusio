@@ -192,8 +192,7 @@ public class UserService {
         final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
 
         // "Deleted" is 7 in length
-        // TODO: update for new limit
-        user.setUsername("Deleted" + randomHash.substring(0, Math.min(7, randomHash.length())));
+        user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
 
         this.userRepositoryService.save(user);
     }
