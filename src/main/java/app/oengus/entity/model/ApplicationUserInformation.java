@@ -21,7 +21,7 @@ import java.time.LocalDate;
 public class ApplicationUserInformation {
     @Id
     @JsonBackReference
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     @JsonView(Views.Internal.class)
     @OneToOne(fetch = FetchType.LAZY)
     private User user;

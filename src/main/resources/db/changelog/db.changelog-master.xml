@@ -866,10 +866,10 @@
             <column name="status" type="varchar(8)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="datetime">
+            <column name="created_at" type="datetime" defaultValueDate="now()">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="datetime">
+            <column name="updated_at" type="datetime" defaultValueDate="now()">
                 <constraints nullable="false"/>
             </column>
             <column name="references" type="text">

@@ -42,7 +42,6 @@ public class SocialAccount implements Serializable {
     @JsonView(Views.Public.class)
     private SocialPlatform platform;
 
-    // TODO: platform based validation
     @NotNull
     @Size(max = 320)
     @Column(name = "username")
