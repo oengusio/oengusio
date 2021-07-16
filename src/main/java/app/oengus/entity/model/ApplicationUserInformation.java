@@ -29,49 +29,60 @@ public class ApplicationUserInformation {
     @NotNull
     @Max(value = 255)
     @Column(name = "first_name")
+    @JsonView(Views.Public.class)
     private String firstName;
 
     @NotNull
     @Max(value = 255)
     @Column(name = "last_name")
+    @JsonView(Views.Public.class)
     private String lastName;
 
     @NotNull
     @Column(name = "birthdate")
+    @JsonView(Views.Public.class)
     private LocalDate birthdate;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "tshrit_size")
+    @JsonView(Views.Public.class)
     private TShirtSize tShirtSize;
 
     @Email
     @NotNull
     @Column(name = "email")
+    @JsonView(Views.Public.class)
     private String email;
 
     @Nullable
     @Max(value = 20)
+    @JsonView(Views.Public.class)
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Nullable
     @Max(value = 255)
     @Column(name = "ice_1")
+    @JsonView(Views.Public.class)
     private String ICE1;
 
     @Nullable
     @Max(value = 255)
     @Column(name = "ice_2")
+    @JsonView(Views.Public.class)
     private String ICE2;
 
     @Nullable
     @Max(value = 255)
     @Column(name = "allergies")
+    @JsonView(Views.Public.class)
     private String allergies;
 
     @Nullable
     @Max(value = 255)
     @Column(name = "diet")
+    @JsonView(Views.Public.class)
     private String diet;
 
     public int getUserId() {
