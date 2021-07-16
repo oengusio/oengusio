@@ -808,10 +808,51 @@
             </column>
         </createTable>
 
-
         <addForeignKeyConstraint baseTableName="patreon_status"
                                  baseColumnNames="patreon_id"
                                  constraintName="fk_user_patreon_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="patreon_id"/>
+
+        <createTable tableName="application_user_information">
+            <column name="user_id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birthdate" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tshrit_size" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ice_1" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ice_2" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="allergies" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="diet" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_user_information"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_user_information_user"
                                  referencedTableName="users"
                                  referencedColumnNames="patreon_id"/>
     </changeSet>
