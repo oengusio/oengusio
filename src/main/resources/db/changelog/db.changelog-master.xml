@@ -857,11 +857,14 @@
                                  referencedColumnNames="user_id"/>
 
         <createTable tableName="applications">
-            <column name="user_id" type="serial">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="user_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
             <column name="marathon_id" type="varchar(10)">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="status" type="varchar(8)">
                 <constraints nullable="false"/>
@@ -892,6 +895,24 @@
                                  referencedTableName="marathon"
                                  referencedColumnNames="id"/>
 
+
+        <createTable tableName="application_auditlog">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="application_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_status" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 

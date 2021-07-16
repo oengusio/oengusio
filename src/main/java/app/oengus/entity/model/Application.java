@@ -18,13 +18,16 @@ import java.time.LocalDateTime;
 public class Application {
 
     @Id
+    @JsonView(Views.Public.class)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @JsonBackReference
     @JoinColumn(name = "user_id")
     @JsonView(Views.Public.class)
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Id
     @JsonBackReference
     @JsonView(Views.Public.class)
     @JoinColumn(name = "marathon_id")
@@ -56,6 +59,14 @@ public class Application {
     @Column(name = "application")
     @JsonView(Views.Public.class)
     private String application;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public User getUser() {
         return user;
