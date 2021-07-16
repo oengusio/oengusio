@@ -15,7 +15,6 @@ import org.hibernate.annotations.Cache;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static app.oengus.requests.user.IUserRequest.*;
 

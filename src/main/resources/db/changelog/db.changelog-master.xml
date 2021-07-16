@@ -834,13 +834,13 @@
                 <constraints nullable="false"/>
             </column>
             <column name="phone_number" type="varchar(20)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="ice_1" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="ice_2" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="allergies" type="varchar(255)">
                 <constraints nullable="true"/>
