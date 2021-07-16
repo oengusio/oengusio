@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @Table(name = "marathon")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Marathon {
 
     @Id
@@ -37,7 +38,7 @@ public class Marathon {
     @ManyToOne
     @JsonView(Views.Public.class)
     @JoinColumn(name = "creator_id")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @NotNull
     private User creator;
 
@@ -174,7 +175,7 @@ public class Marathon {
     )
     @OrderBy(value = "id ASC")
     @JsonView(Views.Public.class)
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<User> moderators;
 
     @Column(name = "incentives")
@@ -237,6 +238,10 @@ public class Marathon {
     @Column(name = "announce_accepted_submissions")
     @JsonView(Views.Public.class)
     private boolean announceAcceptedSubmissions = false;
+
+    @Column(name = "applications_open")
+    @JsonView(Views.Public.class)
+    private boolean applicationsOpen = false;
 
     public String getId() {
         return this.id;
@@ -600,5 +605,13 @@ public class Marathon {
 
     public void setAnnounceAcceptedSubmissions(boolean announceAcceptedRuns) {
         this.announceAcceptedSubmissions = announceAcceptedRuns;
+    }
+
+    public boolean isApplicationsOpen() {
+        return applicationsOpen;
+    }
+
+    public void setApplicationsOpen(boolean applications_open) {
+        this.applicationsOpen = applications_open;
     }
 }

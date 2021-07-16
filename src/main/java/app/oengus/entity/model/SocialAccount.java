@@ -12,10 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
-
-import java.io.Serializable;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static app.oengus.requests.user.IUserRequest.*;
 
@@ -24,7 +21,7 @@ import static app.oengus.requests.user.IUserRequest.*;
 @Table(name = "social_accounts")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class SocialAccount implements Serializable {
+public class SocialAccount {
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +40,6 @@ public class SocialAccount implements Serializable {
     @JsonView(Views.Public.class)
     private SocialPlatform platform;
 
-    // TODO: platform based validation
     @NotNull
     @Size(max = 320)
     @Column(name = "username")

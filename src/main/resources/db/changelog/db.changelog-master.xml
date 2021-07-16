@@ -746,7 +746,7 @@
     </changeSet>
 
     <changeSet id="20210712-1" author="duncte123">
-        <addColumn tableName="users"> <!-- Purposefully invalid so I can't accidentally commit this to the db -->
+        <addColumn tableName="users">
             <column name="pronouns" type="varchar(20)"/>
             <column name="patreon_id" type="varchar(20)"/>
             <column name="country" type="varchar(3)"/>
@@ -790,5 +790,150 @@
         <dropColumn tableName="users" columnName="discord_name"/>
         <dropColumn tableName="users" columnName="speedruncom_name"/>
     </changeSet>
+
+    <changeSet id="20210716-1" author="duncte123">
+        <!-- fix some columns -->
+        <addUniqueConstraint columnNames="patreon_id" tableName="users"/>
+        <modifyDataType tableName="social_accounts" columnName="user_id" newDataType="int"/>
+
+        <addColumn tableName="marathon">
+            <column name="applications_open" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+
+
+        <createTable tableName="patreon_status">
+            <column name="patreon_id" type="varchar(20)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="pledge_amount" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="patreon_status"
+                                 baseColumnNames="patreon_id"
+                                 constraintName="fk_user_patreon_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="patreon_id"/>
+
+        <createTable tableName="application_user_information">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birthdate" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tshrit_size" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ice_1" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ice_2" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="allergies" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="diet" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_user_information"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_user_information_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="applications">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime" defaultValueDate="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="datetime" defaultValueDate="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="references" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="application" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="applications"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="applications"
+                                 baseColumnNames="marathon_id"
+                                 constraintName="fk_application_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+
+
+        <createTable tableName="application_auditlog">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="application_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="new_status" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_auditlog"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_auditlog_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="application_auditlog"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_application_auditlog_application"
+                                 referencedTableName="applications"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
 
 </databaseChangeLog>
