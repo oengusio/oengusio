@@ -4,9 +4,6 @@ import app.oengus.entity.model.SocialAccount;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,27 +19,12 @@ public class UserProfileDto {
     private List<MarathonBasicInfoDto> moderatedMarathons;
     @Nullable
     private String pronouns;
-    private final String avatarHash;
     private boolean banned;
     private String country;
 
-    public UserProfileDto(String email) {
+    public UserProfileDto() {
         this.history = new ArrayList<>();
         this.moderatedMarathons = new ArrayList<>();
-
-        String tmpHash = "00000000000000000000000000000000";
-
-        try {
-            final String emailLower = email.toLowerCase();
-            final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
-            tmpHash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
-            // should never happen
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        this.avatarHash = tmpHash;
-
     }
 
     public int getId() {
@@ -120,10 +102,6 @@ public class UserProfileDto {
 
     public void setBanned(boolean banned) {
         this.banned = banned;
-    }
-
-    public String getAvatarHash() {
-        return avatarHash;
     }
 
     public String getCountry() {

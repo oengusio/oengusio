@@ -224,6 +224,16 @@ public class UserService {
         return this.userRepositoryService.findById(id);
     }
 
+    public User findByUsername(final String username) throws NotFoundException {
+        final User user = this.userRepositoryService.findByUsername(username);
+
+        if (user == null) {
+            throw new NotFoundException("Unknown user");
+        }
+
+        return user;
+    }
+
     public UserProfileDto getUserProfile(final String username) throws NotFoundException {
         final User user = this.userRepositoryService.findByUsername(username);
 
@@ -231,7 +241,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final UserProfileDto userProfileDto = new UserProfileDto(user.getMail());
+        final UserProfileDto userProfileDto = new UserProfileDto();
 
         BeanUtils.copyProperties(user, userProfileDto);
         userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));

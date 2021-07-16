@@ -1,7 +1,6 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.UserProfileDto;
-import app.oengus.entity.model.Error;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.requests.user.UserUpdateRequest;
@@ -13,8 +12,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +29,10 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
+import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +45,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
+    private final OkHttpClient client = new OkHttpClient();
 
     @Autowired
     public UserController(final UserService userService, @Value("${oengus.oauthOrigins}") final List<String> oauthOrigins) {
@@ -98,6 +106,37 @@ public class UserController {
         final UserProfileDto userProfile = this.userService.getUserProfile(name);
 
         return ResponseEntity.ok(userProfile);
+    }
+
+    @GetMapping("/{name}/avatar")
+    @PermitAll
+    @ApiOperation(value = "Get a user's avatar")
+    public ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
+        final User user = this.userService.findByUsername(name);
+
+        final String emailLower = user.getMail().toLowerCase().trim();
+        final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
+        final String hash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
+
+        final Request request = new Request.Builder()
+            .url("https://www.gravatar.com/avatar/" + hash + "?s=80&d=retro&r=pg")
+            .get()
+            // Send over the browser's user-agent
+            .header("User-Agent", "oengus.io-gravatar-proxy/1.0")
+            .build();
+
+        try (final Response res = this.client.newCall(request).execute()) {
+            try (final okhttp3.ResponseBody body = res.body()) {
+                return ResponseEntity.status(HttpStatus.OK)
+                    // copy over the headers we need
+                    .header("Content-Type", res.header("Content-Type"))
+                    .header("Cache-Control", res.header("Cache-Control"))
+                    .header("Expires", res.header("Expires"))
+                    .header("Last-Modified", res.header("Last-Modified"))
+                    .header("Content-Length", res.header("Content-Length"))
+                    .body(body.bytes());
+            }
+        }
     }
 
     @PatchMapping("/{id}")
