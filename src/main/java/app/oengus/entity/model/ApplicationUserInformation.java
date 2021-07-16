@@ -20,6 +20,10 @@ import java.time.LocalDate;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ApplicationUserInformation {
     @Id
+    @JsonView(Views.Public.class)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @JsonBackReference
     @JoinColumn(name = "user_id")
     @JsonView(Views.Internal.class)
@@ -84,6 +88,18 @@ public class ApplicationUserInformation {
     @Column(name = "diet")
     @JsonView(Views.Public.class)
     private String diet;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
 
     public int getUserId() {
         return this.user.getId();

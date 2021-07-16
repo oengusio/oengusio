@@ -12,8 +12,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
-
-import java.io.Serializable;
 import java.util.Objects;
 
 import static app.oengus.requests.user.IUserRequest.*;
@@ -23,7 +21,7 @@ import static app.oengus.requests.user.IUserRequest.*;
 @Table(name = "social_accounts")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class SocialAccount implements Serializable {
+public class SocialAccount {
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -792,12 +792,17 @@
     </changeSet>
 
     <changeSet id="20210716-1" author="duncte123">
+        <!-- fix some columns -->
+        <addUniqueConstraint columnNames="patreon_id" tableName="users"/>
+        <modifyDataType tableName="social_accounts" columnName="user_id" newDataType="int"/>
+
         <addColumn tableName="marathon">
             <column name="applications_open" type="boolean" defaultValueBoolean="true"/>
         </addColumn>
 
+
         <createTable tableName="patreon_status">
-            <column name="patreon_id" type="string">
+            <column name="patreon_id" type="varchar(20)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="status" type="varchar(20)">
@@ -815,8 +820,11 @@
                                  referencedColumnNames="patreon_id"/>
 
         <createTable tableName="application_user_information">
-            <column name="user_id" type="serial">
+            <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
             </column>
             <column name="first_name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -854,13 +862,13 @@
                                  baseColumnNames="user_id"
                                  constraintName="fk_application_user_information_user"
                                  referencedTableName="users"
-                                 referencedColumnNames="user_id"/>
+                                 referencedColumnNames="id"/>
 
         <createTable tableName="applications">
             <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_id" type="serial">
+            <column name="user_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="marathon_id" type="varchar(10)">
@@ -890,7 +898,7 @@
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="applications"
-                                 baseColumnNames="marathon"
+                                 baseColumnNames="marathon_id"
                                  constraintName="fk_application_marathon"
                                  referencedTableName="marathon"
                                  referencedColumnNames="id"/>
@@ -900,13 +908,13 @@
             <column name="id" type="serial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="application_id" type="serial">
+            <column name="application_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="timestamp" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="serial">
+            <column name="user_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="new_status" type="varchar(8)">
