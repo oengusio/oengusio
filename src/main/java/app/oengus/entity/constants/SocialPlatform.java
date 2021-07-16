@@ -12,6 +12,5 @@ public enum SocialPlatform {
     SNAPCHAT,
     DISCORD,
     EMAIL,
-    PHONE,
     NICO
 }

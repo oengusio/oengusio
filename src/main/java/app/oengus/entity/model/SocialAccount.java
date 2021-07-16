@@ -15,6 +15,9 @@ import org.hibernate.annotations.Cache;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.regex.Pattern;
+
+import static app.oengus.requests.user.IUserRequest.*;
 
 @SuppressWarnings("unused")
 @Entity
@@ -46,17 +49,6 @@ public class SocialAccount implements Serializable {
     @Column(name = "username")
     @JsonView(Views.Public.class)
     private String username;
-
-    // TODO: check
-    /*@AssertTrue
-    public boolean isUsernameValidForPlatform() {
-        System.out.println("USERNAME " + this.username);
-        System.out.println("PLATFORM " + this.platform);
-        System.out.println("USER " + this.user);
-
-
-        return true;
-    }*/
 
     public int getId() {
         return id;
@@ -91,6 +83,16 @@ public class SocialAccount implements Serializable {
 
     public void setUsername(@NotNull String username) {
         this.username = username;
+    }
+
+    @AssertTrue(message = "The username does not have a valid format for the platform")
+    public boolean isUsernameValidForPlatform() {
+        return switch (this.platform) {
+            case SPEEDRUNCOM -> this.username.length() < 20 && this.username.matches(SPEEDRUN_COM_NAME_REGEX);
+            case DISCORD -> this.username.matches(DISCORD_USERNAME_REGEX);
+            case EMAIL -> this.username.matches(EMAIL_REGEX);
+            default -> this.username.matches(USERNAME_REGEX);
+        };
     }
 
     @Override
