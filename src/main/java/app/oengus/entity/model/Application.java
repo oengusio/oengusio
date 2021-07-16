@@ -1,8 +1,10 @@
 package app.oengus.entity.model;
 
 import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -10,6 +12,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "applications")
@@ -59,6 +63,13 @@ public class Application {
     @Column(name = "application")
     @JsonView(Views.Public.class)
     private String application;
+
+    @JsonManagedReference
+    @OrderBy("timestamp DESC")
+    @JsonView(Views.Public.class)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ApplicationAuditlog> auditLogs;
 
     public int getId() {
         return id;
@@ -122,5 +133,18 @@ public class Application {
 
     public void setApplication(String application) {
         this.application = application;
+    }
+
+    public List<ApplicationAuditlog> getAuditLogs() {
+        return auditLogs;
+    }
+
+    public void setAuditLogs(List<ApplicationAuditlog> auditLogs) {
+        if (this.auditLogs == null) {
+            this.auditLogs = new ArrayList<>();
+        }
+
+        this.auditLogs.clear();
+        this.auditLogs.addAll(auditLogs);
     }
 }
