@@ -26,7 +26,6 @@ application {
 
 repositories {
     mavenCentral()
-    jcenter()
 
     maven { url = uri("https://jitpack.io") }
 }
@@ -90,6 +89,9 @@ dependencies {
 
     // WEBHOOKS
     implementation(group = "com.github.esamarathon", name = "oengus-discord-webhooks", version = "b9bd477")
+
+    // COUNTRY SUPPORT
+    implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.28")
 }
 
 val wrapper: Wrapper by tasks

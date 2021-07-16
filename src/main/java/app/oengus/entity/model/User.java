@@ -3,13 +3,16 @@ package app.oengus.entity.model;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
@@ -20,13 +23,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.requests.user.IUserRequest.SPEEDRUN_COM_NAME_REGEX;
 import static app.oengus.requests.user.IUserRequest.USERNAME_REGEX;
 
 @Entity
 @Table(name = "users")
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements UserDetails {
 
     @Id
@@ -51,14 +53,21 @@ public class User implements UserDetails {
 
     @ElementCollection
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @Column(name = "role")
     @JsonView(Views.Public.class)
     private List<Role> roles;
 
+    @JsonManagedReference
+    @OrderBy("platform ASC")
+    @JsonView(Views.Public.class)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialAccount> connections;
+
+    @Email
     @Column
     @JsonView(Views.Internal.class)
-    @Email
     private String mail;
 
     @Column(name = "discord_id")
@@ -73,26 +82,21 @@ public class User implements UserDetails {
     @JsonView(Views.Internal.class)
     private String twitterId;
 
-    @Column(name = "discord_name")
-    @JsonView(Views.Public.class)
-    @Size(max = 37)
-    private String discordName;
+    @Column(name = "patreon_id")
+    @JsonView(Views.Internal.class)
+    private String patreonId;
 
-    @Column(name = "twitter_name")
-    @JsonView(Views.Public.class)
-    @Size(max = 15)
-    private String twitterName;
-
-    @Column(name = "twitch_name")
-    @JsonView(Views.Public.class)
-    @Size(max = 25)
-    private String twitchName;
-
-    @Column(name = "speedruncom_name")
+    @Nullable
+    @Column(name = "pronouns")
     @JsonView(Views.Public.class)
     @Size(max = 20)
-    @Pattern(regexp = SPEEDRUN_COM_NAME_REGEX)
-    private String speedruncomName;
+    private String pronouns;
+
+    @Nullable
+    @Column(name = "country")
+    @JsonView(Views.Public.class)
+    @Size(max = 3)
+    private String country;
 
     @Override
     public boolean isEnabled() {
@@ -207,36 +211,17 @@ public class User implements UserDetails {
         this.twitchId = twitchId;
     }
 
-    public String getDiscordName() {
-        return this.discordName;
+    public List<SocialAccount> getConnections() {
+        return connections;
     }
 
-    public void setDiscordName(final String discordName) {
-        this.discordName = discordName;
-    }
+    public void setConnections(List<SocialAccount> connections) {
+        if (this.connections == null) {
+            this.connections = new ArrayList<>();
+        }
 
-    public String getTwitterName() {
-        return this.twitterName;
-    }
-
-    public void setTwitterName(final String twitterName) {
-        this.twitterName = twitterName;
-    }
-
-    public String getTwitchName() {
-        return this.twitchName;
-    }
-
-    public void setTwitchName(final String twitchName) {
-        this.twitchName = twitchName;
-    }
-
-    public String getSpeedruncomName() {
-        return this.speedruncomName;
-    }
-
-    public void setSpeedruncomName(final String speedruncomName) {
-        this.speedruncomName = speedruncomName;
+        this.connections.clear();
+        this.connections.addAll(connections);
     }
 
     public String getUsernameJapanese() {
@@ -253,6 +238,24 @@ public class User implements UserDetails {
 
     public void setTwitterId(final String twitterId) {
         this.twitterId = twitterId;
+    }
+
+    public void setPronouns(@Nullable String pronouns) {
+        this.pronouns = pronouns;
+    }
+
+    @Nullable
+    public String getPronouns() {
+        return pronouns;
+    }
+
+    @Nullable
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(@Nullable String country) {
+        this.country = country;
     }
 
     @JsonIgnore

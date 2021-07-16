@@ -53,7 +53,7 @@ public class ScheduleService {
     public Schedule findByMarathonCustomDataControl(final String marathonId, boolean withCustomData) {
         final Schedule byMarathon = this.findByMarathon(marathonId);
 
-        if (withCustomData) {
+        if (withCustomData && byMarathon != null) {
             final List<ScheduleLine> lines = byMarathon.getLines();
 
             // lines can be null so we check if they are not

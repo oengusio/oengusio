@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.dto.UserHistoryDto;
@@ -104,7 +105,60 @@ public class UserService {
     public void updateRequest(final int id, final UserUpdateRequest userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
-        BeanHelper.copyProperties(userPatch, user);
+        BeanHelper.copyProperties(userPatch, user, "connections");
+
+        // TODO: extract method to request
+        if (userPatch.getConnections() == null || userPatch.getConnections().isEmpty()) {
+            user.getConnections().clear();
+        } else {
+            if (user.getConnections().isEmpty()) {
+                // newly added properties
+                for (final SocialAccount connection : userPatch.getConnections()) {
+                    connection.setUser(user);
+                }
+
+                user.setConnections(userPatch.getConnections());
+            } else {
+                final List<SocialAccount> currentConnections = new ArrayList<>(user.getConnections());
+                final List<SocialAccount> updateConnections = new ArrayList<>(userPatch.getConnections());
+                final List<SocialAccount> toInsert = new ArrayList<>();
+
+                for (final SocialPlatform platform : SocialPlatform.values()) {
+                    final List<SocialAccount> current = currentConnections.stream()
+                        .filter((c) -> c.getPlatform() == platform)
+                        .collect(Collectors.toList());
+                    final List<SocialAccount> update = updateConnections.stream()
+                        .filter((c) -> c.getPlatform() == platform)
+                        .collect(Collectors.toList());
+
+                    for (final SocialAccount currentAcc : current) {
+                        if (update.isEmpty()) {
+                            break;
+                        }
+
+                        final SocialAccount updateAcc = update.get(0);
+
+                        currentAcc.setUsername(updateAcc.getUsername());
+                        toInsert.add(currentAcc);
+                        update.remove(0);
+                    }
+
+                    // accounts that are new
+                    update.forEach((account) -> {
+                        final SocialAccount fresh = new SocialAccount();
+
+                        fresh.setId(-1);
+                        fresh.setUser(user);
+                        fresh.setPlatform(account.getPlatform());
+                        fresh.setUsername(account.getUsername());
+
+                        toInsert.add(fresh);
+                    });
+                }
+
+                user.setConnections(toInsert);
+            }
+        }
 
         this.userRepositoryService.update(user);
     }
@@ -124,14 +178,13 @@ public class UserService {
     public void markDeleted(final int id) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
+        // TODO: delete all connections
+
+        user.getConnections().clear();
         user.setUsernameJapanese(null);
         user.setDiscordId(null);
-        user.setDiscordName(null);
         user.setTwitchId(null);
-        user.setTwitchName(null);
         user.setTwitterId(null);
-        user.setTwitterName(null);
-        user.setSpeedruncomName(null);
         user.setMail(null);
 //        user.setMail("deleted-user@oengus.io");
         user.setEnabled(false);
@@ -139,7 +192,7 @@ public class UserService {
         final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
 
         // "Deleted" is 7 in length
-        user.setUsername("Deleted" + randomHash.substring(0, Math.min(7, randomHash.length())));
+        user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
 
         this.userRepositoryService.save(user);
     }
@@ -168,6 +221,16 @@ public class UserService {
 
     public User getUser(final int id) throws NotFoundException {
         return this.userRepositoryService.findById(id);
+    }
+
+    public User findByUsername(final String username) throws NotFoundException {
+        final User user = this.userRepositoryService.findByUsername(username);
+
+        if (user == null) {
+            throw new NotFoundException("Unknown user");
+        }
+
+        return user;
     }
 
     public UserProfileDto getUserProfile(final String username) throws NotFoundException {

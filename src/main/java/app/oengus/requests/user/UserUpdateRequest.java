@@ -1,13 +1,14 @@
 package app.oengus.requests.user;
 
+import app.oengus.entity.model.SocialAccount;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.neovisionaries.i18n.CountryCode;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.util.List;
 
 public class UserUpdateRequest implements IUserRequest {
 
@@ -36,30 +37,26 @@ public class UserUpdateRequest implements IUserRequest {
     private String twitchId;
 
     @Nullable
-    @Column(name = "twitter_id")
     @JsonView(Views.Internal.class)
     private String twitterId;
 
     @Nullable
-    @JsonView(Views.Public.class)
-    @Size(max = 37)
-    private String discordName;
+    @JsonView(Views.Internal.class)
+    private String patreonId;
 
-    @Nullable
+    @NotNull
     @JsonView(Views.Public.class)
-    @Size(max = 15)
-    private String twitterName;
-
-    @Nullable
-    @JsonView(Views.Public.class)
-    @Size(max = 25)
-    private String twitchName;
+    private List<SocialAccount> connections;
 
     @Nullable
     @JsonView(Views.Public.class)
     @Size(max = 20)
-    @Pattern(regexp = SPEEDRUN_COM_NAME_REGEX)
-    private String speedruncomName;
+    private String pronouns;
+
+    @Nullable
+    @JsonView(Views.Public.class)
+    @Size(max = 3)
+    private String country;
 
     public String getUsername() {
         return username;
@@ -121,38 +118,62 @@ public class UserUpdateRequest implements IUserRequest {
     }
 
     @Nullable
-    public String getDiscordName() {
-        return discordName;
+    public String getPatreonId() {
+        return patreonId;
     }
 
-    public void setDiscordName(@Nullable String discordName) {
-        this.discordName = discordName;
-    }
-
-    @Nullable
-    public String getTwitterName() {
-        return twitterName;
-    }
-
-    public void setTwitterName(@Nullable String twitterName) {
-        this.twitterName = twitterName;
+    public void setPatreonId(@Nullable String patreonId) {
+        this.patreonId = patreonId;
     }
 
     @Nullable
-    public String getTwitchName() {
-        return twitchName;
+    public String getPronouns() {
+        return pronouns;
     }
 
-    public void setTwitchName(@Nullable String twitchName) {
-        this.twitchName = twitchName;
+    public void setPronouns(@Nullable String pronouns) {
+        this.pronouns = pronouns;
+    }
+
+    public List<SocialAccount> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<SocialAccount> connections) {
+        this.connections = connections;
     }
 
     @Nullable
-    public String getSpeedruncomName() {
-        return speedruncomName;
+    public String getCountry() {
+        return country;
     }
 
-    public void setSpeedruncomName(@Nullable String speedruncomName) {
-        this.speedruncomName = speedruncomName;
+    public void setCountry(@Nullable String country) {
+        this.country = country;
     }
+
+    /// <editor-fold desc="validation" defaultstate="collapsed">
+    @AssertTrue(message = "You must have at least one account synced")
+    public boolean isAtLeastOneAccountSynchronized() {
+        // ignore for disabled users
+        if (!this.enabled) {
+            return true;
+        }
+
+        return StringUtils.isNotEmpty(this.discordId) ||
+            StringUtils.isNotEmpty(this.twitchId) ||
+            StringUtils.isNotEmpty(this.twitterId);
+    }
+
+    @AssertTrue(message = "The country code is not valid")
+    public boolean isCountryValid() {
+        if (this.country == null || this.country.isBlank()) {
+            return true;
+        }
+
+        final CountryCode byCode = CountryCode.getByCode(this.country);
+
+        return byCode != null && byCode != CountryCode.UNDEFINED;
+    }
+    /// </editor-fold>
 }

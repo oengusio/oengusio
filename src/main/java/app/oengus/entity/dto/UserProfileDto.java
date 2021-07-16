@@ -1,21 +1,26 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.model.SocialAccount;
+
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class UserProfileDto {
 
     private int id;
     private String username;
     private String usernameJapanese;
     private boolean enabled;
-    private String twitterName;
-    private String discordName;
-    private String twitchName;
-    private String speedruncomName;
+    private List<SocialAccount> connections;
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
+    @Nullable
+    private String pronouns;
     private boolean banned;
+    private String country;
 
     public UserProfileDto() {
         this.history = new ArrayList<>();
@@ -54,38 +59,6 @@ public class UserProfileDto {
         this.enabled = enabled;
     }
 
-    public String getTwitterName() {
-        return this.twitterName;
-    }
-
-    public void setTwitterName(final String twitterName) {
-        this.twitterName = twitterName;
-    }
-
-    public String getTwitchName() {
-        return this.twitchName;
-    }
-
-    public void setTwitchName(final String twitchName) {
-        this.twitchName = twitchName;
-    }
-
-    public String getDiscordName() {
-        return this.discordName;
-    }
-
-    public void setDiscordName(String discordName) {
-        this.discordName = discordName;
-    }
-
-    public String getSpeedruncomName() {
-        return this.speedruncomName;
-    }
-
-    public void setSpeedruncomName(final String speedruncomName) {
-        this.speedruncomName = speedruncomName;
-    }
-
     public List<UserHistoryDto> getHistory() {
         return this.history;
     }
@@ -102,11 +75,40 @@ public class UserProfileDto {
         this.moderatedMarathons = moderatedMarathons;
     }
 
+    public List<SocialAccount> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<SocialAccount> connections) {
+        this.connections = connections;
+    }
+
+    @NotNull
+    public String[] getPronouns() {
+        if (pronouns == null) {
+            return new String[]{};
+        }
+
+        return pronouns.split(",");
+    }
+
+    public void setPronouns(@Nullable String pronouns) {
+        this.pronouns = pronouns;
+    }
+
     public boolean isBanned() {
         return banned;
     }
 
     public void setBanned(boolean banned) {
         this.banned = banned;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }
