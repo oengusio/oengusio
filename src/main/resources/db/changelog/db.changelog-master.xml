@@ -854,7 +854,44 @@
                                  baseColumnNames="user_id"
                                  constraintName="fk_application_user_information_user"
                                  referencedTableName="users"
-                                 referencedColumnNames="patreon_id"/>
+                                 referencedColumnNames="user_id"/>
+
+        <createTable tableName="applications">
+            <column name="user_id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="references" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="application" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="applications"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_application_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="applications"
+                                 baseColumnNames="marathon"
+                                 constraintName="fk_application_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+
     </changeSet>
 
 
