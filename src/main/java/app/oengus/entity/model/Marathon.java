@@ -238,6 +238,10 @@ public class Marathon {
     @JsonView(Views.Public.class)
     private boolean announceAcceptedSubmissions = false;
 
+    @Column(name = "applications_open")
+    @JsonView(Views.Public.class)
+    private boolean applicationsOpen = false;
+
     public String getId() {
         return this.id;
     }
@@ -600,5 +604,13 @@ public class Marathon {
 
     public void setAnnounceAcceptedSubmissions(boolean announceAcceptedRuns) {
         this.announceAcceptedSubmissions = announceAcceptedRuns;
+    }
+
+    public boolean isApplicationsOpen() {
+        return applicationsOpen;
+    }
+
+    public void setApplicationsOpen(boolean applications_open) {
+        this.applicationsOpen = applications_open;
     }
 }
