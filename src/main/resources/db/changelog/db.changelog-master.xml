@@ -935,5 +935,11 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="20210719-1" author="duncte123">
+        <renameColumn tableName="application_user_information"
+                      oldColumnName="tshrit_size"
+                      newColumnName="tshirt_size"/>
+    </changeSet>
+
 
 </databaseChangeLog>

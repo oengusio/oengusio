@@ -3,6 +3,8 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.TShirtSize;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -10,8 +12,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,13 +34,13 @@ public class ApplicationUserInformation {
     private User user;
 
     @NotNull
-    @Max(value = 255)
+    @Size(max = 255)
     @Column(name = "first_name")
     @JsonView(Views.Public.class)
     private String firstName;
 
     @NotNull
-    @Max(value = 255)
+    @Size(max = 255)
     @Column(name = "last_name")
     @JsonView(Views.Public.class)
     private String lastName;
@@ -50,7 +52,7 @@ public class ApplicationUserInformation {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "tshrit_size")
+    @Column(name = "tshirt_size")
     @JsonView(Views.Public.class)
     private TShirtSize tShirtSize;
 
@@ -61,31 +63,33 @@ public class ApplicationUserInformation {
     private String email;
 
     @Nullable
-    @Max(value = 20)
+    @Size(max = 20)
     @JsonView(Views.Public.class)
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Nullable
-    @Max(value = 255)
+    @JsonIgnore
+    @Size(max = 255)
     @Column(name = "ice_1")
     @JsonView(Views.Public.class)
     private String ICE1;
 
     @Nullable
-    @Max(value = 255)
+    @JsonIgnore
+    @Size(max = 255)
     @Column(name = "ice_2")
     @JsonView(Views.Public.class)
     private String ICE2;
 
     @Nullable
-    @Max(value = 255)
+    @Size(max = 255)
     @Column(name = "allergies")
     @JsonView(Views.Public.class)
     private String allergies;
 
     @Nullable
-    @Max(value = 255)
+    @Size(max = 255)
     @Column(name = "diet")
     @JsonView(Views.Public.class)
     private String diet;
@@ -139,8 +143,14 @@ public class ApplicationUserInformation {
         this.birthdate = birthdate;
     }
 
+    @JsonIgnore
     public TShirtSize gettShirtSize() {
         return tShirtSize;
+    }
+
+    @JsonGetter("tShirtSize")
+    public String gettShirtSizeDisplay() {
+        return tShirtSize.getDisplay();
     }
 
     public void settShirtSize(TShirtSize tShirtSize) {
@@ -164,7 +174,9 @@ public class ApplicationUserInformation {
         this.phoneNumber = phoneNumber;
     }
 
+
     @Nullable
+    @JsonGetter("ice1")
     public String getICE1() {
         return ICE1;
     }
@@ -173,7 +185,9 @@ public class ApplicationUserInformation {
         this.ICE1 = ICE1;
     }
 
+
     @Nullable
+    @JsonGetter("ice2")
     public String getICE2() {
         return ICE2;
     }
