@@ -13,6 +13,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "application_user_information")
@@ -88,6 +89,11 @@ public class ApplicationUserInformation {
     @Column(name = "diet")
     @JsonView(Views.Public.class)
     private String diet;
+
+    @JoinColumn(name = "user_id")
+    @JsonView(Views.Internal.class)
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Application> applications;
 
     public int getId() {
         return id;
@@ -192,5 +198,9 @@ public class ApplicationUserInformation {
 
     public void setDiet(@Nullable String diet) {
         this.diet = diet;
+    }
+
+    public List<Application> getApplications() {
+        return applications;
     }
 }

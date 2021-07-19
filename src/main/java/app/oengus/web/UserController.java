@@ -114,7 +114,8 @@ public class UserController {
     public ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
         final User user = this.userService.findByUsername(name);
 
-        final String emailLower = user.getMail().toLowerCase().trim();
+        // Strip off any "+blah" parts with the regex
+        final String emailLower = user.getMail().toLowerCase().trim().replaceAll("\\+.*@", "@");
         final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
         final String hash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
 
