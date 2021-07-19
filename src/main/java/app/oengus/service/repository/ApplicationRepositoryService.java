@@ -1,4 +1,4 @@
-package app.oengus.service;
+package app.oengus.service.repository;
 
 import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
@@ -29,13 +29,13 @@ public class ApplicationRepositoryService {
         this.applicationUserInformationRepository = applicationUserInformationRepository;
     }
 
-    // TODO: throw on missing?
-    public ApplicationUserInformation getInfoForUser(User user) {
-        return this.applicationUserInformationRepository.findByUser(user);
+    public ApplicationUserInformation getInfoForUser(User user) throws NotFoundException {
+        return this.applicationUserInformationRepository.findByUser(user)
+            .orElseThrow(() -> new NotFoundException("Application not found"));
     }
 
     public ApplicationUserInformation update(User user, ApplicationUserInformationDto dto) {
-        ApplicationUserInformation infoForUser = this.applicationUserInformationRepository.findByUser(user);
+        ApplicationUserInformation infoForUser = this.applicationUserInformationRepository.findByUser(user).orElse(null);
 
         if (infoForUser == null) {
             infoForUser = new ApplicationUserInformation();
