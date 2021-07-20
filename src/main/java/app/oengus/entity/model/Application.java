@@ -3,7 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
@@ -53,7 +52,7 @@ public class Application {
     private LocalDateTime updatedAt;
 
     @NotNull
-    @Column(name = "references")
+    @Column(name = "reference")
     @JsonView(Views.Public.class)
     private String references;
 

@@ -2,6 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
+import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.model.Application;
 import app.oengus.entity.model.ApplicationUserInformation;
@@ -12,6 +13,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,7 +40,7 @@ public class ApplicationRepositoryService {
 
         if (infoForUser == null) {
             infoForUser = new ApplicationUserInformation();
-
+            infoForUser.setId(-1);
             infoForUser.setUser(user);
         }
 
@@ -57,5 +59,23 @@ public class ApplicationRepositoryService {
         marathon.setId(marathonId);
 
         return this.getApplications(marathon);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public Application updateApplication(User user, Marathon marathon, ApplicationDto data) {
+        final Application application = this.applicationRepository.findByMarathonAndUser(marathon, user).orElseGet(() -> {
+            final Application app = new Application();
+            app.setId(-1);
+            app.setUser(user);
+            app.setMarathon(marathon);
+
+            return app;
+        });
+
+        BeanHelper.copyProperties(data, application);
+
+        application.setUpdatedAt(LocalDateTime.now());
+
+        return this.applicationRepository.save(application);
     }
 }

@@ -1,8 +1,8 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.Application;
-import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import app.oengus.helper.PrincipalHelper;
@@ -37,10 +37,9 @@ import java.util.concurrent.TimeUnit;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
-@CrossOrigin(maxAge = 3600)
+@Api
 @RestController
 @RequestMapping("/marathons")
-@Api
 public class MarathonController {
 
     private final MarathonService marathonService;
@@ -185,5 +184,34 @@ public class MarathonController {
         final List<Application> applications = this.applicationRepositoryService.getApplications(id);
 
         return ResponseEntity.ok(applications);
+    }
+
+    // TODO: seperate route for updating status
+    @ApiIgnore
+    @PostMapping("/{id}/applications")
+    @RolesAllowed({"ROLE_USER"})
+    @JsonView(Views.Public.class)
+    @PreAuthorize("!isBanned()")
+    public ResponseEntity<?> createApplication(
+        @PathVariable("id") final String id,
+        @RequestBody @Valid ApplicationDto applciation,
+        final BindingResult bindingResult,
+        final Principal principal
+    ) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
+        final Marathon marathon = new Marathon();
+        marathon.setId(id);
+        final User user = getUserFromPrincipal(principal);
+
+        this.applicationRepositoryService.updateApplication(
+            user,
+            marathon,
+            applciation
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }
