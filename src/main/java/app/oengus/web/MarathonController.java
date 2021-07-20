@@ -1,10 +1,14 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.MarathonBasicInfoDto;
+import app.oengus.entity.model.Application;
+import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.Marathon;
+import app.oengus.entity.model.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
+import app.oengus.service.repository.ApplicationRepositoryService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
@@ -31,17 +35,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/marathons")
 @Api
 public class MarathonController {
 
-    @Autowired
-    private MarathonService marathonService;
+    private final MarathonService marathonService;
+    private final OengusWebhookService webhookService;
+    private final ApplicationRepositoryService applicationRepositoryService;
 
     @Autowired
-    private OengusWebhookService webhookService;
+    public MarathonController(
+        final MarathonService marathonService, final OengusWebhookService webhookService,
+        final ApplicationRepositoryService applicationRepositoryService
+    ) {
+        this.marathonService = marathonService;
+        this.webhookService = webhookService;
+        this.applicationRepositoryService = applicationRepositoryService;
+    }
 
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
@@ -66,9 +80,8 @@ public class MarathonController {
     @ApiIgnore
     public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
         final Map<String, Boolean> validationErrors = new HashMap<>();
-        if (this.marathonService.exists(name)) {
-            validationErrors.put("exists", true);
-        }
+        validationErrors.put("exists", this.marathonService.exists(name));
+
         return ResponseEntity.ok(validationErrors);
     }
 
@@ -161,5 +174,16 @@ public class MarathonController {
         this.marathonService.update(id, marathon);
 
         return ResponseEntity.ok().build();
+    }
+
+    @ApiIgnore
+    @GetMapping("/{id}/applications")
+    @RolesAllowed({"ROLE_USER"})
+    @JsonView(Views.Public.class)
+    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    public ResponseEntity<?> getOwnApplicationInfo(@PathVariable("id") final String id, final Principal principal) {
+        final List<Application> applications = this.applicationRepositoryService.getApplications(id);
+
+        return ResponseEntity.ok(applications);
     }
 }

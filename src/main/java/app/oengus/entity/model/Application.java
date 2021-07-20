@@ -26,14 +26,12 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JsonBackReference
     @JoinColumn(name = "user_id")
     @JsonView(Views.Public.class)
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JsonBackReference
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     @JoinColumn(name = "marathon_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Marathon marathon;

@@ -51,4 +51,11 @@ public class ApplicationRepositoryService {
     public List<Application> getApplications(Marathon marathon) {
         return this.applicationRepository.findByMarathon(marathon);
     }
+
+    public List<Application> getApplications(String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+
+        return this.getApplications(marathon);
+    }
 }

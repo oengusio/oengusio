@@ -3,6 +3,7 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -81,6 +82,7 @@ public class SocialAccount {
         this.username = username;
     }
 
+    @JsonIgnore
     @AssertTrue(message = "The username does not have a valid format for the platform")
     public boolean isUsernameValidForPlatform() {
         return switch (this.platform) {
