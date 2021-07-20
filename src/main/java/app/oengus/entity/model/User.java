@@ -142,6 +142,7 @@ public class User implements UserDetails {
         return false;
     }
 
+    @JsonIgnore
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
@@ -154,6 +155,7 @@ public class User implements UserDetails {
             StringUtils.isNotEmpty(this.twitterId);
     }
 
+    @JsonIgnore
     @AssertTrue
     public boolean isEmailPresentForExistingUser() {
         if (this.id > 0 && this.enabled) {

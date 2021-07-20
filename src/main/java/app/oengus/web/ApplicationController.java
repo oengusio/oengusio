@@ -3,7 +3,7 @@ package app.oengus.web;
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.User;
-import app.oengus.service.ApplicationRepositoryService;
+import app.oengus.service.repository.ApplicationRepositoryService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import javassist.NotFoundException;
@@ -37,10 +37,6 @@ public class ApplicationController {
     public ResponseEntity<?> getOwnApplicationInfo(final Principal principal) throws NotFoundException {
         final User user = getUserFromPrincipal(principal);
         final ApplicationUserInformation infoForUser = this.applicationRepositoryService.getInfoForUser(user);
-
-        if (infoForUser == null) {
-            throw new NotFoundException("No application found");
-        }
 
         return ResponseEntity.ok(infoForUser);
     }

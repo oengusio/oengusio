@@ -941,5 +941,16 @@
                       newColumnName="tshirt_size"/>
     </changeSet>
 
+    <changeSet id="20210720-1" author="duncte123">
+        <renameColumn tableName="applications"
+                      oldColumnName="references"
+                      newColumnName="reference"/>
+    </changeSet>
+
+    <changeSet id="20210720-2" author="duncte123">
+        <modifyDataType tableName="applications" columnName="status" newDataType="varchar(10)"/>
+        <modifyDataType tableName="application_auditlog" columnName="new_status" newDataType="varchar(10)"/>
+    </changeSet>
+
 
 </databaseChangeLog>
