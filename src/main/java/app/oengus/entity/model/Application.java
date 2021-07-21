@@ -3,7 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
@@ -26,14 +25,12 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JsonBackReference
     @JoinColumn(name = "user_id")
     @JsonView(Views.Public.class)
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JsonBackReference
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     @JoinColumn(name = "marathon_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Marathon marathon;
@@ -55,7 +52,7 @@ public class Application {
     private LocalDateTime updatedAt;
 
     @NotNull
-    @Column(name = "references")
+    @Column(name = "reference")
     @JsonView(Views.Public.class)
     private String references;
 

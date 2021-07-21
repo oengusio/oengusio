@@ -36,10 +36,9 @@ public class ApplicationAuditlog {
     @JsonView(Views.Public.class)
     private LocalDateTime timestamp;
 
-    @JsonBackReference
     @JoinColumn(name = "user_id")
     @JsonView(Views.Public.class)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @NotNull
