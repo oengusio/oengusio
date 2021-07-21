@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "applications")
 @Cacheable
+@Table(name = "applications")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Application {
 
@@ -69,6 +69,18 @@ public class Application {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationAuditlog> auditLogs;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "application_availability", joinColumns = @JoinColumn(name = "application_id"))
+    @AttributeOverrides({
+        @AttributeOverride(name = "from", column = @Column(name = "date_from")),
+        @AttributeOverride(name = "to", column = @Column(name = "date_to"))
+    })
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OrderBy(value = "date_from ASC")
+    @JsonView(Views.Public.class)
+    // we can reuse this model as it has no submission related information
+    private List<Availability> availabilities;
 
     public int getId() {
         return id;

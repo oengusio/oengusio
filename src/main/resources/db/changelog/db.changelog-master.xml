@@ -1018,6 +1018,7 @@
             <!-- comma seperated list of languages that a user speaks -->
             <column name="languages_spoken" type="text"/>
         </addColumn>
+        <dropColumn tableName="marathon" columnName="applications_open"/>
     </changeSet>
 
 

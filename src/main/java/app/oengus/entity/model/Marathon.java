@@ -239,9 +239,14 @@ public class Marathon {
     @JsonView(Views.Public.class)
     private boolean announceAcceptedSubmissions = false;
 
-    @Column(name = "applications_open")
+    @Column(name = "user_info_hidden")
     @JsonView(Views.Public.class)
-    private boolean applicationsOpen = false;
+    private String userInfoHidden;
+
+    @JsonManagedReference
+    @JsonView(Views.Internal.class)
+    @OneToMany(mappedBy = "marathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Team> teams;
 
     public String getId() {
         return this.id;
@@ -607,11 +612,19 @@ public class Marathon {
         this.announceAcceptedSubmissions = announceAcceptedRuns;
     }
 
-    public boolean isApplicationsOpen() {
-        return applicationsOpen;
+    public String getUserInfoHidden() {
+        return userInfoHidden;
     }
 
-    public void setApplicationsOpen(boolean applications_open) {
-        this.applicationsOpen = applications_open;
+    public void setUserInfoHidden(String userInfoHidden) {
+        this.userInfoHidden = userInfoHidden;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 }
