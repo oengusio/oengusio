@@ -38,6 +38,9 @@ public class TeamRepositoryService {
 
         BeanHelper.copyProperties(teamDto, team);
 
+        team.setApplicationOpenDate(team.getApplicationOpenDate().withSecond(0));
+        team.setApplicationCloseDate(team.getApplicationCloseDate().withSecond(0));
+
         return this.teamRepository.save(team);
     }
 
@@ -45,6 +48,9 @@ public class TeamRepositoryService {
         final Team currentTeam = this.getById(teamId);
 
         BeanHelper.copyProperties(patch, currentTeam);
+
+        currentTeam.setApplicationOpenDate(currentTeam.getApplicationOpenDate().withSecond(0));
+        currentTeam.setApplicationCloseDate(currentTeam.getApplicationCloseDate().withSecond(0));
 
         return this.teamRepository.save(currentTeam);
     }
