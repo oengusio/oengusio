@@ -52,7 +52,7 @@ public class DonationService {
     @Transactional
     public Order initDonation(final String marathonId, final Donation donation) {
         try {
-            final Marathon marathon = this.marathonService.findOne(marathonId);
+            final Marathon marathon = this.marathonService.getById(marathonId);
 
             if (!marathon.isHasDonations()) {
                 throw new OengusBusinessException("NO_DONATIONS");
@@ -141,7 +141,7 @@ public class DonationService {
 
         try {
             // should we fetch the marathon here?
-            final Marathon marathon = this.marathonService.findOne(marathonId);
+            final Marathon marathon = this.marathonService.getById(marathonId);
             // Call API with your client and get a response for your call
             final HttpResponse<Order> response = this.payPalHttpClient.execute(request);
 

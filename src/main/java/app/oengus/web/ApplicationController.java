@@ -23,6 +23,7 @@ import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 @ApiIgnore
 @RestController
 @RequestMapping("/applications")
+// TODO: remove and delegate to own controllers
 public class ApplicationController {
     private final ApplicationRepositoryService applicationRepositoryService;
 

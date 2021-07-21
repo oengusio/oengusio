@@ -51,7 +51,7 @@ public class ApplicationRepositoryService {
 
 
     public List<Application> getApplications(Marathon marathon) {
-        return this.applicationRepository.findByMarathon(marathon);
+        return null;
     }
 
     public List<Application> getApplications(String marathonId) {
@@ -63,11 +63,13 @@ public class ApplicationRepositoryService {
 
     @SuppressWarnings("UnusedReturnValue")
     public Application updateApplication(User user, Marathon marathon, ApplicationDto data) {
-        final Application application = this.applicationRepository.findByMarathonAndUser(marathon, user).orElseGet(() -> {
+        return null;
+
+        /*final Application application = this.applicationRepository.findByMarathonAndUser(marathon, user).orElseGet(() -> {
             final Application app = new Application();
             app.setId(-1);
             app.setUser(user);
-            app.setMarathon(marathon);
+            // app.setMarathon(marathon);
 
             return app;
         });
@@ -76,6 +78,6 @@ public class ApplicationRepositoryService {
 
         application.setUpdatedAt(LocalDateTime.now());
 
-        return this.applicationRepository.save(application);
+        return this.applicationRepository.save(application);*/
     }
 }

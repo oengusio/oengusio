@@ -52,7 +52,7 @@ public class DiscordController {
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {
         try {
-            final Marathon marathon = this.marathonService.findOne(marathonId);
+            final Marathon marathon = this.marathonService.getById(marathonId);
             final String guildId = marathon.getDiscordGuildId();
 
             if (StringUtils.isEmpty(guildId)) {

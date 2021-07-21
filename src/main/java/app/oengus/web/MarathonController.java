@@ -2,6 +2,7 @@ package app.oengus.web;
 
 import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
+import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.model.Application;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
@@ -88,9 +89,9 @@ public class MarathonController {
     @JsonView(Views.Public.class)
     @PermitAll
     @ApiOperation(value = "Get information about a marathon",
-        response = Marathon.class)
-    public ResponseEntity<Marathon> get(@PathVariable("id") final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.findOne(id);
+        response = MarathonDto.class)
+    public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) throws NotFoundException {
+        final MarathonDto marathon = this.marathonService.findOne(id);
         return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathon);
 
     }
@@ -118,7 +119,7 @@ public class MarathonController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> delete(@PathVariable("id") final String id) throws NotFoundException {
         this.marathonService.delete(id);
@@ -127,7 +128,7 @@ public class MarathonController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> update(@PathVariable("id") final String id,
                                     @RequestBody @Valid final Marathon patch,
@@ -143,7 +144,7 @@ public class MarathonController {
 
     // we're checking the webhook on the backend to ensure "localhost" will fail
     @GetMapping("/{id}/webhook")
-    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> isWebhookOnline(@PathVariable("id") final String id,
                                              @RequestParam("url") final String url) {
@@ -156,7 +157,7 @@ public class MarathonController {
     }
 
     @PostMapping("/{id}/selections/publish")
-    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
         // make a fake marathon so we don't update the real one
@@ -179,7 +180,7 @@ public class MarathonController {
     @GetMapping("/{id}/applications")
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
-    @PreAuthorize("canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     public ResponseEntity<?> getOwnApplicationInfo(@PathVariable("id") final String id, final Principal principal) {
         final List<Application> applications = this.applicationRepositoryService.getApplications(id);
 
@@ -191,7 +192,7 @@ public class MarathonController {
     @PostMapping("/{id}/applications")
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("isAuthenticated() && !isBanned()")
     public ResponseEntity<?> createApplication(
         @PathVariable("id") final String id,
         @RequestBody @Valid ApplicationDto applciation,

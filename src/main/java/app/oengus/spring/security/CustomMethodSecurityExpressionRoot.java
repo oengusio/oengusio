@@ -1,21 +1,25 @@
 package app.oengus.spring.security;
 
 import app.oengus.entity.model.Marathon;
+import app.oengus.entity.model.Team;
 import app.oengus.entity.model.User;
 import app.oengus.service.MarathonService;
 import app.oengus.service.UserService;
+import app.oengus.service.repository.TeamRepositoryService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
+import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     implements MethodSecurityExpressionOperations {
 
+    private final TeamRepositoryService teamRepositoryService;
     private final MarathonService marathonService;
     private final UserService userService;
     private Object filterObject;
@@ -23,84 +27,100 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
     public CustomMethodSecurityExpressionRoot(final Authentication authentication,
                                               final MarathonService marathonService,
-                                              final UserService userService) {
+                                              final UserService userService,
+                                              final TeamRepositoryService teamRepositoryService) {
         super(authentication);
         this.marathonService = marathonService;
         this.userService = userService;
+        this.teamRepositoryService = teamRepositoryService;
     }
 
     public boolean isSelf(final int id) {
         final User user = this.getUser();
 
-        if (this.isNotLoggedIn(user)) {
-            return false;
-        }
-
-        return Objects.equals(user.getId(), id);
-    }
-
-    private boolean isNotLoggedIn(User user) {
-        return user == null;
+        return user != null && Objects.equals(user.getId(), id);
     }
 
     public boolean isAdmin() {
         final User user = this.getUser();
 
-        if (this.isNotLoggedIn(user)) {
-            return false;
-        }
-
-        return user.getRoles().contains(Role.ROLE_ADMIN);
+        return user != null && user.getRoles().contains(Role.ROLE_ADMIN);
     }
 
     public boolean isBanned() {
         final User user = this.getUser();
 
-        if (this.isNotLoggedIn(user)) {
-            return true;
-        }
-
-        return user.getRoles().contains(Role.ROLE_BANNED);
+        return user != null && user.getRoles().contains(Role.ROLE_BANNED);
     }
 
     public boolean isMarathonArchived(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.findOne(id);
+        final Marathon marathon = this.marathonService.getById(id);
         return marathon.getEndDate().plusHours(1).isBefore(ZonedDateTime.now());
+    }
+
+    public boolean canUpdateTeam(final int teamId) throws NotFoundException {
+        final User user = this.getUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        if (this.isAdmin()) {
+            return true;
+        }
+
+        final Team team = this.teamRepositoryService.getById(teamId);
+        final int uId = user.getId();
+
+        return team.getLeaders().stream().anyMatch((u) -> u.getId() == uId) || this.isMarathonMod(team.getMarathon(), user);
     }
 
     public boolean canUpdateMarathon(final String id) throws NotFoundException {
         final User user = this.getUser();
+
         if (user == null) {
             return false;
         }
+
         if (this.isAdmin()) {
             return true;
         }
-        final Marathon marathon = this.marathonService.findOne(id);
-        return (marathon.getCreator().getId() == user.getId() ||
-            marathon.getModerators().stream().anyMatch(u -> u.getId() == user.getId())) &&
-            ZonedDateTime.now().isBefore(marathon.getEndDate());
+
+        final Marathon marathon = this.marathonService.getById(id);
+        return this.isMarathonMod(marathon, user) && ZonedDateTime.now().isBefore(marathon.getEndDate());
     }
 
     public boolean isSelectionDone(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.findOne(id);
+        final Marathon marathon = this.marathonService.getById(id);
         return marathon.isSelectionDone();
     }
 
     public boolean isScheduleDone(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.findOne(id);
+        final Marathon marathon = this.marathonService.getById(id);
         return marathon.isScheduleDone();
     }
 
     public boolean areSubmissionsOpen(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.findOne(id);
+        final Marathon marathon = this.marathonService.getById(id);
 
         return (marathon.isCanEditSubmissions() && marathon.isSubmitsOpen() &&
             ZonedDateTime.now().isBefore(marathon.getEndDate())) ||
             (marathon.getSubmissionsEndDate() != null && ZonedDateTime.now().isBefore(marathon.getSubmissionsEndDate()));
     }
 
+    private boolean isMarathonMod(Marathon marathon, User user) {
+        final int uId = user.getId();
+
+        return marathon.getCreator().getId() == uId ||
+            marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
+    }
+
+    @Nullable
     public User getUser() {
+        if (!this.isAuthenticated()) {
+            return null;
+        }
+
         final Object principal = this.getPrincipal();
         if (principal instanceof final User tmp) {
             try {

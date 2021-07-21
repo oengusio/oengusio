@@ -1004,7 +1004,7 @@
                                  referencedTableName="teams"
                                  referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="team_leaders"
-                                 baseColumnNames="users"
+                                 baseColumnNames="user_id"
                                  constraintName="fk_team_leaders_users"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>

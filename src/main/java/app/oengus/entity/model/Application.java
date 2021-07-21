@@ -35,7 +35,7 @@ public class Application {
     @JsonView(Views.Public.class)
     @JoinColumn(name = "team_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Marathon team;
+    private Team team;
 
     @NotNull
     @Column(name = "status")
@@ -98,12 +98,12 @@ public class Application {
         this.user = user;
     }
 
-    public Marathon getTeam() {
+    public Team getTeam() {
         return team;
     }
 
-    public void setTeam(Marathon marathon) {
-        this.team = marathon;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public ApplicationStatus getStatus() {
