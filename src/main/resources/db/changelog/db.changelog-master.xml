@@ -942,4 +942,62 @@
     </changeSet>
 
 
+    <changeSet id="20210721-1" author="duncte123">
+        <dropForeignKeyConstraint baseTableName="applications" constraintName="fk_application_marathon"/>
+        <renameColumn tableName="applications"
+                      oldColumnName="marathon_id"
+                      newColumnName="team_id"/>
+        <modifyDataType tableName="applications" columnName="team_id" newDataType="int"/>
+        <modifyDataType tableName="applications" columnName="status" newDataType="varchar(9)"/>
+        <modifyDataType tableName="application_auditlog" columnName="new_status" newDataType="varchar(9)"/>
+
+        <createTable tableName="application_availability">
+            <column name="application_id" type="int"/>
+            <column name="date_from" type="timestamp with time zone"/>
+            <column name="date_to" type="timestamp with time zone"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_availability"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_application_availability_applications"
+                                 referencedTableName="applications"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="teams">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="marathon_id" type="varchar(10)"/>
+            <column name="name" type="varchar(100)"/>
+            <column name="description" type="text"/>
+            <column name="team_size" type="int"/>
+            <column name="applications_open" type="boolean" defaultValueBoolean="false"/>
+            <column name="application_open_date" type="timestamp with time zone"/>
+            <column name="application_close_date" type="timestamp with time zone"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="teams"
+                                 baseColumnNames="marathon_id"
+                                 constraintName="fk_teams_marathon"
+                                 referencedTableName="marathon"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="team_leaders">
+            <column name="team_id" type="int"/>
+            <column name="user_id" type="int"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="team_leaders"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_team_leaders_teams"
+                                 referencedTableName="teams"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="team_leaders"
+                                 baseColumnNames="users"
+                                 constraintName="fk_team_leaders_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
 </databaseChangeLog>
