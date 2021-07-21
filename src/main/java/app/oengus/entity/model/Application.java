@@ -3,6 +3,7 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
@@ -30,10 +31,11 @@ public class Application {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JsonView(Views.Internal.class)
-    @JoinColumn(name = "marathon_id")
+    @JsonBackReference
+    @JsonView(Views.Public.class)
+    @JoinColumn(name = "team_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Marathon marathon;
+    private Marathon team;
 
     @NotNull
     @Column(name = "status")
@@ -84,12 +86,12 @@ public class Application {
         this.user = user;
     }
 
-    public Marathon getMarathon() {
-        return marathon;
+    public Marathon getTeam() {
+        return team;
     }
 
-    public void setMarathon(Marathon marathon) {
-        this.marathon = marathon;
+    public void setTeam(Marathon marathon) {
+        this.team = marathon;
     }
 
     public ApplicationStatus getStatus() {
