@@ -997,6 +997,16 @@
                                  constraintName="fk_team_leaders_users"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
+
+        <addColumn tableName="marathon">
+            <column name="volunteer_applications_open" type="boolean" defaultValueBoolean="false"/>
+            <!-- comma seperated list of user info fields that are hidden -->
+            <column name="user_info_hidden" type="text"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <!-- comma seperated list of languages that a user speaks -->
+            <column name="languages_spoken" type="text"/>
+        </addColumn>
     </changeSet>
 
 
