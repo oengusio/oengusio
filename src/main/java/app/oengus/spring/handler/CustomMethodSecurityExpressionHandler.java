@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
-    private final AuthenticationTrustResolver trustResolver =
-        new AuthenticationTrustResolverImpl();
+    private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
     private final MarathonService marathonService;
     private final UserService userService;
