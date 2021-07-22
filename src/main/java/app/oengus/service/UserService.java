@@ -1,10 +1,8 @@
 package app.oengus.service;
 
+import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.SocialPlatform;
-import app.oengus.entity.dto.MarathonBasicInfoDto;
-import app.oengus.entity.dto.SelectionDto;
-import app.oengus.entity.dto.UserHistoryDto;
-import app.oengus.entity.dto.UserProfileDto;
+import app.oengus.entity.dto.*;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
 import app.oengus.requests.user.UserUpdateRequest;
@@ -35,13 +33,15 @@ public class UserService {
     private final SubmissionRepositoryService submissionRepositoryService;
     private final MarathonService marathonService;
     private final SelectionService selectionService;
+    private final ApplicationUserInformationRepository applicationUserInformationRepository;
 
     @Autowired
     public UserService(
         final DiscordService discordService, final TwitterLoginService twitterLoginService,
         final TwitchService twitchService, final JWTUtil jwtUtil, final UserRepositoryService userRepositoryService,
         final SubmissionRepositoryService submissionRepositoryService, final MarathonService marathonService,
-        final SelectionService selectionService
+        final SelectionService selectionService,
+        final ApplicationUserInformationRepository applicationUserInformationRepository
     ) {
         this.discordService = discordService;
         this.twitterLoginService = twitterLoginService;
@@ -51,6 +51,7 @@ public class UserService {
         this.submissionRepositoryService = submissionRepositoryService;
         this.marathonService = marathonService;
         this.selectionService = selectionService;
+        this.applicationUserInformationRepository = applicationUserInformationRepository;
     }
 
     public Token login(final String host, final LoginRequest request) throws LoginException {
@@ -303,7 +304,27 @@ public class UserService {
     }
 
     public boolean exists(final String name) {
+        // TODO: what the fuck?
         return this.userRepositoryService.existsByUsername(name) || "new".equalsIgnoreCase(name) ||
             "settings".equalsIgnoreCase(name);
+    }
+
+    public ApplicationUserInformation getApplicationInfo(User user) throws NotFoundException {
+        return this.applicationUserInformationRepository.findByUser(user)
+            .orElseThrow(() -> new NotFoundException("Application not found"));
+    }
+
+    public ApplicationUserInformation updateApplicationInfo(User user, ApplicationUserInformationDto dto) {
+        ApplicationUserInformation infoForUser = this.applicationUserInformationRepository.findByUser(user).orElse(null);
+
+        if (infoForUser == null) {
+            infoForUser = new ApplicationUserInformation();
+            infoForUser.setId(-1);
+            infoForUser.setUser(user);
+        }
+
+        BeanHelper.copyProperties(dto, infoForUser);
+
+        return this.applicationUserInformationRepository.save(infoForUser);
     }
 }

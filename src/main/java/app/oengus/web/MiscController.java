@@ -27,6 +27,12 @@ public class MiscController {
         this.pronounsApi = pronounsApi;
     }
 
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> bonk() {
+        return ResponseEntity.ok("Bonk!");
+    }
+
     @GetMapping("/pronouns")
     @PreAuthorize("!isBanned()")
     public ResponseEntity<?> searchPronouns(@RequestParam String search) {

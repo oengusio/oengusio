@@ -3,6 +3,7 @@ package app.oengus.entity.model;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "applications")
 @Cacheable
+@Table(name = "applications")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Application {
 
@@ -30,10 +31,11 @@ public class Application {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JsonView(Views.Internal.class)
-    @JoinColumn(name = "marathon_id")
+    @JsonBackReference
+    @JsonView(Views.Public.class)
+    @JoinColumn(name = "team_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Marathon marathon;
+    private Team team;
 
     @NotNull
     @Column(name = "status")
@@ -68,6 +70,18 @@ public class Application {
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationAuditlog> auditLogs;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "application_availability", joinColumns = @JoinColumn(name = "application_id"))
+    @AttributeOverrides({
+        @AttributeOverride(name = "from", column = @Column(name = "date_from")),
+        @AttributeOverride(name = "to", column = @Column(name = "date_to"))
+    })
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OrderBy("date_from ASC")
+    @JsonView(Views.Public.class)
+    // we can reuse this model as it has no submission related information
+    private List<Availability> availabilities;
+
     public int getId() {
         return id;
     }
@@ -84,12 +98,12 @@ public class Application {
         this.user = user;
     }
 
-    public Marathon getMarathon() {
-        return marathon;
+    public Team getTeam() {
+        return team;
     }
 
-    public void setMarathon(Marathon marathon) {
-        this.marathon = marathon;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public ApplicationStatus getStatus() {
@@ -143,5 +157,18 @@ public class Application {
 
         this.auditLogs.clear();
         this.auditLogs.addAll(auditLogs);
+    }
+
+    public List<Availability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<Availability> availabilities) {
+        if (this.availabilities == null) {
+            this.availabilities = new ArrayList<>();
+        }
+
+        this.availabilities.clear();
+        this.availabilities.addAll(availabilities);
     }
 }

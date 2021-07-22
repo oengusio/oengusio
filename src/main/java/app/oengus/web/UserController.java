@@ -1,6 +1,8 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.UserProfileDto;
+import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.requests.user.UserUpdateRequest;
@@ -176,7 +178,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/ban")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> ban(@PathVariable int id) throws NotFoundException {
         this.userService.addRole(id, Role.ROLE_BANNED);
@@ -185,7 +187,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/ban")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> unban(@PathVariable int id) throws NotFoundException {
         this.userService.removeRole(id, Role.ROLE_BANNED);
@@ -194,7 +196,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/enabled")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
         final User patch = this.userService.getUser(id);
@@ -204,5 +206,37 @@ public class UserController {
         this.userService.update(id, patch);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @ApiIgnore
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @GetMapping("/me/application-info")
+    @RolesAllowed({"ROLE_USER"})
+    public ResponseEntity<?> getApplicationInfo(final Principal principal) throws NotFoundException {
+        final User user = getUserFromPrincipal(principal);
+        final ApplicationUserInformation infoForUser = this.userService.getApplicationInfo(user);
+
+        return ResponseEntity.ok(infoForUser);
+    }
+
+    @ApiIgnore
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PostMapping("/me/application-info")
+    @RolesAllowed({"ROLE_USER"})
+    public ResponseEntity<?> updateApplicationInfo(
+        final Principal principal,
+        @RequestBody @Valid final ApplicationUserInformationDto infoPatch,
+        final BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
+        this.userService.updateApplicationInfo(
+            getUserFromPrincipal(principal),
+            infoPatch
+        );
+
+        return ResponseEntity.accepted().build();
     }
 }
