@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -52,10 +53,12 @@ public class Team {
     @JsonView(Views.Public.class)
     private boolean applicationsOpen;
 
+    @Nullable
     @Column(name = "application_open_date")
     @JsonView(Views.Public.class)
     private ZonedDateTime applicationOpenDate;
 
+    @Nullable
     @Column(name = "application_close_date")
     @JsonView(Views.Public.class)
     private ZonedDateTime applicationCloseDate;

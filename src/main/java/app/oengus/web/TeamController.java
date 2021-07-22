@@ -48,6 +48,7 @@ public class TeamController {
     @PatchMapping("/{id}")
     @PreAuthorize("isAuthenticated() && canUpdateTeam(#teamId) && !isBanned()")
     public ResponseEntity<?> updateTeam(
+        @PathVariable("marathonId") final String marathonId, // not needed but required somehow
         @PathVariable("id") final int teamId,
         @RequestBody @Valid final TeamDto teamdto,
         final BindingResult bindingResult

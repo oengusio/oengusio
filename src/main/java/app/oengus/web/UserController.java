@@ -178,7 +178,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/ban")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> ban(@PathVariable int id) throws NotFoundException {
         this.userService.addRole(id, Role.ROLE_BANNED);
@@ -187,7 +187,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/ban")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> unban(@PathVariable int id) throws NotFoundException {
         this.userService.removeRole(id, Role.ROLE_BANNED);
@@ -196,7 +196,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/enabled")
-    @PreAuthorize("isAdmin()")
+    @PreAuthorize("isAuthenticated() && isAdmin()")
     @ApiIgnore
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
         final User patch = this.userService.getUser(id);
@@ -237,6 +237,6 @@ public class UserController {
             infoPatch
         );
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.accepted().build();
     }
 }

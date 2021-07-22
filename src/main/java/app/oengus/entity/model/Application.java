@@ -77,7 +77,7 @@ public class Application {
         @AttributeOverride(name = "to", column = @Column(name = "date_to"))
     })
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @OrderBy(value = "date_from ASC")
+    @OrderBy("date_from ASC")
     @JsonView(Views.Public.class)
     // we can reuse this model as it has no submission related information
     private List<Availability> availabilities;

@@ -75,6 +75,12 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return team.getLeaders().stream().anyMatch((u) -> u.getId() == uId) || this.isMarathonMod(team.getMarathon(), user);
     }
 
+    public boolean applicationsOpen(final int teamId) throws NotFoundException {
+        final Team team = this.teamRepositoryService.getById(teamId);
+
+        return team.isApplicationsOpen();
+    }
+
     public boolean canUpdateMarathon(final String id) throws NotFoundException {
         final User user = this.getUser();
 
