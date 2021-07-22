@@ -10,9 +10,10 @@ import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.helper.BeanHelper;
 import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,6 +43,7 @@ public class ApplicationService {
         );
     }
 
+    @Transactional
     public Application createApplication(int teamId, int userId, ApplicationDto data) {
         final Team team = new Team();
         team.setId(teamId);
@@ -53,6 +55,8 @@ public class ApplicationService {
 
         BeanHelper.copyProperties(data, application, "status");
 
+        application.setAuditLogs(new ArrayList<>());
+        application.setId(-1);
         application.setTeam(team);
         application.setUser(user);
         application.setStatus(ApplicationStatus.PENDING);
@@ -83,8 +87,20 @@ public class ApplicationService {
             );
         }
 
-        BeanHelper.copyProperties(application, applicationPatch, "status");
+        BeanHelper.copyProperties(application, applicationPatch, "status", "availabilities");
         application.setUpdatedAt(LocalDateTime.now());
+
+        // this is absolute bullshit, why would I have to ignore the availabilities
+        // it just does not make sense, this should just be copied over normally
+        // but no, spring decided that it would be better if I were to ignore them when copying
+        // and manually copy them over later on
+        // 3 hours wasted that I never will get back ffs
+        application.setAvailabilities(applicationPatch.getAvailabilities());
+
+        application.getAvailabilities().forEach((availability) -> {
+            availability.setFrom(availability.getFrom().withSecond(0));
+            availability.setTo(availability.getTo().withSecond(0));
+        });
 
         return this.applicationRepository.save(application);
     }

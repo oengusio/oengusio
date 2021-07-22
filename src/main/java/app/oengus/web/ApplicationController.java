@@ -58,10 +58,11 @@ public class ApplicationController {
         final BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted()
+            .body(this.applicationService.createApplication(teamId, userId, applicationDto));
     }
 
     @PatchMapping("/{userId}")
@@ -74,8 +75,10 @@ public class ApplicationController {
         final BindingResult bindingResult
     ) throws NotFoundException {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult);
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
+
+        applicationDto.setStatus(null);
 
         return ResponseEntity.ok(
             this.applicationService.update(

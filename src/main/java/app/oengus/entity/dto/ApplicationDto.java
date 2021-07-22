@@ -1,11 +1,17 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.entity.model.Availability;
+import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.annotation.Nullable;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 public class ApplicationDto {
     @Nullable
@@ -19,6 +25,11 @@ public class ApplicationDto {
     @NotBlank
     @Size(max = 255)
     private String application;
+
+    @Valid
+    @NotNull
+    @NotEmpty
+    private List<Availability> availabilities;
 
     @Nullable
     public ApplicationStatus getStatus() {
@@ -43,5 +54,13 @@ public class ApplicationDto {
 
     public void setApplication(String application) {
         this.application = application;
+    }
+
+    public List<Availability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<Availability> availabilities) {
+        this.availabilities = availabilities;
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Cacheable
-@Table(name = "applications")
+@Table(name = "teams")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Team {
 
@@ -123,19 +123,21 @@ public class Team {
         this.applicationsOpen = applicationsOpen;
     }
 
+    @Nullable
     public ZonedDateTime getApplicationOpenDate() {
         return applicationOpenDate;
     }
 
-    public void setApplicationOpenDate(ZonedDateTime applicationOpenDate) {
+    public void setApplicationOpenDate(@Nullable ZonedDateTime applicationOpenDate) {
         this.applicationOpenDate = applicationOpenDate;
     }
 
+    @Nullable
     public ZonedDateTime getApplicationCloseDate() {
         return applicationCloseDate;
     }
 
-    public void setApplicationCloseDate(ZonedDateTime applicationCloseDate) {
+    public void setApplicationCloseDate(@Nullable ZonedDateTime applicationCloseDate) {
         this.applicationCloseDate = applicationCloseDate;
     }
 

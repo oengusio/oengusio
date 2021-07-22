@@ -76,7 +76,7 @@ public class Application {
         @AttributeOverride(name = "from", column = @Column(name = "date_from")),
         @AttributeOverride(name = "to", column = @Column(name = "date_to"))
     })
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy("date_from ASC")
     @JsonView(Views.Public.class)
     // we can reuse this model as it has no submission related information
@@ -157,5 +157,18 @@ public class Application {
 
         this.auditLogs.clear();
         this.auditLogs.addAll(auditLogs);
+    }
+
+    public List<Availability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<Availability> availabilities) {
+        if (this.availabilities == null) {
+            this.availabilities = new ArrayList<>();
+        }
+
+        this.availabilities.clear();
+        this.availabilities.addAll(availabilities);
     }
 }
