@@ -74,7 +74,6 @@ public class Team {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<User> leaders;
 
-
     public int getId() {
         return id;
     }

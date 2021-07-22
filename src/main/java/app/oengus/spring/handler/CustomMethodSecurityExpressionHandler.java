@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
-	private final AuthenticationTrustResolver trustResolver =
-			new AuthenticationTrustResolverImpl();
+    private final AuthenticationTrustResolver trustResolver =
+        new AuthenticationTrustResolverImpl();
 
-	private final MarathonService marathonService;
-	private final UserService userService;
-	private final TeamRepositoryService teamRepositoryService;
+    private final MarathonService marathonService;
+    private final UserService userService;
+    private final TeamRepositoryService teamRepositoryService;
 
     public CustomMethodSecurityExpressionHandler(MarathonService marathonService, UserService userService, TeamRepositoryService teamRepositoryService) {
         this.marathonService = marathonService;
@@ -28,18 +28,18 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     }
 
     @Override
-	protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-			final Authentication authentication, final MethodInvocation invocation) {
-		final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(
-		    authentication,
+    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
+        final Authentication authentication, final MethodInvocation invocation) {
+        final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(
+            authentication,
             this.marathonService,
             this.userService,
             this.teamRepositoryService
         );
-		root.setPermissionEvaluator(this.getPermissionEvaluator());
-		root.setTrustResolver(this.trustResolver);
-		root.setRoleHierarchy(this.getRoleHierarchy());
+        root.setPermissionEvaluator(this.getPermissionEvaluator());
+        root.setTrustResolver(this.trustResolver);
+        root.setRoleHierarchy(this.getRoleHierarchy());
 
-		return root;
-	}
+        return root;
+    }
 }
