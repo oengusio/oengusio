@@ -1,7 +1,9 @@
-package app.oengus.requests.user;
+package app.oengus.entity.dto;
 
 import app.oengus.entity.model.SocialAccount;
+import app.oengus.service.LanguageService;
 import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.neovisionaries.i18n.CountryCode;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +12,15 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.*;
 import java.util.List;
 
-public class UserUpdateRequest implements IUserRequest {
+public class UserDto {
+    @JsonIgnore
+    public static final String DISCORD_USERNAME_REGEX = "^\\S.{0,30}\\S\\s*#\\d{4}$";
+    @JsonIgnore
+    public static final String EMAIL_REGEX = "^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])$";
+    @JsonIgnore
+    public static final String USERNAME_REGEX = "^[\\w\\-]{3,32}$";
+    @JsonIgnore
+    public static final String SPEEDRUN_COM_NAME_REGEX = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$";
 
     @JsonView(Views.Public.class)
     @Size(min = 3, max = 32)
@@ -57,6 +67,9 @@ public class UserUpdateRequest implements IUserRequest {
     @JsonView(Views.Public.class)
     @Size(max = 3)
     private String country;
+
+    @NotNull
+    private List<String> languagesSpoken;
 
     public String getUsername() {
         return username;
@@ -152,6 +165,14 @@ public class UserUpdateRequest implements IUserRequest {
         this.country = country;
     }
 
+    public List<String> getLanguagesSpoken() {
+        return languagesSpoken;
+    }
+
+    public void setLanguagesSpoken(List<String> languagesSpoken) {
+        this.languagesSpoken = languagesSpoken;
+    }
+
     /// <editor-fold desc="validation" defaultstate="collapsed">
     @AssertTrue(message = "You must have at least one account synced")
     public boolean isAtLeastOneAccountSynchronized() {
@@ -174,6 +195,15 @@ public class UserUpdateRequest implements IUserRequest {
         final CountryCode byCode = CountryCode.getByCode(this.country);
 
         return byCode != null && byCode != CountryCode.UNDEFINED;
+    }
+
+    @AssertTrue(message = "One of the languages in languages_spoken is not supported by Oengus")
+    public boolean isLanguagesSpokenValid() {
+        if (this.languagesSpoken.isEmpty()) {
+            return true;
+        }
+
+        return this.languagesSpoken.stream().anyMatch(LanguageService::isSupportedLanguage);
     }
     /// </editor-fold>
 }

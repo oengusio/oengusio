@@ -7,7 +7,6 @@ import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
-import app.oengus.requests.user.UserUpdateRequest;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
 import app.oengus.service.login.TwitterLoginService;
@@ -108,7 +107,7 @@ public class UserService {
         };
     }
 
-    public void updateRequest(final int id, final UserUpdateRequest userPatch) throws NotFoundException {
+    public void updateRequest(final int id, final UserDto userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
         BeanHelper.copyProperties(userPatch, user, "connections");

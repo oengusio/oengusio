@@ -1,11 +1,11 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.ApplicationUserInformationDto;
+import app.oengus.entity.dto.UserDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.requests.user.UserUpdateRequest;
 import app.oengus.service.UserService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
@@ -147,7 +147,7 @@ public class UserController {
     @PreAuthorize("isSelf(#id) && !isBanned()")
     @ApiIgnore
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
-                                        @RequestBody @Valid final UserUpdateRequest userPatch,
+                                        @RequestBody @Valid final UserDto userPatch,
                                         final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
