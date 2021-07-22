@@ -17,6 +17,7 @@ public class UserProfileDto {
     private List<SocialAccount> connections;
     private List<UserHistoryDto> history;
     private List<MarathonBasicInfoDto> moderatedMarathons;
+    private List<UserApplicationHistoryDto> volunteeringHistory;
     @Nullable
     private String pronouns;
     private boolean banned;
@@ -25,6 +26,7 @@ public class UserProfileDto {
     public UserProfileDto() {
         this.history = new ArrayList<>();
         this.moderatedMarathons = new ArrayList<>();
+        this.volunteeringHistory = new ArrayList<>();
     }
 
     public int getId() {
@@ -52,6 +54,10 @@ public class UserProfileDto {
     }
 
     public boolean getEnabled() {
+        return this.enabled;
+    }
+
+    public boolean isEnabled() {
         return this.enabled;
     }
 
@@ -110,5 +116,13 @@ public class UserProfileDto {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public List<UserApplicationHistoryDto> getVolunteeringHistory() {
+        return volunteeringHistory;
+    }
+
+    public void setVolunteeringHistory(List<UserApplicationHistoryDto> volunteeringHistory) {
+        this.volunteeringHistory = volunteeringHistory;
     }
 }

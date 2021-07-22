@@ -1,6 +1,8 @@
 package app.oengus.service;
 
+import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
+import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.model.*;
@@ -32,6 +34,7 @@ public class UserService {
     private final UserRepositoryService userRepositoryService;
     private final SubmissionRepositoryService submissionRepositoryService;
     private final MarathonService marathonService;
+    private final ApplicationRepository applicationRepository;
     private final SelectionService selectionService;
     private final ApplicationUserInformationRepository applicationUserInformationRepository;
 
@@ -41,7 +44,8 @@ public class UserService {
         final TwitchService twitchService, final JWTUtil jwtUtil, final UserRepositoryService userRepositoryService,
         final SubmissionRepositoryService submissionRepositoryService, final MarathonService marathonService,
         final SelectionService selectionService,
-        final ApplicationUserInformationRepository applicationUserInformationRepository
+        final ApplicationUserInformationRepository applicationUserInformationRepository,
+        final ApplicationRepository applicationRepository
     ) {
         this.discordService = discordService;
         this.twitterLoginService = twitterLoginService;
@@ -52,6 +56,7 @@ public class UserService {
         this.marathonService = marathonService;
         this.selectionService = selectionService;
         this.applicationUserInformationRepository = applicationUserInformationRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     public Token login(final String host, final LoginRequest request) throws LoginException {
@@ -245,50 +250,11 @@ public class UserService {
 
         BeanUtils.copyProperties(user, userProfileDto);
         userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
-        final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
-        if (submissions != null && !submissions.isEmpty()) {
-            final List<Submission> filteredSubmissions = submissions.stream()
-                .filter((submission) -> submission.getMarathon() != null)
-                .sorted(
-                    Comparator.comparing(
-                        o -> ((Submission) o).getMarathon().getStartDate()
-                    ).reversed()
-                )
-                .collect(Collectors.toList());
-            final Map<Integer, SelectionDto> selections =
-                this.selectionService.findAllByCategory(filteredSubmissions.stream()
-                    .flatMap((submission) ->
-                        submission.getGames()
-                            .stream()
-                            .flatMap((game) -> game.getCategories().stream())
-                    )
-                    .collect(Collectors.toList()));
-            filteredSubmissions.forEach(submission -> {
-                final UserHistoryDto userHistoryDto = new UserHistoryDto();
-                if (!submission.getMarathon().getIsPrivate()) {
-                    userHistoryDto.setMarathonId(submission.getMarathon().getId());
-                    userHistoryDto.setMarathonName(submission.getMarathon().getName());
-                    userHistoryDto.setMarathonStartDate(submission.getMarathon().getStartDate());
-                    userHistoryDto.setGames(new ArrayList<>(submission.getGames()));
-                    userHistoryDto.setOpponents(new ArrayList<>(submission.getOpponents()));
-                    userHistoryDto.getGames()
-                        .forEach(game -> {
-                            game.getCategories()
-                                .forEach(category -> {
-                                    if (submission.getMarathon().isSelectionDone()) {
-                                        category.setStatus(
-                                            selections.get(category.getId()).getStatus());
-                                    } else {
-                                        category.setStatus(Status.TODO);
-                                    }
-                                });
-                            game.getCategories().sort(Comparator.comparing(Category::getId));
-                        });
-                    userHistoryDto.getGames().sort(Comparator.comparing(Game::getId));
-                    userProfileDto.getHistory().add(userHistoryDto);
-                }
-            });
-        }
+
+        this.addSubmissionsToProfile(
+            userProfileDto,
+            this.submissionRepositoryService.findByUser(user)
+        );
 
         final List<MarathonBasicInfoDto> marathons = this.marathonService.findAllMarathonsIModerate(user);
 
@@ -296,7 +262,87 @@ public class UserService {
             marathons.stream().filter(m -> !m.getPrivate()).collect(Collectors.toList())
         );
 
+        final List<Application> apps = this.applicationRepository.findByUserAndStatus(user, ApplicationStatus.APPROVED);
+
+        if (!apps.isEmpty()) {
+            userProfileDto.setVolunteeringHistory(
+                apps.stream()
+                    .map((application) -> {
+                        final UserApplicationHistoryDto history = new UserApplicationHistoryDto();
+
+                        final Team team = application.getTeam();
+
+                        history.setTeamId(team.getId());
+                        history.setTeamName(team.getName());
+
+                        final Marathon marathon = team.getMarathon();
+
+                        history.setMarathonName(marathon.getName());
+                        history.setMarathonId(marathon.getId());
+
+                        history.setStatus(application.getStatus());
+
+                        return history;
+                    })
+                    .collect(Collectors.toList())
+            );
+        }
+
         return userProfileDto;
+    }
+
+    private void addSubmissionsToProfile(UserProfileDto userProfileDto, List<Submission> submissions) {
+        if (submissions == null || submissions.isEmpty()) {
+            return;
+        }
+
+        final List<Submission> filteredSubmissions = submissions.stream()
+            .filter(
+                (submission) -> submission.getMarathon() != null
+            )
+            .sorted(
+                Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
+            )
+            .collect(Collectors.toList());
+
+        final Map<Integer, SelectionDto> selections = this.selectionService.findAllByCategory(filteredSubmissions.stream()
+                .flatMap((submission) ->
+                    submission.getGames()
+                        .stream()
+                        .flatMap(
+                            (game) -> game.getCategories().stream()
+                        )
+                )
+                .collect(Collectors.toList()));
+
+        filteredSubmissions.forEach((submission) -> {
+            final Marathon marathon = submission.getMarathon();
+
+            if (marathon.getIsPrivate()) {
+                return;
+            }
+
+            final UserHistoryDto userHistoryDto = new UserHistoryDto();
+
+            userHistoryDto.setMarathonId(marathon.getId());
+            userHistoryDto.setMarathonName(marathon.getName());
+            userHistoryDto.setMarathonStartDate(marathon.getStartDate());
+            userHistoryDto.setGames(new ArrayList<>(submission.getGames()));
+            userHistoryDto.setOpponents(new ArrayList<>(submission.getOpponents()));
+            userHistoryDto.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    if (marathon.isSelectionDone()) {
+                        category.setStatus(selections.get(category.getId()).getStatus());
+                    } else {
+                        category.setStatus(Status.TODO);
+                    }
+                });
+                game.getCategories().sort(Comparator.comparing(Category::getId));
+            });
+
+            userHistoryDto.getGames().sort(Comparator.comparing(Game::getId));
+            userProfileDto.getHistory().add(userHistoryDto);
+        });
     }
 
     public List<User> findUsersWithUsername(final String username) {
