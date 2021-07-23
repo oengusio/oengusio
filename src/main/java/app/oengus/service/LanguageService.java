@@ -72,11 +72,6 @@ public class LanguageService {
     };
     /// </editor-fold>
 
-
-    public String[] getSupportedLanguages() {
-        return SUPPORTED_LANGUAGES;
-    }
-
     public List<LanguageDto> searchLanguages(String search) {
         return this.searchLanguages(search, Locale.ENGLISH);
     }

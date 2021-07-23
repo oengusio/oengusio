@@ -110,9 +110,7 @@ public class UserService {
     public void updateRequest(final int id, final UserDto userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
-        BeanHelper.copyProperties(userPatch, user, "connections"/*, "languagesSpoken"*/);
-
-        //user.setLanguagesSpoken(userPatch.getLanguagesSpoken());
+        BeanHelper.copyProperties(userPatch, user, "connections");
 
         // TODO: extract method to request
         if (userPatch.getConnections() == null || userPatch.getConnections().isEmpty()) {

@@ -60,22 +60,6 @@ public class MiscController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/languages2")
-    public ResponseEntity<?> bla(@RequestParam final String lang) {
-        final String[] supportedLanguages = this.languageService.getSupportedLanguages();
-        final Locale searchLang = Locale.forLanguageTag(lang);
-        final Map<String, String> out = new HashMap<>();
-
-        for (String supportedLanguage : supportedLanguages) {
-            out.put(
-                supportedLanguage,
-                Locale.forLanguageTag(supportedLanguage).getDisplayLanguage(searchLang)
-            );
-        }
-
-        return ResponseEntity.ok(out);
-    }
-
     @GetMapping("/languages")
     @PreAuthorize("isAuthenticated() && !isBanned()")
     public ResponseEntity<?> searchLanguages(
