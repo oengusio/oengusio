@@ -3,6 +3,7 @@ package app.oengus.web;
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,20 +12,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping
 public class MiscController {
 
     private final PronounsPageApi pronounsApi;
+    private final LanguageService languageService;
 
     @Autowired
-    public MiscController(final PronounsPageApi pronounsApi) {
+    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService) {
         this.pronounsApi = pronounsApi;
+        this.languageService = languageService;
     }
 
     @GetMapping
@@ -34,8 +34,8 @@ public class MiscController {
     }
 
     @GetMapping("/pronouns")
-    @PreAuthorize("!isBanned()")
-    public ResponseEntity<?> searchPronouns(@RequestParam String search) {
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    public ResponseEntity<?> searchPronouns(@RequestParam final String search) {
         if (search.isBlank()) {
             throw new OengusBusinessException("Missing search parameter");
         }
@@ -60,4 +60,35 @@ public class MiscController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/languages")
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    public ResponseEntity<?> searchLanguages(
+        @RequestParam final String search,
+        @RequestParam(value = "locale", required = false, defaultValue = "") final String locale
+    ) {
+        if (search.isBlank()) {
+            throw new OengusBusinessException("Missing search parameter");
+        }
+
+        final Locale searchLang;
+
+        if (locale.isBlank()) {
+            searchLang = Locale.ENGLISH;
+        } else {
+            searchLang = Locale.forLanguageTag(locale);
+        }
+
+        try {
+            // I hate how these throw instead of return null, but checking is always good
+            if (searchLang.getISO3Language() == null || searchLang.getISO3Country() == null) {
+                throw new OengusBusinessException("Locale is not valid");
+            }
+        } catch (final MissingResourceException ignored) {
+            throw new OengusBusinessException("Locale is not valid");
+        }
+
+        return ResponseEntity.ok(
+            this.languageService.searchLanguages(search, searchLang)
+        );
+    }
 }
