@@ -14,10 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -93,10 +90,15 @@ public class User implements UserDetails {
     private String pronouns;
 
     @Nullable
+    @Size(max = 3)
     @Column(name = "country")
     @JsonView(Views.Public.class)
-    @Size(max = 3)
     private String country;
+
+    @Nullable
+    @Column(name = "languages_spoken")
+    @JsonView(Views.Public.class)
+    private String languagesSpoken;
 
     @Override
     public boolean isEnabled() {
@@ -213,6 +215,14 @@ public class User implements UserDetails {
         this.twitchId = twitchId;
     }
 
+    public String getPatreonId() {
+        return patreonId;
+    }
+
+    public void setPatreonId(String patreonId) {
+        this.patreonId = patreonId;
+    }
+
     public List<SocialAccount> getConnections() {
         return connections;
     }
@@ -258,6 +268,19 @@ public class User implements UserDetails {
 
     public void setCountry(@Nullable String country) {
         this.country = country;
+    }
+
+    @Nullable
+    public String getLanguagesSpoken() {
+        return languagesSpoken;
+    }
+
+    public void setLanguagesSpoken(@Nullable String languagesSpoken) {
+        this.languagesSpoken = languagesSpoken;
+    }
+
+    public void setLanguagesSpoken(@NotNull List<String> languagesSpoken) {
+        this.languagesSpoken = String.join(",", languagesSpoken);
     }
 
     @JsonIgnore

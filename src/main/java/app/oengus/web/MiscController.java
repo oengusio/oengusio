@@ -60,9 +60,28 @@ public class MiscController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/languages2")
+    public ResponseEntity<?> bla(@RequestParam final String lang) {
+        final String[] supportedLanguages = this.languageService.getSupportedLanguages();
+        final Locale searchLang = Locale.forLanguageTag(lang);
+        final Map<String, String> out = new HashMap<>();
+
+        for (String supportedLanguage : supportedLanguages) {
+            out.put(
+                supportedLanguage,
+                Locale.forLanguageTag(supportedLanguage).getDisplayLanguage(searchLang)
+            );
+        }
+
+        return ResponseEntity.ok(out);
+    }
+
     @GetMapping("/languages")
     @PreAuthorize("isAuthenticated() && !isBanned()")
-    public ResponseEntity<?> searchLanguages(@RequestParam final String search, @RequestParam("locale") final String locale) {
+    public ResponseEntity<?> searchLanguages(
+        @RequestParam final String search,
+        @RequestParam(value = "locale", required = false, defaultValue = "") final String locale
+    ) {
         if (search.isBlank()) {
             throw new OengusBusinessException("Missing search parameter");
         }
@@ -75,7 +94,12 @@ public class MiscController {
             searchLang = Locale.forLanguageTag(locale);
         }
 
-        if (searchLang.getISO3Language() == null || searchLang.getISO3Country() == null) {
+        try {
+            // I hate how these throw instead of return null, but checking is always good
+            if (searchLang.getISO3Language() == null || searchLang.getISO3Country() == null) {
+                throw new OengusBusinessException("Locale is not valid");
+            }
+        } catch (final MissingResourceException ignored) {
             throw new OengusBusinessException("Locale is not valid");
         }
 
@@ -83,5 +107,4 @@ public class MiscController {
             this.languageService.searchLanguages(search, searchLang)
         );
     }
-
 }

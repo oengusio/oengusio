@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.dto.LanguageDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -71,17 +72,28 @@ public class LanguageService {
     };
     /// </editor-fold>
 
-    public List<String> searchLanguages(String search) {
+
+    public String[] getSupportedLanguages() {
+        return SUPPORTED_LANGUAGES;
+    }
+
+    public List<LanguageDto> searchLanguages(String search) {
         return this.searchLanguages(search, Locale.ENGLISH);
     }
 
-    public List<String> searchLanguages(String search, Locale clientLang) {
+    public List<LanguageDto> searchLanguages(String search, Locale clientLang) {
         final String trim = search.trim();
-        final List<String> result = new ArrayList<>();
+        final List<LanguageDto> result = new ArrayList<>();
 
         for (final String lang : SUPPORTED_LANGUAGES) {
-            if (lang.contains(search) || Locale.forLanguageTag(lang).getDisplayName(clientLang).contains(search)) {
-                result.add(lang);
+            if (
+                lang.contains(search) ||
+                Locale.forLanguageTag(lang).getDisplayName(clientLang).toLowerCase().contains(search.toLowerCase())
+            ) {
+                result.add(new LanguageDto(
+                    Locale.forLanguageTag(lang).getDisplayName(clientLang),
+                    lang
+                ));
             }
         }
 

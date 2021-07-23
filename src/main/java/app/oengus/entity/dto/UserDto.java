@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserDto {
@@ -68,8 +69,8 @@ public class UserDto {
     @Size(max = 3)
     private String country;
 
-    @NotNull
-    private List<String> languagesSpoken;
+    @Nullable
+    private String languagesSpoken;
 
     public String getUsername() {
         return username;
@@ -165,11 +166,11 @@ public class UserDto {
         this.country = country;
     }
 
-    public List<String> getLanguagesSpoken() {
+    public String getLanguagesSpoken() {
         return languagesSpoken;
     }
 
-    public void setLanguagesSpoken(List<String> languagesSpoken) {
+    public void setLanguagesSpoken(String languagesSpoken) {
         this.languagesSpoken = languagesSpoken;
     }
 
@@ -199,11 +200,11 @@ public class UserDto {
 
     @AssertTrue(message = "One of the languages in languages_spoken is not supported by Oengus")
     public boolean isLanguagesSpokenValid() {
-        if (this.languagesSpoken.isEmpty()) {
+        if (this.languagesSpoken == null || this.languagesSpoken.isEmpty()) {
             return true;
         }
 
-        return this.languagesSpoken.stream().anyMatch(LanguageService::isSupportedLanguage);
+        return Arrays.stream(this.languagesSpoken.split(",")).allMatch(LanguageService::isSupportedLanguage);
     }
     /// </editor-fold>
 }

@@ -19,15 +19,15 @@ public class OengusApplication {
 
     public static void main(final String[] args) {
 
-        System.out.println(
+        /*System.out.println(
             Locale.forLanguageTag("zh-TW").getDisplayName()
         );
 
 
         System.out.println(
             new LanguageService().searchLanguages("Nieder", Locale.GERMAN)
-        );
+        );*/
 
-        //SpringApplication.run(OengusApplication.class, args);
+        SpringApplication.run(OengusApplication.class, args);
     }
 }

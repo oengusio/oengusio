@@ -20,6 +20,8 @@ public class UserProfileDto {
     private List<UserApplicationHistoryDto> volunteeringHistory;
     @Nullable
     private String pronouns;
+    @Nullable
+    private String languagesSpoken;
     private boolean banned;
     private String country;
 
@@ -92,7 +94,7 @@ public class UserProfileDto {
     @NotNull
     public String[] getPronouns() {
         if (pronouns == null) {
-            return new String[]{};
+            return new String[0];
         }
 
         return pronouns.split(",");
@@ -100,6 +102,19 @@ public class UserProfileDto {
 
     public void setPronouns(@Nullable String pronouns) {
         this.pronouns = pronouns;
+    }
+
+    @Nullable
+    public String[] getLanguagesSpoken() {
+        if (this.languagesSpoken == null) {
+            return new String[0];
+        }
+
+        return this.languagesSpoken.split(",");
+    }
+
+    public void setLanguagesSpoken(@Nullable String languagesSpoken) {
+        this.languagesSpoken = languagesSpoken;
     }
 
     public boolean isBanned() {
