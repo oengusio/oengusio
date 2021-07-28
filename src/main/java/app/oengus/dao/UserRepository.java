@@ -20,6 +20,9 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     User findByTwitterId(String twitterId);
 
+    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
+    User findByPatreonId(String patreonId);
+
     User findByUsername(String username);
 
     boolean existsByUsernameIgnoreCase(String username);

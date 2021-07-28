@@ -7,6 +7,7 @@ import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
+import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
 import app.oengus.service.login.TwitterLoginService;
@@ -103,8 +104,19 @@ public class UserService {
             case "twitch" -> this.twitchService.sync(code, host);
             case "twitterAuth" -> new Token(this.twitterLoginService.generateAuthUrlForSync(host));
             case "twitter" -> this.twitterLoginService.sync(request.getOauthToken(), request.getOauthVerifier());
+            case "patreon" -> this.checkPatreonSync(code);
             default -> throw new LoginException("UNKNOWN_SERVICE");
         };
+    }
+
+    private SyncDto checkPatreonSync(String id) throws LoginException {
+        final User user = this.userRepositoryService.findByPatreonId(id);
+
+        if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
+            throw new LoginException("ACCOUNT_ALREADY_SYNCED");
+        }
+
+        return new SyncDto(id, null);
     }
 
     public void updateRequest(final int id, final UserDto userPatch) throws NotFoundException {

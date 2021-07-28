@@ -55,6 +55,10 @@ public class UserRepositoryService {
 		return this.userRepository.findByTwitterId(id);
 	}
 
+	public User findByPatreonId(final String id) {
+		return this.userRepository.findByPatreonId(id);
+	}
+
 	public User save(final User user) {
 		return this.userRepository.save(user);
 	}

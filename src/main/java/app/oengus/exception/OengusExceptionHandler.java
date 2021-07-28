@@ -40,7 +40,7 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ResponseEntity.notFound().build();
+            return ((ResponseEntity.BodyBuilder) ResponseEntity.notFound()).body(exc.getMessage());
         }
 
         return ResponseEntity.badRequest().body(toMap(req, exc));
