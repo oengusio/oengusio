@@ -1021,5 +1021,9 @@
         <dropColumn tableName="marathon" columnName="applications_open"/>
     </changeSet>
 
+    <changeSet author="duncte123" id="20210730-1">
+        <dropForeignKeyConstraint baseTableName="patreon_status" constraintName="fk_user_patreon_id"/>
+    </changeSet>
+
 
 </databaseChangeLog>
