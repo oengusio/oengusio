@@ -188,23 +188,4 @@ public class Incentive {
     public void setDonationIncentiveLinks(final List<DonationIncentiveLink> donationIncentiveLinks) {
         this.donationIncentiveLinks = donationIncentiveLinks;
     }
-
-    @Override
-    public String toString() {
-        return "Incentive{" +
-            "id=" + id +
-            ", marathon=" + marathon +
-            ", scheduleLine=" + scheduleLine +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            ", bidWar=" + bidWar +
-            ", locked=" + locked +
-            ", openBid=" + openBid +
-            ", goal=" + goal +
-            ", currentAmount=" + currentAmount +
-            ", bids=" + bids +
-            ", donationIncentiveLinks=" + donationIncentiveLinks +
-            ", toDelete=" + toDelete +
-            '}';
-    }
 }

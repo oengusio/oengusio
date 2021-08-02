@@ -40,6 +40,7 @@ public class IncentiveRepositoryService {
     public Map<Integer, BigDecimal> findAmountsByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
+        // TODO: this can just be a pair?
         final List<Object[]> results = this.incentiveRepository.findAmountsByMarathon(marathon);
         final Map<Integer, BigDecimal> map = new HashMap<>();
         results.forEach(result -> {
