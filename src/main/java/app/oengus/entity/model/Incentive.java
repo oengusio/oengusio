@@ -2,6 +2,7 @@ package app.oengus.entity.model;
 
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -12,179 +13,179 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Cacheable
 @Table(name = "incentive")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Incentive {
 
-	@Id
-	@JsonView(Views.Public.class)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+    @Id
+    @JsonView(Views.Public.class)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	@ManyToOne
-	@JoinColumn(name = "marathon_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@JsonBackReference
-	@JsonView(Views.Public.class)
-	private Marathon marathon;
+    @ManyToOne
+    @JoinColumn(name = "marathon_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonBackReference
+    @JsonView(Views.Public.class)
+    private Marathon marathon;
 
-	@ManyToOne
-	@JoinColumn(name = "schedule_line_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@JsonView(Views.Public.class)
-	private ScheduleLine scheduleLine;
+    @ManyToOne
+    @JoinColumn(name = "schedule_line_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonView(Views.Public.class)
+    private ScheduleLine scheduleLine;
 
-	@Column(name = "name")
-	@JsonView(Views.Public.class)
-	@NotBlank
-	@Size(max = 50)
-	private String name;
+    @Column(name = "name")
+    @JsonView(Views.Public.class)
+    @NotBlank
+    @Size(max = 50)
+    private String name;
 
-	@Column(name = "description")
-	@JsonView(Views.Public.class)
-	@NotBlank
-	@Size(max = 300)
-	private String description;
+    @Column(name = "description")
+    @JsonView(Views.Public.class)
+    @NotBlank
+    @Size(max = 300)
+    private String description;
 
-	@Column(name = "bid_war")
-	@JsonView(Views.Public.class)
-	private boolean bidWar;
+    @Column(name = "bid_war")
+    @JsonView(Views.Public.class)
+    private boolean bidWar;
 
-	@Column(name = "locked")
-	@JsonView(Views.Public.class)
-	private boolean locked;
+    @Column(name = "locked")
+    @JsonView(Views.Public.class)
+    private boolean locked;
 
-	@Column(name = "open_bid")
-	@JsonView(Views.Public.class)
-	private boolean openBid;
+    @Column(name = "open_bid")
+    @JsonView(Views.Public.class)
+    private boolean openBid;
 
-	@Column(name = "goal")
-	@JsonView(Views.Public.class)
-	@DecimalMin(value = "0.0", inclusive = false)
-	private BigDecimal goal;
+    @Column(name = "goal")
+    @JsonView(Views.Public.class)
+    @DecimalMin(value = "0.0", inclusive = false)
+    private BigDecimal goal;
 
-	@Column(name = "current_amount")
-	@JsonView(Views.Public.class)
-	@DecimalMin(value = "0.0")
-	private BigDecimal currentAmount;
+    @Column(name = "current_amount")
+    @JsonView(Views.Public.class)
+    @DecimalMin(value = "0.0")
+    private BigDecimal currentAmount;
 
-	@OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL, orphanRemoval = true)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@OrderBy(value = "current_amount DESC")
-	@JsonView(Views.Public.class)
-	@JsonManagedReference("incentive")
-	private List<Bid> bids;
+    @OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OrderBy(value = "current_amount DESC")
+    @JsonView(Views.Public.class)
+    @JsonManagedReference("incentive")
+    private List<Bid> bids;
 
-	@OneToMany(mappedBy = "incentive")
-	@JsonIgnore
-	private List<DonationIncentiveLink> donationIncentiveLinks;
+    @JsonIgnore
+    @OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL)
+    private List<DonationIncentiveLink> donationIncentiveLinks;
 
-	@Transient
-	private boolean toDelete = false;
+    @Transient
+    private boolean toDelete = false;
 
-	public int getId() {
-		return this.id;
-	}
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(final int id) {
-		this.id = id;
-	}
+    public void setId(final int id) {
+        this.id = id;
+    }
 
-	public Marathon getMarathon() {
-		return this.marathon;
-	}
+    public Marathon getMarathon() {
+        return this.marathon;
+    }
 
-	public void setMarathon(final Marathon marathon) {
-		this.marathon = marathon;
-	}
+    public void setMarathon(final Marathon marathon) {
+        this.marathon = marathon;
+    }
 
-	public List<Bid> getBids() {
-		return this.bids;
-	}
+    public List<Bid> getBids() {
+        return this.bids;
+    }
 
-	public void setBids(final List<Bid> bids) {
-		this.bids = bids;
-	}
+    public void setBids(final List<Bid> bids) {
+        this.bids = bids;
+    }
 
-	public ScheduleLine getScheduleLine() {
-		return this.scheduleLine;
-	}
+    public ScheduleLine getScheduleLine() {
+        return this.scheduleLine;
+    }
 
-	public void setScheduleLine(final ScheduleLine scheduleLine) {
-		this.scheduleLine = scheduleLine;
-	}
+    public void setScheduleLine(final ScheduleLine scheduleLine) {
+        this.scheduleLine = scheduleLine;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public String getDescription() {
-		return this.description;
-	}
+    public String getDescription() {
+        return this.description;
+    }
 
-	public void setDescription(final String description) {
-		this.description = description;
-	}
+    public void setDescription(final String description) {
+        this.description = description;
+    }
 
-	public boolean isBidWar() {
-		return this.bidWar;
-	}
+    public boolean isBidWar() {
+        return this.bidWar;
+    }
 
-	public void setBidWar(final boolean bidWar) {
-		this.bidWar = bidWar;
-	}
+    public void setBidWar(final boolean bidWar) {
+        this.bidWar = bidWar;
+    }
 
-	public BigDecimal getGoal() {
-		return this.goal;
-	}
+    public BigDecimal getGoal() {
+        return this.goal;
+    }
 
-	public void setGoal(final BigDecimal goal) {
-		this.goal = goal;
-	}
+    public void setGoal(final BigDecimal goal) {
+        this.goal = goal;
+    }
 
-	public BigDecimal getCurrentAmount() {
-		return this.currentAmount;
-	}
+    public BigDecimal getCurrentAmount() {
+        return this.currentAmount;
+    }
 
-	public void setCurrentAmount(final BigDecimal currentAmount) {
-		this.currentAmount = currentAmount;
-	}
+    public void setCurrentAmount(final BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
 
-	public boolean isLocked() {
-		return this.locked;
-	}
+    public boolean isLocked() {
+        return this.locked;
+    }
 
-	public void setLocked(final boolean locked) {
-		this.locked = locked;
-	}
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
+    }
 
-	public boolean isToDelete() {
-		return this.toDelete;
-	}
+    public boolean isToDelete() {
+        return this.toDelete;
+    }
 
-	public void setToDelete(final boolean toDelete) {
-		this.toDelete = toDelete;
-	}
+    public void setToDelete(final boolean toDelete) {
+        this.toDelete = toDelete;
+    }
 
-	public boolean isOpenBid() {
-		return this.openBid;
-	}
+    public boolean isOpenBid() {
+        return this.openBid;
+    }
 
-	public void setOpenBid(final boolean openBid) {
-		this.openBid = openBid;
-	}
+    public void setOpenBid(final boolean openBid) {
+        this.openBid = openBid;
+    }
 
-	public List<DonationIncentiveLink> getDonationIncentiveLinks() {
-		return this.donationIncentiveLinks;
-	}
+    public List<DonationIncentiveLink> getDonationIncentiveLinks() {
+        return this.donationIncentiveLinks;
+    }
 
-	public void setDonationIncentiveLinks(final List<DonationIncentiveLink> donationIncentiveLinks) {
-		this.donationIncentiveLinks = donationIncentiveLinks;
-	}
+    public void setDonationIncentiveLinks(final List<DonationIncentiveLink> donationIncentiveLinks) {
+        this.donationIncentiveLinks = donationIncentiveLinks;
+    }
 }

@@ -2,6 +2,7 @@ package app.oengus.service;
 
 import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.model.Donation;
+import app.oengus.entity.model.DonationIncentiveLink;
 import app.oengus.entity.model.Incentive;
 import app.oengus.entity.model.Marathon;
 import app.oengus.exception.OengusBusinessException;
@@ -28,21 +29,25 @@ import java.util.List;
 
 @Service
 public class DonationService {
+    private final DonationRepositoryService donationRepositoryService;
+    private final MarathonService marathonService;
+    private final BidRepositoryService bidRepositoryService;
+    private final PayPalHttpClient payPalHttpClient;
+    private final OengusWebhookService donationWebhook;
+    private final IncentiveService incentiveService;
 
-    @Autowired
-    private DonationRepositoryService donationRepositoryService;
-
-    @Autowired
-    private MarathonService marathonService;
-
-    @Autowired
-    private BidRepositoryService bidRepositoryService;
-
-    @Autowired
-    private PayPalHttpClient payPalHttpClient;
-
-    @Autowired
-    private OengusWebhookService donationWebhook;
+    public DonationService(
+        DonationRepositoryService donationRepositoryService, MarathonService marathonService,
+        BidRepositoryService bidRepositoryService, PayPalHttpClient payPalHttpClient,
+        OengusWebhookService donationWebhook, IncentiveService incentiveService
+    ) {
+        this.donationRepositoryService = donationRepositoryService;
+        this.marathonService = marathonService;
+        this.bidRepositoryService = bidRepositoryService;
+        this.payPalHttpClient = payPalHttpClient;
+        this.donationWebhook = donationWebhook;
+        this.incentiveService = incentiveService;
+    }
 
     public Page<Donation> findForMarathon(final String marathonId, final int page, final int size) {
         return this.donationRepositoryService.findByMarathon(marathonId,
@@ -65,25 +70,28 @@ public class DonationService {
             donation.setMarathon(marathon);
             donation.setPaymentSource("PAYPAL");
             donation.getAnswers().forEach(donationExtraData -> donationExtraData.setDonation(donation));
-            donation.getDonationIncentiveLinks()
-                .forEach((donationIncentiveLink) -> {
-                    donationIncentiveLink.setDonation(donation);
+            for (final DonationIncentiveLink donationIncentiveLink : donation.getDonationIncentiveLinks()) {
+                donationIncentiveLink.setDonation(donation);
 
-                    if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() <= 0) {
-                        final Incentive incentive = new Incentive();
+                if (donationIncentiveLink.getBid() != null && donationIncentiveLink.getBid().getId() <= 0) {
+                    try {
+                        final Incentive incentive = this.incentiveService.findById(donationIncentiveLink.getBid().getIncentiveId());
 
-                        incentive.setId(donationIncentiveLink.getBid().getIncentiveId());
                         donationIncentiveLink.getBid().setIncentive(incentive);
 
                         donationIncentiveLink.setBid(
                             this.bidRepositoryService.save(donationIncentiveLink.getBid())
                         );
+                    } catch (NotFoundException ignored) {
+                        throw new OengusBusinessException("INCENTIVE_NOT_FOUND:" + donationIncentiveLink.getBid().getIncentiveId());
                     }
-                });
+                }
+            }
 
             if (StringUtils.isEmpty(donation.getNickname())) {
                 donation.setNickname("Anonymous");
             }
+
             this.donationRepositoryService.save(donation);
 
             return order;
@@ -169,9 +177,8 @@ public class DonationService {
                 }
             }
         } catch (final IOException ioe) {
-            if (ioe instanceof HttpException) {
+            if (ioe instanceof final HttpException he) {
                 // Something went wrong server-side
-                final HttpException he = (HttpException) ioe;
                 LoggerFactory.getLogger(DonationService.class).error(he.getMessage(), he);
             }
             throw new OengusBusinessException("ERROR_DONATION_VALIDATION");

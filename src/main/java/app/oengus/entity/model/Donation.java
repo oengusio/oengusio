@@ -26,187 +26,189 @@ import java.util.SortedSet;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Donation {
 
-	@Id
-	@JsonView(Views.Public.class)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+    private static final List<String> DEFAULT_HEADERS = List.of("date", "nickname", "amount", "comment");
 
-	@ManyToOne
-	@JoinColumn(name = "marathon_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@JsonBackReference
-	@JsonView(Views.Public.class)
-	private Marathon marathon;
+    @Id
+    @JsonView(Views.Public.class)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	@Column(name = "functional_id")
-	@JsonView(Views.Internal.class)
-	private String functionalId;
+    @ManyToOne
+    @JoinColumn(name = "marathon_id")
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonBackReference
+    @JsonView(Views.Public.class)
+    private Marathon marathon;
 
-	@Column(name = "payment_source")
-	@JsonView(Views.Internal.class)
-	private String paymentSource;
+    @Column(name = "functional_id")
+    @JsonView(Views.Internal.class)
+    private String functionalId;
 
-	@Column(name = "nickname")
-	@Pattern(regexp = "^[\\w\\-]{0,16}$")
-	@JsonView(Views.Public.class)
-	private String nickname;
+    @Column(name = "payment_source")
+    @JsonView(Views.Internal.class)
+    private String paymentSource;
 
-	@Column(name = "donation_date")
-	@JsonView(Views.Public.class)
-	private ZonedDateTime date;
+    @Column(name = "nickname")
+    @Pattern(regexp = "^[\\w\\-]{0,16}$")
+    @JsonView(Views.Public.class)
+    private String nickname;
 
-	@Column(name = "amount")
-	@JsonView(Views.Public.class)
-	private BigDecimal amount;
+    @Column(name = "donation_date")
+    @JsonView(Views.Public.class)
+    private ZonedDateTime date;
 
-	@Column(name = "donation_comment")
-	@JsonView(Views.Public.class)
-	private String comment;
+    @Column(name = "amount")
+    @JsonView(Views.Public.class)
+    private BigDecimal amount;
 
-	@Column(name = "approved")
-	@JsonView(Views.Internal.class)
-	private boolean approved;
+    @Column(name = "donation_comment")
+    @JsonView(Views.Public.class)
+    private String comment;
 
-	@OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@JsonView(Views.Public.class)
-	@JsonManagedReference("donation")
-	private Set<DonationIncentiveLink> donationIncentiveLinks;
+    @Column(name = "approved")
+    @JsonView(Views.Internal.class)
+    private boolean approved;
 
-	@OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference(value = "donationReference")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-	@SortComparator(DonationExtraDataComparator.class)
-	@JsonView(Views.Public.class)
-	private SortedSet<DonationExtraData> answers;
+    @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonView(Views.Public.class)
+    @JsonManagedReference("donation")
+    private Set<DonationIncentiveLink> donationIncentiveLinks;
 
-	@AssertTrue
-	@JsonIgnore
-	public boolean isIncentiveTotalInferiorToAmount() {
-		if (this.donationIncentiveLinks == null || this.donationIncentiveLinks.isEmpty()) {
-			return true;
-		}
-		return this.amount.compareTo(this.donationIncentiveLinks.stream()
-		                                                        .map(DonationIncentiveLink::getAmount)
-		                                                        .reduce(BigDecimal.ZERO, BigDecimal::add)) >= 0;
-	}
+    @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "donationReference")
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @SortComparator(DonationExtraDataComparator.class)
+    @JsonView(Views.Public.class)
+    private SortedSet<DonationExtraData> answers;
 
-	public String getFunctionalId() {
-		return this.functionalId;
-	}
+    @AssertTrue
+    @JsonIgnore
+    public boolean isIncentiveTotalInferiorToAmount() {
+        if (this.donationIncentiveLinks == null || this.donationIncentiveLinks.isEmpty()) {
+            return true;
+        }
 
-	public void setFunctionalId(final String functionalId) {
-		this.functionalId = functionalId;
-	}
+        return this.amount.compareTo(
+            this.donationIncentiveLinks.stream()
+                .map(DonationIncentiveLink::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+        ) >= 0;
+    }
 
-	public String getPaymentSource() {
-		return this.paymentSource;
-	}
+    public String getFunctionalId() {
+        return this.functionalId;
+    }
 
-	public void setPaymentSource(final String paymentSource) {
-		this.paymentSource = paymentSource;
-	}
+    public void setFunctionalId(final String functionalId) {
+        this.functionalId = functionalId;
+    }
 
-	public String getNickname() {
-		return this.nickname;
-	}
+    public String getPaymentSource() {
+        return this.paymentSource;
+    }
 
-	public void setNickname(final String nickname) {
-		this.nickname = nickname;
-	}
+    public void setPaymentSource(final String paymentSource) {
+        this.paymentSource = paymentSource;
+    }
 
-	public ZonedDateTime getDate() {
-		return this.date;
-	}
+    public String getNickname() {
+        return this.nickname;
+    }
 
-	public void setDate(final ZonedDateTime date) {
-		this.date = date;
-	}
+    public void setNickname(final String nickname) {
+        this.nickname = nickname;
+    }
 
-	public BigDecimal getAmount() {
-		return this.amount;
-	}
+    public ZonedDateTime getDate() {
+        return this.date;
+    }
 
-	public void setAmount(final BigDecimal amount) {
-		this.amount = amount;
-	}
+    public void setDate(final ZonedDateTime date) {
+        this.date = date;
+    }
 
-	public String getComment() {
-		return this.comment;
-	}
+    public BigDecimal getAmount() {
+        return this.amount;
+    }
 
-	public void setComment(final String comment) {
-		this.comment = comment;
-	}
+    public void setAmount(final BigDecimal amount) {
+        this.amount = amount;
+    }
 
-	public boolean getApproved() {
-		return this.approved;
-	}
+    public String getComment() {
+        return this.comment;
+    }
 
-	public void setApproved(final boolean approved) {
-		this.approved = approved;
-	}
+    public void setComment(final String comment) {
+        this.comment = comment;
+    }
 
-	public int getId() {
-		return this.id;
-	}
+    public boolean getApproved() {
+        return this.approved;
+    }
 
-	public void setId(final int id) {
-		this.id = id;
-	}
+    public void setApproved(final boolean approved) {
+        this.approved = approved;
+    }
 
-	public Marathon getMarathon() {
-		return this.marathon;
-	}
+    public int getId() {
+        return this.id;
+    }
 
-	public void setMarathon(final Marathon marathon) {
-		this.marathon = marathon;
-	}
+    public void setId(final int id) {
+        this.id = id;
+    }
 
-	public Set<DonationIncentiveLink> getDonationIncentiveLinks() {
-		return this.donationIncentiveLinks;
-	}
+    public Marathon getMarathon() {
+        return this.marathon;
+    }
 
-	public void setDonationIncentiveLinks(final Set<DonationIncentiveLink> donationIncentiveLinks) {
-		this.donationIncentiveLinks = donationIncentiveLinks;
-	}
+    public void setMarathon(final Marathon marathon) {
+        this.marathon = marathon;
+    }
 
-	public SortedSet<DonationExtraData> getAnswers() {
-		return this.answers;
-	}
+    public Set<DonationIncentiveLink> getDonationIncentiveLinks() {
+        return this.donationIncentiveLinks;
+    }
 
-	public void setAnswers(final SortedSet<DonationExtraData> answers) {
-		this.answers = answers;
-	}
+    public void setDonationIncentiveLinks(final Set<DonationIncentiveLink> donationIncentiveLinks) {
+        this.donationIncentiveLinks = donationIncentiveLinks;
+    }
 
-	private static final List<String> DEFAULT_HEADERS =
-			List.of("date", "nickname", "amount", "comment");
+    public SortedSet<DonationExtraData> getAnswers() {
+        return this.answers;
+    }
 
-	@JsonIgnore
-	public String[] getCsvHeaders() {
-		final List<String> headers = new ArrayList<>(DEFAULT_HEADERS);
-		this.getAnswers()
-		    .stream()
-		    .filter(answer -> !answer.getQuestion().getFieldType().equals(FieldType.FREETEXT))
-		    .forEach(answer ->
-				    headers.add(answer.getQuestion().getLabel()));
-		String[] array = new String[headers.size()];
-		array = headers.toArray(array);
-		return array;
-	}
+    public void setAnswers(final SortedSet<DonationExtraData> answers) {
+        this.answers = answers;
+    }
 
-	@JsonIgnore
-	public List<List<String>> getCsvRecords(final String zoneId) {
-		final List<String> record = new ArrayList<>();
-		record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(this.date.withZoneSameInstant(
-				ZoneId.of(zoneId))));
-		record.add(this.nickname);
-		record.add(this.amount.toPlainString());
-		record.add(this.comment);
-		this.getAnswers()
-		    .stream()
-		    .filter(answer -> !answer.getQuestion().getFieldType().equals(FieldType.FREETEXT))
-		    .forEach(answer -> record.add(answer.getAnswer()));
-		return List.of(record);
-	}
+    @JsonIgnore
+    public String[] getCsvHeaders() {
+        final List<String> headers = new ArrayList<>(DEFAULT_HEADERS);
+        this.getAnswers()
+            .stream()
+            .filter(answer -> !answer.getQuestion().getFieldType().equals(FieldType.FREETEXT))
+            .forEach(answer ->
+                headers.add(answer.getQuestion().getLabel()));
+        String[] array = new String[headers.size()];
+        array = headers.toArray(array);
+        return array;
+    }
+
+    @JsonIgnore
+    public List<List<String>> getCsvRecords(final String zoneId) {
+        final List<String> record = new ArrayList<>();
+        record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(this.date.withZoneSameInstant(
+            ZoneId.of(zoneId))));
+        record.add(this.nickname);
+        record.add(this.amount.toPlainString());
+        record.add(this.comment);
+        this.getAnswers()
+            .stream()
+            .filter(answer -> !answer.getQuestion().getFieldType().equals(FieldType.FREETEXT))
+            .forEach(answer -> record.add(answer.getAnswer()));
+        return List.of(record);
+    }
 }
