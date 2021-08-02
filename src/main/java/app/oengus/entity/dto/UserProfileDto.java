@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.model.SocialAccount;
 
 import javax.annotation.Nullable;
@@ -93,11 +94,11 @@ public class UserProfileDto {
 
     @NotNull
     public String[] getPronouns() {
-        if (pronouns == null) {
+        if (this.pronouns == null || this.pronouns.isBlank()) {
             return new String[0];
         }
 
-        return pronouns.split(",");
+        return this.pronouns.split(",");
     }
 
     public void setPronouns(@Nullable String pronouns) {
@@ -106,7 +107,7 @@ public class UserProfileDto {
 
     @Nullable
     public String[] getLanguagesSpoken() {
-        if (this.languagesSpoken == null) {
+        if (this.languagesSpoken == null || this.languagesSpoken.isBlank()) {
             return new String[0];
         }
 
@@ -139,5 +140,46 @@ public class UserProfileDto {
 
     public void setVolunteeringHistory(List<UserApplicationHistoryDto> volunteeringHistory) {
         this.volunteeringHistory = volunteeringHistory;
+    }
+
+    ///// deprecated properties
+    public String getTwitterName() {
+        return this.getConnections().stream()
+            .filter(
+                (it) -> it.getPlatform() == SocialPlatform.TWITTER
+            )
+            .map(SocialAccount::getUsername)
+            .findFirst()
+            .orElse("");
+    }
+
+    public String getDiscordName() {
+        return this.getConnections().stream()
+            .filter(
+                (it) -> it.getPlatform() == SocialPlatform.DISCORD
+            )
+            .map(SocialAccount::getUsername)
+            .findFirst()
+            .orElse("");
+    }
+
+    public String getTwitchName() {
+        return this.getConnections().stream()
+            .filter(
+                (it) -> it.getPlatform() == SocialPlatform.TWITCH
+            )
+            .map(SocialAccount::getUsername)
+            .findFirst()
+            .orElse("");
+    }
+
+    public String getSpeedruncomName() {
+        return this.getConnections().stream()
+            .filter(
+                (it) -> it.getPlatform() == SocialPlatform.SPEEDRUNCOM
+            )
+            .map(SocialAccount::getUsername)
+            .findFirst()
+            .orElse("");
     }
 }
