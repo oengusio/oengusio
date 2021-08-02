@@ -47,7 +47,6 @@ public class OengusExceptionHandler {
     }
 
     @ExceptionHandler(NestedServletException.class)
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> validationException(final NestedServletException exc, final HttpServletRequest req) {
         final Throwable cause = exc.getRootCause();
 
@@ -61,7 +60,7 @@ public class OengusExceptionHandler {
 
         LOG.error("Uncaught NestedServletException", exc);
 
-        return ResponseEntity.badRequest().body(toMap(req, exc));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(toMap(req, exc));
     }
 
     // TODO: find all parts that catch this exception and remove it

@@ -1,12 +1,14 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.ApplicationUserInformationDto;
+import app.oengus.entity.dto.PatreonStatusDto;
 import app.oengus.entity.dto.UserDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.UserService;
+import app.oengus.service.repository.PatreonStatusRepositoryService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
@@ -48,12 +50,17 @@ import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
+    private final PatreonStatusRepositoryService patreonStatusRepositoryService;
     private final OkHttpClient client = new OkHttpClient();
 
-    @Autowired
-    public UserController(final UserService userService, @Value("${oengus.oauthOrigins}") final List<String> oauthOrigins) {
+    public UserController(
+        final UserService userService,
+        @Value("${oengus.oauthOrigins}") final List<String> oauthOrigins,
+        final PatreonStatusRepositoryService patreonStatusRepositoryService
+    ) {
         this.userService = userService;
         this.oauthOrigins = oauthOrigins;
+        this.patreonStatusRepositoryService = patreonStatusRepositoryService;
     }
 
     @PostMapping("/login")
@@ -141,6 +148,31 @@ public class UserController {
                     .body(body.bytes());
             }
         }
+    }
+
+    @ApiIgnore
+    @PutMapping("/{id}/patreon-status")
+    @PreAuthorize("isSelf(#id) && !isBanned()")
+    public ResponseEntity<?> updateUserPatreonStatus(
+        @PathVariable("id") final int id,
+        @RequestBody @Valid final PatreonStatusDto patch,
+        final BindingResult bindingResult,
+        final Principal principal
+    ) throws NotFoundException {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+        }
+
+        // fetch a fresh user
+        final User user = this.userService.getUser(getUserFromPrincipal(principal).getId());
+
+        if (!patch.getPatreonId().equals(user.getPatreonId())) {
+            throw new OengusBusinessException("ACCOUNT_NOT_OWNED_BY_USER");
+        }
+
+        this.patreonStatusRepositoryService.update(patch);
+
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
