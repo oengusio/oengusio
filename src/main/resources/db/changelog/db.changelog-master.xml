@@ -1025,5 +1025,7 @@
         <dropForeignKeyConstraint baseTableName="patreon_status" constraintName="fk_user_patreon_id"/>
     </changeSet>
 
-
+    <!--<changeSet author="duncte123" id="20210802-1">
+        <modifyDataType tableName="bid" columnName="approved" newDataType="boolean"/>
+    </changeSet>-->
 </databaseChangeLog>

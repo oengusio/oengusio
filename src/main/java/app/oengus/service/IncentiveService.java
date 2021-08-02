@@ -42,10 +42,11 @@ public class IncentiveService {
 		} else {
 			incentives = this.incentiveRepositoryService.findByMarathonNotLocked(marathonId);
 		}
+
 		if (marathon.isHasDonations()) {
-			final Map<Integer, BigDecimal> incentivesAmounts =
-					this.incentiveRepositoryService.findAmountsByMarathon(marathonId);
+			final Map<Integer, BigDecimal> incentivesAmounts = this.incentiveRepositoryService.findAmountsByMarathon(marathonId);
 			final Map<Integer, BigDecimal> bidsAmounts = this.bidRepositoryService.findAmountsByMarathon(marathonId);
+
 			incentives.forEach(incentive -> {
 				if (incentive.isBidWar()) {
 					if (!withUnapproved && CollectionUtils.isNotEmpty(incentive.getBids())) {
@@ -53,8 +54,7 @@ public class IncentiveService {
 								incentive.getBids()
 								         .stream()
 								         .filter(bid -> BooleanUtils.isTrue(bid.getApproved()))
-								         .collect(
-										         Collectors.toList()));
+								         .collect(Collectors.toList()));
 					}
 					incentive.getBids().forEach(bid -> {
 						bid.setCurrentAmount(bidsAmounts.getOrDefault(bid.getId(), BigDecimal.ZERO));
@@ -69,14 +69,21 @@ public class IncentiveService {
 
 	@Transactional
 	public List<Incentive> saveAll(final List<Incentive> incentives, final String marathonId) {
+        System.out.println(incentives);
+
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		incentives.forEach(incentive -> {
+		    if (incentive.getId() == 0) {
+		        incentive.setId(-1);
+            }
+
 			incentive.setMarathon(marathon);
 			if (incentive.getBids() != null) {
 				incentive.getBids().forEach(bid -> bid.setIncentive(incentive));
 			}
 		});
+
 		incentives.forEach(incentive -> {
 			if (incentive.isBidWar()) {
 				incentive.getBids().forEach(bid -> {
@@ -86,9 +93,11 @@ public class IncentiveService {
 					}
 				});
 				incentive.setBids(
-						incentive.getBids().stream().filter(bid -> !bid.isToDelete()).collect(Collectors.toList()));
+						incentive.getBids().stream().filter(bid -> !bid.isToDelete()).collect(Collectors.toList())
+                );
 			}
 		});
+
 		incentives.stream()
 		          .filter(incentive -> incentive.getId() > 0 && incentive.isToDelete())
 		          .forEach(i -> {
@@ -98,9 +107,10 @@ public class IncentiveService {
 			          this.donationIncentiveLinkRepositoryService.deleteByIncentive(i);
 			          this.incentiveRepositoryService.delete(i.getId());
 		          });
+
 		return this.incentiveRepositoryService.saveAll(
-				incentives.stream().filter(incentive -> !incentive.isToDelete()).collect(
-						Collectors.toList()));
+				incentives.stream().filter(incentive -> !incentive.isToDelete()).collect(Collectors.toList())
+        );
 	}
 
 	public void deleteByMarathon(final String marathonId) {

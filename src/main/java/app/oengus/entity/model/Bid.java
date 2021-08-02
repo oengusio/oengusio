@@ -21,7 +21,7 @@ public class Bid {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int id = -1;
 
 	@ManyToOne
 	@JoinColumn(name = "incentive_id")
@@ -30,9 +30,9 @@ public class Bid {
 	@JsonBackReference("incentive")
 	private Incentive incentive;
 
+    @NotBlank
 	@Column(name = "name")
 	@JsonView(Views.Public.class)
-	@NotBlank
 	private String name;
 
 	@Column(name = "current_amount")
@@ -42,7 +42,7 @@ public class Bid {
 
 	@Column(name = "approved")
 	@JsonView(Views.Public.class)
-	private boolean approved;
+	private boolean approved/* = false*/;
 
 	@OneToMany(mappedBy = "bid")
 	@JsonIgnore

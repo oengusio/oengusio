@@ -3,6 +3,7 @@ package app.oengus.entity.model;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -12,10 +13,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Cacheable
 @Table(name = "incentive")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Incentive {
 
 	@Id
@@ -25,14 +26,14 @@ public class Incentive {
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
 	@JsonView(Views.Public.class)
 	private Marathon marathon;
 
 	@ManyToOne
 	@JoinColumn(name = "schedule_line_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonView(Views.Public.class)
 	private ScheduleLine scheduleLine;
 
@@ -71,7 +72,7 @@ public class Incentive {
 	private BigDecimal currentAmount;
 
 	@OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL, orphanRemoval = true)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+	@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@OrderBy(value = "current_amount DESC")
 	@JsonView(Views.Public.class)
 	@JsonManagedReference("incentive")
@@ -187,4 +188,23 @@ public class Incentive {
 	public void setDonationIncentiveLinks(final List<DonationIncentiveLink> donationIncentiveLinks) {
 		this.donationIncentiveLinks = donationIncentiveLinks;
 	}
+
+    @Override
+    public String toString() {
+        return "Incentive{" +
+            "id=" + id +
+            ", marathon=" + marathon +
+            ", scheduleLine=" + scheduleLine +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", bidWar=" + bidWar +
+            ", locked=" + locked +
+            ", openBid=" + openBid +
+            ", goal=" + goal +
+            ", currentAmount=" + currentAmount +
+            ", bids=" + bids +
+            ", donationIncentiveLinks=" + donationIncentiveLinks +
+            ", toDelete=" + toDelete +
+            '}';
+    }
 }
