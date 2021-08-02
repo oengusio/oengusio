@@ -1025,7 +1025,15 @@
         <dropForeignKeyConstraint baseTableName="patreon_status" constraintName="fk_user_patreon_id"/>
     </changeSet>
 
-    <!--<changeSet author="duncte123" id="20210802-1">
-        <modifyDataType tableName="bid" columnName="approved" newDataType="boolean"/>
-    </changeSet>-->
+    <changeSet author="duncte123" id="20210802-1">
+        <!-- askjdhf;skjdf;l WHY THE FUCK THIS TOOK 3 HOURS TO FIX -->
+        <addAutoIncrement
+            tableName="bid"
+            columnName="id"
+        />
+        <addAutoIncrement
+            tableName="donation_incentive_link"
+            columnName="id"
+        />
+    </changeSet>
 </databaseChangeLog>

@@ -78,8 +78,8 @@ public class Incentive {
     @JsonManagedReference("incentive")
     private List<Bid> bids;
 
-    @OneToMany(mappedBy = "incentive")
     @JsonIgnore
+    @OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL)
     private List<DonationIncentiveLink> donationIncentiveLinks;
 
     @Transient

@@ -9,10 +9,10 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +29,13 @@ import java.util.concurrent.TimeUnit;
 @Api
 public class DonationController {
 
-    @Autowired
-    private DonationService donationService;
+    private final DonationService donationService;
+    private final ExportService exportService;
 
-    @Autowired
-    private ExportService exportService;
+    public DonationController(DonationService donationService, ExportService exportService) {
+        this.donationService = donationService;
+        this.exportService = exportService;
+    }
 
     @GetMapping
     @JsonView(Views.Public.class)
@@ -60,7 +62,7 @@ public class DonationController {
     @ApiIgnore
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> initDonation(@PathVariable("marathonId") final String marathonId,
-                                          @RequestBody final Donation donation) {
+                                          @RequestBody final Donation donation) throws NotFoundException {
         return ResponseEntity.ok(new OrderDto(this.donationService.initDonation(marathonId, donation).id()));
     }
 
