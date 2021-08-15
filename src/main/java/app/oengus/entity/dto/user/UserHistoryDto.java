@@ -1,4 +1,4 @@
-package app.oengus.entity.dto;
+package app.oengus.entity.dto.user;
 
 import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Opponent;

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cache;
 import java.util.Objects;
 
-import static app.oengus.entity.dto.UserDto.*;
+import static app.oengus.entity.dto.user.UserDto.*;
 
 @SuppressWarnings("unused")
 @Entity

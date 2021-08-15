@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
+import static app.oengus.entity.dto.user.UserDto.USERNAME_REGEX;
 
 @Entity
 @Table(name = "users")

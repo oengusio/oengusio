@@ -2,8 +2,8 @@ package app.oengus.web;
 
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.PatreonStatusDto;
-import app.oengus.entity.dto.UserDto;
-import app.oengus.entity.dto.UserProfileDto;
+import app.oengus.entity.dto.user.UserDto;
+import app.oengus.entity.dto.user.UserProfileDto;
 import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
@@ -19,7 +19,6 @@ import javassist.NotFoundException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

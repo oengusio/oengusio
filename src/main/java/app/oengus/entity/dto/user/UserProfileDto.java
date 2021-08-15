@@ -1,6 +1,7 @@
-package app.oengus.entity.dto;
+package app.oengus.entity.dto.user;
 
 import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.SocialAccount;
 
 import javax.annotation.Nullable;
