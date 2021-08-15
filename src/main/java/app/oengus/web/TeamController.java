@@ -22,7 +22,7 @@ public class TeamController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#marathonId) && !isBanned()")
+    @PreAuthorize("canHaveTeams() && isAuthenticated() && canUpdateMarathon(#marathonId) && !isBanned()")
     public ResponseEntity<?> listTeams(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok(
             this.teamRepositoryService.getAll(marathonId)
@@ -30,7 +30,7 @@ public class TeamController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#marathonId) && !isBanned()")
+    @PreAuthorize("canHaveTeams() && isAuthenticated() && canUpdateMarathon(#marathonId) && !isBanned()")
     public ResponseEntity<?> createTeam(
         @PathVariable("marathonId") final String marathonId,
         @RequestBody @Valid final TeamDto teamdto,
@@ -46,7 +46,7 @@ public class TeamController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && canUpdateTeam(#teamId) && !isBanned()")
+    @PreAuthorize("canHaveTeams() && isAuthenticated() && canUpdateTeam(#teamId) && !isBanned()")
     public ResponseEntity<?> updateTeam(
         @PathVariable("marathonId") final String marathonId, // not needed but required somehow
         @PathVariable("id") final int teamId,
