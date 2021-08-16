@@ -1,6 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.schedule.ScheduleDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
@@ -50,6 +51,18 @@ public class ScheduleService {
         return schedule;
     }
 
+    public ScheduleDto findByMarathonDto(final String marathonId, boolean withCustomData) throws NotFoundException {
+        final Schedule byMarathon = this.findByMarathon(marathonId);
+
+        // TODO: is this nullable?
+        if (byMarathon == null) {
+            throw new NotFoundException("No schedule found");
+        }
+
+        return ScheduleDto.fromModel(byMarathon);
+    }
+
+    // TODO: convert to DTO
     public Schedule findByMarathonCustomDataControl(final String marathonId, boolean withCustomData) {
         final Schedule byMarathon = this.findByMarathon(marathonId);
 

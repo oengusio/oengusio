@@ -1,6 +1,7 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.schedule.ScheduleDto;
 import app.oengus.entity.model.Schedule;
 import app.oengus.service.ExportService;
 import app.oengus.service.ScheduleService;
@@ -40,9 +41,17 @@ public class ScheduleController {
     @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
     @JsonView(Views.Public.class)
     @ApiOperation(value = "Get schedule for a marathon",
-        response = Schedule.class)
+        response = ScheduleDto.class)
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
+                                                @RequestHeader(value = "oengus-version", required = false) String version,
+                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData)
+        throws NotFoundException {
+        // Return a new model for version 2
+        if ("2".equals(version)) {
+            return ResponseEntity.ok()
+                .body(this.scheduleService.findByMarathonDto(marathonId, withCustomData));
+        }
+
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
