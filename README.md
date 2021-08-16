@@ -40,6 +40,7 @@ DB_URL=jdbc:postgresql://localhost:5432/oengus;
 DB_USERNAME=;
 DB_PASSWORD=;
 BASE_URL=http://localhost:4200;
+OAUTH_ORIGINS=http://localhost:4200,https://oengus.io
 ```
 
 #### Dependencies
