@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import app.oengus.entity.model.Schedule;
 
 import java.util.List;

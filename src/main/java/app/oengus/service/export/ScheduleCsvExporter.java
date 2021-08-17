@@ -1,6 +1,6 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;

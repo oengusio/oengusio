@@ -1,7 +1,7 @@
 package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleDto;
-import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;

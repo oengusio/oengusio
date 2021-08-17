@@ -1,11 +1,9 @@
 package app.oengus.entity.dto.schedule;
 
-import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.model.Schedule;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,15 +47,18 @@ public class ScheduleDto {
         this.lines = lines;
     }
 
-    public static ScheduleDto fromModel(final Schedule model) {
+    public static ScheduleDto fromModel(final Schedule model, final boolean customData) {
         final ScheduleDto dto = new ScheduleDto();
 
         dto.setId(model.getId());
         dto.setMarathon(model.getMarathon().getId());
-        // TODO
-        /*dto.setLines(
-            model.getLines().stream().map(ScheduleLineDto::fromModel).collect(Collectors.toList())
-        );*/
+        if (model.getLines() != null) {
+            dto.setLines(
+                model.getLines().stream()
+                    .map((line) -> ScheduleLineDto.fromModel(line, customData))
+                    .collect(Collectors.toList())
+            );
+        }
 
         return dto;
     }

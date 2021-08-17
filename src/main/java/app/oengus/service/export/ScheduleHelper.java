@@ -1,9 +1,8 @@
 package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleDto;
-import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import app.oengus.entity.model.Schedule;
-import app.oengus.entity.model.ScheduleLine;
 import app.oengus.helper.BeanHelper;
 import app.oengus.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,9 @@ public class ScheduleHelper {
 	@Autowired
 	private ScheduleService scheduleService;
 
+	// TODO: delegate to models, used for export
 	public ScheduleDto getSchedule(final String marathonId, final String zoneId) {
+	    // make sure lines is null when copying over to the DTO
 		ScheduleDto schedule = new ScheduleDto();
 		final Schedule found = this.scheduleService.findByMarathon(marathonId);
 		BeanHelper.copyProperties(found, schedule, "lines");
@@ -29,8 +30,8 @@ public class ScheduleHelper {
 			BeanHelper.copyProperties(found.getLines().get(i), scheduleLineDto);
 			if (i == 0) {
 				scheduleLineDto.setTime(
-						scheduleLineDto.getSchedule().getMarathon().getStartDate().withSecond(0).withZoneSameInstant(
-								ZoneId.of(zoneId)));
+                    found.getMarathon().getStartDate().withSecond(0).withZoneSameInstant(ZoneId.of(zoneId))
+                );
 			} else {
 				scheduleLineDto.setTime(scheduleLineDtos.get(i - 1)
 				                                        .getTime()

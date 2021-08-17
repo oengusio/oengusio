@@ -59,7 +59,7 @@ public class ScheduleService {
             throw new NotFoundException("No schedule found");
         }
 
-        return ScheduleDto.fromModel(byMarathon);
+        return ScheduleDto.fromModel(byMarathon, withCustomData);
     }
 
     // TODO: convert to DTO

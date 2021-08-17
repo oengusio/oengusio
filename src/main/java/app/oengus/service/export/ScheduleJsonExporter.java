@@ -1,7 +1,7 @@
 package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleDto;
-import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
