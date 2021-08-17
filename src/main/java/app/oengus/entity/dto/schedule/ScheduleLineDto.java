@@ -4,6 +4,7 @@ import app.oengus.entity.model.RunType;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -14,6 +15,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+@ApiModel(description = "A line in a schedule, contains all sorts of info about a run")
 public class ScheduleLineDto {
 
     private static final List<String> DEFAULT_HEADERS =
@@ -38,7 +40,7 @@ public class ScheduleLineDto {
 
     private String customData;
 
-    private ZonedDateTime time;
+    private ZonedDateTime time; // TODO: remove? can be set on the date
 
     public int getId() {
         return id;

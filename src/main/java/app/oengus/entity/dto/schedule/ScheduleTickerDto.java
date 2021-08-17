@@ -1,4 +1,4 @@
-package app.oengus.entity.dto;
+package app.oengus.entity.dto.schedule;
 
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.spring.model.Views;

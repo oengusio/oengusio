@@ -1,6 +1,6 @@
 package app.oengus.service;
 
-import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.schedule.ScheduleTickerDto;
 import app.oengus.entity.dto.schedule.ScheduleDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
@@ -36,6 +36,7 @@ public class ScheduleService {
         if (schedule != null && schedule.getLines() != null && schedule.getLines().size() > 0) {
             final List<ScheduleLine> lines = schedule.getLines();
 
+            // TODO: move this over to the model
             lines.get(0).setDate(schedule.getMarathon().getStartDate());
 
             for (int i = 1; i < lines.size(); i++) {

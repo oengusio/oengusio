@@ -1,6 +1,6 @@
 package app.oengus.web;
 
-import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.schedule.ScheduleTickerDto;
 import app.oengus.entity.dto.schedule.ScheduleDto;
 import app.oengus.entity.model.Schedule;
 import app.oengus.service.ExportService;

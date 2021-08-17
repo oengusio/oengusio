@@ -48,11 +48,15 @@ public class ScheduleDto {
     }
 
     public static ScheduleDto fromModel(final Schedule model, final boolean customData) {
+        return fromModel(model, true, customData);
+    }
+
+    public static ScheduleDto fromModel(final Schedule model, final boolean copyLines, final boolean customData) {
         final ScheduleDto dto = new ScheduleDto();
 
         dto.setId(model.getId());
         dto.setMarathon(model.getMarathon().getId());
-        if (model.getLines() != null) {
+        if (model.getLines() != null && copyLines) {
             dto.setLines(
                 model.getLines().stream()
                     .map((line) -> ScheduleLineDto.fromModel(line, customData))

@@ -1,6 +1,6 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.ScheduleDto;
+import app.oengus.entity.dto.schedule.ScheduleDto;
 import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
@@ -39,6 +39,7 @@ public class ScheduleJsonExporter implements Exporter {
         this.objectMapper = objectMapper;
     }
 
+    // TODO: fetch marathon
     @Override
     public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
         final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
@@ -67,7 +68,7 @@ public class ScheduleJsonExporter implements Exporter {
                 "schedule.export.json.column." + column))
             .collect(Collectors.toList()));
         horaroSchedule.setItems(
-            scheduleDto.getLinesWithTime()
+            scheduleDto.getLines()
                 .stream()
                 .map(
                     (scheduleLineDto) -> this.mapLineToItem(scheduleLineDto, resourceBundle)
