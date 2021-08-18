@@ -1,16 +1,18 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.schedule.ScheduleDto;
-import app.oengus.entity.dto.schedule.ScheduleLineDto;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
+import app.oengus.entity.dto.schedule.ScheduleDto;
+import app.oengus.entity.dto.schedule.ScheduleLineDto;
+import app.oengus.entity.model.Marathon;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.service.MarathonService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -27,46 +29,48 @@ import java.util.stream.Collectors;
 @Component
 public class ScheduleJsonExporter implements Exporter {
 
-    private static final List<String> COLUMNS =
-        List.of("runners", "game", "category", "type", "console", "custom_data", "[[options]]");
+    private static final List<String> COLUMNS = List.of("runners", "game", "category", "type", "console", "custom_data", "[[options]]");
 
+    private final MarathonService marathonService;
     private final ScheduleHelper scheduleHelper;
     private final ObjectMapper objectMapper;
 
-    @Autowired
-    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper) {
+    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper, MarathonService marathonService) {
         this.scheduleHelper = scheduleHelper;
         this.objectMapper = objectMapper;
+        this.marathonService = marathonService;
     }
 
-    // TODO: fetch marathon
     @Override
-    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
+    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
         final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
+        final Marathon marathon = this.marathonService.getById(marathonId);
+
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();
         final HoraroSchedule horaroSchedule = new HoraroSchedule();
         final HoraroEvent horaroEvent = new HoraroEvent();
-        horaroEvent.setName(scheduleDto.getMarathon().getName());
-        horaroEvent.setSlug(scheduleDto.getMarathon().getId());
+
+        horaroEvent.setName(marathon.getName());
+        horaroEvent.setSlug(marathon.getId());
         horaroSchedule.setEvent(horaroEvent);
-        horaroSchedule.setName(scheduleDto.getMarathon().getName());
-        horaroSchedule.setSlug(scheduleDto.getMarathon().getId());
+        horaroSchedule.setName(marathon.getName());
+        horaroSchedule.setSlug(marathon.getId());
         horaroSchedule.setTimezone(zoneId);
         horaroSchedule.setStart(
-            scheduleDto.getMarathon()
-                .getStartDate()
+            marathon.getStartDate()
                 .withFixedOffsetZone()
                 .withSecond(0)
                 .format(DateTimeFormatter.ISO_DATE_TIME)
         );
-        horaroSchedule.setTwitch(scheduleDto.getMarathon().getTwitch());
-        horaroSchedule.setTwitter(scheduleDto.getMarathon().getTwitter());
-        horaroSchedule.setColumns(COLUMNS.stream()
-            .map(column -> column.contains("[[") ? column : resourceBundle.getString(
-                "schedule.export.json.column." + column))
-            .collect(Collectors.toList()));
+        horaroSchedule.setTwitch(marathon.getTwitch());
+        horaroSchedule.setTwitter(marathon.getTwitter());
+        horaroSchedule.setColumns(
+            COLUMNS.stream().map(
+                (col) -> col.contains("[[") ? col : resourceBundle.getString("schedule.export.json.column." + col)
+            ).collect(Collectors.toList())
+        );
         horaroSchedule.setItems(
             scheduleDto.getLines()
                 .stream()
@@ -75,11 +79,10 @@ public class ScheduleJsonExporter implements Exporter {
                 )
                 .collect(Collectors.toList())
         );
+
         horaro.setSchedule(horaroSchedule);
 
-        final StringWriter out = new StringWriter();
-        out.append(this.objectMapper.writeValueAsString(horaro));
-        return out;
+        return new StringWriter().append(this.objectMapper.writeValueAsString(horaro));
     }
 
     private HoraroItem mapLineToItem(final ScheduleLineDto scheduleLineDto, final ResourceBundle resourceBundle) {

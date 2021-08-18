@@ -85,7 +85,7 @@ public class ScheduleController {
                                      @RequestParam("format") final String format,
                                      @RequestParam("zoneId") final String zoneId,
                                      @RequestParam("locale") final String locale,
-                                     final HttpServletResponse response) throws IOException {
+                                     final HttpServletResponse response) throws IOException, NotFoundException {
         switch (format.toLowerCase()) {
             case "csv":
                 response.setContentType("text/csv");

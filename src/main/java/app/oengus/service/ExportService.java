@@ -5,10 +5,10 @@ import app.oengus.service.export.DonationsCsvExporter;
 import app.oengus.service.export.ScheduleCsvExporter;
 import app.oengus.service.export.ScheduleIcalExporter;
 import app.oengus.service.export.ScheduleJsonExporter;
+import javassist.NotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,58 +20,61 @@ import java.util.Locale;
 @Service
 public class ExportService {
 
-	@Autowired
-	private SubmissionService submissionService;
+    private final SubmissionService submissionService;
+    private final DonationsCsvExporter donationsCsvExporter;
+    private final ScheduleCsvExporter scheduleCsvExporter;
+    private final ScheduleJsonExporter scheduleJsonExporter;
+    private final ScheduleIcalExporter scheduleIcalExporter;
 
-	@Autowired
-	private DonationsCsvExporter donationsCsvExporter;
+    public ExportService(
+        SubmissionService submissionService, DonationsCsvExporter donationsCsvExporter,
+        ScheduleCsvExporter scheduleCsvExporter, ScheduleJsonExporter scheduleJsonExporter,
+        ScheduleIcalExporter scheduleIcalExporter
+    ) {
+        this.submissionService = submissionService;
+        this.donationsCsvExporter = donationsCsvExporter;
+        this.scheduleCsvExporter = scheduleCsvExporter;
+        this.scheduleJsonExporter = scheduleJsonExporter;
+        this.scheduleIcalExporter = scheduleIcalExporter;
+    }
 
-	@Autowired
-	private ScheduleCsvExporter scheduleCsvExporter;
+    public Writer exportSubmissionsToCsv(final String marathonId, final String zoneId, final String language) throws IOException {
+        final List<Submission> submissions = this.submissionService.findByMarathon(marathonId);
+        final StringWriter out = new StringWriter();
 
-	@Autowired
-	private ScheduleJsonExporter scheduleJsonExporter;
+        if (!submissions.isEmpty()) {
+            try (final CSVPrinter printer = new CSVPrinter(
+                out,
+                CSVFormat.RFC4180.withHeader(submissions.get(0).getCsvHeaders()).withQuoteMode(QuoteMode.NON_NUMERIC)
+            )) {
+                final Locale locale = Locale.forLanguageTag(language);
 
-	@Autowired
-	private ScheduleIcalExporter scheduleIcalExporter;
+                for (final Submission submission : submissions) {
+                    printer.printRecords(submission.getCsvRecords(locale, zoneId));
+                }
+            }
+        }
 
-	public Writer exportSubmissionsToCsv(final String marathonId, final String zoneId, final String language)
-			throws IOException {
-		final List<Submission> submissions = this.submissionService.findByMarathon(marathonId);
+        return out;
+    }
 
-		final StringWriter out = new StringWriter();
-		if (!submissions.isEmpty()) {
-			try (final CSVPrinter printer = new CSVPrinter(out,
-					CSVFormat.RFC4180.withHeader(submissions.get(0).getCsvHeaders())
-					                 .withQuoteMode(QuoteMode.NON_NUMERIC))) {
-				final Locale locale = Locale.forLanguageTag(language);
-				for (final Submission submission : submissions) {
-					printer.printRecords(submission.getCsvRecords(locale, zoneId));
-				}
-			}
-		}
+    public Writer exportScheduleToCsv(final String marathonId, final String zoneId, final String locale)
+        throws IOException {
+        return this.scheduleCsvExporter.export(marathonId, zoneId, locale);
+    }
 
-		return out;
-	}
+    public Writer exportScheduleToJson(final String marathonId, final String zoneId, final String locale)
+        throws IOException, NotFoundException {
+        return this.scheduleJsonExporter.export(marathonId, zoneId, locale);
+    }
 
-	public Writer exportScheduleToCsv(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
-		return this.scheduleCsvExporter.export(marathonId, zoneId, locale);
-	}
+    public Writer exportScheduleToIcal(final String marathonId, final String zoneId, final String locale)
+        throws IOException {
+        return this.scheduleIcalExporter.export(marathonId, zoneId, locale);
+    }
 
-	public Writer exportScheduleToJson(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
-		return this.scheduleJsonExporter.export(marathonId, zoneId, locale);
-	}
-
-	public Writer exportScheduleToIcal(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
-		return this.scheduleIcalExporter.export(marathonId, zoneId, locale);
-	}
-
-	public Writer exportDonationsToCsv(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
-		return this.donationsCsvExporter.export(marathonId, zoneId, locale);
-	}
-
+    public Writer exportDonationsToCsv(final String marathonId, final String zoneId, final String locale)
+        throws IOException {
+        return this.donationsCsvExporter.export(marathonId, zoneId, locale);
+    }
 }
