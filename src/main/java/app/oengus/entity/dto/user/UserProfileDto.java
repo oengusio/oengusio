@@ -5,6 +5,8 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -13,21 +15,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
+@ApiModel(description = "Represents a user's profile")
 public class UserProfileDto {
 
+    @ApiModelProperty(value = "The id of this user")
     private int id;
+    @ApiModelProperty(required = true, value = "The primary username of this user")
     private String username;
+    @Nullable
+    @ApiModelProperty(value = "The japanese username of this user")
     private String usernameJapanese;
+    @ApiModelProperty(value = "Whether this user is enabled")
     private boolean enabled;
+    @ApiModelProperty(value = "The social connections that this user has added to their profile")
     private List<SocialAccount> connections;
+    @ApiModelProperty(value = "The history of marathons that this user has participated in")
     private List<UserHistoryDto> history;
+    @ApiModelProperty(value = "The marathons that this user is a moderator in")
     private List<MarathonBasicInfoDto> moderatedMarathons;
+    @ApiModelProperty(hidden = true, value = "The volunteering history for this user")
     private List<UserApplicationHistoryDto> volunteeringHistory;
     @Nullable
-    private String pronouns;
+    @ApiModelProperty(value = "The pronouns that this user has set")
+    private String pronouns; // TODO: make array
     @Nullable
-    private String languagesSpoken;
+    @ApiModelProperty(value = "The languages that this user speaks")
+    private String languagesSpoken; // TODO: make array
+    @ApiModelProperty(value = "True if this user is banned on Oengus")
     private boolean banned;
+    @Nullable
+    @ApiModelProperty(value = "The country of origin that this user has set")
     private String country;
 
     public UserProfileDto() {
@@ -52,11 +69,12 @@ public class UserProfileDto {
         this.username = username;
     }
 
+    @Nullable
     public String getUsernameJapanese() {
         return this.usernameJapanese;
     }
 
-    public void setUsernameJapanese(final String usernameJapanese) {
+    public void setUsernameJapanese(@Nullable final String usernameJapanese) {
         this.usernameJapanese = usernameJapanese;
     }
 
@@ -130,11 +148,12 @@ public class UserProfileDto {
         this.banned = banned;
     }
 
+    @Nullable
     public String getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(@Nullable String country) {
         this.country = country;
     }
 

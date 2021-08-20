@@ -5,6 +5,7 @@ import app.oengus.entity.model.ScheduleLine;
 import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -21,17 +22,29 @@ public class ScheduleLineDto {
     private static final List<String> DEFAULT_HEADERS =
         List.of("time", "runners", "game", "category", "type", "console", "estimate", "setup_time", "custom_data");
 
+    @ApiModelProperty(value = "The id of this schedule line")
     private int id;
+    @ApiModelProperty(value = "The name of the game")
     private String gameName;
+    @ApiModelProperty(value = "The console that the game is running on")
     private String console;
+    @ApiModelProperty(value = "True if the console is emulated")
     private boolean emulated;
+    @ApiModelProperty(value = "The display ratio of the game")
     private String ratio;
+    @ApiModelProperty(value = "The name of the category that is being ran")
     private String categoryName;
+    @ApiModelProperty(value = "The estimate of the run")
     private Duration estimate;
+    @ApiModelProperty(value = "The setup time assigned for this run")
     private Duration setupTime;
+    @ApiModelProperty(value = "True if this line is a setup block")
     private boolean setupBlock;
+    @ApiModelProperty(value = "True if this is a custom run (idk what that means)")
     private boolean customRun;
+    @ApiModelProperty(value = "The position of this run in the schedule")
     private int position;
+    @ApiModelProperty(value = "The type of run")
     private RunType type;
     private List<RunnerDto> runners;
     private String setupBlockText;
