@@ -58,6 +58,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return marathon.getEndDate().plusHours(1).isBefore(ZonedDateTime.now());
     }
 
+    public boolean canHaveTeams() {
+        return false;
+    }
+
     public boolean canUpdateTeam(final int teamId) throws NotFoundException {
         final User user = this.getUser();
 
