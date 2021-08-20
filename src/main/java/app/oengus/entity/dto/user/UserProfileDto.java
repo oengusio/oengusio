@@ -3,6 +3,9 @@ package app.oengus.entity.dto.user;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.model.SocialAccount;
+import app.oengus.entity.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -144,6 +147,7 @@ public class UserProfileDto {
     }
 
     ///// deprecated properties
+    @Deprecated
     public String getTwitterName() {
         return this.getConnections().stream()
             .filter(
@@ -154,6 +158,7 @@ public class UserProfileDto {
             .orElse("");
     }
 
+    @Deprecated
     public String getDiscordName() {
         return this.getConnections().stream()
             .filter(
@@ -164,6 +169,7 @@ public class UserProfileDto {
             .orElse("");
     }
 
+    @Deprecated
     public String getTwitchName() {
         return this.getConnections().stream()
             .filter(
@@ -174,6 +180,7 @@ public class UserProfileDto {
             .orElse("");
     }
 
+    @Deprecated
     public String getSpeedruncomName() {
         return this.getConnections().stream()
             .filter(
@@ -182,5 +189,18 @@ public class UserProfileDto {
             .map(SocialAccount::getUsername)
             .findFirst()
             .orElse("");
+    }
+
+    @JsonIgnore
+    public String getUsername(final String locale) {
+        if ("ja".equals(locale) && StringUtils.isNotEmpty(this.usernameJapanese)) {
+            return this.usernameJapanese;
+        }
+
+        return this.username;
+    }
+
+    public static UserProfileDto fromModel(final User model) {
+        return null;
     }
 }
