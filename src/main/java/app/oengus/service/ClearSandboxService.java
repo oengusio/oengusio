@@ -37,19 +37,24 @@ public class ClearSandboxService {
     }
 
     @Scheduled(cron = "@weekly")
+//    @Scheduled(cron = "* * * * * *")
     public void purgeEntries() {
         LOG.info("Deleting marathons");
+
+        // we need to fetch marathons before deling because stupid applications
+        final var marathons = this.marathonRepository.findAll();
 
         this.incentiveRepository.deleteAll();
         this.donationRepository.deleteAll();
 
-        this.marathonRepository.findAll().forEach((marathon) -> {
+        for (final var marathon : marathons) {
+            var marathonId = marathon.getId();
             try {
-                this.marathonService.delete(marathon.getId());
+                this.marathonService.delete(marathonId);
             } catch (NotFoundException e) {
-                LOG.error("Failed to delete marathon " + marathon.getId(), e);
+                LOG.error("Failed to delete marathon " + marathonId, e);
             }
-        });
+        }
 
         LOG.info("Deleting users");
 
