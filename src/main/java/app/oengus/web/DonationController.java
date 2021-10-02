@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,7 @@ public class DonationController {
                                              @RequestParam("page") final int page,
                                              @RequestParam("size") final int size) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.donationService.findForMarathon(marathonId, page, size));
     }
 
@@ -52,9 +51,9 @@ public class DonationController {
     @JsonView(Views.Public.class)
     @ApiOperation(value = "Get the donation stats for a marathon, you probably want this one",
         response = DonationStatsDto.class)
-    public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) {
+    public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) throws NotFoundException {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.donationService.getStats(marathonId));
     }
 

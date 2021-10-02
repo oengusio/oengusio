@@ -3,6 +3,7 @@ package app.oengus.service.repository;
 import app.oengus.dao.DonationRepository;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.Marathon;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,34 +36,40 @@ public class DonationRepositoryService {
 		return this.donationRepository.findByFunctionalId(functionalId);
 	}
 
-	public BigDecimal findTotalAmountByMarathon(final String marathonId) {
+	public BigDecimal findTotalAmountByMarathon(final String marathonId) throws NotFoundException {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findTotalAmountByMarathon(marathon);
-		if (result == null) {
-			result = BigDecimal.ZERO;
-		}
-		return result;
+
+        if (result == null) {
+            throw new NotFoundException("Marathon not found");
+        }
+
+        return result;
 	}
 
-	public BigDecimal findAverageAmountByMarathon(final String marathonId) {
+	public BigDecimal findAverageAmountByMarathon(final String marathonId) throws NotFoundException {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findAverageAmountByMarathon(marathon);
+
 		if (result == null) {
-			result = BigDecimal.ZERO;
+			throw new NotFoundException("Marathon not found");
 		}
+
 		return result;
 	}
 
-	public BigDecimal findMaxAmountByMarathon(final String marathonId) {
+	public BigDecimal findMaxAmountByMarathon(final String marathonId) throws NotFoundException {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findMaxAmountByMarathon(marathon);
-		if (result == null) {
-			result = BigDecimal.ZERO;
-		}
-		return result;
+
+        if (result == null) {
+            throw new NotFoundException("Marathon not found");
+        }
+
+        return result;
 	}
 
 	public int countByMarathon(final String marathonId) {

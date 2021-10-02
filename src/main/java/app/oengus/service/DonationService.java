@@ -192,7 +192,7 @@ public class DonationService {
         this.donationRepositoryService.delete(orderId);
     }
 
-    public DonationStatsDto getStats(final String marathonId) {
+    public DonationStatsDto getStats(final String marathonId) throws NotFoundException {
         final DonationStatsDto donationStatsDto = new DonationStatsDto();
         donationStatsDto.setAverage(this.donationRepositoryService.findAverageAmountByMarathon(marathonId));
         donationStatsDto.setMax(this.donationRepositoryService.findMaxAmountByMarathon(marathonId));

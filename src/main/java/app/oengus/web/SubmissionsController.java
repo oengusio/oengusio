@@ -79,7 +79,7 @@ public class SubmissionsController {
         responseContainer = "List")
     public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.submissionService.findByMarathon(marathonId));
     }
 
@@ -132,7 +132,7 @@ public class SubmissionsController {
     @ApiIgnore
     public ResponseEntity<?> getAvailabilities(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.submissionService.getRunnersAvailabilitiesForMarathon(marathonId));
     }
 
@@ -141,7 +141,7 @@ public class SubmissionsController {
     @ApiIgnore
     public ResponseEntity<?> getAnswers(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.submissionService.findCustomAnswersByMarathon(marathonId));
     }
 

@@ -1,7 +1,6 @@
 package app.oengus.web;
 
 import app.oengus.entity.dto.SelectionDto;
-import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.Status;
 import app.oengus.service.SelectionService;
 import app.oengus.spring.model.Views;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -32,12 +30,11 @@ public class SelectionController {
     @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId) || isSelectionDone(#marathonId))")
     @JsonView(Views.Public.class)
     @ApiOperation(value = "Get all selection statuses a marathon",
-        response = Schedule.class)
+        response = SelectionDto.class)
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(name = "status", required = false) final List<Status> statuses) {
         return ResponseEntity.ok()
-            .cacheControl(
-                CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.selectionService.findByMarathon(marathonId, statuses));
     }
 

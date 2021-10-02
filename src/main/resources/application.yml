@@ -56,8 +56,12 @@ server:
             enabled: true
 
 spring:
+    # TODO: read into this, cache can do a lot
+    # https://www.ehcache.org/documentation/3.3/107.html
+    # https://github.com/gibsong/ehcache-jsr107-spring/tree/master/src/main/resources
 #    cache:
-#        type: none
+#        jcache:
+#            config:
     jpa:
         hibernate:
             ddl-auto: none
@@ -73,7 +77,7 @@ spring:
                         missing_cache_strategy: create
                 cache:
                     # disable database caching
-                    use_second_level_cache: ${USE_SECOND_LEVEL_CACHE:true}
+                    use_second_level_cache: ${USE_SECOND_LEVEL_CACHE:false}
                     use_query_cache: ${USE_QUERY_CACHE:false}
                     provider: org.ehcache.jsr107.EhcacheCachingProvider
                     region:
@@ -117,3 +121,5 @@ log4j:
     logger:
         org:
             hibernate: info
+
+debug: false
