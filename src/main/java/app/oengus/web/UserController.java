@@ -90,11 +90,11 @@ public class UserController {
     @PermitAll
     @ApiOperation(value = "Check if username exists")
     public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
-        final Map<String, Boolean> validationErrors = new HashMap<>();
-        if (this.userService.exists(name)) {
-            validationErrors.put("exists", true);
-        }
-        return ResponseEntity.ok(validationErrors);
+        final Map<String, Boolean> response = new HashMap<>();
+
+        response.put("exists", this.userService.exists(name));
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{name}/search")
