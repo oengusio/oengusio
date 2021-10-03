@@ -64,13 +64,9 @@ dependencies {
 
     // HIBERNATE
     implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.11.1")
-    // implementation(group = "org.hibernate", name = "hibernate-ehcache", version = "5.3.9.Final")
     implementation(group = "org.hibernate", name = "hibernate-core", version = "5.4.31.Final")
     implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.4.31.Final")
     implementation(group = "org.ehcache", name = "ehcache", version = "3.8.1")
-
-    // GUAVA (do we need this?)
-    // implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
 
     // SWAGGER
     implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")
