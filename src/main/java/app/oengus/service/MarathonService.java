@@ -15,6 +15,7 @@ import javassist.NotFoundException;
 import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ public class MarathonService {
                            DonationRepositoryService donationRepositoryService,
                            DonationExtraDataRepositoryService donationExtraDataRepositoryService, EntityManager entityManager,
                            EventSchedulerService eventSchedulerService, AbstractTwitterService twitterService,
-                           SelectionService selectionService, OengusWebhookService webhookService) {
+                           SelectionService selectionService, @Lazy OengusWebhookService webhookService) {
         this.submissionService = submissionService;
         this.marathonRepositoryService = marathonRepositoryService;
         this.scheduleService = scheduleService;
