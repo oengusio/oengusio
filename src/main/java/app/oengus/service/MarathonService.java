@@ -15,7 +15,6 @@ import javassist.NotFoundException;
 import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,38 +33,36 @@ import java.util.Map;
 @Service
 public class MarathonService {
 
-    @Autowired
-    private MarathonRepositoryService marathonRepositoryService;
+    private final MarathonRepositoryService marathonRepositoryService;
+    private final SubmissionService submissionService;
+    private final ScheduleService scheduleService;
+    private final IncentiveService incentiveService;
+    private final DonationRepositoryService donationRepositoryService;
+    private final DonationExtraDataRepositoryService donationExtraDataRepositoryService;
+    private final EntityManager entityManager;
+    private final EventSchedulerService eventSchedulerService;
+    private final AbstractTwitterService twitterService;
+    private final SelectionService selectionService;
+    private final OengusWebhookService webhookService;
 
-    @Autowired
-    private SubmissionService submissionService;
-
-    @Autowired
-    private ScheduleService scheduleService;
-
-    @Autowired
-    private IncentiveService incentiveService;
-
-    @Autowired
-    private DonationRepositoryService donationRepositoryService;
-
-    @Autowired
-    private DonationExtraDataRepositoryService donationExtraDataRepositoryService;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
-    private EventSchedulerService eventSchedulerService;
-
-    @Autowired
-    private AbstractTwitterService twitterService;
-
-    @Autowired
-    private SelectionService selectionService;
-
-    @Autowired
-    private OengusWebhookService webhookService;
+    public MarathonService(SubmissionService submissionService, MarathonRepositoryService marathonRepositoryService,
+                           ScheduleService scheduleService, IncentiveService incentiveService,
+                           DonationRepositoryService donationRepositoryService,
+                           DonationExtraDataRepositoryService donationExtraDataRepositoryService, EntityManager entityManager,
+                           EventSchedulerService eventSchedulerService, AbstractTwitterService twitterService,
+                           SelectionService selectionService, OengusWebhookService webhookService) {
+        this.submissionService = submissionService;
+        this.marathonRepositoryService = marathonRepositoryService;
+        this.scheduleService = scheduleService;
+        this.incentiveService = incentiveService;
+        this.donationRepositoryService = donationRepositoryService;
+        this.donationExtraDataRepositoryService = donationExtraDataRepositoryService;
+        this.entityManager = entityManager;
+        this.eventSchedulerService = eventSchedulerService;
+        this.twitterService = twitterService;
+        this.selectionService = selectionService;
+        this.webhookService = webhookService;
+    }
 
     @PostConstruct
     public void initScheduledEvents() {
@@ -119,7 +116,7 @@ public class MarathonService {
         Hibernate.initialize(marathon.getQuestions());
         this.entityManager.detach(marathon);
 
-        final boolean openedSubmissions = !marathon.isSubmitsOpen() && patch.isSubmitsOpen();
+        // final boolean openedSubmissions = !marathon.isSubmitsOpen() && patch.isSubmitsOpen();
         final boolean markedSelectionDone = !marathon.isSelectionDone() && patch.isSelectionDone();
 
         BeanHelper.copyProperties(patch, marathon, "creator");
@@ -128,7 +125,7 @@ public class MarathonService {
         marathon.setEndDate(marathon.getEndDate().withSecond(0));
 
         if (markedSelectionDone) {
-            this.twitterService.sendSelectionDoneTweet(marathon);
+            // this.twitterService.sendSelectionDoneTweet(marathon);
             // send accepted submissions
             if (marathon.isAnnounceAcceptedSubmissions() && marathon.hasWebhook()) {
                 try {
@@ -145,19 +142,20 @@ public class MarathonService {
         if (marathon.isScheduleDone()) {
             final Schedule schedule = this.scheduleService.findByMarathon(marathon.getId());
             this.scheduleService.computeEndDate(marathon, schedule);
-            this.twitterService.sendScheduleDoneTweet(marathon);
             this.selectionService.rejectTodos(marathon);
             marathon.setSelectionDone(true);
             marathon.setCanEditSubmissions(false);
+
+            // this.twitterService.sendScheduleDoneTweet(marathon);
         }
 
         if (marathon.isSubmitsOpen()) {
             marathon.setCanEditSubmissions(true);
         }
 
-        if (openedSubmissions) {
+        /*if (openedSubmissions) {
             this.twitterService.sendSubmissionsOpenTweet(marathon);
-        }
+        }*/
 
         if (marathon.getSubmissionsStartDate() != null && marathon.getSubmissionsEndDate() != null) {
             marathon.setSubmissionsStartDate(marathon.getSubmissionsStartDate().withSecond(0));

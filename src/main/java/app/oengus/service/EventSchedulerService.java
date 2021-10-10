@@ -35,7 +35,7 @@ public class EventSchedulerService {
 			this.scheduledEvents.put(marathon.getId() + "-start",
 					this.taskScheduler.schedule(() -> {
 						this.marathonRepositoryService.openSubmissions(marathon);
-						this.twitterService.sendSubmissionsOpenTweet(marathon);
+						// this.twitterService.sendSubmissionsOpenTweet(marathon);
 					}, Instant.from(marathon.getSubmissionsStartDate())));
 		}
 		if (marathon.getSubmissionsEndDate().isAfter(ZonedDateTime.now())) {
