@@ -76,14 +76,19 @@ public class MarathonController {
         return ResponseEntity.ok(validationErrors);
     }
 
+    @PermitAll
     @GetMapping("/{id}")
     @JsonView(Views.Public.class)
-    @PermitAll
-    @ApiOperation(value = "Get information about a marathon",
-        response = MarathonDto.class)
+    @ApiOperation(
+        value = "Get information about a marathon",
+        response = MarathonDto.class
+    )
     public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) throws NotFoundException {
         final MarathonDto marathon = this.marathonService.findOne(id);
-        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathon);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(marathon);
 
     }
 

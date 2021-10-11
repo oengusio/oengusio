@@ -102,14 +102,19 @@ public class MarathonService {
     public MarathonDto findOne(final String id) throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(id);
         final MarathonDto marathonDto = new MarathonDto();
+
         BeanHelper.copyProperties(marathon, marathonDto);
+
         if (marathon.isHasDonations()) {
             marathonDto.setDonationsTotal(this.donationRepositoryService.findTotalAmountByMarathon(id));
         }
+
         if (PrincipalHelper.getCurrentUser() != null) {
             marathonDto.setHasSubmitted(
-                this.submissionService.userHasSubmitted(marathon, PrincipalHelper.getCurrentUser()));
+                this.submissionService.userHasSubmitted(marathon, PrincipalHelper.getCurrentUser())
+            );
         }
+
         return marathonDto;
     }
 
