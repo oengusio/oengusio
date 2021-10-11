@@ -16,7 +16,6 @@ import com.paypal.orders.*;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -192,7 +191,7 @@ public class DonationService {
         this.donationRepositoryService.delete(orderId);
     }
 
-    public DonationStatsDto getStats(final String marathonId) throws NotFoundException {
+    public DonationStatsDto getStats(final String marathonId) {
         final DonationStatsDto donationStatsDto = new DonationStatsDto();
         donationStatsDto.setAverage(this.donationRepositoryService.findAverageAmountByMarathon(marathonId));
         donationStatsDto.setMax(this.donationRepositoryService.findMaxAmountByMarathon(marathonId));

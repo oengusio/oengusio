@@ -35,7 +35,7 @@ public class Marathon {
     @Pattern(regexp = "^[\\w\\- ]{4,40}$")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonView(Views.Public.class)
     @JoinColumn(name = "creator_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

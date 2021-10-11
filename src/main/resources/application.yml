@@ -65,7 +65,7 @@ spring:
     jpa:
         hibernate:
             ddl-auto: none
-        show-sql: true
+        show-sql: false
         properties:
             javax:
                 persistence:

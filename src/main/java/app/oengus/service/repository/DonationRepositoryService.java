@@ -36,37 +36,37 @@ public class DonationRepositoryService {
 		return this.donationRepository.findByFunctionalId(functionalId);
 	}
 
-	public BigDecimal findTotalAmountByMarathon(final String marathonId) throws NotFoundException {
+	public BigDecimal findTotalAmountByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findTotalAmountByMarathon(marathon);
 
         if (result == null) {
-            throw new NotFoundException("Marathon not found");
+            return BigDecimal.ZERO;
         }
 
         return result;
 	}
 
-	public BigDecimal findAverageAmountByMarathon(final String marathonId) throws NotFoundException {
+	public BigDecimal findAverageAmountByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findAverageAmountByMarathon(marathon);
 
 		if (result == null) {
-			throw new NotFoundException("Marathon not found");
+			return BigDecimal.ZERO;
 		}
 
 		return result;
 	}
 
-	public BigDecimal findMaxAmountByMarathon(final String marathonId) throws NotFoundException {
+	public BigDecimal findMaxAmountByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findMaxAmountByMarathon(marathon);
 
         if (result == null) {
-            throw new NotFoundException("Marathon not found");
+            return BigDecimal.ZERO;
         }
 
         return result;
