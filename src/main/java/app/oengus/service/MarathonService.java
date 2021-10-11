@@ -46,12 +46,14 @@ public class MarathonService {
     private final SelectionService selectionService;
     private final OengusWebhookService webhookService;
 
-    public MarathonService(SubmissionService submissionService, MarathonRepositoryService marathonRepositoryService,
-                           ScheduleService scheduleService, IncentiveService incentiveService,
-                           DonationRepositoryService donationRepositoryService,
-                           DonationExtraDataRepositoryService donationExtraDataRepositoryService, EntityManager entityManager,
-                           EventSchedulerService eventSchedulerService, AbstractTwitterService twitterService,
-                           SelectionService selectionService, @Lazy OengusWebhookService webhookService) {
+    public MarathonService(
+        SubmissionService submissionService, MarathonRepositoryService marathonRepositoryService,
+        ScheduleService scheduleService, IncentiveService incentiveService,
+        DonationRepositoryService donationRepositoryService,
+        DonationExtraDataRepositoryService donationExtraDataRepositoryService, EntityManager entityManager,
+        EventSchedulerService eventSchedulerService, AbstractTwitterService twitterService,
+        SelectionService selectionService, @Lazy OengusWebhookService webhookService
+    ) {
         this.submissionService = submissionService;
         this.marathonRepositoryService = marathonRepositoryService;
         this.scheduleService = scheduleService;

@@ -66,7 +66,7 @@ dependencies {
     implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.11.1")
     implementation(group = "org.hibernate", name = "hibernate-core", version = "5.4.31.Final")
     implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.4.31.Final")
-    implementation(group = "org.ehcache", name = "ehcache", version = "3.8.1")
+    runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
     // SWAGGER
     implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")

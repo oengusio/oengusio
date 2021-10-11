@@ -19,7 +19,6 @@ import javassist.NotFoundException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,21 +62,21 @@ public class UserController {
         this.patreonStatusRepositoryService = patreonStatusRepositoryService;
     }
 
-    @PostMapping("/login")
     @PermitAll
     @ApiIgnore
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
-            throw new OengusBusinessException("ORIGIN_DISALLOWED");
+            throw new OengusBusinessException("ORIGIN_DISALLOWED " + host);
         }
 
         return ResponseEntity.ok(this.userService.login(host, request));
     }
 
+    @ApiIgnore
     @PostMapping("/sync")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
-    @ApiIgnore
     public ResponseEntity<?> sync(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
             throw new OengusBusinessException("ORIGIN_DISALLOWED");

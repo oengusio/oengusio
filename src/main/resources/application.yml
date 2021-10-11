@@ -70,7 +70,9 @@ spring:
             javax:
                 persistence:
                     sharedCache:
-                        mode: ENABLE_SELECTIVE
+                        # javax.persistence.SharedCacheMode
+                        mode: ${SHARED_CACHE_MODE:NONE}
+#                        mode: ENABLE_SELECTIVE
             hibernate:
                 javax:
                     cache:
