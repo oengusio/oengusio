@@ -15,6 +15,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -29,29 +30,30 @@ import static app.oengus.service.CategoryService.MULTIPLAYER_RUN_TYPES;
 @Service
 public class SubmissionService {
 
-    @Autowired
-    private SubmissionRepositoryService submissionRepositoryService;
+    private final SubmissionRepositoryService submissionRepositoryService;
+    private final MarathonRepositoryService marathonRepositoryService;
+    private final SelectionRepositoryService selectionRepositoryService;
+    private final UserRepositoryService userRepositoryService;
+    private final CategoryRepository categoryRepository;
+    private final GameRepositoryService gameRepositoryService;
+    private final OengusWebhookService webhookService;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private MarathonRepositoryService marathonRepositoryService;
-
-    @Autowired
-    private SelectionRepositoryService selectionRepositoryService;
-
-    @Autowired
-    private UserRepositoryService userRepositoryService;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private GameRepositoryService gameRepositoryService;
-
-    @Autowired
-    private OengusWebhookService webhookService;
-
-    @Autowired
-    private EntityManager entityManager;
+    public SubmissionService(
+        SubmissionRepositoryService submissionRepositoryService, MarathonRepositoryService marathonRepositoryService,
+        SelectionRepositoryService selectionRepositoryService, UserRepositoryService userRepositoryService,
+        CategoryRepository categoryRepository, GameRepositoryService gameRepositoryService,
+        @Lazy OengusWebhookService webhookService, EntityManager entityManager
+    ) {
+        this.submissionRepositoryService = submissionRepositoryService;
+        this.marathonRepositoryService = marathonRepositoryService;
+        this.selectionRepositoryService = selectionRepositoryService;
+        this.userRepositoryService = userRepositoryService;
+        this.categoryRepository = categoryRepository;
+        this.gameRepositoryService = gameRepositoryService;
+        this.webhookService = webhookService;
+        this.entityManager = entityManager;
+    }
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {

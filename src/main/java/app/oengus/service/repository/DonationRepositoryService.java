@@ -3,6 +3,7 @@ package app.oengus.service.repository;
 import app.oengus.dao.DonationRepository;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.Marathon;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,19 +40,23 @@ public class DonationRepositoryService {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findTotalAmountByMarathon(marathon);
-		if (result == null) {
-			result = BigDecimal.ZERO;
-		}
-		return result;
+
+        if (result == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return result;
 	}
 
 	public BigDecimal findAverageAmountByMarathon(final String marathonId) {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findAverageAmountByMarathon(marathon);
+
 		if (result == null) {
-			result = BigDecimal.ZERO;
+			return BigDecimal.ZERO;
 		}
+
 		return result;
 	}
 
@@ -59,10 +64,12 @@ public class DonationRepositoryService {
 		final Marathon marathon = new Marathon();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findMaxAmountByMarathon(marathon);
-		if (result == null) {
-			result = BigDecimal.ZERO;
-		}
-		return result;
+
+        if (result == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return result;
 	}
 
 	public int countByMarathon(final String marathonId) {

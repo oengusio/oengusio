@@ -53,7 +53,7 @@ public class ScheduleController {
         }
 
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.noCache())
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }
 

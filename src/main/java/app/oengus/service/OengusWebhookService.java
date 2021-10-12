@@ -38,22 +38,14 @@ import static app.oengus.helper.WebhookHelper.createParameters;
 
 @Service
 public class OengusWebhookService {
-
     private static final Logger LOG = LoggerFactory.getLogger(OengusWebhookService.class);
 
     private final OkHttpClient client = new OkHttpClient();
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Value("${oengus.shortUrl}")
-    private String shortUrl;
-
-    @Autowired
-    private DiscordApiService jda;
-
-    @Autowired
-    private MarathonService marathonService;
+    private final String shortUrl;
+    private final ObjectMapper mapper;
+    private final DiscordApiService jda;
+    private final MarathonService marathonService;
 
     // NOTE: this can only do two at the same time
     private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
@@ -61,6 +53,16 @@ public class OengusWebhookService {
         t.setDaemon(true);
         return t;
     });
+
+    public OengusWebhookService(
+        @Value("${oengus.shortUrl}") String shortUrl,
+        ObjectMapper mapper, DiscordApiService jda, MarathonService marathonService
+    ) {
+        this.shortUrl = shortUrl;
+        this.mapper = mapper;
+        this.jda = jda;
+        this.marathonService = marathonService;
+    }
 
     /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {

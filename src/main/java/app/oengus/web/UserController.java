@@ -62,21 +62,21 @@ public class UserController {
         this.patreonStatusRepositoryService = patreonStatusRepositoryService;
     }
 
-    @PostMapping("/login")
     @PermitAll
     @ApiIgnore
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
-            throw new OengusBusinessException("ORIGIN_DISALLOWED");
+            throw new OengusBusinessException("ORIGIN_DISALLOWED " + host);
         }
 
         return ResponseEntity.ok(this.userService.login(host, request));
     }
 
+    @ApiIgnore
     @PostMapping("/sync")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
-    @ApiIgnore
     public ResponseEntity<?> sync(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
             throw new OengusBusinessException("ORIGIN_DISALLOWED");
@@ -89,11 +89,11 @@ public class UserController {
     @PermitAll
     @ApiOperation(value = "Check if username exists")
     public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
-        final Map<String, Boolean> validationErrors = new HashMap<>();
-        if (this.userService.exists(name)) {
-            validationErrors.put("exists", true);
-        }
-        return ResponseEntity.ok(validationErrors);
+        final Map<String, Boolean> response = new HashMap<>();
+
+        response.put("exists", this.userService.exists(name));
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{name}/search")
