@@ -79,28 +79,28 @@ public class ScheduleController {
                                      final HttpServletResponse response) throws IOException, NotFoundException {
         switch (format.toLowerCase()) {
             case "csv" -> {
+                final String export = this.exportService.exportScheduleToCsv(marathonId, zoneId, locale).toString();
                 response.setContentType("text/csv");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.csv\"");
-                response.getWriter()
-                    .write(this.exportService.exportScheduleToCsv(marathonId, zoneId, locale).toString());
+                response.getWriter().write(export);
             }
             case "json" -> {
+                final String export = this.exportService.exportScheduleToJson(marathonId, zoneId, locale).toString();
                 response.setContentType("application/json");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.json\"");
-                response.getWriter()
-                    .write(this.exportService.exportScheduleToJson(marathonId, zoneId, locale).toString());
+                response.getWriter().write(export);
             }
             case "ics" -> {
+                final String export = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale).toString();
                 response.setContentType("text/calendar");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.ics\"");
-                response.getWriter()
-                    .write(this.exportService.exportScheduleToIcal(marathonId, zoneId, locale).toString());
+                response.getWriter().write(export);
             }
             default -> throw new NotFoundException("Format not found");
         }
