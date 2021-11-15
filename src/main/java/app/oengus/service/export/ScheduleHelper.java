@@ -9,6 +9,7 @@ import app.oengus.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,15 @@ public class ScheduleHelper {
 	@Autowired
 	private ScheduleService scheduleService;
 
+    @Nullable
 	public ScheduleDto getSchedule(final String marathonId, final String zoneId) {
 		ScheduleDto schedule = new ScheduleDto();
 		final Schedule found = this.scheduleService.findByMarathon(marathonId);
+
+        if (found == null) {
+            return null;
+        }
+
 		BeanHelper.copyProperties(found, schedule, "lines");
 		final List<ScheduleLineDto> scheduleLineDtos = new ArrayList<>();
 		for (int i = 0; i < found.getLines().size(); i++) {

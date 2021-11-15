@@ -2,6 +2,7 @@ package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
+import javassist.NotFoundException;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
@@ -29,8 +30,13 @@ public class ScheduleIcalExporter implements Exporter {
 	UidGenerator ug = new RandomUidGenerator();
 
 	@Override
-	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
+	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
 		final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
+
+        if (scheduleDto == null) {
+            throw new NotFoundException("Schedule not found");
+        }
+
 		final ResourceBundle resourceBundle =
 				ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
 

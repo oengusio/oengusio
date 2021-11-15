@@ -1,10 +1,12 @@
 package app.oengus.service.export;
 
+import javassist.NotFoundException;
+
 import java.io.IOException;
 import java.io.Writer;
 
 public interface Exporter {
 
-	Writer export(String marathonId, String zoneId, String locale) throws IOException;
+	Writer export(String marathonId, String zoneId, String locale) throws IOException, NotFoundException;
 
 }

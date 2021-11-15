@@ -5,6 +5,7 @@ import app.oengus.service.export.DonationsCsvExporter;
 import app.oengus.service.export.ScheduleCsvExporter;
 import app.oengus.service.export.ScheduleIcalExporter;
 import app.oengus.service.export.ScheduleJsonExporter;
+import javassist.NotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -55,17 +56,17 @@ public class ExportService {
 	}
 
 	public Writer exportScheduleToCsv(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
+        throws IOException, NotFoundException {
 		return this.scheduleCsvExporter.export(marathonId, zoneId, locale);
 	}
 
 	public Writer exportScheduleToJson(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
+        throws IOException, NotFoundException {
 		return this.scheduleJsonExporter.export(marathonId, zoneId, locale);
 	}
 
 	public Writer exportScheduleToIcal(final String marathonId, final String zoneId, final String locale)
-			throws IOException {
+        throws IOException, NotFoundException {
 		return this.scheduleIcalExporter.export(marathonId, zoneId, locale);
 	}
 

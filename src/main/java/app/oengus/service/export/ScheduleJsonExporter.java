@@ -9,6 +9,7 @@ import app.oengus.entity.dto.horaro.HoraroSchedule;
 import app.oengus.exception.OengusBusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,8 +41,13 @@ public class ScheduleJsonExporter implements Exporter {
     }
 
     @Override
-    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
+    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
         final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
+
+        if (scheduleDto == null) {
+            throw new NotFoundException("Schedule not found");
+        }
+
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();

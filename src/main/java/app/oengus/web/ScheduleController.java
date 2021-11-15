@@ -76,34 +76,33 @@ public class ScheduleController {
                                      @RequestParam("format") final String format,
                                      @RequestParam("zoneId") final String zoneId,
                                      @RequestParam("locale") final String locale,
-                                     final HttpServletResponse response) throws IOException {
+                                     final HttpServletResponse response) throws IOException, NotFoundException {
         switch (format.toLowerCase()) {
-            case "csv":
+            case "csv" -> {
                 response.setContentType("text/csv");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.csv\"");
                 response.getWriter()
                     .write(this.exportService.exportScheduleToCsv(marathonId, zoneId, locale).toString());
-                break;
-            case "json":
-                response.setContentType("text/plain");
+            }
+            case "json" -> {
+                response.setContentType("application/json");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.json\"");
                 response.getWriter()
                     .write(this.exportService.exportScheduleToJson(marathonId, zoneId, locale).toString());
-                break;
-            case "ics":
+            }
+            case "ics" -> {
                 response.setContentType("text/calendar");
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + marathonId + "-schedule.ics\"");
                 response.getWriter()
                     .write(this.exportService.exportScheduleToIcal(marathonId, zoneId, locale).toString());
-                break;
-            default:
-                break;
+            }
+            default -> throw new NotFoundException("Format not found");
         }
 
     }
