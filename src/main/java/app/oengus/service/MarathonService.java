@@ -2,6 +2,7 @@ package app.oengus.service;
 
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
+import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.User;
@@ -79,6 +80,14 @@ public class MarathonService {
 
     public Marathon getById(String id) throws NotFoundException {
         return this.marathonRepositoryService.findById(id);
+    }
+
+    public MarathonStatsDto getStats(String id) throws NotFoundException {
+        final Marathon marathon = new Marathon();
+
+        marathon.setId(id);
+
+        return this.marathonRepositoryService.findStats(marathon);
     }
 
     public String getNameForCode(String code) {

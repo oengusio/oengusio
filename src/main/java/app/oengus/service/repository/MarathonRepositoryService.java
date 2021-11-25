@@ -1,6 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.MarathonRepository;
+import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
@@ -77,6 +78,12 @@ public class MarathonRepositoryService {
 	public List<Marathon> findFutureMarathonsWithScheduleDone() {
 		return this.marathonRepository.findFutureMarathonsWithScheduleDone();
 	}
+
+    public MarathonStatsDto findStats(final Marathon marathon) throws NotFoundException {
+        return this.marathonRepository.findStats(marathon)
+            .map(MarathonStatsDto::new)
+            .orElseThrow(() -> new NotFoundException("Marathon not found"));
+    }
 
     @Transactional
 	public void clearMarathon(final Marathon marathon) {

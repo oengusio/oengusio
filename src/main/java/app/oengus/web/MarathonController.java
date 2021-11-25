@@ -2,6 +2,7 @@ package app.oengus.web;
 
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
+import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
@@ -26,6 +27,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +90,26 @@ public class MarathonController {
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
+            .body(marathon);
+
+    }
+
+    @PermitAll
+    @GetMapping("/{id}/stats")
+    @JsonView(Views.Internal.class)
+    @ApiOperation(
+        value = "Get stats about a marathon",
+        response = MarathonStatsDto.class
+    )
+    public ResponseEntity<MarathonStatsDto> getStats(@PathVariable("id") final String id) throws NotFoundException {
+        if (!this.marathonService.exists(id)) {
+            throw new NotFoundException("Marathon not found");
+        }
+
+        final MarathonStatsDto marathon = this.marathonService.getStats(id);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(Duration.ofMinutes(3)).cachePublic())
             .body(marathon);
 
     }

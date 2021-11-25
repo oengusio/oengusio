@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.QueryHint;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface MarathonRepository extends JpaRepository<Marathon, String> {
@@ -90,5 +92,12 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
     @Modifying
     @Query("UPDATE Marathon m SET m.submitsOpen = false WHERE m = :marathon")
     void closeSubmissions(@Param("marathon") Marathon marathon);
+
+    @Query("SELECT COUNT(c.id) AS submissionCount," +
+        "COUNT(DISTINCT c.game.submission.user) AS runnerCount," +
+        "SUM(c.estimate) AS totalLength," +
+        "AVG(c.estimate) AS averageEstimate " +
+        "FROM Category c WHERE c.game.submission.marathon = :marathon")
+    Optional<Map<String, Object>> findStats(@Param("marathon") Marathon marathon);
 
 }
