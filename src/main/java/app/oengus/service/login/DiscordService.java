@@ -27,17 +27,18 @@ import java.util.Objects;
 @Service
 public class DiscordService {
 
-    @Autowired
-    private DiscordParams discordParams;
-
-    @Autowired
-    private DiscordApi discordApi;
-
-    @Autowired
-    private UserRepositoryService userRepositoryService;
+    private final DiscordParams discordParams;
+    private final DiscordApi discordApi;
+    private final UserRepositoryService userRepositoryService;
 
     @Value("${discord.botToken}")
     private String botToken;
+
+    public DiscordService(DiscordParams discordParams, DiscordApi discordApi, UserRepositoryService userRepositoryService) {
+        this.discordParams = discordParams;
+        this.discordApi = discordApi;
+        this.userRepositoryService = userRepositoryService;
+    }
 
     public User login(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, host);

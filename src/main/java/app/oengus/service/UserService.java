@@ -63,7 +63,7 @@ public class UserService {
         final String service = request.getService();
         final String code = request.getCode();
 
-        if ((code == null || code.isBlank()) && !service.contains("twitter")) {
+        if (code == null || code.isBlank()) {
             throw new LoginException("Missing code in request");
         }
 
@@ -75,10 +75,8 @@ public class UserService {
             case "twitch":
                 user = this.twitchService.login(code, host);
                 break;
-            case "twitterAuth":
-                return new Token(this.twitterLoginService.generateAuthUrlForLogin(host));
             case "twitter":
-                user = this.twitterLoginService.login(request.getOauthToken(), request.getOauthVerifier());
+                user = this.twitterLoginService.login(code, host);
                 break;
             default:
                 throw new LoginException("UNKNOWN_SERVICE");
@@ -95,15 +93,14 @@ public class UserService {
         final String service = request.getService();
         final String code = request.getCode();
 
-        if ((code == null || code.isBlank()) && !service.contains("twitter")) {
+        if (code == null || code.isBlank()) {
             throw new LoginException("Missing code in request");
         }
 
         return switch (service) {
             case "discord" -> this.discordService.sync(code, host);
             case "twitch" -> this.twitchService.sync(code, host);
-            case "twitterAuth" -> new Token(this.twitterLoginService.generateAuthUrlForSync(host));
-            case "twitter" -> this.twitterLoginService.sync(request.getOauthToken(), request.getOauthVerifier());
+            case "twitter" -> this.twitterLoginService.sync(code, host);
             case "patreon" -> this.checkPatreonSync(code);
             default -> throw new LoginException("UNKNOWN_SERVICE");
         };

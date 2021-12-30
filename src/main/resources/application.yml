@@ -18,9 +18,17 @@ discord:
     botToken: 'Bot ${DISCORD_BOT_TOKEN}'
 
 twitter:
-    loginCallback: '/login/twitter'
-    syncCallback: '/user/settings/sync/twitter'
     oauth:
+        # oauth2
+        clientId: ${TWITTER_OAUTH2_CLIENT_ID}
+        clientSecret: ${TWITTER_OAUTH2_CLIENT_SECRET}
+        redirectUri: '/login/twitter'
+        syncRedirectUri: '/user/settings/sync/twitter'
+        grantType: 'authorization_code'
+        scope:
+            - users.read
+            - tweet.read
+        # oauth 1.0a
         consumerKey: ${TWITTER_CONSUMER_KEY}
         consumerSecret: ${TWITTER_CONSUMER_SECRET}
         accessToken: ${TWITTER_ACCESS_TOKEN}

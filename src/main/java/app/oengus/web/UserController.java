@@ -42,10 +42,10 @@ import java.util.Map;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
-@CrossOrigin(maxAge = 3600)
-@RestController
-@RequestMapping("/users")
 @Api
+@RestController
+@CrossOrigin(maxAge = 3600)
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
