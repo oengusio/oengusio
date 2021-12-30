@@ -8,7 +8,7 @@ plugins {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.2")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.0")
     }
 }
 
@@ -57,7 +57,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.7")
     
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "2.1.1.RELEASE")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "2.2.10.RELEASE")
     
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.9.8")
@@ -88,6 +88,9 @@ dependencies {
 
     // COUNTRY SUPPORT
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.28")
+
+    // security and shit
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.1")
 }
 
 val wrapper: Wrapper by tasks
