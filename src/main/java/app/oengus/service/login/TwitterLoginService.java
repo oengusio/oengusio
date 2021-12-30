@@ -77,7 +77,7 @@ public class TwitterLoginService {
 
     public User login(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.twitterParams, code, host);
-        oauthParams.put("code_verifier", "challenge");
+        oauthParams.put("code_verifier", "speedrun");
 
         final AccessToken accessToken = this.twitterOauth.getAccessToken(
             "Basic " + Base64.getEncoder().encodeToString(
@@ -120,7 +120,7 @@ public class TwitterLoginService {
 
     public SyncDto sync(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitterParams, code, host);
-        oauthParams.put("code_verifier", "challenge");
+        oauthParams.put("code_verifier", "speedrun");
 
         final AccessToken accessToken = this.twitterOauth.getAccessToken(
             "Basic " + Base64.getEncoder().encodeToString(
