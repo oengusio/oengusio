@@ -2,13 +2,13 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "2.4.5"
+    id("org.springframework.boot") version "2.4.13"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.0")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.5")
     }
 }
 
@@ -26,6 +26,7 @@ application {
 
 repositories {
     mavenCentral()
+    jcenter()
 
     maven { url = uri("https://jitpack.io") }
 }
@@ -69,6 +70,7 @@ dependencies {
     runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
     // SWAGGER
+    // implementation(group = "io.springfox", name = "springfox-boot-starter", version = "3.0.0")
     implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")
 
     // iCal4J

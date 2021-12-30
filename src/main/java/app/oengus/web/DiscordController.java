@@ -8,7 +8,7 @@ import app.oengus.service.DiscordApiService;
 import app.oengus.service.MarathonService;
 import feign.FeignException;
 import javassist.NotFoundException;
-import liquibase.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
