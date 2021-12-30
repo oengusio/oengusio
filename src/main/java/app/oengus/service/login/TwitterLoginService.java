@@ -95,7 +95,7 @@ public class TwitterLoginService {
             user = new User();
             user.setRoles(List.of(Role.ROLE_USER));
             user.setEnabled(true);
-            user.setUsername(twitterUser.getName());
+            user.setUsername(twitterUser.getUsername());
 
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                 throw new LoginException("USERNAME_EXISTS");
