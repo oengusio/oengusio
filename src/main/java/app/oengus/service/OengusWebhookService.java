@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -186,6 +186,7 @@ public class OengusWebhookService {
             return false;
         }
 
+        // TODO: no notification for joining multiplayer run
         // parse the url
         final OengusBotUrl url = new OengusBotUrl(rawUrl);
 
@@ -228,7 +229,7 @@ public class OengusWebhookService {
                     marathon,
                     editsub,
                     // get the new submission channel for when there's a new game added, or get the edit channel
-                    url.has("newsub") ? url.get("newsub") : editsub,
+                    url.has("newsub") ? url.get("newsub") : null,
                     (Submission) args.get("submission"),
                     oldSubmission
                 );
@@ -262,7 +263,7 @@ public class OengusWebhookService {
                     marathonName
                 );
 
-                if (url.has("editsub")) {
+                if (url.has("editsub") && !newsub.equals(url.get("editsub"))) {
                     sendNewSubmission(
                         marathon,
                         url.get("editsub"),
@@ -310,7 +311,7 @@ public class OengusWebhookService {
 
     // TODO: extract to classes
     // TODO: does currently not detect a category that was removed
-    private void sendEditSubmission(final String marathon, final String channel, final String newSubChannel,
+    private void sendEditSubmission(final String marathon, final String channel, @Nullable final String newSubChannel,
                                     final Submission submission, final Submission oldSubmission) {
         final String marathonName = this.marathonService.getNameForCode(marathon);
 
@@ -318,6 +319,8 @@ public class OengusWebhookService {
         if (Objects.equals(submission, oldSubmission)) {
             return;
         }
+
+        final boolean canPostNew = newSubChannel != null;
 
         for (final Game newGame : submission.getGames()) {
             final Game oldGame = oldSubmission.getGames()
@@ -328,7 +331,10 @@ public class OengusWebhookService {
 
             // The game was just added
             if (oldGame == null) {
-                sendNewGame(marathon, newSubChannel, newGame, marathonName);
+                if (canPostNew) {
+                    sendNewGame(marathon, newSubChannel, newGame, marathonName);
+                }
+
                 sendNewGame(marathon, channel, newGame, marathonName);
                 continue;
             }
@@ -346,7 +352,10 @@ public class OengusWebhookService {
                     .orElse(null);
 
                 if (oldCategory == null) {
-                    sendNewCategory(marathon, newSubChannel, newCategory, marathonName);
+                    if (canPostNew) {
+                        sendNewCategory(marathon, newSubChannel, newCategory, marathonName);
+                    }
+
                     sendNewCategory(marathon, channel, newCategory, marathonName);
                     continue;
                 }
