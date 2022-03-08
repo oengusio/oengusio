@@ -71,6 +71,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/export")
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @ApiOperation(value = "Export schedule to format specified in parameter. Available formats : csv, json, ics")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("format") final String format,
