@@ -122,9 +122,14 @@ public class UserController {
     @ApiOperation(value = "Get a user's avatar")
     public ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
         final User user = this.userService.findByUsername(name);
+        final String mail = user.getMail();
+
+        if (!user.isEnabled() || mail == null) {
+            throw new NotFoundException("This user does not exist");
+        }
 
         // Strip off any "+blah" parts with the regex
-        final String emailLower = user.getMail().toLowerCase().trim().replaceAll("\\+.*@", "@");
+        final String emailLower = mail.toLowerCase().trim().replaceAll("\\+.*@", "@");
         final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
         final String hash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
 
