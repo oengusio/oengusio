@@ -14,15 +14,18 @@ public class TwitterService extends AbstractTwitterService {
 
 	static Logger LOGGER = LoggerFactory.getLogger(TwitterService.class);
 
-	@Autowired
-	private Twitter twitter;
+	private final Twitter twitter;
 
-	@Override
+    public TwitterService(Twitter twitter) {
+        this.twitter = twitter;
+    }
+
+    @Override
 	public void send(final String message) {
 		try {
 			this.twitter.updateStatus(message);
 		} catch (final TwitterException e) {
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.error("Failed to update twitter status", e);
 		}
 	}
 }

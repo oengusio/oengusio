@@ -54,7 +54,7 @@ public class ScheduleController {
     @ApiOperation(value = "Get a ticker for this schedule, displaying the previous, current and next lines",
         response = ScheduleTickerDto.class)
     public ResponseEntity<?> getTicker(@PathVariable("marathonId") final String marathonId,
-                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
+                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
             .body(this.scheduleService.getForTicker(marathonId, withCustomData));

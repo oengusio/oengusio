@@ -4,6 +4,7 @@ import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
+import app.oengus.exception.schedule.EmptyScheduleException;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.ScheduleRepositoryService;
 import javassist.NotFoundException;
@@ -75,15 +76,25 @@ public class ScheduleService {
         this.scheduleRepository.deleteByMarathon(marathon);
     }
 
-    public ScheduleTickerDto getForTicker(final String marathonId, boolean withCustomData) {
+    public ScheduleTickerDto getForTicker(final String marathonId, boolean withCustomData) throws NotFoundException {
         final Schedule schedule = this.findByMarathonCustomDataControl(marathonId, withCustomData);
+
+        if (schedule == null) {
+            throw new NotFoundException("Schedule not found");
+        }
+
         final ZonedDateTime endDate = schedule.getMarathon().getEndDate();
         final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
+        final List<ScheduleLine> lines = schedule.getLines();
+
+        if (lines.isEmpty()) {
+            throw new EmptyScheduleException("This schedule is empty");
+        }
 
         // fast return if the marathon has ended
         if (now.isAfter(endDate) || now.isEqual(endDate)) {
             return new ScheduleTickerDto().setPrevious(
-                schedule.getLines().get(schedule.getLines().size() - 1)
+                lines.get(lines.size() - 1)
             );
         }
 
@@ -91,7 +102,7 @@ public class ScheduleService {
         ScheduleLine current = null;
         ScheduleLine next = null;
 
-        for (final ScheduleLine line : schedule.getLines()) {
+        for (final ScheduleLine line : lines) {
             if (now.isEqual(line.getDate()) || now.isAfter(line.getDate())) {
                 previous = current;
                 current = line;

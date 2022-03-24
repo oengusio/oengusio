@@ -3,6 +3,7 @@ package app.oengus.exception;
 public class OengusBusinessException extends RuntimeException {
 
 	public OengusBusinessException() {
+        super();
 	}
 
 	public OengusBusinessException(final String message) {

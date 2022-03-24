@@ -3,7 +3,6 @@ package app.oengus.service;
 import app.oengus.entity.model.Marathon;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.twitter.AbstractTwitterService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,18 +17,18 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class EventSchedulerService {
 
-	@Autowired
-	private TaskScheduler taskScheduler;
-
-	@Autowired
-	private MarathonRepositoryService marathonRepositoryService;
-
-	@Autowired
-	private AbstractTwitterService twitterService;
-
+	private final TaskScheduler taskScheduler;
+	private final MarathonRepositoryService marathonRepositoryService;
+	private final AbstractTwitterService twitterService;
 	private final Map<String, ScheduledFuture<?>> scheduledEvents = new ConcurrentHashMap<>();
 
-	public void scheduleSubmissions(final Marathon marathon) {
+    public EventSchedulerService(TaskScheduler taskScheduler, MarathonRepositoryService marathonRepositoryService, AbstractTwitterService twitterService) {
+        this.taskScheduler = taskScheduler;
+        this.marathonRepositoryService = marathonRepositoryService;
+        this.twitterService = twitterService;
+    }
+
+    public void scheduleSubmissions(final Marathon marathon) {
 		this.unscheduleSubmissions(marathon);
 		if (marathon.getSubmissionsStartDate().isAfter(ZonedDateTime.now())) {
 			this.scheduledEvents.put(marathon.getId() + "-start",
@@ -60,12 +59,18 @@ public class EventSchedulerService {
 
 	public void scheduleMarathonStartAlert(final Marathon marathon) {
 		final ScheduledFuture<?> start = this.scheduledEvents.get(marathon.getId());
+
 		if (start != null) {
 			start.cancel(true);
 		}
-		this.scheduledEvents.put(marathon.getId(),
-				this.taskScheduler.schedule(() -> this.twitterService.sendMarathonLiveTweet(marathon),
-						Instant.from(marathon.getStartDate())));
+
+		this.scheduledEvents.put(
+            marathon.getId(),
+            this.taskScheduler.schedule(
+                () -> this.twitterService.sendMarathonLiveTweet(marathon),
+                Instant.from(marathon.getStartDate())
+            )
+        );
 	}
 
 	@Scheduled(cron = "0 0 0 * * *")

@@ -48,7 +48,7 @@ public class OengusExceptionHandler {
 
     @ExceptionHandler(NestedServletException.class)
     public ResponseEntity<?> validationException(final NestedServletException exc, final HttpServletRequest req) {
-        final Throwable cause = exc.getRootCause();
+        final Throwable cause = ExceptionHelper.getRootCause(exc);
 
         if (cause instanceof ConstraintViolationException ex) {
             final Map<String, Object> stringStringMap = toMap(req, ex);
@@ -63,7 +63,6 @@ public class OengusExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(toMap(req, exc));
     }
 
-    // TODO: find all parts that catch this exception and remove it
     @ExceptionHandler(OengusBusinessException.class)
     @ResponseStatus(value=HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> oengusBusinessExceptionHandler(final OengusBusinessException e, final HttpServletRequest req) {
