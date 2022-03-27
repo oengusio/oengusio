@@ -21,7 +21,11 @@ A docker image is hosted on docker hub https://hub.docker.com/repository/docker/
 
 On PostgreSQL, create a database named `oengus`
 
-Fill the following fields and add them to your environment variables (can be done locally with your favourite IDE). For Discord/Twitch/Twitter, only one of them is required so you can login. We recommend using [Discord](https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application) since it's the easiest to setup 
+Fill the following fields and add them to your environment variables (can be done locally with your favourite IDE). For Discord/Twitch/Twitter, only one of them is required so you can login. We recommend using [Discord](https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application) since it's the easiest to setup.
+
+The redirect urls for this are:
+- Login: \[base_url]/login/discord
+- Sync: \[base_url]/user/settings/sync/discord
 
 ```
 JWT_SECRET=<random string>;
@@ -46,6 +50,9 @@ DB_USERNAME=;
 DB_PASSWORD=;
 BASE_URL=http://localhost:4200;
 OAUTH_ORIGINS=http://localhost:4200,https://oengus.io
+SENTRY_DSN=;
+SENTRY_TRACES_SAMPLE_RATE=1.0;
+SENTRY_ENVIRONMENT=local;
 ```
 
 #### Dependencies

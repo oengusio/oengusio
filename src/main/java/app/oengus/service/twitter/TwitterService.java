@@ -1,5 +1,6 @@
 package app.oengus.service.twitter;
 
+import io.sentry.Sentry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class TwitterService extends AbstractTwitterService {
 		try {
 			this.twitter.updateStatus(message);
 		} catch (final TwitterException e) {
+            Sentry.captureException(e);
 			LOGGER.error("Failed to update twitter status", e);
 		}
 	}

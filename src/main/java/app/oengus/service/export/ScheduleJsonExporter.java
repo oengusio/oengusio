@@ -9,6 +9,7 @@ import app.oengus.entity.dto.horaro.HoraroSchedule;
 import app.oengus.exception.OengusBusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.sentry.Sentry;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +119,7 @@ public class ScheduleJsonExporter implements Exporter {
                 )
             ));
         } catch (final JsonProcessingException e) {
+            Sentry.captureException(e);
             throw new OengusBusinessException("EXPORT_FAIL");
         }
         return horaroItem;

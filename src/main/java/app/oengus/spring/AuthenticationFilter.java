@@ -3,6 +3,7 @@ package app.oengus.spring;
 import app.oengus.entity.model.User;
 import app.oengus.spring.model.Role;
 import io.jsonwebtoken.Claims;
+import io.sentry.Sentry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,6 +68,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} catch (final Exception e) {
+                    Sentry.captureException(e);
 					//log.error("ERROR ", e);
 				}
 			}

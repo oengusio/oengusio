@@ -47,13 +47,6 @@ twitch:
         syncRedirectUri: '/user/settings/sync/twitch'
         scope:
             - openid
-    sync:
-        clientId: ${TWITCH_CLIENT_ID}
-        clientSecret: ${TWITCH_CLIENT_SECRET}
-        grantType: 'authorization_code'
-        syncRedirectUri: '${BASE_URL}/user/settings/sync/twitch'
-        scope:
-            - openid
 
 server:
     undertow:
@@ -62,6 +55,13 @@ server:
     error:
         whitelabel:
             enabled: true
+
+sentry:
+    dsn: ${SENTRY_DSN}
+    # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces-sample-rate: ${SENTRY_TRACES_SAMPLE_RATE:1.0}
+    environment: ${SENTRY_ENVIRONMENT}
 
 spring:
     # TODO: read into this, cache can do a lot
