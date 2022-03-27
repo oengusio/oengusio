@@ -7,3 +7,5 @@
 /misc.xml
 /runConfigurations.xml
 /uiDesigner.xml
+# IntelliJ plugin "Discord Integration" https://github.com/Almighty-Alpaca/JetBrains-Discord-Integration
+/discord.xml
