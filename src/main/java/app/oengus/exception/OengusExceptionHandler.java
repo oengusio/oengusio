@@ -1,5 +1,6 @@
 package app.oengus.exception;
 
+import io.sentry.Sentry;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ public class OengusExceptionHandler {
             return ResponseEntity.badRequest().body(stringStringMap);
         }
 
+        Sentry.captureException(exc);
         LOG.error("Uncaught NestedServletException", exc);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(toMap(req, exc));

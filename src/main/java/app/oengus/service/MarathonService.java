@@ -12,6 +12,7 @@ import app.oengus.service.repository.DonationExtraDataRepositoryService;
 import app.oengus.service.repository.DonationRepositoryService;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.twitter.AbstractTwitterService;
+import io.sentry.Sentry;
 import javassist.NotFoundException;
 import org.hibernate.Hibernate;
 import org.slf4j.LoggerFactory;
@@ -151,6 +152,7 @@ public class MarathonService {
                         this.selectionService.findByMarathon(marathon)
                     );
                 } catch (IOException e) {
+                    Sentry.captureException(e);
                     LoggerFactory.getLogger(MarathonService.class).error("Sending selection done event failed", e);
                 }
             }

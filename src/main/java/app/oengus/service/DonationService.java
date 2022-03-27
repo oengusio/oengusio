@@ -13,6 +13,7 @@ import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
 import com.paypal.http.exceptions.HttpException;
 import com.paypal.orders.*;
+import io.sentry.Sentry;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -95,6 +96,7 @@ public class DonationService {
 
             return order;
         } catch (final NotFoundException e) { // TODO: properly fix this?
+            Sentry.captureException(e);
             throw new OengusBusinessException("MARATHON_NOT_FOUND");
         }
     }
@@ -182,6 +184,7 @@ public class DonationService {
             }
             throw new OengusBusinessException("ERROR_DONATION_VALIDATION");
         } catch (final NotFoundException e) { // TODO: properly fix this?
+            Sentry.captureException(e);
             throw new OengusBusinessException("MARATHON_NOT_FOUND");
         }
     }
@@ -215,6 +218,7 @@ public class DonationService {
         try {
             this.donationWebhook.sendDonationEvent(url, parsedDonation);
         } catch (final IOException e) {
+            Sentry.captureException(e);
             LoggerFactory.getLogger(DonationService.class).error(e.getLocalizedMessage());
         }
     }

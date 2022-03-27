@@ -31,6 +31,8 @@ repositories {
     maven { url = uri("https://jitpack.io") }
 }
 
+val sentryVersion = "5.7.0"
+
 dependencies {
     // SPRING
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-validation")
@@ -90,6 +92,10 @@ dependencies {
 
     // COUNTRY SUPPORT
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.28")
+
+    // Sentry
+    implementation(group = "io.sentry", name = "sentry-spring-boot-starter", version = sentryVersion)
+    implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.1")
