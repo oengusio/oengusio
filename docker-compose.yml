@@ -32,3 +32,6 @@ services:
       - DB_PASSWORD=
       - BASE_URL=http://localhost:4200
       - OAUTH_ORIGINS=http://localhost:4200,https://oengus.io
+      - SENTRY_DSN=;
+      - SENTRY_TRACES_SAMPLE_RATE=1.0;
+      - SENTRY_ENVIRONMENT=local;
