@@ -9,3 +9,6 @@
 /uiDesigner.xml
 # IntelliJ plugin "Discord Integration" https://github.com/Almighty-Alpaca/JetBrains-Discord-Integration
 /discord.xml
+/dataSources/
+/dataSources.xml
+/dataSources.local.xml
