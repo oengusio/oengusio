@@ -13,6 +13,10 @@ jobs:
     build:
         runs-on: ubuntu-latest
 
+        concurrency:
+            group: ${{ github.ref }}
+            cancel-in-progress: true
+
         steps:
             - uses: actions/checkout@v2.3.4
             - name: Set up java

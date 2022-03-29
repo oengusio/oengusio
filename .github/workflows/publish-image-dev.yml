@@ -4,6 +4,11 @@ on:
         branches: [ master ]
 jobs:
     push_to_registry:
+
+        concurrency:
+            group: ${{ github.ref }}
+            cancel-in-progress: true
+
         name: Push development docker image
         runs-on: ubuntu-latest
         steps:

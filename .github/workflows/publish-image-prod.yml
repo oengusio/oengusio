@@ -4,6 +4,11 @@ on:
         types: [ published ]
 jobs:
     push_to_registry:
+
+        concurrency:
+            group: ${{ github.ref }}
+            cancel-in-progress: true
+
         name: Push production image
         runs-on: ubuntu-latest
         steps:
