@@ -1,20 +1,17 @@
-Oengus Docker instructions
-==========================
+# Oengus Docker instructions
 
-To run Oengus backend for development purposes, you don't need to use Docker. Using IntelliJ IDEA for development is
+To run Oengus backend for development purposes you don't need to use Docker. We actively discourage the use of docker for development. Using IntelliJ IDEA for development is
 both easier and more convenient: [IntelliJ IDEA instructions](./DEVELOPER.md). However, if you do need to use the Docker
 image, follow the instruction below on how to use Oengus in Docker in Ubuntu or other Debian-based GNU/Linux
 distributions.
 
-Installation
-------------
+## Installation
 
 Install packages listed in "Prerequisites" section of [DEVELOPER.md](./DEVELOPER.md). As of March 2022, Ubuntu's
 docker-compose is way outdated. Because of that, you'll have to install Docker from Docker's packages:
 https://docs.docker.com/engine/install/ubuntu/
 
-Docker setup
-------------
+## Docker setup
 
 If you haven't used Docker before, you need to do the following:
 

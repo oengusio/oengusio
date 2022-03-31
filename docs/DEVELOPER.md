@@ -64,7 +64,7 @@ The easiest way for developers to run Oengus is from an [IntelliJ IDEA run confi
    DISCORD_CLIENT_SECRET
    DB_PASSWORD
    ```
-6. Run the configuration that you've created. The backend of Oengus should now be running in your IDE!
+6. Run the configuration that you've created. The Oengus backend should now be running in your IDE!
 
 [Discord instructions]: <https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application>
 [IntelliJ run configs]: <https://www.jetbrains.com/help/idea/run-debug-configuration.html>
