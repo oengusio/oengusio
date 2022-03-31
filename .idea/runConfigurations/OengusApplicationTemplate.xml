@@ -3,6 +3,7 @@
     <envs>
       <env name="JWT_SECRET" value="&lt;random string&gt;" />
       <env name="PAYPAL_CLIENT_ID" value="" />
+      <env name="PAYPAL_CLIENT_SECRET" value="" />
       <env name="DISCORD_CLIENT_ID" value="&lt;your Discord client ID goes here&gt;" />
       <env name="DISCORD_CLIENT_SECRET" value="&lt;your Discord client secret goes here&gt;" />
       <env name="DISCORD_BOT_TOKEN" value="" />
@@ -24,6 +25,7 @@
       <env name="OAUTH_ORIGINS" value="http://localhost:4200,https://oengus.io SENTRY_DSN=" />
       <env name="SENTRY_TRACES_SAMPLE_RATE" value="1.0" />
       <env name="SENTRY_ENVIRONMENT" value="local" />
+      <env name="SENTRY_DSN" value="" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="app.oengus.OengusApplication" />
     <module name="oengusio.main" />
