@@ -24,8 +24,7 @@ $ git clone git@github.com:esamarathon/oengusio.git
 $ cd oengusio
 ```
 
-Postgres
---------
+## Postgres
 
 If you haven't used Postgres before, set up a password for the connection to the database:
 
@@ -42,16 +41,14 @@ $ sudo su - postgres
 postgres@hostname:~$ createdb oengus
 ```
 
-Discord integration
--------------------
+## Discord integration
 
 Discord integration is needed to allow you to login into your Oengus dev environment of with your real Discord account.
 
 Follow [these instructions][Discord instructions] to create a Discord client ID and client secret values. Name your
 application something like `<your name>-oengus-dev`.
 
-IntelliJ IDEA run config
-------------------------
+## IntelliJ IDEA run config
 
 The easiest way for developers to run Oengus is from an [IntelliJ IDEA run configuration][IntelliJ run configs].
 
