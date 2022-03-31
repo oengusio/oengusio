@@ -34,10 +34,9 @@ postgres@hostname:~$ psql
 postgres=# ALTER USER postgres PASSWORD '<your password here>';
 ```
 
-Create database `oengus`:
+Create database named `oengus` in your Postgres installation. For example, using the [`createdb` executable][createdb]:
 
 ```shell
-$ sudo su - postgres
 postgres@hostname:~$ createdb oengus
 ```
 
@@ -68,3 +67,4 @@ The easiest way for developers to run Oengus is from an [IntelliJ IDEA run confi
 
 [Discord instructions]: <https://github.com/SinisterRectus/Discordia/wiki/Setting-up-a-Discord-application>
 [IntelliJ run configs]: <https://www.jetbrains.com/help/idea/run-debug-configuration.html>
+[createdb]: <https://www.postgresql.org/docs/12/app-createdb.html>
