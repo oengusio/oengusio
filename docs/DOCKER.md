@@ -20,19 +20,27 @@ If you haven't used Docker before, you need to do the following:
 
 1. Add yourself to the `docker` group to have access to the daemon:
 
-       $ sudo usermod -a -G docker $USER
+   ```shell
+   $ sudo usermod -a -G docker $USER
+   ```
 2. To get the updated groups in text shells you can just re-log in, but in GUI shells, you'll have to re-log in via
    their GUI.
 
-       $ sudo su - $USER
+   ```shell
+   $ sudo su - $USER
+   ```
 3. Start up the docker daemon (assuming systemd-based distro):
 
-       $ sudo systemctl start docker
+   ```shell
+   $ sudo systemctl start docker
+   ```
 
 ## Get Oengus Docker image
 
 Get the Docker image of Oengus from [Docker Hub][Docker image]:
 
-    $ docker pull oengusio/backend
+```shell
+$ docker pull oengusio/backend
+```
 
 [Docker image]: <https://hub.docker.com/repository/docker/oengusio/backend>
