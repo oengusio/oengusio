@@ -8,6 +8,8 @@ Note that the front-end lives on this repository [https://github.com/esamarathon
 
 ## How to run on your computer
 
+_**Disclaimer**: self-hosted instances are not allowed to use the Oengus branding._
+
 ### Requirements
 
 - Java JDK 16
