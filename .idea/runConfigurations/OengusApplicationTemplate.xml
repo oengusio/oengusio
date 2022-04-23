@@ -1,0 +1,36 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="OengusApplicationTemplate" type="Application" factoryName="Application">
+    <envs>
+      <env name="JWT_SECRET" value="&lt;random string&gt;" />
+      <env name="PAYPAL_CLIENT_ID" value="" />
+      <env name="PAYPAL_CLIENT_SECRET" value="" />
+      <env name="DISCORD_CLIENT_ID" value="&lt;your Discord client ID goes here&gt;" />
+      <env name="DISCORD_CLIENT_SECRET" value="&lt;your Discord client secret goes here&gt;" />
+      <env name="DISCORD_BOT_TOKEN" value="" />
+      <env name="TWITCH_CLIENT_ID" value="" />
+      <env name="TWITCH_CLIENT_SECRET" value="" />
+      <env name="TWITTER_CONSUMER_KEY" value="" />
+      <env name="TWITTER_CONSUMER_SECRET" value="" />
+      <env name="TWITTER_ACCESS_TOKEN" value="" />
+      <env name="TWITTER_ACCESS_TOKEN_SECRET" value="" />
+      <env name="twitter4j.debug" value="true" />
+      <env name="twitter4j.oauth.consumerKey" value="" />
+      <env name="twitter4j.oauth.consumerSecret" value="" />
+      <env name="TWITTER_OAUTH2_CLIENT_ID" value="" />
+      <env name="TWITTER_OAUTH2_CLIENT_SECRET" value="" />
+      <env name="DB_URL" value="jdbc:postgresql://localhost:5432/oengus" />
+      <env name="DB_USERNAME" value="postgres" />
+      <env name="DB_PASSWORD" value="&lt;your Postgres password goes here&gt;" />
+      <env name="BASE_URL" value="http://localhost:4200" />
+      <env name="OAUTH_ORIGINS" value="http://localhost:4200,https://oengus.io SENTRY_DSN=" />
+      <env name="SENTRY_TRACES_SAMPLE_RATE" value="1.0" />
+      <env name="SENTRY_ENVIRONMENT" value="local" />
+      <env name="SENTRY_DSN" value="" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="app.oengus.OengusApplication" />
+    <module name="oengusio.main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

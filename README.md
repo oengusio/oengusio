@@ -8,6 +8,8 @@ Note that the front-end lives on this repository [https://github.com/esamarathon
 
 ## How to run on your computer
 
+_**Disclaimer**: self-hosted instances are not allowed to use the Oengus branding._
+
 ### Requirements
 
 - Java JDK 16
@@ -63,11 +65,18 @@ SENTRY_ENVIRONMENT=local;
 
 #### Run
 
-##### Docker (recommended)
-Copy `docker-compose.yml` to `docker-compose.override.yml` and ill in the environment variables, then run `docker-compose up --build`
+##### Docker (recommended for production)
+
+Docker setup instructions are in [docs/DOCKER.md](./docs/DOCKER.md).
+
+1. Copy `docker-compose.yml` to `docker-compose.override.yml`
+2. Fill in the environment variables in `docker-compose.override.yml`
+3. Run `docker-compose up --build`
 
 ##### IDE
-Start Application.java with your favourite IDE. On first startup the database will be initialized automatically.
+
+Start `OengusApplication.java` with your favourite IDE. On first startup the database will be initialized automatically.
+See [docs/DEVELOPER.md](./docs/DEVELOPER.md) for detailed instructions on how to set up a development environment.
 
 ## Support
 
