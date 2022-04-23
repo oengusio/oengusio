@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:16 AS builder
+FROM azul/zulu-openjdk-alpine:17.0.3 AS builder
 
 WORKDIR /oengus-backend
 COPY gradle ./gradle
@@ -7,7 +7,7 @@ RUN ./gradlew --no-daemon dependencies
 COPY . .
 RUN ./gradlew --no-daemon bootJar
 
-FROM azul/zulu-openjdk-alpine:16-jre
+FROM azul/zulu-openjdk-alpine:17.0.3-jre
 
 WORKDIR /oengus-backend
 COPY --from=builder /oengus-backend/build/libs/oengusio-*.jar ./oengusio.jar
