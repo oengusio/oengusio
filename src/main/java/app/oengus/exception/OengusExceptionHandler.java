@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +26,17 @@ import java.util.Map;
 public class OengusExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(OengusExceptionHandler.class);
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> accessDeniedException(final AccessDeniedException exc, final HttpServletRequest req) {
+        final String header = req.getHeader("oengus-version");
+
+        if (!"2".equals(header)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(toMap(req, exc));
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> notFoundException(final NotFoundException exc, final HttpServletRequest req) {
         final String header = req.getHeader("oengus-version");
@@ -37,7 +49,7 @@ public class OengusExceptionHandler {
     }
 
     @ExceptionHandler(LoginException.class)
-    public ResponseEntity<?> notFoundException(final LoginException exc, final HttpServletRequest req) {
+    public ResponseEntity<?> loginExceptionHandler(final LoginException exc, final HttpServletRequest req) {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
