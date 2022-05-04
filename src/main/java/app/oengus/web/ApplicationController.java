@@ -17,7 +17,7 @@ import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 @ApiIgnore
 @RestController
-@RequestMapping("/marathons/{marathonId}/teams/{teamId}/applications")
+@RequestMapping({"/v1/marathons/{marathonId}/teams/{teamId}/applications", "/marathons/{marathonId}/teams/{teamId}/applications"})
 public class ApplicationController {
     private final ApplicationService applicationService;
 

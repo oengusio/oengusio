@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@RequestMapping
+@RequestMapping({"/v1", ""})
 public class MiscController {
 
     private final PronounsPageApi pronounsApi;

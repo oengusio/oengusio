@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/marathons/{marathonId}/submissions")
+@RequestMapping({"/v1/marathons/{marathonId}/submissions", "/marathons/{marathonId}/submissions"})
 @Api
 public class SubmissionsController {
 

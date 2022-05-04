@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 @Api
 @RestController
-@RequestMapping("/marathons")
+@RequestMapping({"/v1/marathons", "/marathons"})
 public class MarathonController {
 
     private final MarathonService marathonService;

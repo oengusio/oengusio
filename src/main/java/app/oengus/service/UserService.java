@@ -67,20 +67,12 @@ public class UserService {
             throw new LoginException("Missing code in request");
         }
 
-        final User user;
-        switch (service) {
-            case "discord":
-                user = this.discordService.login(code, host);
-                break;
-            case "twitch":
-                user = this.twitchService.login(code, host);
-                break;
-            case "twitter":
-                user = this.twitterLoginService.login(code, host);
-                break;
-            default:
-                throw new LoginException("UNKNOWN_SERVICE");
-        }
+        final User user = switch (service) {
+            case "discord" -> this.discordService.login(code, host);
+            case "twitch" -> this.twitchService.login(code, host);
+            case "twitter" -> this.twitterLoginService.login(code, host);
+            default -> throw new LoginException("UNKNOWN_SERVICE");
+        };
 
         if (!user.isEnabled()) {
             throw new LoginException("DISABLED_ACCOUNT");

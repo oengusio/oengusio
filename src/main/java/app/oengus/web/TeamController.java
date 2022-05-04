@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 @Api
 @RestController
-@RequestMapping("/marathons/{marathonId}/teams")
+@RequestMapping({"/v1/marathons/{marathonId}/teams", "/marathons/{marathonId}/teams"})
 public class TeamController {
     private final TeamRepositoryService teamRepositoryService;
 

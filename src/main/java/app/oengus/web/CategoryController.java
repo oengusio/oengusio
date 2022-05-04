@@ -17,7 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/marathons/{marathonId}/categories")
+@RequestMapping({"/v1/marathons/{marathonId}/categories", "/marathons/{marathonId}/categories"})
 @Api
 public class CategoryController {
 

@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/marathons/{marathonId}/schedule")
+@RequestMapping({"/v1/marathons/{marathonId}/schedule", "/marathons/{marathonId}/schedule"})
 @Api
 public class ScheduleController {
     private final ScheduleService scheduleService;

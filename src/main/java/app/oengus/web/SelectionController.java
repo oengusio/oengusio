@@ -19,7 +19,7 @@ import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/marathons/{marathonId}/selections")
+@RequestMapping({"/v1/marathons/{marathonId}/selections", "/marathons/{marathonId}/selections"})
 @Api
 public class SelectionController {
 

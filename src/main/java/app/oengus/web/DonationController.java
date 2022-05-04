@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/marathons/{marathonId}/donations")
+@RequestMapping({"/v1/marathons/{marathonId}/donations", "/marathons/{marathonId}/donations"})
 @Api
 public class DonationController {
 

@@ -72,11 +72,11 @@ dependencies {
     runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
     // SWAGGER
-    // implementation(group = "io.springfox", name = "springfox-boot-starter", version = "3.0.0")
-    implementation(group = "io.springfox", name = "springfox-swagger2", version = "2.9.2")
+     implementation(group = "io.springfox", name = "springfox-boot-starter", version = "3.0.0")
+//    implementation(group = "io.springfox", name = "springfox-swagger2", version = "3.0.0")
 
     // iCal4J
-    implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.0.11")
+    implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.2.2")
 
     // Paypal
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
@@ -110,6 +110,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "7.0.1"
+    gradleVersion = "7.4.2"
     distributionType = Wrapper.DistributionType.ALL
 }
