@@ -1,4 +1,4 @@
-package app.oengus.web;
+package app.oengus.web.v2;
 
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@RequestMapping({"/v1", ""})
+@RequestMapping({"/v1", "/v2", ""})
 public class MiscController {
 
     private final PronounsPageApi pronounsApi;

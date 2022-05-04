@@ -141,7 +141,7 @@ public class Marathon {
 
     @Column(name = "cleared")
     @JsonIgnore
-    private boolean cleared = false;
+    private boolean cleared = false; // what the fuck is this?
 
     @Column(name = "donation_open")
     @JsonView(Views.Public.class)
@@ -241,7 +241,7 @@ public class Marathon {
 
     @Column(name = "user_info_hidden")
     @JsonView(Views.Public.class)
-    private String userInfoHidden;
+    private String userInfoHidden; // what was I thinking?
 
     @JsonManagedReference
     @JsonView(Views.Internal.class)
