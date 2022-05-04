@@ -3,28 +3,29 @@ package app.oengus.request.marathon;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.annotation.Nullable;
+import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
+// TODO: request to model mapping
+//  Manual or automatic?
 @ApiModel
 public class MarathonCreateRequest {
 
-    @NotNull
+    @NotNull(message = "The marathon id must not be null")
     @Size(min = 4, max = 10)
     @Pattern(regexp = "^[\\w\\-]{4,10}$")
     @ApiModelProperty(required = true, value = "The id of this marathon. Will display in urls referencing this marathon")
     private String id;
 
-    @NotNull
+    @NotNull(message = "The marathon name must not be null")
     @Size(min = 4, max = 40)
     @Pattern(regexp = "^[\\w\\- ]{4,40}$")
     @ApiModelProperty(required = true, value = "The name of this marathon")
     private String name;
 
-    @NotNull
+    @NotNull(message = "The marathon description must not be null, empty strings are allowed however")
     @Size(max = 5000)
     @ApiModelProperty(required = true, value = "The description is what is shown to users when they visit this marathon's homepage")
     private String description;
@@ -33,9 +34,24 @@ public class MarathonCreateRequest {
     @ApiModelProperty(required = true, value = "Marathon privacy, marathon will not show on homepage and in calendar if set to false")
     private boolean isPrivate;
 
+    @NotNull(message = "Marathon start date must not be null")
+    @FutureOrPresent(message = "The start date must be the current date or a future date")
+    @ApiModelProperty(required = true, value = "The date and time of when this marathon starts")
     private ZonedDateTime startDate;
+
+    @Future(message = "The end date must be a future date")
+    @NotNull(message = "Marathon end date must not be null")
+    @ApiModelProperty(required = true, value = "The date and time of when this marathon ends")
     private ZonedDateTime endDate;
+
+    @Nullable
+    @FutureOrPresent
+    @ApiModelProperty(value = "Allows Oengus to automatically open the submissions for this marathon")
     private ZonedDateTime submissionsStartDate;
+
+    @Future
+    @Nullable
+    @ApiModelProperty(value = "Allows Oengus to automatically close the submissions for this marathon")
     private ZonedDateTime submissionsEndDate;
 
     private boolean onSite;
