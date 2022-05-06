@@ -113,4 +113,294 @@ public class MarathonDto {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public ZonedDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public ZonedDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(ZonedDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    @Nullable
+    public ZonedDateTime getSubmissionsStartDate() {
+        return submissionsStartDate;
+    }
+
+    public void setSubmissionsStartDate(@Nullable ZonedDateTime submissionsStartDate) {
+        this.submissionsStartDate = submissionsStartDate;
+    }
+
+    @Nullable
+    public ZonedDateTime getSubmissionsEndDate() {
+        return submissionsEndDate;
+    }
+
+    public void setSubmissionsEndDate(@Nullable ZonedDateTime submissionsEndDate) {
+        this.submissionsEndDate = submissionsEndDate;
+    }
+
+    public boolean isOnSite() {
+        return onSite;
+    }
+
+    public void setOnSite(boolean onSite) {
+        this.onSite = onSite;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public int getMaxGamesPerRunner() {
+        return maxGamesPerRunner;
+    }
+
+    public void setMaxGamesPerRunner(int maxGamesPerRunner) {
+        this.maxGamesPerRunner = maxGamesPerRunner;
+    }
+
+    public int getMaxCategoriesPerGame() {
+        return maxCategoriesPerGame;
+    }
+
+    public void setMaxCategoriesPerGame(int maxCategoriesPerGame) {
+        this.maxCategoriesPerGame = maxCategoriesPerGame;
+    }
+
+    public boolean isAllowMultiplayer() {
+        return allowMultiplayer;
+    }
+
+    public void setAllowMultiplayer(boolean allowMultiplayer) {
+        this.allowMultiplayer = allowMultiplayer;
+    }
+
+    public int getMaxNumberOfScreens() {
+        return maxNumberOfScreens;
+    }
+
+    public void setMaxNumberOfScreens(int maxNumberOfScreens) {
+        this.maxNumberOfScreens = maxNumberOfScreens;
+    }
+
+    public boolean isVideoRequired() {
+        return videoRequired;
+    }
+
+    public void setVideoRequired(boolean videoRequired) {
+        this.videoRequired = videoRequired;
+    }
+
+    public boolean isAllowEmulators() {
+        return allowEmulators;
+    }
+
+    public void setAllowEmulators(boolean allowEmulators) {
+        this.allowEmulators = allowEmulators;
+    }
+
+    public boolean isDiscordRequired() {
+        return discordRequired;
+    }
+
+    public void setDiscordRequired(boolean discordRequired) {
+        this.discordRequired = discordRequired;
+    }
+
+    public boolean isCanEditSubmissions() {
+        return canEditSubmissions;
+    }
+
+    public void setCanEditSubmissions(boolean canEditSubmissions) {
+        this.canEditSubmissions = canEditSubmissions;
+    }
+
+    public boolean isUnlimitedGames() {
+        return unlimitedGames;
+    }
+
+    public void setUnlimitedGames(boolean unlimitedGames) {
+        this.unlimitedGames = unlimitedGames;
+    }
+
+    public boolean isUnlimitedCategories() {
+        return unlimitedCategories;
+    }
+
+    public void setUnlimitedCategories(boolean unlimitedCategories) {
+        this.unlimitedCategories = unlimitedCategories;
+    }
+
+    public String getTwitch() {
+        return twitch;
+    }
+
+    public void setTwitch(String twitch) {
+        this.twitch = twitch;
+    }
+
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
+    }
+
+    public String getDiscord() {
+        return discord;
+    }
+
+    public void setDiscord(String discord) {
+        this.discord = discord;
+    }
+
+    public String getYoutube() {
+        return youtube;
+    }
+
+    public void setYoutube(String youtube) {
+        this.youtube = youtube;
+    }
+
+    public boolean isHideDiscord() {
+        return hideDiscord;
+    }
+
+    public void setHideDiscord(boolean hideDiscord) {
+        this.hideDiscord = hideDiscord;
+    }
+
+    public Duration getDefaultSetupTime() {
+        return defaultSetupTime;
+    }
+
+    public void setDefaultSetupTime(Duration defaultSetupTime) {
+        this.defaultSetupTime = defaultSetupTime;
+    }
+
+    public boolean isSelectionDone() {
+        return selectionDone;
+    }
+
+    public void setSelectionDone(boolean selectionDone) {
+        this.selectionDone = selectionDone;
+    }
+
+    public boolean isScheduleDone() {
+        return scheduleDone;
+    }
+
+    public void setScheduleDone(boolean scheduleDone) {
+        this.scheduleDone = scheduleDone;
+    }
+
+    public boolean isDonationsOpen() {
+        return donationsOpen;
+    }
+
+    public void setDonationsOpen(boolean donationsOpen) {
+        this.donationsOpen = donationsOpen;
+    }
+
+    public boolean isHasIncentives() {
+        return hasIncentives;
+    }
+
+    public void setHasIncentives(boolean hasIncentives) {
+        this.hasIncentives = hasIncentives;
+    }
+
+    public boolean isHasDonations() {
+        return hasDonations;
+    }
+
+    public void setHasDonations(boolean hasDonations) {
+        this.hasDonations = hasDonations;
+    }
+
+    public String getPayee() {
+        return payee;
+    }
+
+    public void setPayee(String payee) {
+        this.payee = payee;
+    }
+
+    public String getSupportedCharity() {
+        return supportedCharity;
+    }
+
+    public void setSupportedCharity(String supportedCharity) {
+        this.supportedCharity = supportedCharity;
+    }
+
+    public String getDonationCurrency() {
+        return donationCurrency;
+    }
+
+    public void setDonationCurrency(String donationCurrency) {
+        this.donationCurrency = donationCurrency;
+    }
+
+    public String getWebhook() {
+        return webhook;
+    }
+
+    public void setWebhook(String webhook) {
+        this.webhook = webhook;
+    }
+
+    public boolean isAnnounceAcceptedSubmissions() {
+        return announceAcceptedSubmissions;
+    }
+
+    public void setAnnounceAcceptedSubmissions(boolean announceAcceptedSubmissions) {
+        this.announceAcceptedSubmissions = announceAcceptedSubmissions;
+    }
 }
