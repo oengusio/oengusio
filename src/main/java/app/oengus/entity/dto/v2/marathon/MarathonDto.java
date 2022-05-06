@@ -1,4 +1,4 @@
-package app.oengus.request.marathon;
+package app.oengus.entity.dto.v2.marathon;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 // TODO: request to model mapping
 //  Manual or automatic?
 @ApiModel
-public class MarathonCreateRequest {
+public class MarathonDto {
 
     @NotNull(message = "The marathon id must not be null")
     @Size(min = 4, max = 10)
@@ -54,6 +54,7 @@ public class MarathonCreateRequest {
     @ApiModelProperty(value = "Allows Oengus to automatically close the submissions for this marathon")
     private ZonedDateTime submissionsEndDate;
 
+    @ApiModelProperty(required = true, value = "On-site vs online marathon, true to mark this marathon as on-site")
     private boolean onSite;
     private String location;
     private String country;

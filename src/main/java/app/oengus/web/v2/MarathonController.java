@@ -1,8 +1,6 @@
 package app.oengus.web.v2;
 
-import app.oengus.entity.model.Marathon;
-import app.oengus.helper.PrincipalHelper;
-import app.oengus.request.marathon.MarathonCreateRequest;
+import app.oengus.entity.dto.v2.marathon.MarathonDto;
 import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
 import io.swagger.annotations.Api;
@@ -11,11 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
-import java.net.URI;
 import java.security.Principal;
 
 @Api
@@ -39,7 +35,7 @@ public class MarathonController {
 //    @ApiIgnore
     @ApiOperation("Create a marathon")
     public ResponseEntity<?> create(
-        @RequestBody @Valid final MarathonCreateRequest request,
+        @RequestBody @Valid final MarathonDto request,
         final Principal principal,
         final BindingResult bindingResult
     ) {
