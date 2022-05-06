@@ -45,17 +45,20 @@ public class MarathonDto {
     private ZonedDateTime endDate;
 
     @Nullable
-    @FutureOrPresent
+    @FutureOrPresent(message = "Submissions cannot open in the past, must be current or future date")
     @ApiModelProperty(value = "Allows Oengus to automatically open the submissions for this marathon")
     private ZonedDateTime submissionsStartDate;
 
-    @Future
     @Nullable
+    @Future(message = "Submissions can only end in the future :)")
     @ApiModelProperty(value = "Allows Oengus to automatically close the submissions for this marathon")
     private ZonedDateTime submissionsEndDate;
 
     @ApiModelProperty(required = true, value = "On-site vs online marathon, true to mark this marathon as on-site")
     private boolean onSite;
+
+    @NotNull
+    @ApiModelProperty(required = true, value = "The language that this marathon is in. ISO (something) language codes only.")
     private String location;
     private String country;
     private String language = "en";
@@ -81,6 +84,8 @@ public class MarathonDto {
     private String youtube;
     private boolean hideDiscord;
 
+    @NotNull
+    @ApiModelProperty(required = true, value = "The default length for the setup time field. This field is using the ISO-8601 duration format.")
     private Duration defaultSetupTime;
 
     private boolean selectionDone;
@@ -316,12 +321,12 @@ public class MarathonDto {
         this.hideDiscord = hideDiscord;
     }
 
-    public Duration getDefaultSetupTime() {
-        return defaultSetupTime;
+    public String getDefaultSetupTime() {
+        return defaultSetupTime.toString();
     }
 
-    public void setDefaultSetupTime(Duration defaultSetupTime) {
-        this.defaultSetupTime = defaultSetupTime;
+    public void setDefaultSetupTime(String defaultSetupTime) {
+        this.defaultSetupTime = Duration.parse(defaultSetupTime);
     }
 
     public boolean isSelectionDone() {

@@ -14,6 +14,14 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.security.Principal;
 
+/**
+ * TODO: api ideas
+ *  GET /v2/marathons/{ID}/moderators
+ *  PUT /v2/marathons/{ID}/moderators Body: {"user_ids": [int...]}
+ *  DELETE /v2/marathons/{ID}/moderators/{userID}
+ *
+ *  Separate routes for questions as well
+ */
 @Api
 @RestController("v2MarathonController")
 @RequestMapping("/v2/marathons")
