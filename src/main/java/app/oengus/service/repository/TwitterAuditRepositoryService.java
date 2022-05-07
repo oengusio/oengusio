@@ -11,10 +11,13 @@ import javax.transaction.Transactional;
 @Service
 public class TwitterAuditRepositoryService {
 
-	@Autowired
-	private TwitterAuditRepository twitterAuditRepository;
+	private final TwitterAuditRepository twitterAuditRepository;
 
-	public void save(final Marathon marathon, final String action) {
+    public TwitterAuditRepositoryService(TwitterAuditRepository twitterAuditRepository) {
+        this.twitterAuditRepository = twitterAuditRepository;
+    }
+
+    public void save(final Marathon marathon, final String action) {
 		this.twitterAuditRepository.save(new TwitterAudit(marathon, action));
 	}
 
