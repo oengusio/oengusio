@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
-@FeignClient(value = "discord", url = "https://discordapp.com/api/v8", configuration = CoreFeignConfiguration.class)
+@FeignClient(value = "discord", url = "https://discord.com/api/v9", configuration = CoreFeignConfiguration.class)
 public interface DiscordApi {
 
     @Headers("Content-Type: application/x-www-form-urlencoded")
