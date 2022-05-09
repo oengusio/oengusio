@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -9,6 +10,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Size;
+
+import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "answer")
@@ -21,7 +24,7 @@ public class Answer implements Comparable<Answer> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.REMOVE})
+	@ManyToOne(cascade = {PERSIST, DETACH, REFRESH, REMOVE})
 	@JoinColumn(name = "question_id")
 	@JsonView(Views.Public.class)
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -84,6 +87,6 @@ public class Answer implements Comparable<Answer> {
 
 	@Override
 	public int compareTo(final Answer o) {
-		return Integer.compare(this.getQuestion().getPosition(), o.getQuestion().getPosition());
+		return new AnswerComparator().compare(this, o);
 	}
 }

@@ -67,7 +67,7 @@ public class Submission {
     @JsonView(Views.Public.class)
     private List<Availability> availabilities;
 
-    @OneToMany(mappedBy = "submission", cascade = {DETACH, REFRESH, REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = {PERSIST, DETACH, REFRESH, REMOVE}, orphanRemoval = true)
     @JsonManagedReference(value = "answersReference")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @SortComparator(AnswerComparator.class)
