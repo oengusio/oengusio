@@ -11,8 +11,6 @@ import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Size;
 
-import static javax.persistence.CascadeType.*;
-
 @Entity
 @Table(name = "answer")
 @Cacheable
@@ -24,7 +22,7 @@ public class Answer implements Comparable<Answer> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@ManyToOne(cascade = {PERSIST, DETACH, REFRESH, REMOVE})
+	@ManyToOne
 	@JoinColumn(name = "question_id")
 	@JsonView(Views.Public.class)
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -44,12 +42,14 @@ public class Answer implements Comparable<Answer> {
 
 	@AssertTrue
 	public boolean isAnswerRequired() {
-		if (this.question == null) {
+		if (this.question == null) { // WHY IS QUESTION NULL
 			return false;
 		}
+
 		if (!this.question.isRequired()) {
 			return true;
 		}
+
 		return StringUtils.isNotEmpty(this.answer);
 	}
 

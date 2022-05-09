@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.persistence.*;
@@ -15,6 +17,8 @@ import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "marathon")
@@ -186,10 +190,11 @@ public class Marathon {
     @JsonView(Views.Public.class)
     private boolean canEditSubmissions = false;
 
-    @OneToMany(mappedBy = "marathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "marathon", cascade = { PERSIST, REMOVE, REFRESH }, orphanRemoval = true)
     @JsonManagedReference(value = "marathonReference")
     @OrderBy("position ASC")
     @JsonView(Views.Public.class)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Question> questions;
 
     @Column(name = "has_donations")
