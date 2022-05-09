@@ -4,17 +4,12 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Set;
-
-import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "question")
@@ -33,11 +28,6 @@ public class Question {
 	@JsonView(Views.Public.class)
 	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Marathon marathon;
-
-    @OneToMany(mappedBy = "id", cascade = { REMOVE, REFRESH, MERGE, DETACH })
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonView(Views.Internal.class)
-    private Set<Answer> answers;
 
 	@Column(name = "label")
 	@JsonView(Views.Public.class)
@@ -90,14 +80,6 @@ public class Question {
 	public void setMarathon(final Marathon marathon) {
 		this.marathon = marathon;
 	}
-
-    public Set<Answer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(Set<Answer> answers) {
-        this.answers = answers;
-    }
 
     public String getLabel() {
 		return this.label;

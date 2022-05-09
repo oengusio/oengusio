@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SortComparator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
@@ -69,18 +67,16 @@ public class Submission {
     @JsonView(Views.Public.class)
     private List<Availability> availabilities;
 
-    @OneToMany(mappedBy = "submission", cascade = { REMOVE, REFRESH, DETACH }, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "answersReference")
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @SortComparator(AnswerComparator.class)
     @JsonView(Views.Public.class)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private SortedSet<Answer> answers;
 
-    @OneToMany(mappedBy = "submission", cascade = {DETACH, REFRESH, REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "opponentReference")
     @JsonView(Views.Public.class)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Opponent> opponents;
 
     @Transient

@@ -1036,4 +1036,13 @@
             columnName="id"
         />
     </changeSet>
+
+    <changeSet author="duncte123" id="20220509-1">
+        <dropForeignKeyConstraint baseTableName="answer" constraintName="fk_answer_question"/>
+        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="question_id"
+                                 constraintName="fk_answer_question"
+                                 referencedTableName="question"
+                                 deleteCascade="true"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>
