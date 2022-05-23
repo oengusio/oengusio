@@ -10,6 +10,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.Duration;
@@ -56,10 +57,12 @@ public class Marathon {
 
     @Column(name = "submissions_start_date")
     @JsonView(Views.Public.class)
+    @Nullable
     private ZonedDateTime submissionsStartDate;
 
     @Column(name = "submissions_end_date")
     @JsonView(Views.Public.class)
+    @Nullable
     private ZonedDateTime submissionsEndDate;
 
     @Column(name = "description")
