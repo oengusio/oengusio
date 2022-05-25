@@ -2,13 +2,13 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "2.4.13"
+    id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.5")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.2")
     }
 }
 
@@ -48,7 +48,7 @@ dependencies {
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
     
     // POSTGRESQL
-    implementation(group = "com.zaxxer", name = "HikariCP", version = "4.0.3")
+    implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
@@ -60,20 +60,19 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.7")
     
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "2.2.10.RELEASE")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
     
     // JACKSON
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.9.8")
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
 
     // HIBERNATE
-    implementation(group = "com.vladmihalcea", name = "hibernate-types-52", version = "2.11.1")
-    implementation(group = "org.hibernate", name = "hibernate-core", version = "5.4.31.Final")
-    implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.4.31.Final")
+    implementation(group = "com.vladmihalcea", name = "hibernate-types-55", version = "2.16.2") // TODO: do we need this?
+    implementation(group = "org.hibernate", name = "hibernate-core", version = "5.5.9.Final")
+    implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.5.9.Final")
     runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
-    // SWAGGER
-     implementation(group = "io.springfox", name = "springfox-boot-starter", version = "3.0.0")
-//    implementation(group = "io.springfox", name = "springfox-swagger2", version = "3.0.0")
+    // documentation
+    implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.6.8")
 
     // iCal4J
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.2.2")
@@ -98,7 +97,7 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.1")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.2")
 }
 
 val wrapper: Wrapper by tasks

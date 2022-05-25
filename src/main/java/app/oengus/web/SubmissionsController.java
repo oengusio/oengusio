@@ -7,17 +7,15 @@ import app.oengus.service.GameService;
 import app.oengus.service.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -31,24 +29,25 @@ import java.util.concurrent.TimeUnit;
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/submissions", "/marathons/{marathonId}/submissions"})
-@Api
+@Tag(name = "submissions-v1")
 public class SubmissionsController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+    private final ExportService exportService;
+    private final SubmissionService submissionService;
 
-    @Autowired
-    private ExportService exportService;
-
-    @Autowired
-    private SubmissionService submissionService;
+    public SubmissionsController(GameService gameService, ExportService exportService, SubmissionService submissionService) {
+        this.gameService = gameService;
+        this.exportService = exportService;
+        this.submissionService = submissionService;
+    }
 
     ///////// GameController.java ////////
 
     @GetMapping("/export")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Export all submitted games by marathon to CSV")
+    @Operation(summary = "Export all submitted games by marathon to CSV")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("locale") final String locale,
                                      @RequestParam("zoneId") final String zoneId,
@@ -62,7 +61,7 @@ public class SubmissionsController {
 
     @DeleteMapping("/games/{id}")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
                                     @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
         this.gameService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
@@ -74,9 +73,9 @@ public class SubmissionsController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Find all submissions by marathon",
+    @Operation(summary = "Find all submissions by marathon"/*,
         response = Submission.class,
-        responseContainer = "List")
+        responseContainer = "List"*/)
     public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
@@ -86,7 +85,7 @@ public class SubmissionsController {
     @PostMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> create(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
@@ -111,7 +110,7 @@ public class SubmissionsController {
     @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
         "&& #submission.id != null " +
         "&& (#submission.user.id == principal.id || isAdmin())")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
@@ -129,7 +128,7 @@ public class SubmissionsController {
 
     @GetMapping("/availabilities")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> getAvailabilities(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
@@ -138,7 +137,7 @@ public class SubmissionsController {
 
     @GetMapping("/answers")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> getAnswers(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
@@ -147,7 +146,7 @@ public class SubmissionsController {
 
     @GetMapping("/availabilities/{userId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
                                                       @PathVariable("userId") final int userId) throws NotFoundException {
         return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
@@ -156,7 +155,7 @@ public class SubmissionsController {
     @GetMapping("/me")
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId,
                                                       final Principal principal) {
         final Submission submission =
@@ -168,7 +167,7 @@ public class SubmissionsController {
     @DeleteMapping("/{id}")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final int id, final Principal principal) throws NotFoundException {
         this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
 
