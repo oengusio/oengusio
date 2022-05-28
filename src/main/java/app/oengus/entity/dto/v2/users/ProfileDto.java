@@ -35,6 +35,8 @@ public class ProfileDto {
     @Schema(description = "The country that this user resides in")
     private String country;
 
+    // TODO: add connections
+
 
     public int getId() {
         return id;

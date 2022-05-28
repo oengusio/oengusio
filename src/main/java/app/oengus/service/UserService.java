@@ -5,7 +5,10 @@ import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
+import app.oengus.entity.dto.v2.SimpleCategoryDto;
+import app.oengus.entity.dto.v2.SimpleGameDto;
 import app.oengus.entity.dto.v2.users.ProfileDto;
+import app.oengus.entity.dto.v2.users.ProfileHistory;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
@@ -303,8 +306,7 @@ public class UserService {
             )
             .sorted(
                 Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
-            )
-            .collect(Collectors.toList());
+            ).toList();
 
         final Map<Integer, SelectionDto> selections = this.selectionService.findAllByCategory(filteredSubmissions.stream()
                 .flatMap((submission) ->
@@ -405,5 +407,93 @@ public class UserService {
         }
 
         return profile;
+    }
+
+    public List<ProfileHistory> getUserProfileHistory(final int userId) {
+        final User user = new User();
+        user.setId(userId);
+
+        final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
+
+        final List<Submission> filteredSubmissions = submissions.stream()
+            .filter(
+                (submission) -> submission.getMarathon() != null
+            )
+            .sorted(
+                Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
+            ).toList();
+
+        final List<Category> categories = filteredSubmissions.stream()
+            .flatMap((submission) ->
+                submission.getGames()
+                    .stream()
+                    .flatMap(
+                        (game) -> game.getCategories().stream()
+                    )
+            ).toList();
+
+
+        final Map<Integer, SelectionDto> selections = this.selectionService.findAllByCategory(categories);
+
+        final List<ProfileHistory> history = new ArrayList<>();
+
+        filteredSubmissions.forEach((submission) -> {
+            final Marathon marathon = submission.getMarathon();
+
+            if (marathon.getIsPrivate()) {
+                return;
+            }
+
+            final ProfileHistory historyDto = new ProfileHistory();
+            final List<SimpleGameDto> sgames = submission.getGames()
+                .stream()
+                .map((game) -> {
+                    final SimpleGameDto sgame = new SimpleGameDto();
+
+                    sgame.setId(game.getId());
+                    sgame.setName(game.getName());
+
+                    final List<SimpleCategoryDto> scats = game.getCategories()
+                        .stream()
+                        .map((cat) -> {
+                            final SimpleCategoryDto scat = new SimpleCategoryDto();
+
+                            scat.setId(cat.getId());
+                            scat.setName(cat.getName());
+                            scat.setEstimate(cat.getEstimate());
+                            scat.setStatus(cat.getStatus());
+
+                            return scat;
+                        })
+                        .collect(Collectors.toList());
+
+                    sgame.setCategories(scats);
+
+                    return sgame;
+                })
+                .collect(Collectors.toList());
+
+            historyDto.setMarathonId(marathon.getId());
+            historyDto.setMarathonName(marathon.getName());
+            historyDto.setMarathonStartDate(marathon.getStartDate());
+            historyDto.setGames(sgames);
+            // historyDto.setOpponents(new ArrayList<>(submission.getOpponents())); // TODO: do we use this?
+            historyDto.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    if (marathon.isSelectionDone()) {
+                        category.setStatus(selections.get(category.getId()).getStatus());
+                    } else {
+                        category.setStatus(Status.TODO);
+                    }
+                });
+                game.getCategories().sort(Comparator.comparing(SimpleCategoryDto::getId));
+            });
+
+            historyDto.getGames().sort(Comparator.comparing(SimpleGameDto::getId));
+
+            history.add(historyDto);
+        });
+
+        return history;
     }
 }

@@ -1,6 +1,7 @@
 package app.oengus.web.v2;
 
 import app.oengus.entity.dto.v2.users.ProfileDto;
+import app.oengus.entity.dto.v2.users.ProfileHistory;
 import app.oengus.service.UserService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.PermitAll;
+import java.util.List;
 
 @Tag(name = "users-v2")
 @RestController("v2UserController")
@@ -25,16 +27,25 @@ public class UserController {
         this.userService = userService;
     }
 
-    // TODO: separate routes for connections, history, moderated marathons and volunteering
+    // TODO: separate routes for connections?, history, moderated marathons and volunteering
     @PermitAll
     @GetMapping("/{name}")
     @JsonView(Views.Public.class)
     @Operation(
         summary = "Get a user's profile by their username"
     )
-    public ResponseEntity<?> profileByName(@PathVariable("name") final String name) throws NotFoundException {
+    public ResponseEntity<ProfileDto> profileByName(@PathVariable("name") final String name) throws NotFoundException {
         final ProfileDto profile = this.userService.getUserProfileV2(name);
 
         return ResponseEntity.ok(profile);
+    }
+
+    @PermitAll
+    @GetMapping("/{id}/submission-history")
+    @JsonView(Views.Public.class)
+    public ResponseEntity<List<ProfileHistory>> userHistory(@PathVariable("id") final int id) {
+        final List<ProfileHistory> history = this.userService.getUserProfileHistory(id);
+
+        return ResponseEntity.ok(history);
     }
 }
