@@ -2,7 +2,6 @@ package app.oengus.web;
 
 import app.oengus.entity.dto.TeamDto;
 import app.oengus.service.repository.TeamRepositoryService;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;

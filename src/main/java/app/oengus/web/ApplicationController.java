@@ -3,19 +3,21 @@ package app.oengus.web;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.service.ApplicationService;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.security.Principal;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
-@ApiIgnore
+@Hidden
+@Tag(name = "applications-v1")
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/teams/{teamId}/applications", "/marathons/{marathonId}/teams/{teamId}/applications"})
 public class ApplicationController {
