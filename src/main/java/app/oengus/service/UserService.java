@@ -5,6 +5,7 @@ import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
+import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
@@ -372,5 +373,37 @@ public class UserService {
         BeanHelper.copyProperties(dto, infoForUser);
 
         return this.applicationUserInformationRepository.save(infoForUser);
+    }
+
+    /* ==================== V2 stuff ==================== */
+    public ProfileDto getUserProfileV2(final String username) throws NotFoundException {
+        final User user = this.userRepositoryService.findByUsername(username);
+
+        if (user == null) {
+            throw new NotFoundException("Unknown user");
+        }
+
+        final ProfileDto profile = new ProfileDto();
+
+        BeanUtils.copyProperties(user, profile);
+        profile.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
+
+        final String pronouns = user.getPronouns();
+
+        if (pronouns != null) {
+            profile.setPronouns(
+                List.of(pronouns.split(","))
+            );
+        }
+
+        final String langs = user.getLanguagesSpoken();
+
+        if (langs != null) {
+            profile.setLanguagesSpoken(
+                List.of(langs.split(","))
+            );
+        }
+
+        return profile;
     }
 }

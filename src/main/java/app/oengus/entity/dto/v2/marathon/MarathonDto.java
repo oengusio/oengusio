@@ -1,7 +1,6 @@
 package app.oengus.entity.dto.v2.marathon;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.*;
@@ -10,55 +9,55 @@ import java.time.ZonedDateTime;
 
 // TODO: request to model mapping
 //  Manual or automatic?
-@ApiModel
+@Schema
 public class MarathonDto {
 
     @NotNull(message = "The marathon id must not be null")
     @Size(min = 4, max = 10)
     @Pattern(regexp = "^[\\w\\-]{4,10}$")
-    @ApiModelProperty(required = true, value = "The id of this marathon. Will display in urls referencing this marathon")
+    @Schema(required = true, description = "The id of this marathon. Will display in urls referencing this marathon")
     private String id;
 
     @NotNull(message = "The marathon name must not be null")
     @Size(min = 4, max = 40)
     @Pattern(regexp = "^[\\w\\- ]{4,40}$")
-    @ApiModelProperty(required = true, value = "The name of this marathon")
+    @Schema(required = true, description = "The name of this marathon")
     private String name;
 
     @NotNull(message = "The marathon description must not be null, empty strings are allowed however")
     @Size(max = 5000)
-    @ApiModelProperty(required = true, value = "The description is what is shown to users when they visit this marathon's homepage")
+    @Schema(required = true, description = "The description is what is shown to users when they visit this marathon's homepage")
     private String description;
 
     @NotNull
-    @ApiModelProperty(required = true, value = "Marathon privacy, marathon will not show on homepage and in calendar if set to false")
+    @Schema(required = true, description = "Marathon privacy, marathon will not show on homepage and in calendar if set to false")
     private boolean isPrivate;
 
     @NotNull(message = "Marathon start date must not be null")
     @FutureOrPresent(message = "The start date must be the current date or a future date")
-    @ApiModelProperty(required = true, value = "The date and time of when this marathon starts")
+    @Schema(required = true, description = "The date and time of when this marathon starts")
     private ZonedDateTime startDate;
 
     @Future(message = "The end date must be a future date")
     @NotNull(message = "Marathon end date must not be null")
-    @ApiModelProperty(required = true, value = "The date and time of when this marathon ends")
+    @Schema(required = true, description = "The date and time of when this marathon ends")
     private ZonedDateTime endDate;
 
     @Nullable
     @FutureOrPresent(message = "Submissions cannot open in the past, must be current or future date")
-    @ApiModelProperty(value = "Allows Oengus to automatically open the submissions for this marathon")
+    @Schema(description = "Allows Oengus to automatically open the submissions for this marathon")
     private ZonedDateTime submissionsStartDate;
 
     @Nullable
     @Future(message = "Submissions can only end in the future :)")
-    @ApiModelProperty(value = "Allows Oengus to automatically close the submissions for this marathon")
+    @Schema(description = "Allows Oengus to automatically close the submissions for this marathon")
     private ZonedDateTime submissionsEndDate;
 
-    @ApiModelProperty(required = true, value = "On-site vs online marathon, true to mark this marathon as on-site")
+    @Schema(required = true, description = "On-site vs online marathon, true to mark this marathon as on-site")
     private boolean onSite;
 
     @NotNull
-    @ApiModelProperty(required = true, value = "The language that this marathon is in. ISO (something) language codes only.")
+    @Schema(required = true, description = "The language that this marathon is in. ISO (something) language codes only.")
     private String location;
     private String country;
     private String language = "en";
@@ -85,7 +84,7 @@ public class MarathonDto {
     private boolean hideDiscord;
 
     @NotNull
-    @ApiModelProperty(required = true, value = "The default length for the setup time field. This field is using the ISO-8601 duration format.")
+    @Schema(required = true, description = "The default length for the setup time field. This field is using the ISO-8601 duration format.")
     private Duration defaultSetupTime;
 
     private boolean selectionDone;
