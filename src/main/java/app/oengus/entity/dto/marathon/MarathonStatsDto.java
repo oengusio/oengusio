@@ -1,12 +1,11 @@
 package app.oengus.entity.dto.marathon;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Duration;
 import java.util.Map;
 
-@ApiModel(description = "Represents the stats of a marathon")
+@Schema(description = "Represents the stats of a marathon")
 public class MarathonStatsDto {
     private final long submissionCount;
     private final long runnerCount;
@@ -30,27 +29,25 @@ public class MarathonStatsDto {
         this.averageEstimate = Duration.ofNanos((long) averageEstimate);
     }
 
-    @ApiModelProperty(value = "The amount of submissions, or runs, for this marathon.")
+    @Schema(description = "The amount of submissions, or runs, for this marathon.")
     public long getSubmissionCount() {
         return submissionCount;
     }
 
-    @ApiModelProperty(value = "The amount of different runners that submitted.")
+    @Schema(description = "The amount of different runners that submitted.")
     public long getRunnerCount() {
         return runnerCount;
     }
 
-    @ApiModelProperty(
-        dataType = "String",
-        value = "The total duration of all submitted runs. Formatted in the ISO-8601 duration format."
+    @Schema(
+        description = "The total duration of all submitted runs. Formatted in the ISO-8601 duration format."
     )
     public String getTotalLength() {
         return totalLength.toString();
     }
 
-    @ApiModelProperty(
-        dataType = "String",
-        value = "The average estimate if all runs combined. Formatted in the ISO-8601 duration format."
+    @Schema(
+        description = "The average estimate if all runs combined. Formatted in the ISO-8601 duration format."
     )
     public String getAverageEstimate() {
         return averageEstimate.toString();

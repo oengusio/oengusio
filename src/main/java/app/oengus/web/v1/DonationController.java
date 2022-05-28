@@ -8,15 +8,14 @@ import app.oengus.service.ExportService;
 import app.oengus.service.MarathonService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Operation;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/donations", "/marathons/{marathonId}/donations"})
-@Api
+@Tag(name = "donations-v1")
 public class DonationController {
 
     private final MarathonService marathonService;
@@ -40,7 +39,7 @@ public class DonationController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> findForMarathon(@PathVariable("marathonId") final String marathonId,
                                              @RequestParam("page") final int page,
                                              @RequestParam("size") final int size) {
@@ -51,8 +50,8 @@ public class DonationController {
 
     @GetMapping("/stats")
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Get the donation stats for a marathon, you probably want this one",
-        response = DonationStatsDto.class)
+    @Operation(summary = "Get the donation stats for a marathon, you probably want this one"/*,
+        response = DonationStatsDto.class*/)
     public ResponseEntity<?> findStatsForMarathon(@PathVariable("marathonId") final String marathonId) throws NotFoundException {
         if (!this.marathonService.exists(marathonId)) {
             throw new NotFoundException("Marathon not found");
@@ -64,7 +63,7 @@ public class DonationController {
     }
 
     @PostMapping("/donate")
-    @ApiIgnore
+    @Operation(hidden = true)
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> initDonation(@PathVariable("marathonId") final String marathonId,
                                           @RequestBody final Donation donation) throws NotFoundException {
@@ -73,7 +72,7 @@ public class DonationController {
 
     @PostMapping("/validate/{code}")
     @JsonView(Views.Public.class)
-    @ApiIgnore
+    @Operation(hidden = true)
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> validateDonation(@PathVariable("marathonId") final String marathonId,
                                               @PathVariable("code") final String code) {
@@ -82,7 +81,7 @@ public class DonationController {
     }
 
     @DeleteMapping("/{code}")
-    @ApiIgnore
+    @Operation(hidden = true)
     @PreAuthorize("!isMarathonArchived(#marathonId)")
     public ResponseEntity<?> deleteDonation(@PathVariable("marathonId") final String marathonId,
                                             @PathVariable("code") final String code) {
@@ -93,7 +92,7 @@ public class DonationController {
     @GetMapping("/export")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Export all submitted donations by marathon to CSV")
+    @Operation(summary = "Export all submitted donations by marathon to CSV")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("zoneId") final String zoneId,
                                      final HttpServletResponse response) throws IOException {

@@ -3,7 +3,9 @@ package app.oengus.entity.dto;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+@ApiResponse
 public class ScheduleTickerDto {
     @JsonView(Views.Public.class)
     public ScheduleLine previous = null;

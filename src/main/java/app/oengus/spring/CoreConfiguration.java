@@ -1,18 +1,19 @@
 package app.oengus.spring;
 
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.List;
 
 @Configuration
-@EnableSwagger2
 @EnableScheduling
 public class CoreConfiguration implements WebMvcConfigurer {
     @Override
@@ -23,12 +24,30 @@ public class CoreConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public Docket docket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .pathMapping("/api/")
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("app.oengus.web"))
-            .paths(PathSelectors.any())
-            .build();
+    public OpenApiCustomiser consumerTypeHeaderOpenAPICustomiser() {
+        return (openApi) -> {
+            openApi.setInfo(
+                new Info()
+                    .title("Oengus API documentation")
+                    .contact(
+                        new Contact()
+                            .url("https://oengus.io/")
+                    )
+                    .license(
+                        new License()
+                            .name("AGPL v3")
+                            .url("https://github.com/esamarathon/oengusio/blob/master/LICENSE")
+                    )
+                    .version("@OENGUS_VERSION@") // TODO: use replace tokens plugin
+            );
+            openApi.setServers(List.of(
+                new Server()
+                    .url("https://oengus.io/api")
+                    .description("Production server"),
+                new Server()
+                    .url("https://sandbox.oengus.io/api")
+                    .description("Sandbox, use for testing the api")
+            ));
+        };
     }
 }

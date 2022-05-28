@@ -81,7 +81,7 @@ public class Question {
 		this.marathon = marathon;
 	}
 
-	public String getLabel() {
+    public String getLabel() {
 		return this.label;
 	}
 

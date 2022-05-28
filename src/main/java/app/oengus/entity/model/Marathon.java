@@ -10,11 +10,14 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "marathon")
@@ -54,10 +57,12 @@ public class Marathon {
 
     @Column(name = "submissions_start_date")
     @JsonView(Views.Public.class)
+    @Nullable
     private ZonedDateTime submissionsStartDate;
 
     @Column(name = "submissions_end_date")
     @JsonView(Views.Public.class)
+    @Nullable
     private ZonedDateTime submissionsEndDate;
 
     @Column(name = "description")
@@ -186,7 +191,7 @@ public class Marathon {
     @JsonView(Views.Public.class)
     private boolean canEditSubmissions = false;
 
-    @OneToMany(mappedBy = "marathon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "marathon", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "marathonReference")
     @OrderBy("position ASC")
     @JsonView(Views.Public.class)

@@ -4,6 +4,7 @@ import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.LanguageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
+@Tag(name = "misc-v1")
 @RestController
 @RequestMapping({"/v1", "/v2", ""})
 public class MiscController {
@@ -29,7 +31,7 @@ public class MiscController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> bonk() {
+    public ResponseEntity<String> bonk() {
         return ResponseEntity.ok("Bonk!");
     }
 

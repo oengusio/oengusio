@@ -2,7 +2,8 @@ package app.oengus.web.v1;
 
 import app.oengus.entity.dto.TeamDto;
 import app.oengus.service.repository.TeamRepositoryService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Api
+@Tag(name = "teams-v1")
+@Hidden
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/teams", "/marathons/{marathonId}/teams"})
 public class TeamController {

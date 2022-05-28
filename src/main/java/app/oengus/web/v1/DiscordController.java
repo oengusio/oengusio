@@ -7,6 +7,8 @@ import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.DiscordApiService;
 import app.oengus.service.MarathonService;
 import feign.FeignException;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Operation;
 
 import javax.annotation.security.RolesAllowed;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/discord", "/marathons/{marathonId}/discord"})
-@ApiIgnore
+@Tag(name = "discord-v1")
+@Hidden
 public class DiscordController {
     @Autowired
     private DiscordApiService discordApiService;

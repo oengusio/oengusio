@@ -5,20 +5,19 @@ import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.CategoryService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.security.Principal;
 
 @RestController
 @RequestMapping({"/v1/marathons/{marathonId}/categories", "/marathons/{marathonId}/categories"})
-@Api
+@Tag(name = "categories-v1")
 public class CategoryController {
 
     @Autowired
@@ -26,8 +25,8 @@ public class CategoryController {
 
     @GetMapping("/{code}")
     @JsonView(Views.Public.class)
-    @ApiOperation(value = "Find a multiplayer category by its code and return basic information",
-        response = OpponentSubmissionDto.class)
+    @Operation(summary = "Find a multiplayer category by its code and return basic information"/*,
+        response = OpponentSubmissionDto.class*/)
     public ResponseEntity<?> findCategoryByCode(@PathVariable("marathonId") final String marathonId,
                                                 @PathVariable("code") final String code) {
         return ResponseEntity.ok(this.categoryService.findCategoryByCode(marathonId, code));
@@ -35,7 +34,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
                                     @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
         this.categoryService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));

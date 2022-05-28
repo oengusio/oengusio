@@ -13,8 +13,8 @@ import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -42,7 +41,7 @@ import java.util.Map;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
-@Api
+@Tag(name = "users-v1")
 @RestController
 @CrossOrigin(maxAge = 3600)
 @RequestMapping({"/v1/users", "/users"})
@@ -63,7 +62,7 @@ public class UserController {
     }
 
     @PermitAll
-    @ApiIgnore
+    @Operation(hidden = true)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
@@ -73,7 +72,7 @@ public class UserController {
         return ResponseEntity.ok(this.userService.login(host, request));
     }
 
-    @ApiIgnore
+    @Operation(hidden = true)
     @PostMapping("/sync")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
@@ -87,7 +86,7 @@ public class UserController {
 
     @GetMapping("/{name}/exists")
     @PermitAll
-    @ApiOperation(value = "Check if username exists")
+    @Operation(summary = "Check if username exists")
     public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
         final Map<String, Boolean> response = new HashMap<>();
 
@@ -99,9 +98,9 @@ public class UserController {
     @GetMapping("/{name}/search")
     @JsonView(Views.Public.class)
     @PermitAll
-    @ApiOperation(value = "Get a list of users that include searched string in their username",
+    @Operation(summary = "Get a list of users that include searched string in their username"/*,
         response = User.class,
-        responseContainer = "List")
+        responseContainer = "List"*/)
     public ResponseEntity<List<User>> search(@PathVariable("name") final String name) {
         return ResponseEntity.ok(this.userService.findUsersWithUsername(name));
     }
@@ -109,8 +108,8 @@ public class UserController {
     @GetMapping("/{name}")
     @JsonView(Views.Public.class)
     @PermitAll
-    @ApiOperation(value = "Get a user profile",
-        response = UserProfileDto.class)
+    @Operation(summary = "Get a user profile"/*,
+        response = UserProfileDto.class*/)
     public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) throws NotFoundException {
         final UserProfileDto userProfile = this.userService.getUserProfile(name);
 
@@ -119,7 +118,7 @@ public class UserController {
 
     @GetMapping("/{name}/avatar")
     @PermitAll
-    @ApiOperation(value = "Get a user's avatar")
+    @Operation(summary = "Get a user's avatar")
     public ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
         final User user = this.userService.findByUsername(name);
         final String mail = user.getMail();
@@ -154,7 +153,7 @@ public class UserController {
         }
     }
 
-    @ApiIgnore
+    @Operation(hidden = true)
     @PutMapping("/{id}/patreon-status")
     @PreAuthorize("isSelf(#id) && !isBanned()")
     public ResponseEntity<?> updateUserPatreonStatus(
@@ -181,7 +180,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("isSelf(#id) && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final UserDto userPatch,
                                         final BindingResult bindingResult) throws NotFoundException {
@@ -196,7 +195,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("(isSelf(#id) && !isBanned()) || isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) throws NotFoundException {
         this.userService.markDeleted(id);
 
@@ -206,7 +205,7 @@ public class UserController {
     @GetMapping("/me")
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Internal.class)
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<User> me(final Principal principal) throws NotFoundException {
         final int id = getUserFromPrincipal(principal).getId();
 
@@ -215,7 +214,7 @@ public class UserController {
 
     @PostMapping("/{id}/ban")
     @PreAuthorize("isAuthenticated() && isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> ban(@PathVariable int id) throws NotFoundException {
         this.userService.addRole(id, Role.ROLE_BANNED);
 
@@ -224,7 +223,7 @@ public class UserController {
 
     @DeleteMapping("/{id}/ban")
     @PreAuthorize("isAuthenticated() && isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> unban(@PathVariable int id) throws NotFoundException {
         this.userService.removeRole(id, Role.ROLE_BANNED);
 
@@ -233,7 +232,7 @@ public class UserController {
 
     @PostMapping("/{id}/enabled")
     @PreAuthorize("isAuthenticated() && isAdmin()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
         final User patch = this.userService.getUser(id);
 
@@ -244,7 +243,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiIgnore
+    @Operation(hidden = true)
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @GetMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})
@@ -255,7 +254,7 @@ public class UserController {
         return ResponseEntity.ok(infoForUser);
     }
 
-    @ApiIgnore
+    @Operation(hidden = true)
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @PostMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})

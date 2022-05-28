@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -41,12 +42,14 @@ public class Answer implements Comparable<Answer> {
 
 	@AssertTrue
 	public boolean isAnswerRequired() {
-		if (this.question == null) {
+		if (this.question == null) { // WHY IS QUESTION NULL
 			return false;
 		}
+
 		if (!this.question.isRequired()) {
 			return true;
 		}
+
 		return StringUtils.isNotEmpty(this.answer);
 	}
 
@@ -84,6 +87,6 @@ public class Answer implements Comparable<Answer> {
 
 	@Override
 	public int compareTo(final Answer o) {
-		return Integer.compare(this.getQuestion().getPosition(), o.getQuestion().getPosition());
+		return new AnswerComparator().compare(this, o);
 	}
 }

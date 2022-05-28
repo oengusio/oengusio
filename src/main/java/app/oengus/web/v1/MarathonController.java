@@ -9,8 +9,7 @@ import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Operation;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Api
+@Tag(name = "marathons-v1")
 @RestController
 @RequestMapping({"/v1/marathons", "/marathons"})
 public class MarathonController {
@@ -53,7 +52,7 @@ public class MarathonController {
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> create(@RequestBody @Valid final Marathon marathon, final Principal principal,
                                     final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -70,7 +69,7 @@ public class MarathonController {
 
     @GetMapping("/{name}/exists")
     @PermitAll
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
         final Map<String, Boolean> validationErrors = new HashMap<>();
         validationErrors.put("exists", this.marathonService.exists(name));
@@ -81,9 +80,9 @@ public class MarathonController {
     @PermitAll
     @GetMapping("/{id}")
     @JsonView(Views.Public.class)
-    @ApiOperation(
-        value = "Get information about a marathon",
-        response = MarathonDto.class
+    @Operation(
+        summary = "Get information about a marathon"/*,
+        response = MarathonDto.class*/
     )
     public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) throws NotFoundException {
         final MarathonDto marathon = this.marathonService.findOne(id);
@@ -97,9 +96,9 @@ public class MarathonController {
     @PermitAll
     @GetMapping("/{id}/stats")
     @JsonView(Views.Internal.class)
-    @ApiOperation(
-        value = "Get stats about a marathon",
-        response = MarathonStatsDto.class
+    @Operation(
+        summary = "Get stats about a marathon"/*,
+        response = MarathonStatsDto.class*/
     )
     public ResponseEntity<MarathonStatsDto> getStats(@PathVariable("id") final String id) throws NotFoundException {
         if (!this.marathonService.exists(id)) {
@@ -116,7 +115,7 @@ public class MarathonController {
 
     @GetMapping
     @PermitAll
-    @ApiOperation(value = "Get marathons as shown on the front page. Map is composed of 3 keys :\n" +
+    @Operation(summary = "Get marathons as shown on the front page. Map is composed of 3 keys :\n" +
         "- next: 5 earliest upcoming marathons\n" +
         "- open: all marathons with submissions open\n" +
         "- live: all currently live marathons")
@@ -127,7 +126,7 @@ public class MarathonController {
 
     @GetMapping("/forDates")
     @PermitAll
-    @ApiOperation(value = "Get marathons between given dates")
+    @Operation(summary = "Get marathons between given dates")
     public ResponseEntity<List<MarathonBasicInfoDto>> getMarathonsForDates(
         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime start,
         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime end,
@@ -138,7 +137,7 @@ public class MarathonController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final String id) throws NotFoundException {
         this.marathonService.delete(id);
 
@@ -147,7 +146,7 @@ public class MarathonController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> update(@PathVariable("id") final String id,
                                     @RequestBody @Valid final Marathon patch,
                                     final BindingResult bindingResult) throws NotFoundException {
@@ -163,7 +162,7 @@ public class MarathonController {
     // we're checking the webhook on the backend to ensure "localhost" will fail
     @GetMapping("/{id}/webhook")
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> isWebhookOnline(@PathVariable("id") final String id,
                                              @RequestParam("url") final String url) {
         final boolean isOnline = this.webhookService.sendPingEvent(url);
@@ -176,7 +175,7 @@ public class MarathonController {
 
     @PostMapping("/{id}/selections/publish")
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
         // make a fake marathon so we don't update the real one
         final Marathon marathon = new Marathon();

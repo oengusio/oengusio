@@ -18,6 +18,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // TODO: Add proper json errors once we have the new front end going
@@ -75,6 +76,28 @@ public class OengusExceptionHandler {
         LOG.error("Uncaught NestedServletException", exc);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(toMap(req, exc));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> constraintViolationException(final ConstraintViolationException exc, final HttpServletRequest req) {
+        final List<Map<String, String>> test = exc.getConstraintViolations()
+            .stream()
+            .map((v) -> {
+                final Map<String, String> map = new HashMap<>();
+
+                map.put("message", v.getMessage());
+                map.put("propertyPath", v.getPropertyPath().toString());
+                map.put("rootBeanClass", v.getRootBeanClass().toString());
+
+                return map;
+            })
+            .toList();
+
+        final Map<String, Object> stringStringMap = toMap(req, exc);
+
+        stringStringMap.put("errors", test);
+
+        return ResponseEntity.badRequest().body(stringStringMap);
     }
 
     @ExceptionHandler(OengusBusinessException.class)
