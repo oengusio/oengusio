@@ -13,7 +13,7 @@ dependencyManagement {
 }
 
 project.group = "app.oengus"
-project.version = "2022.05.09-1"
+project.version = "2022.05.30"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
