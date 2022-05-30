@@ -4,6 +4,9 @@ import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.entity.dto.v1.answers.AnswerDto;
+import app.oengus.entity.dto.v1.submissions.SubmissionDto;
+import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
@@ -257,7 +260,7 @@ public class SubmissionService {
                                 final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
                                 opponentCategoryDto.setId(opponent.getId());
                                 opponentCategoryDto.setVideo(opponent.getVideo());
-                                opponentCategoryDto.setUser(opponent.getSubmission().getUser());
+                                opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
                                 category.getOpponentDtos().add(opponentCategoryDto);
                             });
                         }
@@ -289,6 +292,61 @@ public class SubmissionService {
         return opponentDto;
     }
 
+    public List<AnswerDto> findAnswersByMarathon(final String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<AnswerDto> answers = new ArrayList<>();
+
+        byMarathon.forEach((submission) -> {
+            submission.getAnswers().forEach((answer) -> {
+                if (answer.getQuestion().getFieldType() == FieldType.FREETEXT) {
+                    return;
+                }
+
+                answers.add(AnswerDto.fromAnswer(answer));
+            });
+        });
+
+        return answers;
+    }
+
+    public List<SubmissionDto> findByMarathonNew(final String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<SubmissionDto> submissions = new ArrayList<>();
+
+        byMarathon.forEach((submission) -> {
+            final SubmissionDto dto = new SubmissionDto();
+
+            dto.setId(submission.getId());
+            dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
+
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    if (category.getOpponents() != null) {
+                        category.setOpponentDtos(new ArrayList<>());
+                        category.getOpponents().forEach(opponent -> {
+                            final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
+                            opponentCategoryDto.setId(opponent.getId());
+                            opponentCategoryDto.setVideo(opponent.getVideo());
+                            opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                            opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
+                            category.getOpponentDtos().add(opponentCategoryDto);
+                        });
+                    }
+                });
+            });
+
+            dto.setGames(submission.getGames());
+
+            submissions.add(dto);
+        });
+
+        return submissions;
+    }
+
     @Transactional
     public List<Submission> findByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
@@ -305,7 +363,7 @@ public class SubmissionService {
                             final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
                             opponentCategoryDto.setId(opponent.getId());
                             opponentCategoryDto.setVideo(opponent.getVideo());
-                            opponentCategoryDto.setUser(opponent.getSubmission().getUser());
+                            opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
                             opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
                             category.getOpponentDtos().add(opponentCategoryDto);
                         });

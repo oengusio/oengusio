@@ -1,7 +1,7 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
 import app.oengus.entity.model.Availability;
-import app.oengus.entity.model.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -12,7 +12,7 @@ public class OpponentCategoryDto {
 	private int id;
 
 	@JsonView(Views.Public.class)
-	private User user;
+	private SubmissionUserDto user;
 
 	@JsonView(Views.Public.class)
 	private String video;
@@ -36,11 +36,11 @@ public class OpponentCategoryDto {
 		this.video = video;
 	}
 
-	public User getUser() {
+	public SubmissionUserDto getUser() {
 		return this.user;
 	}
 
-	public void setUser(final User user) {
+	public void setUser(final SubmissionUserDto user) {
 		this.user = user;
 	}
 
