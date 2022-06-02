@@ -4,6 +4,9 @@ import app.oengus.entity.dto.v2.marathon.MarathonDto;
 import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +43,13 @@ public class MarathonController {
     @PostMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
-    @Operation(summary = "Create a marathon")
+    @Operation(
+        summary = "Create a marathon",
+        responses = {
+            @ApiResponse(description = "Marathon created", responseCode = "201", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MarathonDto.class)))
+            // TODO: bindingResult error construction
+        }
+    )
     public ResponseEntity<?> create(
         @RequestBody @Valid final MarathonDto request,
         final Principal principal,

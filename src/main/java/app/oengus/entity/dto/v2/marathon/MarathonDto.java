@@ -7,8 +7,6 @@ import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-// TODO: request to model mapping
-//  Manual or automatic?
 @Schema
 public class MarathonDto {
 
@@ -45,21 +43,22 @@ public class MarathonDto {
 
     @Nullable
     @FutureOrPresent(message = "Submissions cannot open in the past, must be current or future date")
-    @Schema(description = "Allows Oengus to automatically open the submissions for this marathon")
+    @Schema(description = "Allows Oengus to automatically open the submissions for this marathon on the specified date")
     private ZonedDateTime submissionsStartDate;
 
     @Nullable
     @Future(message = "Submissions can only end in the future :)")
-    @Schema(description = "Allows Oengus to automatically close the submissions for this marathon")
+    @Schema(description = "Allows Oengus to automatically close the submissions for this marathon on the specified date")
     private ZonedDateTime submissionsEndDate;
 
     @Schema(required = true, description = "On-site vs online marathon, true to mark this marathon as on-site")
     private boolean onSite;
 
-    @NotNull
-    @Schema(required = true, description = "The language that this marathon is in. ISO (something) language codes only.")
     private String location;
     private String country;
+
+    @NotNull
+    @Schema(required = true, description = "The language that this marathon is in. ISO 639-1 language codes only.")
     private String language = "en";
 
     private int maxGamesPerRunner = 5;

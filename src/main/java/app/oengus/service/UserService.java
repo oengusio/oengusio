@@ -7,6 +7,7 @@ import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.dto.v2.SimpleCategoryDto;
 import app.oengus.entity.dto.v2.SimpleGameDto;
+import app.oengus.entity.dto.v2.users.ModeratedHistory;
 import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.dto.v2.users.ProfileHistory;
 import app.oengus.entity.model.*;
@@ -407,6 +408,11 @@ public class UserService {
         }
 
         return profile;
+    }
+
+    public List<ModeratedHistory> getUserModeratedHistory(final int userId) {
+
+        return null;
     }
 
     public List<ProfileHistory> getUserProfileHistory(final int userId) {
