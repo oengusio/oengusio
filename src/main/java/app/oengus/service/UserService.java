@@ -7,9 +7,9 @@ import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.dto.v2.SimpleCategoryDto;
 import app.oengus.entity.dto.v2.SimpleGameDto;
-import app.oengus.entity.dto.v2.users.ModeratedHistory;
+import app.oengus.entity.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.entity.dto.v2.users.ProfileDto;
-import app.oengus.entity.dto.v2.users.ProfileHistory;
+import app.oengus.entity.dto.v2.users.ProfileHistoryDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
@@ -410,12 +410,26 @@ public class UserService {
         return profile;
     }
 
-    public List<ModeratedHistory> getUserModeratedHistory(final int userId) {
+    public List<ModeratedHistoryDto> getUserModeratedHistory(final int userId) {
+        final User user = new User();
+        user.setId(userId);
 
-        return null;
+        return this.marathonService.findAllMarathonsIModerate(user)
+            .stream()
+            .filter((m) -> !m.getPrivate())
+            .map((m) -> {
+                final ModeratedHistoryDto hist = new ModeratedHistoryDto();
+
+                hist.setMarathonId(m.getId());
+                hist.setMarathonName(m.getName());
+                hist.setMarathonStartDate(m.getStartDate());
+
+                return hist;
+            })
+            .toList();
     }
 
-    public List<ProfileHistory> getUserProfileHistory(final int userId) {
+    public List<ProfileHistoryDto> getUserProfileHistory(final int userId) {
         final User user = new User();
         user.setId(userId);
 
@@ -440,8 +454,7 @@ public class UserService {
 
 
         final Map<Integer, SelectionDto> selections = this.selectionService.findAllByCategory(categories);
-
-        final List<ProfileHistory> history = new ArrayList<>();
+        final List<ProfileHistoryDto> history = new ArrayList<>();
 
         filteredSubmissions.forEach((submission) -> {
             final Marathon marathon = submission.getMarathon();
@@ -450,7 +463,7 @@ public class UserService {
                 return;
             }
 
-            final ProfileHistory historyDto = new ProfileHistory();
+            final ProfileHistoryDto historyDto = new ProfileHistoryDto();
             final List<SimpleGameDto> sgames = submission.getGames()
                 .stream()
                 .map((game) -> {
