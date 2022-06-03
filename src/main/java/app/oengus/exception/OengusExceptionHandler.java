@@ -2,6 +2,8 @@ package app.oengus.exception;
 
 import io.sentry.Sentry;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.util.NestedServletException;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,6 +127,18 @@ public class OengusExceptionHandler {
         mapper.put("path", e.getRequestURL());
 
         return mapper;
+    }
+
+    // SOURCE: https://mtyurt.net/post/spring-how-to-handle-ioexception-broken-pipe.html
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public Object exceptionHandler(final HttpServletRequest req, final IOException e) {
+        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+            return null;
+        } else {
+            Sentry.captureException(e);
+            return toMap(req, e);
+        }
     }
 
     private Map<String, Object> toMap(final HttpServletRequest req, final Exception exception) {
