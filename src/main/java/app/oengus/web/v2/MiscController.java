@@ -30,8 +30,9 @@ public class MiscController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> bonk() {
+    // @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> bonk() throws InterruptedException {
+        Thread.sleep(2000);
         return ResponseEntity.ok("Bonk!");
     }
 

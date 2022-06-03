@@ -62,6 +62,7 @@ sentry:
     # We recommend adjusting this value in production.
     traces-sample-rate: ${SENTRY_TRACES_SAMPLE_RATE:1.0}
     environment: ${SENTRY_ENVIRONMENT}
+    exception-resolver-order: 100
 
 spring:
     # TODO: read into this, cache can do a lot
@@ -116,8 +117,6 @@ spring:
             USE_BIG_DECIMAL_FOR_FLOATS: true
     mvc:
         throw-exception-if-no-handler-found: true
-        pathmatch:
-            matching-strategy: ant_path_matcher #otherwise our lovely documentation plugin breaks :D
     web:
         resources.add-mappings: false
 

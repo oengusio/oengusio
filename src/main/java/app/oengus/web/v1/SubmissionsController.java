@@ -1,5 +1,7 @@
 package app.oengus.web.v1;
 
+import app.oengus.entity.dto.v1.answers.AnswerDto;
+import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.model.Submission;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.ExportService;
@@ -24,7 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -73,13 +75,22 @@ public class SubmissionsController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @Operation(summary = "Find all submissions by marathon"/*,
-        response = Submission.class,
-        responseContainer = "List"*/)
-    public ResponseEntity<?> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
+    @Operation(summary = "Find all submissions by marathon")
+    public ResponseEntity<List<SubmissionDto>> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(this.submissionService.findByMarathon(marathonId));
+            .body(this.submissionService.findByMarathonNew(marathonId));
+    }
+
+
+    @GetMapping("/answers")
+    @JsonView(Views.Public.class)
+    @Operation(summary = "Get the answers for this marathon")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    public ResponseEntity<List<AnswerDto>> findAllAnswers(@PathVariable("marathonId") final String marathonId) {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.submissionService.findAnswersByMarathon(marathonId));
     }
 
     @PostMapping
@@ -133,15 +144,6 @@ public class SubmissionsController {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(this.submissionService.getRunnersAvailabilitiesForMarathon(marathonId));
-    }
-
-    @GetMapping("/answers")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
-    @Operation(hidden = true)
-    public ResponseEntity<?> getAnswers(@PathVariable("marathonId") final String marathonId) {
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(this.submissionService.findCustomAnswersByMarathon(marathonId));
     }
 
     @GetMapping("/availabilities/{userId}")
