@@ -43,8 +43,11 @@ public class ExportService {
 		final StringWriter out = new StringWriter();
 		if (!submissions.isEmpty()) {
 			try (final CSVPrinter printer = new CSVPrinter(out,
-					CSVFormat.RFC4180.withHeader(submissions.get(0).getCsvHeaders())
-					                 .withQuoteMode(QuoteMode.NON_NUMERIC))) {
+					CSVFormat.RFC4180.builder()
+                        .setHeader(submissions.get(0).getCsvHeaders())
+                        .setQuoteMode(QuoteMode.NON_NUMERIC)
+                        .build()
+            )) {
 				final Locale locale = Locale.forLanguageTag(language);
 				for (final Submission submission : submissions) {
 					printer.printRecords(submission.getCsvRecords(locale, zoneId));

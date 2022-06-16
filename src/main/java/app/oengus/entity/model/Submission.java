@@ -151,9 +151,13 @@ public class Submission {
     public String[] getCsvHeaders() {
         final List<String> headers = new ArrayList<>(DEFAULT_HEADERS);
         if (!CollectionUtils.isEmpty(this.getMarathon().getQuestions())) {
-            this.getMarathon().getQuestions().forEach(question -> {
-                headers.add(question.getLabel());
-            });
+            this.getMarathon()
+                .getQuestions()
+                .stream()
+                .filter((q) -> q.getFieldType() != FieldType.FREETEXT)
+                .forEach(
+                    (question) -> headers.add(question.getLabel())
+                );
         }
         headers.add("availabilities");
         String[] array = new String[headers.size()];
@@ -205,7 +209,12 @@ public class Submission {
             final String statusName = category.getSelection().getStatus().name();
             record.add(resourceBundle.getString("run.status." + statusName));
             if (!CollectionUtils.isEmpty(this.getAnswers())) {
-                this.getAnswers().forEach(answer -> record.add(answer.getAnswer()));
+                this.getAnswers()
+                    .stream()
+                    .filter((a) -> a.getQuestion().getFieldType() != FieldType.FREETEXT)
+                    .forEach(
+                        (answer) -> record.add(answer.getAnswer())
+                    );
             }
             this.getAvailabilities().forEach(availability -> {
                 record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(availability.getFrom().withZoneSameInstant(
