@@ -1045,4 +1045,10 @@
                                  deleteCascade="true"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20220831-1">
+        <addUniqueConstraint tableName="submission"
+                             columnNames="user_id,marathon_id"
+                             constraintName="uq_submission_user_id_marathon_id"/>
+    </changeSet>
 </databaseChangeLog>
