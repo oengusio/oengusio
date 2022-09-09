@@ -5,15 +5,13 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import javax.persistence.*;
-import org.hibernate.annotations.Cache;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nullable;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,8 +22,6 @@ import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
 @Entity
 @Table(name = "users")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements UserDetails {
 
     @Id
@@ -50,7 +46,6 @@ public class User implements UserDetails {
 
     @ElementCollection
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @Column(name = "role")
     @JsonView(Views.Public.class)
     private List<Role> roles;
@@ -58,7 +53,6 @@ public class User implements UserDetails {
     @JsonManagedReference
     @OrderBy("platform ASC")
     @JsonView(Views.Public.class)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> connections;
 

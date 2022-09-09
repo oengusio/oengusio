@@ -69,8 +69,11 @@ spring:
     # https://www.ehcache.org/documentation/3.3/107.html
     # https://github.com/gibsong/ehcache-jsr107-spring/tree/master/src/main/resources
 #    cache:
+#        cache-names:
+#            - scheduleCache
 #        jcache:
-#            config:
+#            config: classpath:ehcache.xml
+#            provider: org.ehcache.jsr107.EhcacheCachingProvider
     jpa:
         hibernate:
             ddl-auto: none
@@ -86,13 +89,13 @@ spring:
                 javax:
                     cache:
                         missing_cache_strategy: create
-                cache:
-                    # disable database caching
-                    use_second_level_cache: ${USE_SECOND_LEVEL_CACHE:false}
-                    use_query_cache: ${USE_QUERY_CACHE:false}
-                    provider: org.ehcache.jsr107.EhcacheCachingProvider
-                    region:
-                        factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+#                cache:
+#                    # disable database caching
+#                    use_second_level_cache: ${USE_SECOND_LEVEL_CACHE:false}
+#                    use_query_cache: ${USE_QUERY_CACHE:false}
+#                    provider: org.ehcache.jsr107.EhcacheCachingProvider
+#                    region:
+#                        factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
                 dialect: org.hibernate.dialect.PostgreSQL82Dialect
                 current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
                 temp:

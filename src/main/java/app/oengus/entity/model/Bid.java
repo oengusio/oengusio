@@ -4,8 +4,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -16,8 +14,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "bid")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Bid {
 
     @Id
@@ -28,7 +24,6 @@ public class Bid {
     @ManyToOne
     @JoinColumn(name = "incentive_id")
     @JsonView(Views.Public.class)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference("incentive")
     private Incentive incentive;
 

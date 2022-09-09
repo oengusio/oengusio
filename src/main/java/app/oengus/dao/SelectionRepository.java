@@ -6,24 +6,19 @@ import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.QueryHint;
 import java.util.List;
 
 @Repository
 public interface SelectionRepository extends CrudRepository<Selection, Integer> {
 
-    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     List<Selection> findByMarathon(Marathon marathon);
 
-    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     Selection findByCategory(Category category);
 
-    @QueryHints(@QueryHint(name = org.hibernate.annotations.QueryHints.CACHEABLE, value = "true"))
     List<Selection> findByMarathonAndStatusIn(Marathon marathon, List<Status> statuses);
 
     @Modifying

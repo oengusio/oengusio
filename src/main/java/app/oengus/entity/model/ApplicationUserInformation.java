@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -19,8 +17,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "application_user_information")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ApplicationUserInformation {
     @Id
     @JsonView(Views.Public.class)

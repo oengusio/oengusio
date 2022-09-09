@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
@@ -18,8 +17,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "game")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Game {
 
 	@Id
@@ -29,7 +26,6 @@ public class Game {
 
 	@ManyToOne
 	@JoinColumn(name = "submission_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
 	@JsonView(Views.Public.class)
 	private Submission submission;
@@ -66,7 +62,6 @@ public class Game {
 	@JsonManagedReference
 	@OrderBy("id ASC")
 	@JsonView(Views.Public.class)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private List<Category> categories;
 
 	public int getId() {

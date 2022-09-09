@@ -6,8 +6,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Cacheable
 @Table(name = "applications")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Application {
 
     @Id
@@ -66,7 +62,6 @@ public class Application {
     @JsonManagedReference
     @OrderBy("timestamp DESC")
     @JsonView(Views.Public.class)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApplicationAuditlog> auditLogs;
 
@@ -76,7 +71,6 @@ public class Application {
         @AttributeOverride(name = "from", column = @Column(name = "date_from")),
         @AttributeOverride(name = "to", column = @Column(name = "date_to"))
     })
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy("date_from ASC")
     @JsonView(Views.Public.class)
     // we can reuse this model as it has no submission related information

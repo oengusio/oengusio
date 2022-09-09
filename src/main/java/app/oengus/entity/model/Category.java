@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.persistence.*;
@@ -20,8 +19,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Category {
 
 	@Id
@@ -31,7 +28,6 @@ public class Category {
 
 	@ManyToOne
 	@JoinColumn(name = "game_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
 	@JsonView(Views.Public.class)
 	private Game game;

@@ -65,12 +65,6 @@ dependencies {
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
 
-    // HIBERNATE
-    implementation(group = "com.vladmihalcea", name = "hibernate-types-55", version = "2.16.2") // TODO: do we need this?
-    implementation(group = "org.hibernate", name = "hibernate-core", version = "5.5.9.Final")
-    implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.5.9.Final")
-    runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
-
     // documentation
     implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.6.8")
 
@@ -97,7 +91,10 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.2")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.18.0")
+
+    // idk
+    implementation("org.javassist:javassist:3.29.1-GA")
 }
 
 val wrapper: Wrapper by tasks

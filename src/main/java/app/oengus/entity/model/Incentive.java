@@ -2,8 +2,6 @@ package app.oengus.entity.model;
 
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -13,10 +11,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Cacheable
 @Table(name = "incentive")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Incentive {
 
     @Id
@@ -26,14 +22,12 @@ public class Incentive {
 
     @ManyToOne
     @JoinColumn(name = "marathon_id")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference
     @JsonView(Views.Public.class)
     private Marathon marathon;
 
     @ManyToOne
     @JoinColumn(name = "schedule_line_id")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     private ScheduleLine scheduleLine;
 
@@ -72,7 +66,6 @@ public class Incentive {
     private BigDecimal currentAmount;
 
     @OneToMany(mappedBy = "incentive", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy(value = "current_amount DESC")
     @JsonView(Views.Public.class)
     @JsonManagedReference("incentive")
