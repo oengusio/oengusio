@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,7 @@ public class ScheduleController {
     ///////////////
     // ADMIN ROUTES
 
+    // TODO: make better route in v2
     @GetMapping("/admin")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @JsonView(Views.Public.class)
@@ -96,28 +98,33 @@ public class ScheduleController {
                                      final HttpServletResponse response) throws IOException, NotFoundException {
         switch (format.toLowerCase()) {
             case "csv" -> {
-                final String export = this.exportService.exportScheduleToCsv(marathonId, zoneId, locale).toString();
-                response.setContentType("text/csv");
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"" + marathonId + "-schedule.csv\"");
-                response.getWriter().write(export);
+                try (final Writer writer = this.exportService.exportScheduleToCsv(marathonId, zoneId, locale)) {
+                    final String export = writer.toString();
+                    response.setContentType("text/csv");
+                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + marathonId + "-schedule.csv\"");
+                    response.getWriter().write(export);
+                }
             }
             case "json" -> {
-                final String export = this.exportService.exportScheduleToJson(marathonId, zoneId, locale).toString();
-                response.setContentType("application/json");
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"" + marathonId + "-schedule.json\"");
-                response.getWriter().write(export);
+                try (final Writer writer = this.exportService.exportScheduleToJson(marathonId, zoneId, locale)) {
+                    final String export = writer.toString();
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + marathonId + "-schedule.json\"");
+                    response.getWriter().write(export);}
             }
             case "ics" -> {
-                final String export = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale).toString();
-                response.setContentType("text/calendar");
-                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"" + marathonId + "-schedule.ics\"");
-                response.getWriter().write(export);
+                try (final Writer writer = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale)) {
+                    final String export = writer.toString();
+                    response.setContentType("text/calendar");
+                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + marathonId + "-schedule.ics\"");
+                    response.getWriter().write(export);
+                }
             }
             default -> throw new NotFoundException("Format not found");
         }
