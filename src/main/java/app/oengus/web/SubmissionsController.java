@@ -30,7 +30,7 @@ import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/submissions", "/marathons/{marathonId}/submissions"})
+@RequestMapping("/v1/marathons/{marathonId}/submissions")
 @Tag(name = "submissions-v1")
 public class SubmissionsController {
 

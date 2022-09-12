@@ -22,7 +22,7 @@ import javax.annotation.security.RolesAllowed;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/discord", "/marathons/{marathonId}/discord"})
+@RequestMapping("/v1/marathons/{marathonId}/discord")
 @Tag(name = "discord-v1")
 @Hidden
 public class DiscordController {

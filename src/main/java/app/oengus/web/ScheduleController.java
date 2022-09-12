@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/schedule", "/marathons/{marathonId}/schedule"})
+@RequestMapping("/v1/marathons/{marathonId}/schedule")
 @Tag(name = "schedules-v1")
 public class ScheduleController {
     private final ScheduleService scheduleService;
@@ -42,7 +43,11 @@ public class ScheduleController {
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
+            .cacheControl(
+                CacheControl.maxAge(Duration.ofMinutes(5))
+                    .cachePublic()
+                    .noTransform()
+            )
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }
 
@@ -54,8 +59,21 @@ public class ScheduleController {
     public ResponseEntity<ScheduleTickerDto> getTicker(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES).cachePublic())
             .body(this.scheduleService.getForTicker(marathonId, withCustomData));
+    }
+
+    ///////////////
+    // ADMIN ROUTES
+
+    @GetMapping("/admin")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @JsonView(Views.Public.class)
+    @Operation(hidden = true)
+    public ResponseEntity<?> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId) {
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache()) // Always fetch custom data for the admin page
+            .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, true));
     }
 
     @PutMapping

@@ -45,7 +45,7 @@ import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 @Tag(name = "users-v1")
 @RestController
 @CrossOrigin(maxAge = 3600)
-@RequestMapping({"/v1/users", "/users"})
+@RequestMapping("/v1/users")
 public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
