@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
@@ -73,15 +75,23 @@ public class SubmissionsController {
 
     ///////// SubmissionController.java ////////
 
+    // TODO: figure out pagination
     @GetMapping
     @JsonView(Views.Public.class)
-    @Operation(summary = "Find all submissions by marathon")
-    public ResponseEntity<List<SubmissionDto>> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
+    @Operation(summary = "Find all submissions by marathon, has a 30 minute cache")
+    public ResponseEntity<Page<SubmissionDto>> findAllSubmissions(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestParam(value = "page", required = false, defaultValue = "1") final int page
+    ) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(this.submissionService.findByMarathonNew(marathonId));
+            .cacheControl(
+                CacheControl.maxAge(Duration.ofMinutes(30))
+                    .cachePublic()
+            )
+            .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
     }
 
+    // TODO: /search?q=
 
     @GetMapping("/answers")
     @JsonView(Views.Public.class)
@@ -158,12 +168,15 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
-    public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId,
-                                                      final Principal principal) {
-        final Submission submission =
-            this.submissionService.findByUserAndMarathon(PrincipalHelper.getUserFromPrincipal(principal),
-                marathonId);
-        return ResponseEntity.ok(submission);
+    public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId, final Principal principal) {
+        final Submission submission = this.submissionService.findByUserAndMarathon(
+            PrincipalHelper.getUserFromPrincipal(principal),
+            marathonId
+        );
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(submission);
     }
 
     @DeleteMapping("/{id}")

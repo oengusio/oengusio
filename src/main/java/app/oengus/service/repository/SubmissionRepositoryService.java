@@ -6,6 +6,8 @@ import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +31,12 @@ public class SubmissionRepositoryService {
 		return this.submissionRepository.findByUserAndMarathon(user, marathon);
 	}
 
-	public List<Submission> findByMarathon(final Marathon marathon) {
+    // TODO: change back to 10 entries per page
+	public Page<Submission> findByMarathon(final Marathon marathon, int page) {
+		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, 1));
+	}
+
+	public List<Submission> findAllByMarathon(final Marathon marathon) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 	}
 

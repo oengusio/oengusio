@@ -3,6 +3,8 @@ package app.oengus.dao;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +28,8 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
     void deleteByMarathon(Marathon marathon);
 
     List<Submission> findByUser(User user);
+
+    Page<Submission> findByMarathonOrderByIdAsc(Marathon marathon, Pageable pageable);
 
     List<Submission> findByMarathonOrderByIdAsc(Marathon marathon);
 

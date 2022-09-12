@@ -18,6 +18,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -295,7 +297,7 @@ public class SubmissionService {
     public List<AnswerDto> findAnswersByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
         final List<AnswerDto> answers = new ArrayList<>();
 
         byMarathon.forEach((submission) -> {
@@ -311,10 +313,10 @@ public class SubmissionService {
         return answers;
     }
 
-    public List<SubmissionDto> findByMarathonNew(final String marathonId) {
+    public Page<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final Page<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon, page);
         final List<SubmissionDto> submissions = new ArrayList<>();
 
         byMarathon.forEach((submission) -> {
@@ -344,14 +346,14 @@ public class SubmissionService {
             submissions.add(dto);
         });
 
-        return submissions;
+        return new PageImpl<>(submissions, byMarathon.getPageable(), 0L);
     }
 
     @Transactional
-    public List<Submission> findByMarathon(final String marathonId) {
+    public List<Submission> findAllByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
 
         // load opponents
         byMarathon.forEach((submission) -> {

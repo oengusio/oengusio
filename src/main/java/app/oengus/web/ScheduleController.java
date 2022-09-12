@@ -40,14 +40,13 @@ public class ScheduleController {
     @GetMapping
     @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
     @JsonView(Views.Public.class)
-    @Operation(summary = "Get schedule for a marathon"/*, response = Schedule.class*/)
+    @Operation(summary = "Get schedule for a marathon, has a 5 minute cache"/*, response = Schedule.class*/)
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
             .cacheControl(
                 CacheControl.maxAge(Duration.ofMinutes(5))
                     .cachePublic()
-                    .noTransform()
             )
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }

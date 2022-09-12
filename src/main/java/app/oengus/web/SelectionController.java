@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.time.Duration;
 import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
@@ -26,11 +27,28 @@ public class SelectionController {
     private SelectionService selectionService;
 
     @GetMapping
-    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId) || isSelectionDone(#marathonId))")
+    @PreAuthorize("isSelectionDone(#marathonId)")
     @JsonView(Views.Public.class)
-    @Operation(summary = "Get all selection statuses a marathon"/*,
+    @Operation(summary = "Get all selection statuses a marathon, has a 30 minute cache"/*,
         response = SelectionDto.class*/)
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(name = "status", required = false) final List<Status> statuses) {
+        return ResponseEntity.ok()
+            .cacheControl(
+                CacheControl.maxAge(Duration.ofMinutes(30))
+                    .cachePublic()
+            )
+            .body(this.selectionService.findByMarathon(marathonId, statuses));
+    }
+
+    ///////////////
+    // ADMIN ROUTES
+
+    @GetMapping("/admin")
+    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId))")
+    @JsonView(Views.Public.class)
+    @Operation(hidden = true)
+    public ResponseEntity<?> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(name = "status", required = false) final List<Status> statuses) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
