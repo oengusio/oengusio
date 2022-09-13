@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +21,16 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
-@CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/v1/marathons/{marathonId}/schedule")
+@CrossOrigin(maxAge = 3600)
 @Tag(name = "schedules-v1")
+@RequestMapping("/v1/marathons/{marathonId}/schedule")
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ExportService exportService;
 
-    @Autowired
     public ScheduleController(ScheduleService scheduleService, ExportService exportService) {
         this.scheduleService = scheduleService;
         this.exportService = exportService;
@@ -54,7 +53,7 @@ public class ScheduleController {
     @GetMapping("/ticker")
     @PreAuthorize("isScheduleDone(#marathonId)")
     @JsonView(Views.Public.class)
-    @Operation(summary = "Get a ticker for this schedule, displaying the previous, current and next lines"/*,
+    @Operation(summary = "Get a ticker for this schedule, displaying the previous, current and next lines. Cache is present but varies"/*,
         response = ScheduleTickerDto.class*/)
     public ResponseEntity<ScheduleTickerDto> getTicker(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
@@ -89,39 +88,46 @@ public class ScheduleController {
 
     @GetMapping("/export")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
-    @Operation(summary = "Export schedule to format specified in parameter. Available formats : csv, json, ics")
+    @Operation(summary = "Export schedule to format specified in parameter. Available formats : csv, json, ics. Cached for 30 minutes.")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("format") final String format,
                                      @RequestParam("zoneId") final String zoneId,
                                      @RequestParam("locale") final String locale,
                                      final HttpServletResponse response) throws IOException, NotFoundException {
+        final BiFunction<String, String, Void> addDefaultHeaders = (contentType, extension) -> {
+            response.setContentType(contentType);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setHeader(
+                HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofMinutes(30))
+                    .cachePublic()
+                    .getHeaderValue()
+            );
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + marathonId + "-schedule." + extension + "\"");
+
+            return null;
+        };
+
+        // Oh the urge to use reflection to clean this up :(
         switch (format.toLowerCase()) {
             case "csv" -> {
                 try (final Writer writer = this.exportService.exportScheduleToCsv(marathonId, zoneId, locale)) {
                     final String export = writer.toString();
-                    response.setContentType("text/csv");
-                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + marathonId + "-schedule.csv\"");
+                    addDefaultHeaders.apply("text/csv", "csv");
                     response.getWriter().write(export);
                 }
             }
             case "json" -> {
                 try (final Writer writer = this.exportService.exportScheduleToJson(marathonId, zoneId, locale)) {
                     final String export = writer.toString();
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + marathonId + "-schedule.json\"");
+                    addDefaultHeaders.apply("application/json", "json");
                     response.getWriter().write(export);}
             }
             case "ics" -> {
                 try (final Writer writer = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale)) {
                     final String export = writer.toString();
-                    response.setContentType("text/calendar");
-                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + marathonId + "-schedule.ics\"");
+                    addDefaultHeaders.apply("text/calendar", "ics");
                     response.getWriter().write(export);
                 }
             }

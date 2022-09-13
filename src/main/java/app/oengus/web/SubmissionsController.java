@@ -58,6 +58,12 @@ public class SubmissionsController {
                                      final HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setHeader(
+            HttpHeaders.CACHE_CONTROL,
+            CacheControl.maxAge(Duration.ofMinutes(30))
+                .cachePublic()
+                .getHeaderValue()
+        );
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-submissions.csv\"");
         response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
