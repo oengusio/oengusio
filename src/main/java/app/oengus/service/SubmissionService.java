@@ -313,38 +313,24 @@ public class SubmissionService {
         return answers;
     }
 
+    public List<SubmissionDto> searchForMarathon(final String marathonId, final String query) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+        final List<Submission> byMarathon = this.submissionRepositoryService.searchForMarathon(marathon, query);
+        final List<SubmissionDto> submissions = new ArrayList<>();
+
+        byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
+
+        return submissions;
+    }
+
     public Page<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final Page<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon, page);
         final List<SubmissionDto> submissions = new ArrayList<>();
 
-        byMarathon.forEach((submission) -> {
-            final SubmissionDto dto = new SubmissionDto();
-
-            dto.setId(submission.getId());
-            dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
-
-            submission.getGames().forEach((game) -> {
-                game.getCategories().forEach((category) -> {
-                    if (category.getOpponents() != null) {
-                        category.setOpponentDtos(new ArrayList<>());
-                        category.getOpponents().forEach(opponent -> {
-                            final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
-                            opponentCategoryDto.setId(opponent.getId());
-                            opponentCategoryDto.setVideo(opponent.getVideo());
-                            opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
-                            opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
-                            category.getOpponentDtos().add(opponentCategoryDto);
-                        });
-                    }
-                });
-            });
-
-            dto.setGames(submission.getGames());
-
-            submissions.add(dto);
-        });
+        byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
 
         return new PageImpl<>(submissions, byMarathon.getPageable(), 0L);
     }
@@ -424,5 +410,32 @@ public class SubmissionService {
         } else {
             throw new OengusBusinessException("NOT_AUTHORIZED");
         }
+    }
+
+    private SubmissionDto mapSubmissionDto(Submission submission) {
+        final SubmissionDto dto = new SubmissionDto();
+
+        dto.setId(submission.getId());
+        dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
+
+        submission.getGames().forEach((game) -> {
+            game.getCategories().forEach((category) -> {
+                if (category.getOpponents() != null) {
+                    category.setOpponentDtos(new ArrayList<>());
+                    category.getOpponents().forEach(opponent -> {
+                        final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
+                        opponentCategoryDto.setId(opponent.getId());
+                        opponentCategoryDto.setVideo(opponent.getVideo());
+                        opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                        opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
+                        category.getOpponentDtos().add(opponentCategoryDto);
+                    });
+                }
+            });
+        });
+
+        dto.setGames(submission.getGames());
+
+        return dto;
     }
 }

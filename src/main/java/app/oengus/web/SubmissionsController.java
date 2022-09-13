@@ -81,7 +81,6 @@ public class SubmissionsController {
 
     ///////// SubmissionController.java ////////
 
-    // TODO: figure out pagination
     @GetMapping
     @JsonView(Views.Public.class)
     @Operation(summary = "Find all submissions by marathon, has a 30 minute cache")
@@ -97,7 +96,20 @@ public class SubmissionsController {
             .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
     }
 
-    // TODO: /search?q=
+    @GetMapping("/search")
+    @JsonView(Views.Public.class)
+    @Operation(summary = "Search in submissions, has a 30 minute cache on the result")
+    public ResponseEntity<List<SubmissionDto>> serachForSubmissions(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestParam(value = "q") final String q
+    ) {
+        return ResponseEntity.ok()
+            .cacheControl(
+                CacheControl.maxAge(Duration.ofMinutes(30))
+                    .cachePublic()
+            )
+            .body(this.submissionService.searchForMarathon(marathonId, q));
+    }
 
     @GetMapping("/answers")
     @JsonView(Views.Public.class)
