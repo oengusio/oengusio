@@ -44,7 +44,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// custom JWT based security filter
 		httpSecurity.addFilterBefore(this.authenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
-		// disable page caching
+		// enable page caching
 		httpSecurity.headers().cacheControl();
 	}
 }

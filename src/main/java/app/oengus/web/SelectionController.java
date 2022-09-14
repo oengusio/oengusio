@@ -14,8 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
-import java.time.Duration;
 import java.util.List;
+
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -34,10 +35,7 @@ public class SelectionController {
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(name = "status", required = false) final List<Status> statuses) {
         return ResponseEntity.ok()
-            .cacheControl(
-                CacheControl.maxAge(Duration.ofMinutes(30))
-                    .cachePublic()
-            )
+            .headers(cachingHeaders(30))
             .body(this.selectionService.findByMarathon(marathonId, statuses));
     }
 

@@ -26,12 +26,12 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @Tag(name = "marathons-v1")
 @RestController
@@ -97,7 +97,7 @@ public class MarathonController {
     @GetMapping("/{id}/stats")
     @JsonView(Views.Internal.class)
     @Operation(
-        summary = "Get stats about a marathon"/*,
+        summary = "Get stats about a marathon, has a 5 minute cache"/*,
         response = MarathonStatsDto.class*/
     )
     public ResponseEntity<MarathonStatsDto> getStats(@PathVariable("id") final String id) throws NotFoundException {
@@ -108,7 +108,7 @@ public class MarathonController {
         final MarathonStatsDto marathon = this.marathonService.getStats(id);
 
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(Duration.ofMinutes(3)).cachePublic())
+            .headers(cachingHeaders(5))
             .body(marathon);
 
     }
@@ -118,21 +118,26 @@ public class MarathonController {
     @Operation(summary = "Get marathons as shown on the front page. Map is composed of 3 keys :\n" +
         "- next: 5 earliest upcoming marathons\n" +
         "- open: all marathons with submissions open\n" +
-        "- live: all currently live marathons")
+        "- live: all currently live marathons\n" +
+        "Has a 5 minute cache")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathons() {
         final Map<String, List<MarathonBasicInfoDto>> marathons = this.marathonService.findMarathons();
-        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathons);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, false))
+            .body(marathons);
     }
 
     @GetMapping("/forDates")
     @PermitAll
-    @Operation(summary = "Get marathons between given dates")
+    @Operation(summary = "Get marathons between given dates, has a 5 minute cache")
     public ResponseEntity<List<MarathonBasicInfoDto>> getMarathonsForDates(
         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime start,
         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime end,
         @RequestParam("zoneId") final String zoneId) {
         final List<MarathonBasicInfoDto> marathons = this.marathonService.findMarathonsForDates(start, end, zoneId);
-        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES)).body(marathons);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, false))
+            .body(marathons);
     }
 
     @DeleteMapping("/{id}")

@@ -19,9 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
@@ -43,10 +43,7 @@ public class ScheduleController {
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
-            .cacheControl(
-                CacheControl.maxAge(Duration.ofMinutes(5))
-                    .cachePublic()
-            )
+            .headers(cachingHeaders(5))
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }
 
@@ -58,7 +55,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleTickerDto> getTicker(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES).cachePublic())
+            .headers(cachingHeaders(1))
             .body(this.scheduleService.getForTicker(marathonId, withCustomData));
     }
 
@@ -97,12 +94,7 @@ public class ScheduleController {
         final BiFunction<String, String, Void> addDefaultHeaders = (contentType, extension) -> {
             response.setContentType(contentType);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.setHeader(
-                HttpHeaders.CACHE_CONTROL,
-                CacheControl.maxAge(Duration.ofMinutes(30))
-                    .cachePublic()
-                    .getHeaderValue()
-            );
+            cachingHeaders(30).toSingleValueMap().forEach(response::setHeader);
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + marathonId + "-schedule." + extension + "\"");
 

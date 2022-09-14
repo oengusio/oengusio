@@ -27,8 +27,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.time.Duration;
 import java.util.List;
+
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -58,12 +59,7 @@ public class SubmissionsController {
                                      final HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.setHeader(
-            HttpHeaders.CACHE_CONTROL,
-            CacheControl.maxAge(Duration.ofMinutes(30))
-                .cachePublic()
-                .getHeaderValue()
-        );
+        cachingHeaders(30).toSingleValueMap().forEach(response::setHeader);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-submissions.csv\"");
         response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
@@ -89,10 +85,7 @@ public class SubmissionsController {
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
     ) {
         return ResponseEntity.ok()
-            .cacheControl(
-                CacheControl.maxAge(Duration.ofMinutes(30))
-                    .cachePublic()
-            )
+            .headers(cachingHeaders(30))
             .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
     }
 
@@ -104,10 +97,7 @@ public class SubmissionsController {
         @RequestParam(value = "q") final String q
     ) {
         return ResponseEntity.ok()
-            .cacheControl(
-                CacheControl.maxAge(Duration.ofMinutes(30))
-                    .cachePublic()
-            )
+            .headers(cachingHeaders(30))
             .body(this.submissionService.searchForMarathon(marathonId, q));
     }
 
