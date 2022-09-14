@@ -403,7 +403,7 @@ public class SubmissionService {
             }
 
             submission.getGames().forEach((game) -> {
-                game.getCategories().forEach(this.categoryRepository::delete);
+                this.categoryRepository.deleteAll(game.getCategories());
                 this.gameRepositoryService.delete(game.getId());
             });
             this.submissionRepositoryService.delete(id);
