@@ -1,5 +1,6 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.misc.PageDTO;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.model.Submission;
@@ -80,7 +81,7 @@ public class SubmissionsController {
     @GetMapping
     @JsonView(Views.Public.class)
     @Operation(summary = "Find all submissions by marathon, has a 30 minute cache")
-    public ResponseEntity<Page<SubmissionDto>> findAllSubmissions(
+    public ResponseEntity<PageDTO<SubmissionDto>> findAllSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
     ) {

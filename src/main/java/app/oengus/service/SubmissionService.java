@@ -4,6 +4,7 @@ import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.entity.dto.misc.PageDTO;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
@@ -324,7 +325,7 @@ public class SubmissionService {
         return submissions;
     }
 
-    public Page<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
+    public PageDTO<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final Page<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon, page);
@@ -332,7 +333,7 @@ public class SubmissionService {
 
         byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
 
-        return new PageImpl<>(submissions, byMarathon.getPageable(), 0L);
+        return new PageDTO(new PageImpl<>(submissions, byMarathon.getPageable(), 0L));
     }
 
     @Transactional
