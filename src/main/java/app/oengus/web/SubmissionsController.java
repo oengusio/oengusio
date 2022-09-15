@@ -1,6 +1,6 @@
 package app.oengus.web;
 
-import app.oengus.entity.dto.misc.PageDTO;
+import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.model.Submission;
@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -81,12 +80,12 @@ public class SubmissionsController {
     @GetMapping
     @JsonView(Views.Public.class)
     @Operation(summary = "Find all submissions by marathon, has a 30 minute cache")
-    public ResponseEntity<PageDTO<SubmissionDto>> findAllSubmissions(
+    public ResponseEntity<PageDto<SubmissionDto>> findAllSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
     ) {
         return ResponseEntity.ok()
-            .headers(cachingHeaders(30))
+            .headers(cachingHeaders(30, false))
             .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
     }
 
@@ -98,7 +97,7 @@ public class SubmissionsController {
         @RequestParam(value = "q") final String q
     ) {
         return ResponseEntity.ok()
-            .headers(cachingHeaders(30))
+            .headers(cachingHeaders(30, false))
             .body(this.submissionService.searchForMarathon(marathonId, q));
     }
 

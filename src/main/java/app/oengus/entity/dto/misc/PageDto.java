@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public class PageDTO<T> {
+public class PageDto<T> {
     private final List<T> content;
     private final int totalPages;
     private final int currentPage;
@@ -12,7 +12,7 @@ public class PageDTO<T> {
     private final boolean last;
     private final boolean empty;
 
-    public PageDTO(Page<T> page) {
+    public PageDto(Page<T> page) {
         this.content = page.getContent();
         this.totalPages = page.getTotalPages();
         this.currentPage = page.getNumber() + 1;

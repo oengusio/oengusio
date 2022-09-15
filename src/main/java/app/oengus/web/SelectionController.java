@@ -35,7 +35,7 @@ public class SelectionController {
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(name = "status", required = false) final List<Status> statuses) {
         return ResponseEntity.ok()
-            .headers(cachingHeaders(30))
+            .headers(cachingHeaders(30, false))
             .body(this.selectionService.findByMarathon(marathonId, statuses));
     }
 

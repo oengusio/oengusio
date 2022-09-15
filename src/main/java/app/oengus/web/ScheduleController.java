@@ -43,7 +43,7 @@ public class ScheduleController {
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5))
+            .headers(cachingHeaders(5, false))
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
     }
 
@@ -55,7 +55,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleTickerDto> getTicker(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         return ResponseEntity.ok()
-            .headers(cachingHeaders(1))
+            .headers(cachingHeaders(1, false))
             .body(this.scheduleService.getForTicker(marathonId, withCustomData));
     }
 

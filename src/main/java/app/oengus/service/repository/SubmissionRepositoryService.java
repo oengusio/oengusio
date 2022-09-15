@@ -32,12 +32,11 @@ public class SubmissionRepositoryService {
 	}
 
     public List<Submission> searchForMarathon(final Marathon marathon, String query) {
-        return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, 10)).getContent();
+        return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, 15)).getContent();
     }
 
-    // TODO: change back to 10 entries per page
 	public Page<Submission> findByMarathon(final Marathon marathon, int page) {
-		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, 1));
+		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, 15));
 	}
 
 	public List<Submission> findAllByMarathon(final Marathon marathon) {

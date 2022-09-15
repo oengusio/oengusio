@@ -4,7 +4,7 @@ import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
-import app.oengus.entity.dto.misc.PageDTO;
+import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
@@ -314,18 +314,57 @@ public class SubmissionService {
         return answers;
     }
 
+    // TODO: exclude categories and games that are not in the search query
     public List<SubmissionDto> searchForMarathon(final String marathonId, final String query) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.searchForMarathon(marathon, query);
+        final String queryLower = query.toLowerCase();
+        final List<Submission> bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
         final List<SubmissionDto> submissions = new ArrayList<>();
 
-        byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
+        bySearch.stream()
+            .filter(
+                (submission) -> {
+                    final User user = submission.getUser();
+
+                    if (user.getUsername().toLowerCase().contains(queryLower) ||
+                        (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower))) {
+                        return true;
+                    }
+
+                    final Set<Game> gameSet = submission.getGames()
+                        .stream()
+                        .filter((game) -> {
+                            if (game.getName().toLowerCase().contains(queryLower)) {
+                                return true;
+                            }
+
+                            final List<Category> categoryList = game.getCategories()
+                                .stream()
+                                .filter(
+                                    (category) -> category.getName().toLowerCase().contains(queryLower)
+                                )
+                                .toList();
+
+                            game.setCategories(categoryList);
+
+                            return !game.getCategories().isEmpty();
+                        })
+                        .collect(Collectors.toSet());
+
+                    submission.setGames(gameSet);
+
+                    return !submission.getGames().isEmpty();
+                }
+            )
+            .forEach(
+                (submission) -> submissions.add(this.mapSubmissionDto(submission))
+            );
 
         return submissions;
     }
 
-    public PageDTO<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
+    public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final Page<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon, page);
@@ -333,7 +372,7 @@ public class SubmissionService {
 
         byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
 
-        return new PageDTO(new PageImpl<>(submissions, byMarathon.getPageable(), 0L));
+        return new PageDto<>(new PageImpl<>(submissions, byMarathon.getPageable(), 0L));
     }
 
     @Transactional
