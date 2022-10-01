@@ -24,7 +24,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
             .allowedMethods("GET", "PUT", "OPTIONS", "POST", "DELETE", "PATCH")
             .allowedOrigins("*")
             .allowCredentials(false)
-            .allowedHeaders("Authorization", "Content-Type", "Location", "Content-Length");
+            .allowedHeaders("*");
     }
 
     @Bean
