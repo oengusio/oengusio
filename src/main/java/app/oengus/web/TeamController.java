@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @Tag(name = "teams-v1")
 @Hidden
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/teams", "/marathons/{marathonId}/teams"})
+@RequestMapping("/v1/marathons/{marathonId}/teams")
 public class TeamController {
     private final TeamRepositoryService teamRepositoryService;
 

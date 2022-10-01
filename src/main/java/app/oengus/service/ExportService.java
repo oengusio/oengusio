@@ -38,7 +38,7 @@ public class ExportService {
 
 	public Writer exportSubmissionsToCsv(final String marathonId, final String zoneId, final String language)
 			throws IOException {
-		final List<Submission> submissions = this.submissionService.findByMarathon(marathonId);
+		final List<Submission> submissions = this.submissionService.findAllByMarathon(marathonId);
 
 		final StringWriter out = new StringWriter();
 		if (!submissions.isEmpty()) {

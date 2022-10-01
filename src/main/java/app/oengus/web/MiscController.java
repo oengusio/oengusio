@@ -17,7 +17,7 @@ import java.util.*;
 
 @Tag(name = "misc-v1")
 @RestController
-@RequestMapping({"/v1", ""})
+@RequestMapping("/v1")
 public class MiscController {
 
     private final PronounsPageApi pronounsApi;
@@ -32,8 +32,7 @@ public class MiscController {
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> bonk() throws InterruptedException {
-        Thread.sleep(2000);
-        return ResponseEntity.ok("Bonk!");
+        return ResponseEntity.ok("(:");
     }
 
     @GetMapping("/pronouns")

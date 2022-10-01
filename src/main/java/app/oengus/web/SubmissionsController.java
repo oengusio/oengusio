@@ -1,5 +1,6 @@
 package app.oengus.web;
 
+import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.model.Submission;
@@ -28,9 +29,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/submissions", "/marathons/{marathonId}/submissions"})
+@RequestMapping("/v1/marathons/{marathonId}/submissions")
 @Tag(name = "submissions-v1")
 public class SubmissionsController {
 
@@ -56,6 +59,7 @@ public class SubmissionsController {
                                      final HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        cachingHeaders(30).toSingleValueMap().forEach(response::setHeader);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-submissions.csv\"");
         response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
@@ -75,13 +79,27 @@ public class SubmissionsController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    @Operation(summary = "Find all submissions by marathon")
-    public ResponseEntity<List<SubmissionDto>> findAllSubmissions(@PathVariable("marathonId") final String marathonId) {
+    @Operation(summary = "Find all submissions by marathon, has a 30 minute cache")
+    public ResponseEntity<PageDto<SubmissionDto>> findAllSubmissions(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestParam(value = "page", required = false, defaultValue = "1") final int page
+    ) {
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(this.submissionService.findByMarathonNew(marathonId));
+            .headers(cachingHeaders(30, false))
+            .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
     }
 
+    @GetMapping("/search")
+    @JsonView(Views.Public.class)
+    @Operation(summary = "Search in submissions, has a 30 minute cache on the result")
+    public ResponseEntity<List<SubmissionDto>> serachForSubmissions(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestParam(value = "q") final String q
+    ) {
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(30, false))
+            .body(this.submissionService.searchForMarathon(marathonId, q));
+    }
 
     @GetMapping("/answers")
     @JsonView(Views.Public.class)
@@ -158,12 +176,15 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
-    public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId,
-                                                      final Principal principal) {
-        final Submission submission =
-            this.submissionService.findByUserAndMarathon(PrincipalHelper.getUserFromPrincipal(principal),
-                marathonId);
-        return ResponseEntity.ok(submission);
+    public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId, final Principal principal) {
+        final Submission submission = this.submissionService.findByUserAndMarathon(
+            PrincipalHelper.getUserFromPrincipal(principal),
+            marathonId
+        );
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(submission);
     }
 
     @DeleteMapping("/{id}")

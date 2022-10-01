@@ -19,7 +19,7 @@ import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 @Hidden
 @Tag(name = "applications-v1")
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/teams/{teamId}/applications", "/marathons/{marathonId}/teams/{teamId}/applications"})
+@RequestMapping("/v1/marathons/{marathonId}/teams/{teamId}/applications")
 public class ApplicationController {
     private final ApplicationService applicationService;
 
