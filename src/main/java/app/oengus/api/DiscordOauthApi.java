@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
-@FeignClient(value = "discord", url = "https://discord.com/api/oauth2", configuration = CoreFeignConfiguration.class)
+@FeignClient(value = "discord-oauth", url = "https://discord.com/api/oauth2", configuration = CoreFeignConfiguration.class)
 public interface DiscordOauthApi {
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @RequestMapping(method = RequestMethod.POST, value = "/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
