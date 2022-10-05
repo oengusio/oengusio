@@ -372,7 +372,7 @@ public class SubmissionService {
 
         byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
 
-        return new PageDto<>(new PageImpl<>(submissions, byMarathon.getPageable(), 0L));
+        return new PageDto<>(new PageImpl<>(submissions, byMarathon.getPageable(), byMarathon.getTotalElements()));
     }
 
     @Transactional
