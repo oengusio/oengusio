@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -367,12 +366,11 @@ public class SubmissionService {
     public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final Page<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon, page);
-        final List<SubmissionDto> submissions = new ArrayList<>();
+        final Page<SubmissionDto> byMarathon = this.submissionRepositoryService
+            .findByMarathon(marathon, page)
+            .map(this::mapSubmissionDto);
 
-        byMarathon.forEach((submission) -> submissions.add(this.mapSubmissionDto(submission)));
-
-        return new PageDto<>(new PageImpl<>(submissions, byMarathon.getPageable(), byMarathon.getTotalElements()));
+        return new PageDto<>(byMarathon);
     }
 
     @Transactional
