@@ -5,6 +5,7 @@ oengus:
     baseUrl: ${BASE_URL}
     oauthOrigins: ${OAUTH_ORIGINS}
     shortUrl: "https://oengus.fun"
+    pageSize: ${PAGINATION_SIZE:15}
 
 discord:
     clientId: ${DISCORD_CLIENT_ID}
