@@ -323,6 +323,11 @@ public class SubmissionService {
         final Status cStat;
 
         if (status == null) {
+            // Fast return if we have nothing to search for
+            if (queryLower.isBlank()) {
+                return List.of();
+            }
+
             cStat = null;
             bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
         } else {
@@ -337,7 +342,7 @@ public class SubmissionService {
         }
 
         final List<SubmissionDto> submissions = new ArrayList<>();
-        final boolean qNotEmpty = !queryLower.isEmpty();
+        final boolean qNotEmpty = !queryLower.isBlank();
 
         bySearch.stream()
             .filter(
