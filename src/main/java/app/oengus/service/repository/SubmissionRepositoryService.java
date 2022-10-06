@@ -2,10 +2,12 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.SubmissionRepository;
 import app.oengus.entity.model.Marathon;
+import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.CompletionContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,10 @@ public class SubmissionRepositoryService {
 
     public List<Submission> searchForMarathon(final Marathon marathon, String query) {
         return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, this.pageSize)).getContent();
+    }
+
+    public List<Submission> searchForMarathonWithStatus(final Marathon marathon, String query, Status status) {
+        return this.submissionRepository.searchForMarathonWithStatus(marathon, query, status, PageRequest.of(0, this.pageSize)).getContent();
     }
 
 	public Page<Submission> findByMarathon(final Marathon marathon, int page) {

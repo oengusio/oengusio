@@ -94,11 +94,14 @@ public class SubmissionsController {
     @Operation(summary = "Search in submissions, has a 30 minute cache on the result")
     public ResponseEntity<List<SubmissionDto>> serachForSubmissions(
         @PathVariable("marathonId") final String marathonId,
-        @RequestParam(value = "q") final String q
+        @RequestParam(value = "q") final String q,
+        @RequestParam(value = "status", required = false) String status
     ) {
+        final String nullableStatus = ValueConstants.DEFAULT_NONE.equals(status) ? null : status;
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(this.submissionService.searchForMarathon(marathonId, q));
+            .body(this.submissionService.searchForMarathon(marathonId, q, nullableStatus));
     }
 
     @GetMapping("/answers")

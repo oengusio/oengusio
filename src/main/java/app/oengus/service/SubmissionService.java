@@ -314,34 +314,64 @@ public class SubmissionService {
     }
 
     // TODO: exclude categories and games that are not in the search query
-    public List<SubmissionDto> searchForMarathon(final String marathonId, final String query) {
+    public List<SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final String queryLower = query.toLowerCase();
-        final List<Submission> bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
+
+        final List<Submission> bySearch;
+        final Status cStat;
+
+        if (status == null) {
+            cStat = null;
+            bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
+        } else {
+            try {
+                cStat = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+                throw new OengusBusinessException("Invalid status supplied");
+            }
+            bySearch = this.submissionRepositoryService.searchForMarathonWithStatus(
+                marathon, query, cStat
+            );
+        }
+
         final List<SubmissionDto> submissions = new ArrayList<>();
+        final boolean qNotEmpty = !queryLower.isEmpty();
 
         bySearch.stream()
             .filter(
                 (submission) -> {
                     final User user = submission.getUser();
 
-                    if (user.getUsername().toLowerCase().contains(queryLower) ||
-                        (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower))) {
+                    if (qNotEmpty && (user.getUsername().toLowerCase().contains(queryLower) ||
+                        (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower)))) {
                         return true;
                     }
 
                     final Set<Game> gameSet = submission.getGames()
                         .stream()
                         .filter((game) -> {
-                            if (game.getName().toLowerCase().contains(queryLower)) {
+                            if (qNotEmpty && game.getName().toLowerCase().contains(queryLower)) {
                                 return true;
                             }
 
                             final List<Category> categoryList = game.getCategories()
                                 .stream()
                                 .filter(
-                                    (category) -> category.getName().toLowerCase().contains(queryLower)
+                                    (category) -> {
+                                        boolean base = true;
+
+                                        if (qNotEmpty) {
+                                            base = category.getName().toLowerCase().contains(queryLower);
+                                        }
+
+                                        if (cStat != null && category.getSelection() != null) {
+                                            base &= category.getSelection().getStatus() == cStat;
+                                        }
+
+                                        return base;
+                                    }
                                 )
                                 .toList();
 
