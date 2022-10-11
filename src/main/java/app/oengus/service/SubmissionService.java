@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
@@ -41,13 +40,12 @@ public class SubmissionService {
     private final CategoryRepository categoryRepository;
     private final GameRepositoryService gameRepositoryService;
     private final OengusWebhookService webhookService;
-    private final EntityManager entityManager;
 
     public SubmissionService(
         SubmissionRepositoryService submissionRepositoryService, MarathonRepositoryService marathonRepositoryService,
         SelectionRepositoryService selectionRepositoryService, UserRepositoryService userRepositoryService,
         CategoryRepository categoryRepository, GameRepositoryService gameRepositoryService,
-        @Lazy OengusWebhookService webhookService, EntityManager entityManager
+        @Lazy OengusWebhookService webhookService
     ) {
         this.submissionRepositoryService = submissionRepositoryService;
         this.marathonRepositoryService = marathonRepositoryService;
@@ -56,7 +54,6 @@ public class SubmissionService {
         this.categoryRepository = categoryRepository;
         this.gameRepositoryService = gameRepositoryService;
         this.webhookService = webhookService;
-        this.entityManager = entityManager;
     }
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
@@ -92,18 +89,13 @@ public class SubmissionService {
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
 
-        /*Submission.initialize(oldSubmission, true);
-
-        // uncache the old submission
-        entityManager.detach(oldSubmission);*/
-
         // save before sending so we catch the error if saving fails
         final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
             try {
-                this.webhookService.sendSubmissionUpdateEvent(marathon.getWebhook(), newSubmission, oldSubmission);
+                this.webhookService.sendSubmissionUpdateEvent(marathon.getWebhook(), saved, oldSubmission);
             } catch (IOException e) {
                 LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
             }

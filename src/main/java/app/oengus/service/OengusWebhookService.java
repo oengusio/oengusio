@@ -339,11 +339,7 @@ public class OengusWebhookService {
                 continue;
             }
 
-            // ignore the game if they are equal
-            if (Objects.equals(newGame, oldGame)) {
-                continue;
-            }
-
+            // NEVER check if equal games as they are always the same if a category is updated
             for (final Category newCategory : newGame.getCategories()) {
                 final Category oldCategory = oldGame.getCategories()
                     .stream()

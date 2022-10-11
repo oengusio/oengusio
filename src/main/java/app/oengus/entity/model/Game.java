@@ -133,7 +133,7 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio) && Objects.equals(categories, game.categories);
+        return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio);
     }
 
     @Override
@@ -143,14 +143,16 @@ public class Game {
 
     public Game fresh(boolean withSubmission) {
         final Game game = new Game();
+
         // load all the items needed from the old game
         Hibernate.initialize(this.getCategories());
 
-        this.getCategories().forEach((category) -> {
-            Hibernate.initialize(category.getOpponents());
-        });
+        BeanUtils.copyProperties(this, game, "categories");
 
-        BeanUtils.copyProperties(this, game);
+        // De-reference :D
+        game.setCategories(
+            this.getCategories().stream().map((c) -> c.fresh(game)).toList()
+        );
 
         if (withSubmission) {
             game.setSubmission(this.getSubmission().fresh(false));
