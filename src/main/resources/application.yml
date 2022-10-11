@@ -35,6 +35,11 @@ twitter:
         accessToken: ${TWITTER_ACCESS_TOKEN}
         accessTokenSecret: ${TWITTER_ACCESS_TOKEN_SECRET}
 
+rabbitmq:
+    uri: ${AMQP_URI}
+    username: ${AMQP_USERNAME}
+    password: ${AMQP_PASSWORD}
+
 paypal:
     clientId: ${PAYPAL_CLIENT_ID}
     clientSecret: ${PAYPAL_CLIENT_SECRET}

@@ -95,6 +95,8 @@ dependencies {
 
     // idk
     implementation("org.javassist:javassist:3.29.1-GA")
+
+    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.16.0")
 }
 
 val wrapper: Wrapper by tasks

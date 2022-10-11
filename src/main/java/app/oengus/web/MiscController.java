@@ -4,6 +4,7 @@ import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.LanguageService;
+import app.oengus.service.rabbitmq.IRabbitMQService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +23,19 @@ public class MiscController {
 
     private final PronounsPageApi pronounsApi;
     private final LanguageService languageService;
+    private final IRabbitMQService rabbitMq;
 
     @Autowired
-    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService) {
+    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService, IRabbitMQService rabbitMq) {
         this.pronounsApi = pronounsApi;
         this.languageService = languageService;
+        this.rabbitMq = rabbitMq;
     }
 
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> bonk() throws InterruptedException {
+        this.rabbitMq.sendMessage("COOL MESSAGE");
         return ResponseEntity.ok("(:");
     }
 
