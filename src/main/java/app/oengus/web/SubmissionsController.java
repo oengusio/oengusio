@@ -83,7 +83,7 @@ public class SubmissionsController {
     public ResponseEntity<PageDto<SubmissionDto>> findAllSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
-    ) {
+    ) throws NotFoundException {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
             .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));

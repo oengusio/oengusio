@@ -74,7 +74,9 @@ public class MarathonController {
         final Map<String, Boolean> validationErrors = new HashMap<>();
         validationErrors.put("exists", this.marathonService.exists(name));
 
-        return ResponseEntity.ok(validationErrors);
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(validationErrors);
     }
 
     @PermitAll

@@ -384,18 +384,20 @@ public class SubmissionService {
                 }
             )
             .forEach(
-                (submission) -> submissions.add(this.mapSubmissionDto(submission))
+                (submission) -> submissions.add(this.mapSubmissionDto(submission, false))
             );
 
         return submissions;
     }
 
-    public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) {
-        final Marathon marathon = new Marathon();
-        marathon.setId(marathonId);
+    public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) throws NotFoundException {
+        // Get the marathon so that we can see if the selections are done
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final boolean selectionDone = marathon.isSelectionDone();
+
         final Page<SubmissionDto> byMarathon = this.submissionRepositoryService
             .findByMarathon(marathon, page)
-            .map(this::mapSubmissionDto);
+            .map((s) -> this.mapSubmissionDto(s, selectionDone));
 
         return new PageDto<>(byMarathon);
     }
@@ -477,7 +479,7 @@ public class SubmissionService {
         }
     }
 
-    private SubmissionDto mapSubmissionDto(Submission submission) {
+    private SubmissionDto mapSubmissionDto(Submission submission, boolean selectionDone) {
         final SubmissionDto dto = new SubmissionDto();
 
         dto.setId(submission.getId());
@@ -495,6 +497,10 @@ public class SubmissionService {
                         opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
                         category.getOpponentDtos().add(opponentCategoryDto);
                     });
+                }
+
+                if (selectionDone) {
+                    category.setStatus(category.getSelection().getStatus());
                 }
             });
         });
