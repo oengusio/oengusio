@@ -13,7 +13,7 @@ dependencyManagement {
 }
 
 project.group = "app.oengus"
-project.version = "2022.10.14"
+project.version = "2022.12.09"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -46,7 +46,7 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
     implementation(group = "org.liquibase", name = "liquibase-core")
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
-    
+
     // POSTGRESQL
     implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
     implementation(group = "org.postgresql", name = "postgresql")
@@ -54,14 +54,14 @@ dependencies {
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
     implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-    
+
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
-    
+
     // FEIGN
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
-    
+
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
 
