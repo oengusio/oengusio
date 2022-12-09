@@ -360,7 +360,21 @@ public class SubmissionService {
                                         boolean base = true;
 
                                         if (qNotEmpty) {
-                                            base = category.getName().toLowerCase().contains(queryLower);
+                                            if (category.getOpponents() != null) {
+                                                base = category.getOpponents()
+                                                    .stream()
+                                                    .map(Opponent::getSubmission)
+                                                    .map(Submission::getUser)
+                                                    .anyMatch(
+                                                        (u) -> u.getUsername().toLowerCase().contains(queryLower) ||
+                                                            (u.getUsernameJapanese() != null && u.getUsernameJapanese().toLowerCase().contains(queryLower))
+                                                    );
+                                            }
+
+                                            // if we did not find an opponent, search category name
+                                            if (!base) {
+                                                base = category.getName().toLowerCase().contains(queryLower);
+                                            }
                                         }
 
                                         if (cStat != null && category.getSelection() != null) {

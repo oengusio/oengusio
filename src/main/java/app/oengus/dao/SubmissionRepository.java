@@ -30,9 +30,12 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
         "SELECT s FROM Submission s " +
             "INNER JOIN s.games g ON g.submission = s " +
             "INNER JOIN g.categories c ON c.game = g " +
+            "INNER JOIN c.opponents opp ON opp.category = c " +
             "WHERE s.marathon = :marathon AND (" +
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "s.user.usernameJapanese LIKE concat('%',:searchQ,'%') OR " +
+            "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
+            "opp.submission.user.usernameJapanese LIKE concat('%',:searchQ,'%') OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) GROUP BY s")
     Page<Submission> searchForMarathon(@Param("marathon") Marathon marathon, @Param("searchQ") String searchQ, Pageable pageable);
@@ -42,9 +45,12 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
             "INNER JOIN s.games g ON g.submission = s " +
             "INNER JOIN g.categories c ON c.game = g " +
             "INNER JOIN c.selection sel ON sel.category = c " +
+            "INNER JOIN c.opponents opp ON opp.category = c " +
             "WHERE s.marathon = :marathon AND (" +
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "s.user.usernameJapanese LIKE concat('%',:searchQ,'%') OR " +
+            "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
+            "opp.submission.user.usernameJapanese LIKE concat('%',:searchQ,'%') OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) AND sel.status = :status GROUP BY s")
     Page<Submission> searchForMarathonWithStatus(
