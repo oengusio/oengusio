@@ -26,6 +26,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static app.oengus.service.CategoryService.MULTIPLAYER_RUN_TYPES;
@@ -335,14 +336,16 @@ public class SubmissionService {
 
         final List<SubmissionDto> submissions = new ArrayList<>();
         final boolean qNotEmpty = !queryLower.isBlank();
+        final Predicate<User> matchesUsername = (user) ->
+            user.getUsername().toLowerCase().contains(queryLower) ||
+                (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower));
 
         bySearch.stream()
             .filter(
                 (submission) -> {
                     final User user = submission.getUser();
 
-                    if (qNotEmpty && (user.getUsername().toLowerCase().contains(queryLower) ||
-                        (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower)))) {
+                    if (qNotEmpty && matchesUsername.test(user)) {
                         return true;
                     }
 
@@ -365,10 +368,7 @@ public class SubmissionService {
                                                     .stream()
                                                     .map(Opponent::getSubmission)
                                                     .map(Submission::getUser)
-                                                    .anyMatch(
-                                                        (u) -> u.getUsername().toLowerCase().contains(queryLower) ||
-                                                            (u.getUsernameJapanese() != null && u.getUsernameJapanese().toLowerCase().contains(queryLower))
-                                                    );
+                                                    .anyMatch(matchesUsername);
                                             }
 
                                             // if we did not find an opponent, search category name
