@@ -6,6 +6,10 @@ import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,10 +19,13 @@ import java.util.List;
 @Service
 public class MarathonRepositoryService {
 
-	@Autowired
-	private MarathonRepository marathonRepository;
+	private final MarathonRepository marathonRepository;
 
-	public Marathon save(final Marathon marathon) {
+    public MarathonRepositoryService(MarathonRepository marathonRepository) {
+        this.marathonRepository = marathonRepository;
+    }
+
+    public Marathon save(final Marathon marathon) {
 		return this.marathonRepository.save(marathon);
 	}
 

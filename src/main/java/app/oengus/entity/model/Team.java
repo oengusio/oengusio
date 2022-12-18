@@ -3,8 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -15,9 +13,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
-@Cacheable
 @Table(name = "teams")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Team {
 
     @Id
@@ -71,7 +67,6 @@ public class Team {
     )
     @OrderBy(value = "id ASC")
     @JsonView(Views.Public.class)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<User> leaders;
 
     public int getId() {

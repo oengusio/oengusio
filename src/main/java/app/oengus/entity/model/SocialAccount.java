@@ -5,23 +5,17 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.Cache;
 import java.util.Objects;
 
 import static app.oengus.entity.dto.UserDto.*;
 
-@SuppressWarnings("unused")
 @Entity
 @Table(name = "social_accounts")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SocialAccount {
     @Id
     @JsonView(Views.Public.class)

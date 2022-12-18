@@ -5,7 +5,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
@@ -13,8 +12,6 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "answer")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Answer implements Comparable<Answer> {
 
 	@Id
@@ -25,14 +22,12 @@ public class Answer implements Comparable<Answer> {
 	@ManyToOne
 	@JoinColumn(name = "question_id")
 	@JsonView(Views.Public.class)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Question question;
 
 	@ManyToOne
 	@JoinColumn(name = "submission_id")
 	@JsonBackReference(value = "answersReference")
 	@JsonView(Views.Public.class)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Submission submission;
 
 	@Column(name = "answer")

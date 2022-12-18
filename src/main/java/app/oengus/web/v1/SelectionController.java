@@ -16,9 +16,11 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 
+import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/selections", "/marathons/{marathonId}/selections"})
+@RequestMapping("/v1/marathons/{marathonId}/selections")
 @Tag(name = "selections-v1")
 public class SelectionController {
 
@@ -26,11 +28,25 @@ public class SelectionController {
     private SelectionService selectionService;
 
     @GetMapping
-    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId) || isSelectionDone(#marathonId))")
+    @PreAuthorize("isSelectionDone(#marathonId)")
     @JsonView(Views.Public.class)
-    @Operation(summary = "Get all selection statuses a marathon"/*,
+    @Operation(summary = "Get all selection statuses a marathon, has a 30 minute cache"/*,
         response = SelectionDto.class*/)
     public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                @RequestParam(name = "status", required = false) final List<Status> statuses) {
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(30, false))
+            .body(this.selectionService.findByMarathon(marathonId, statuses));
+    }
+
+    ///////////////
+    // ADMIN ROUTES
+
+    @GetMapping("/admin")
+    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId))")
+    @JsonView(Views.Public.class)
+    @Operation(hidden = true)
+    public ResponseEntity<?> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(name = "status", required = false) final List<Status> statuses) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())

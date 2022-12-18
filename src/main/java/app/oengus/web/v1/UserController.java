@@ -34,12 +34,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static app.oengus.helper.PrincipalHelper.getNullableUserFromPrincipal;
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 @Tag(name = "users-v1")
 @RestController
 @CrossOrigin(maxAge = 3600)
-@RequestMapping({"/v1/users", "/users"})
+@RequestMapping("/v1/users")
 public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
@@ -82,10 +83,25 @@ public class UserController {
     @GetMapping("/{name}/exists")
     @PermitAll
     @Operation(summary = "Check if username exists")
-    public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
+    public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name, final Principal principal) {
+        final User user = getNullableUserFromPrincipal(principal);
         final Map<String, Boolean> response = new HashMap<>();
 
-        response.put("exists", this.userService.exists(name));
+        if (user != null) {
+            final String username = user.getUsername();
+
+            // Bugfix, can't change capitalisation on own username
+            // if the new username does not equal the old username, but it does equal it regarding of case.
+            // Then the user changed the capitalisation of their username
+            if (!name.equals(username) && name.equalsIgnoreCase(username)) {
+                response.put("exists", false);
+                response.put("super-hacky-code", true);
+            } else {
+                response.put("exists", this.userService.exists(name));
+            }
+        } else {
+            response.put("exists", this.userService.exists(name));
+        }
 
         return ResponseEntity.ok(response);
     }

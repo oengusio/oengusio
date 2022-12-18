@@ -1,6 +1,7 @@
 package app.oengus.service.login;
 
 import app.oengus.api.DiscordApi;
+import app.oengus.api.DiscordOauthApi;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.SocialAccount;
@@ -14,7 +15,6 @@ import app.oengus.spring.model.Role;
 import app.oengus.spring.model.params.DiscordParams;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,20 +29,23 @@ public class DiscordService {
 
     private final DiscordParams discordParams;
     private final DiscordApi discordApi;
+    private final DiscordOauthApi discordOauthApi;
     private final UserRepositoryService userRepositoryService;
 
     @Value("${discord.botToken}")
     private String botToken;
 
-    public DiscordService(DiscordParams discordParams, DiscordApi discordApi, UserRepositoryService userRepositoryService) {
+    public DiscordService(DiscordParams discordParams, DiscordApi discordApi,
+                          DiscordOauthApi discordOauthApi, UserRepositoryService userRepositoryService) {
         this.discordParams = discordParams;
         this.discordApi = discordApi;
+        this.discordOauthApi = discordOauthApi;
         this.userRepositoryService = userRepositoryService;
     }
 
     public User login(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, host);
-        final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
+        final AccessToken accessToken = this.discordOauthApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken()));
 
@@ -82,7 +85,7 @@ public class DiscordService {
 
     public SyncDto sync(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.discordParams, code, host);
-        final AccessToken accessToken = this.discordApi.getAccessToken(oauthParams);
+        final AccessToken accessToken = this.discordOauthApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken())
         );

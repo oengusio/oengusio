@@ -1,6 +1,5 @@
 package app.oengus.web.v1;
 
-import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.dto.OrderDto;
 import app.oengus.entity.model.Donation;
 import app.oengus.service.DonationService;
@@ -23,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/donations", "/marathons/{marathonId}/donations"})
+@RequestMapping("/v1/marathons/{marathonId}/donations")
 @Tag(name = "donations-v1")
 public class DonationController {
 

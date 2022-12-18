@@ -10,22 +10,20 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortComparator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Table(name = "submission")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Submission {
     private static final List<String> DEFAULT_HEADERS =
         Arrays.asList("runner", "game_name", "game_description", "game_console", "game_ratio", "category_name",
@@ -38,19 +36,16 @@ public class Submission {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "marathon_id")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference(value = "marathonReference")
     @JsonView(Views.Public.class)
     private Marathon marathon;
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy("id ASC")
     @JsonManagedReference
     @JsonView(Views.Public.class)
@@ -62,14 +57,12 @@ public class Submission {
         @AttributeOverride(name = "from", column = @Column(name = "date_from")),
         @AttributeOverride(name = "to", column = @Column(name = "date_to"))
     })
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy(value = "date_from ASC")
     @JsonView(Views.Public.class)
     private List<Availability> availabilities;
 
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "answersReference")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @SortComparator(AnswerComparator.class)
     @JsonView(Views.Public.class)
     private SortedSet<Answer> answers;
@@ -151,9 +144,13 @@ public class Submission {
     public String[] getCsvHeaders() {
         final List<String> headers = new ArrayList<>(DEFAULT_HEADERS);
         if (!CollectionUtils.isEmpty(this.getMarathon().getQuestions())) {
-            this.getMarathon().getQuestions().forEach(question -> {
-                headers.add(question.getLabel());
-            });
+            this.getMarathon()
+                .getQuestions()
+                .stream()
+                .filter((q) -> q.getFieldType() != FieldType.FREETEXT)
+                .forEach(
+                    (question) -> headers.add(question.getLabel())
+                );
         }
         headers.add("availabilities");
         String[] array = new String[headers.size()];
@@ -205,7 +202,12 @@ public class Submission {
             final String statusName = category.getSelection().getStatus().name();
             record.add(resourceBundle.getString("run.status." + statusName));
             if (!CollectionUtils.isEmpty(this.getAnswers())) {
-                this.getAnswers().forEach(answer -> record.add(answer.getAnswer()));
+                this.getAnswers()
+                    .stream()
+                    .filter((a) -> a.getQuestion().getFieldType() != FieldType.FREETEXT)
+                    .forEach(
+                        (answer) -> record.add(answer.getAnswer())
+                    );
             }
             this.getAvailabilities().forEach(availability -> {
                 record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(availability.getFrom().withZoneSameInstant(

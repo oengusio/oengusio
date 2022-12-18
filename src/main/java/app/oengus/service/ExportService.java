@@ -38,13 +38,16 @@ public class ExportService {
 
 	public Writer exportSubmissionsToCsv(final String marathonId, final String zoneId, final String language)
 			throws IOException {
-		final List<Submission> submissions = this.submissionService.findByMarathon(marathonId);
+		final List<Submission> submissions = this.submissionService.findAllByMarathon(marathonId);
 
 		final StringWriter out = new StringWriter();
 		if (!submissions.isEmpty()) {
 			try (final CSVPrinter printer = new CSVPrinter(out,
-					CSVFormat.RFC4180.withHeader(submissions.get(0).getCsvHeaders())
-					                 .withQuoteMode(QuoteMode.NON_NUMERIC))) {
+					CSVFormat.RFC4180.builder()
+                        .setHeader(submissions.get(0).getCsvHeaders())
+                        .setQuoteMode(QuoteMode.NON_NUMERIC)
+                        .build()
+            )) {
 				final Locale locale = Locale.forLanguageTag(language);
 				for (final Submission submission : submissions) {
 					printer.printRecords(submission.getCsvRecords(locale, zoneId));

@@ -2,10 +2,14 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.SubmissionRepository;
 import app.oengus.entity.model.Marathon;
+import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.CompletionContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,10 +18,15 @@ import java.util.List;
 @Service
 public class SubmissionRepositoryService {
 
-	@Autowired
-	private SubmissionRepository submissionRepository;
+	private final SubmissionRepository submissionRepository;
+    private final int pageSize;
 
-	public Submission save(final Submission submission) {
+    public SubmissionRepositoryService(SubmissionRepository submissionRepository, @Value("${oengus.pageSize}") int pageSize) {
+        this.submissionRepository = submissionRepository;
+        this.pageSize = pageSize;
+    }
+
+    public Submission save(final Submission submission) {
 		return this.submissionRepository.save(submission);
 	}
 
@@ -29,7 +38,19 @@ public class SubmissionRepositoryService {
 		return this.submissionRepository.findByUserAndMarathon(user, marathon);
 	}
 
-	public List<Submission> findByMarathon(final Marathon marathon) {
+    public List<Submission> searchForMarathon(final Marathon marathon, String query) {
+        return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, this.pageSize)).getContent();
+    }
+
+    public List<Submission> searchForMarathonWithStatus(final Marathon marathon, String query, Status status) {
+        return this.submissionRepository.searchForMarathonWithStatus(marathon, query, status, PageRequest.of(0, this.pageSize)).getContent();
+    }
+
+	public Page<Submission> findByMarathon(final Marathon marathon, int page) {
+		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, this.pageSize));
+	}
+
+	public List<Submission> findAllByMarathon(final Marathon marathon) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 	}
 

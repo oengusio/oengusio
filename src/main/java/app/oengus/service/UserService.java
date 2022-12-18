@@ -354,7 +354,6 @@ public class UserService {
     }
 
     public boolean exists(final String name) {
-        // TODO: what the fuck?
         return this.userRepositoryService.existsByUsername(name) || "new".equalsIgnoreCase(name) ||
             "settings".equalsIgnoreCase(name);
     }

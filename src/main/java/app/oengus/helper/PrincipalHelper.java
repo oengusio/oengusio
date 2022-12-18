@@ -5,9 +5,19 @@ import app.oengus.exception.OengusBusinessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.annotation.Nullable;
 import java.security.Principal;
 
 public class PrincipalHelper {
+
+    @Nullable
+    public static User getNullableUserFromPrincipal(@Nullable final Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+
+        return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+    }
 
 	public static User getUserFromPrincipal(final Principal principal) {
 	    if (principal == null) {

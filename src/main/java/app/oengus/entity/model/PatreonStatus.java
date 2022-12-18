@@ -14,8 +14,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "patreon_status")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class PatreonStatus {
 
     @Id

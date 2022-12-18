@@ -12,8 +12,6 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "donation_extra_data")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DonationExtraData implements Comparable<DonationExtraData> {
 
     @Id
@@ -24,14 +22,12 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
     @ManyToOne
     @JoinColumn(name = "question_id")
     @JsonView(Views.Public.class)
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Question question;
 
     @ManyToOne
     @JoinColumn(name = "donation_id")
     @JsonBackReference(value = "donationReference")
     @JsonView(Views.Public.class)
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Donation donation;
 
     @Column(name = "answer")

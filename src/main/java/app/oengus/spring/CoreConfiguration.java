@@ -20,6 +20,10 @@ public class CoreConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .maxAge(3600)
+            .exposedHeaders("Location")
+            .allowedMethods("GET", "PUT", "OPTIONS", "POST", "DELETE", "PATCH")
+            .allowedOrigins("*")
+            .allowCredentials(false)
             .allowedHeaders("*");
     }
 
@@ -28,7 +32,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
         return (openApi) -> {
             openApi.setInfo(
                 new Info()
-                    .title("Oengus API documentation")
+                    .title("Oengus.IO API documentation")
                     .contact(
                         new Contact()
                             .url("https://oengus.io/")
@@ -46,7 +50,10 @@ public class CoreConfiguration implements WebMvcConfigurer {
                     .description("Production server"),
                 new Server()
                     .url("https://sandbox.oengus.io/api")
-                    .description("Sandbox, use for testing the api")
+                    .description("Sandbox, use for testing the api"),
+                new Server()
+                    .url("http://localhost:8080")
+                    .description("Local instance of the api")
             ));
         };
     }

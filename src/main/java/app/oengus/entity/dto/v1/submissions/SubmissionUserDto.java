@@ -2,7 +2,6 @@ package app.oengus.entity.dto.v1.submissions;
 
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;
-import app.oengus.spring.model.Role;
 
 import java.util.List;
 
@@ -14,7 +13,6 @@ public class SubmissionUserDto {
     public List<String> pronouns;
     private String country;
     private List<String> languagesSpoken;
-    private List<Role> roles;
     private List<SocialAccount> connections;
 
     public int getId() {
@@ -73,14 +71,6 @@ public class SubmissionUserDto {
         this.languagesSpoken = languagesSpoken;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
     public List<SocialAccount> getConnections() {
         return connections;
     }
@@ -115,7 +105,6 @@ public class SubmissionUserDto {
             model.setLanguagesSpoken(List.of(languagesSpoken.split(",")));
         }
 
-        model.setRoles(user.getRoles());
         model.setConnections(user.getConnections());
 
         return model;

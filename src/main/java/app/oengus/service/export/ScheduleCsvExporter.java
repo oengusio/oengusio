@@ -34,8 +34,11 @@ public class ScheduleCsvExporter implements Exporter {
 		final StringWriter out = new StringWriter();
 		if (!scheduleLineDtos.isEmpty()) {
 			try (final CSVPrinter printer = new CSVPrinter(out,
-					CSVFormat.RFC4180.withHeader(scheduleLineDtos.get(0).getCsvHeaders())
-					                 .withQuoteMode(QuoteMode.NON_NUMERIC))) {
+					CSVFormat.RFC4180.builder()
+                        .setHeader(scheduleLineDtos.get(0).getCsvHeaders())
+                        .setQuoteMode(QuoteMode.NON_NUMERIC)
+                        .build()
+            )) {
 				for (final ScheduleLineDto scheduleLineDto : scheduleLineDtos) {
 					printer.printRecords(scheduleLineDto.getCsvRecords(locale));
 				}

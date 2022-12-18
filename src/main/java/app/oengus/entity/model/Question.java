@@ -3,7 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,8 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "question")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Question {
 
 	@Id
@@ -26,7 +23,6 @@ public class Question {
 	@JoinColumn(name = "marathon_id")
 	@JsonBackReference(value = "marathonReference")
 	@JsonView(Views.Public.class)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Marathon marathon;
 
 	@Column(name = "label")
@@ -47,7 +43,6 @@ public class Question {
 	@CollectionTable(name = "select_option", joinColumns = @JoinColumn(name = "question_id"))
 	@JsonView(Views.Public.class)
 	@Column(name = "question_option")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private List<@Size(max = 50) String> options;
 
 	@Column(name = "question_type")

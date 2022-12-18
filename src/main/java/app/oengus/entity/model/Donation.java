@@ -3,7 +3,6 @@ package app.oengus.entity.model;
 import app.oengus.entity.comparator.DonationExtraDataComparator;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortComparator;
 
 import javax.persistence.*;
@@ -22,8 +21,6 @@ import java.util.SortedSet;
 @Table(name = "donation")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Donation {
 
     private static final List<String> DEFAULT_HEADERS = List.of("date", "nickname", "amount", "comment");
@@ -35,7 +32,6 @@ public class Donation {
 
     @ManyToOne
     @JoinColumn(name = "marathon_id")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference
     @JsonView(Views.Public.class)
     private Marathon marathon;
@@ -70,14 +66,12 @@ public class Donation {
     private boolean approved;
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     @JsonManagedReference("donation")
     private Set<DonationIncentiveLink> donationIncentiveLinks;
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "donationReference")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @SortComparator(DonationExtraDataComparator.class)
     @JsonView(Views.Public.class)
     private SortedSet<DonationExtraData> answers;

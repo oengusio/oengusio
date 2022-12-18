@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.time.DurationMin;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,8 +21,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Category {
 
 	@Id
@@ -31,7 +30,6 @@ public class Category {
 
 	@ManyToOne
 	@JoinColumn(name = "game_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
 	@JsonView(Views.Public.class)
 	private Game game;
@@ -193,6 +191,17 @@ public class Category {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, estimate, description, video, type);
+    }
+
+    public Category fresh(Game parent) {
+        final Category category = new Category();
+
+        Hibernate.initialize(this.getOpponents());
+        BeanUtils.copyProperties(this, category, "game");
+
+        category.setGame(parent);
+
+        return category;
     }
 }
 

@@ -30,17 +30,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 	                                final FilterChain chain)
 			throws ServletException, IOException {
 
-		//CORS
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Expose-Headers", "Location");
+        // TODO: why the fuck is this required, should already have been configured by spring
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Expose-Headers", "Location");
         response.addHeader("Access-Control-Allow-Headers", "*");
-		if (request.getHeader("Access-Control-Request-Method") != null &&
-				"OPTIONS".equalsIgnoreCase(request.getMethod())) {
-			response.addHeader("Access-Control-Allow-Headers", "Authorization");
-			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-			response.addHeader("Access-Control-Max-Age", "1");
-			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-		}
+        if (request.getHeader("Access-Control-Request-Method") != null &&
+            "OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.addHeader("Access-Control-Allow-Headers", "Authorization");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+            response.addHeader("Access-Control-Max-Age", "1");
+            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+        }
+
 
 		final String authHeader = request.getHeader(AUTH_HEADER);
 

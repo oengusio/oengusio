@@ -4,6 +4,7 @@ import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
@@ -18,13 +19,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static app.oengus.service.CategoryService.MULTIPLAYER_RUN_TYPES;
@@ -39,13 +41,12 @@ public class SubmissionService {
     private final CategoryRepository categoryRepository;
     private final GameRepositoryService gameRepositoryService;
     private final OengusWebhookService webhookService;
-    private final EntityManager entityManager;
 
     public SubmissionService(
         SubmissionRepositoryService submissionRepositoryService, MarathonRepositoryService marathonRepositoryService,
         SelectionRepositoryService selectionRepositoryService, UserRepositoryService userRepositoryService,
         CategoryRepository categoryRepository, GameRepositoryService gameRepositoryService,
-        @Lazy OengusWebhookService webhookService, EntityManager entityManager
+        @Lazy OengusWebhookService webhookService
     ) {
         this.submissionRepositoryService = submissionRepositoryService;
         this.marathonRepositoryService = marathonRepositoryService;
@@ -54,7 +55,6 @@ public class SubmissionService {
         this.categoryRepository = categoryRepository;
         this.gameRepositoryService = gameRepositoryService;
         this.webhookService = webhookService;
-        this.entityManager = entityManager;
     }
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
@@ -90,18 +90,13 @@ public class SubmissionService {
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
 
-        /*Submission.initialize(oldSubmission, true);
-
-        // uncache the old submission
-        entityManager.detach(oldSubmission);*/
-
         // save before sending so we catch the error if saving fails
         final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
             try {
-                this.webhookService.sendSubmissionUpdateEvent(marathon.getWebhook(), newSubmission, oldSubmission);
+                this.webhookService.sendSubmissionUpdateEvent(marathon.getWebhook(), saved, oldSubmission);
             } catch (IOException e) {
                 LoggerFactory.getLogger(SubmissionService.class).error(e.getLocalizedMessage());
             }
@@ -295,7 +290,7 @@ public class SubmissionService {
     public List<AnswerDto> findAnswersByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
         final List<AnswerDto> answers = new ArrayList<>();
 
         byMarathon.forEach((submission) -> {
@@ -311,47 +306,121 @@ public class SubmissionService {
         return answers;
     }
 
-    public List<SubmissionDto> findByMarathonNew(final String marathonId) {
+    // TODO: exclude categories and games that are not in the search query
+    public List<SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final String queryLower = query.toLowerCase();
+
+        final List<Submission> bySearch;
+        final Status cStat;
+
+        if (status == null) {
+            // Fast return if we have nothing to search for
+            if (queryLower.isBlank()) {
+                return List.of();
+            }
+
+            cStat = null;
+            bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
+        } else {
+            try {
+                cStat = Status.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+                throw new OengusBusinessException("Invalid status supplied");
+            }
+            bySearch = this.submissionRepositoryService.searchForMarathonWithStatus(
+                marathon, query, cStat
+            );
+        }
+
         final List<SubmissionDto> submissions = new ArrayList<>();
+        final boolean qNotEmpty = !queryLower.isBlank();
+        final Predicate<User> matchesUsername = (user) ->
+            user.getUsername().toLowerCase().contains(queryLower) ||
+                (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower));
 
-        byMarathon.forEach((submission) -> {
-            final SubmissionDto dto = new SubmissionDto();
+        bySearch.stream()
+            .filter(
+                (submission) -> {
+                    final User user = submission.getUser();
 
-            dto.setId(submission.getId());
-            dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
-
-            submission.getGames().forEach((game) -> {
-                game.getCategories().forEach((category) -> {
-                    if (category.getOpponents() != null) {
-                        category.setOpponentDtos(new ArrayList<>());
-                        category.getOpponents().forEach(opponent -> {
-                            final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
-                            opponentCategoryDto.setId(opponent.getId());
-                            opponentCategoryDto.setVideo(opponent.getVideo());
-                            opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
-                            opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
-                            category.getOpponentDtos().add(opponentCategoryDto);
-                        });
+                    if (qNotEmpty && matchesUsername.test(user)) {
+                        return true;
                     }
-                });
-            });
 
-            dto.setGames(submission.getGames());
+                    final Set<Game> gameSet = submission.getGames()
+                        .stream()
+                        .filter((game) -> {
+                            if (qNotEmpty && game.getName().toLowerCase().contains(queryLower)) {
+                                return true;
+                            }
 
-            submissions.add(dto);
-        });
+                            final List<Category> categoryList = game.getCategories()
+                                .stream()
+                                .filter(
+                                    (category) -> {
+                                        boolean base = true;
+
+                                        if (qNotEmpty) {
+                                            if (category.getOpponents() != null) {
+                                                base = category.getOpponents()
+                                                    .stream()
+                                                    .map(Opponent::getSubmission)
+                                                    .map(Submission::getUser)
+                                                    .anyMatch(matchesUsername);
+                                            }
+
+                                            // if we did not find an opponent, search category name
+                                            if (!base) {
+                                                base = category.getName().toLowerCase().contains(queryLower);
+                                            }
+                                        }
+
+                                        if (cStat != null && category.getSelection() != null) {
+                                            base &= category.getSelection().getStatus() == cStat;
+                                        }
+
+                                        return base;
+                                    }
+                                )
+                                .toList();
+
+                            game.setCategories(categoryList);
+
+                            return !game.getCategories().isEmpty();
+                        })
+                        .collect(Collectors.toSet());
+
+                    submission.setGames(gameSet);
+
+                    return !submission.getGames().isEmpty();
+                }
+            )
+            .forEach(
+                (submission) -> submissions.add(this.mapSubmissionDto(submission, false))
+            );
 
         return submissions;
     }
 
+    public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) throws NotFoundException {
+        // Get the marathon so that we can see if the selections are done
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final boolean selectionDone = marathon.isSelectionDone();
+
+        final Page<SubmissionDto> byMarathon = this.submissionRepositoryService
+            .findByMarathon(marathon, page)
+            .map((s) -> this.mapSubmissionDto(s, selectionDone));
+
+        return new PageDto<>(byMarathon);
+    }
+
     @Transactional
-    public List<Submission> findByMarathon(final String marathonId) {
+    public List<Submission> findAllByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findByMarathon(marathon);
+        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
 
         // load opponents
         byMarathon.forEach((submission) -> {
@@ -415,12 +484,43 @@ public class SubmissionService {
             }
 
             submission.getGames().forEach((game) -> {
-                game.getCategories().forEach(this.categoryRepository::delete);
+                this.categoryRepository.deleteAll(game.getCategories());
                 this.gameRepositoryService.delete(game.getId());
             });
             this.submissionRepositoryService.delete(id);
         } else {
             throw new OengusBusinessException("NOT_AUTHORIZED");
         }
+    }
+
+    private SubmissionDto mapSubmissionDto(Submission submission, boolean selectionDone) {
+        final SubmissionDto dto = new SubmissionDto();
+
+        dto.setId(submission.getId());
+        dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
+
+        submission.getGames().forEach((game) -> {
+            game.getCategories().forEach((category) -> {
+                if (category.getOpponents() != null) {
+                    category.setOpponentDtos(new ArrayList<>());
+                    category.getOpponents().forEach(opponent -> {
+                        final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
+                        opponentCategoryDto.setId(opponent.getId());
+                        opponentCategoryDto.setVideo(opponent.getVideo());
+                        opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                        opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
+                        category.getOpponentDtos().add(opponentCategoryDto);
+                    });
+                }
+
+                if (selectionDone) {
+                    category.setStatus(category.getSelection().getStatus());
+                }
+            });
+        });
+
+        dto.setGames(submission.getGames());
+
+        return dto;
     }
 }

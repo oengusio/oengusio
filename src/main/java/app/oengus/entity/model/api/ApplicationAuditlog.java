@@ -6,8 +6,6 @@ import app.oengus.entity.model.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,8 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "application_auditlog")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ApplicationAuditlog {
 
     @Id

@@ -98,7 +98,7 @@ public class MarathonService {
     @Transactional
     public Marathon create(final Marathon marathon, final User creator) {
         marathon.setCreator(creator);
-        marathon.setDefaultSetupTime(Duration.ofMinutes(10));
+        marathon.setDefaultSetupTime(Duration.ofMinutes(15));
         marathon.setStartDate(marathon.getStartDate().withSecond(0));
         marathon.setEndDate(marathon.getEndDate().withSecond(0));
         return this.marathonRepositoryService.save(marathon);

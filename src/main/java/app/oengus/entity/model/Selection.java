@@ -2,15 +2,12 @@ package app.oengus.entity.model;
 
 import app.oengus.helper.BeanHelper;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "selection")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Selection {
 
 	@Id
@@ -19,12 +16,10 @@ public class Selection {
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Marathon marathon;
 
 	@OneToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private Category category;
 
 	@Column(name = "status")

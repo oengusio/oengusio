@@ -13,7 +13,7 @@ dependencyManagement {
 }
 
 project.group = "app.oengus"
-project.version = "2022.05.30"
+project.version = "2022.12.18"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -46,7 +46,7 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
     implementation(group = "org.liquibase", name = "liquibase-core")
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
-    
+
     // POSTGRESQL
     implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
     implementation(group = "org.postgresql", name = "postgresql")
@@ -54,22 +54,16 @@ dependencies {
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
     implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-    
+
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.7")
-    
+    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
+
     // FEIGN
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
-    
+
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
-
-    // HIBERNATE
-    implementation(group = "com.vladmihalcea", name = "hibernate-types-55", version = "2.16.2") // TODO: do we need this?
-    implementation(group = "org.hibernate", name = "hibernate-core", version = "5.5.9.Final")
-    implementation(group = "org.hibernate", name = "hibernate-jcache", version = "5.5.9.Final")
-    runtimeOnly(group = "org.ehcache", name = "ehcache", version = "3.8.1")
 
     // documentation
     implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.6.8")
@@ -97,7 +91,10 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.2")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.18.0")
+
+    // idk
+    implementation("org.javassist:javassist:3.29.1-GA")
 }
 
 val wrapper: Wrapper by tasks
@@ -109,6 +106,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "7.4.2"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "7.5.1"
+    distributionType = Wrapper.DistributionType.BIN
 }

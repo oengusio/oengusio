@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -73,6 +74,8 @@ public class OengusExceptionHandler {
             stringStringMap.put("errors", ex.getConstraintViolations());
 
             return ResponseEntity.badRequest().body(stringStringMap);
+        } else if (cause instanceof MissingServletRequestParameterException smh) {
+            return ResponseEntity.badRequest().body(toMap(req, smh));
         }
 
         Sentry.captureException(exc);

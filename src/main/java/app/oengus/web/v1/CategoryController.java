@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.security.Principal;
 
 @RestController
-@RequestMapping({"/v1/marathons/{marathonId}/categories", "/marathons/{marathonId}/categories"})
+@RequestMapping("/v1/marathons/{marathonId}/categories")
 @Tag(name = "categories-v1")
 public class CategoryController {
 

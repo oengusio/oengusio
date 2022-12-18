@@ -4,7 +4,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.persistence.*;
@@ -17,8 +16,6 @@ import java.util.List;
 @Entity
 @Table(name = "schedule_line")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ScheduleLine {
 
     @Id
@@ -28,7 +25,6 @@ public class ScheduleLine {
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference
     @JsonView(Views.Public.class)
     private Schedule schedule;
@@ -95,7 +91,6 @@ public class ScheduleLine {
         joinColumns = {@JoinColumn(name = "schedule_line_id")},
         inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
-    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OrderBy(value = "id ASC")
     @JsonView(Views.Public.class)
     private List<User> runners;

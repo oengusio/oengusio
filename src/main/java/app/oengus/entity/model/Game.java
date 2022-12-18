@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
@@ -18,8 +17,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "game")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Game {
 
 	@Id
@@ -29,7 +26,6 @@ public class Game {
 
 	@ManyToOne
 	@JoinColumn(name = "submission_id")
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	@JsonBackReference
 	@JsonView(Views.Public.class)
 	private Submission submission;
@@ -66,7 +62,6 @@ public class Game {
 	@JsonManagedReference
 	@OrderBy("id ASC")
 	@JsonView(Views.Public.class)
-	@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 	private List<Category> categories;
 
 	public int getId() {
@@ -138,7 +133,7 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio) && Objects.equals(categories, game.categories);
+        return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio);
     }
 
     @Override
@@ -148,14 +143,16 @@ public class Game {
 
     public Game fresh(boolean withSubmission) {
         final Game game = new Game();
+
         // load all the items needed from the old game
         Hibernate.initialize(this.getCategories());
 
-        this.getCategories().forEach((category) -> {
-            Hibernate.initialize(category.getOpponents());
-        });
+        BeanUtils.copyProperties(this, game, "categories");
 
-        BeanUtils.copyProperties(this, game);
+        // De-reference :D
+        game.setCategories(
+            this.getCategories().stream().map((c) -> c.fresh(game)).toList()
+        );
 
         if (withSubmission) {
             game.setSubmission(this.getSubmission().fresh(false));

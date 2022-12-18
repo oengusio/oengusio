@@ -4,8 +4,6 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,8 +11,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "donation_incentive_link")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DonationIncentiveLink {
 
     @Id
@@ -24,20 +20,17 @@ public class DonationIncentiveLink {
 
     @ManyToOne
     @JoinColumn(name = "donation_id")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonBackReference("donation")
     @JsonView(Views.Public.class)
     private Donation donation;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "incentive_id")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     private Incentive incentive;
 
     @ManyToOne
     @JoinColumn(name = "bid_id")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonView(Views.Public.class)
     private Bid bid;
 
