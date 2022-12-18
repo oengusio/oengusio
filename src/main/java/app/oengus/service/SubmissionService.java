@@ -334,8 +334,6 @@ public class SubmissionService {
             );
         }
 
-        System.out.println(bySearch);
-
         final List<SubmissionDto> submissions = new ArrayList<>();
         final boolean qNotEmpty = !queryLower.isBlank();
         final Predicate<User> matchesUsername = (user) ->
