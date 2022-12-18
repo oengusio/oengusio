@@ -15,11 +15,20 @@ public class SubmissionToplevelDto {
     }
 
     public static class UserData {
+        private int id;
         private String username;
         @Nullable
         private String usernameJapanese;
         private int accepted;
         private int total;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
 
         public String getUsername() {
             return username;

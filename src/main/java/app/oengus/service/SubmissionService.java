@@ -8,6 +8,7 @@ import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
+import app.oengus.entity.dto.v2.marathon.SubmissionToplevelDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
@@ -56,6 +57,27 @@ public class SubmissionService {
         this.gameRepositoryService = gameRepositoryService;
         this.webhookService = webhookService;
     }
+
+    ///////////
+    // v2 stuff
+
+    public SubmissionToplevelDto getToplevelSubmissionsForMarathon() {
+        final var dto = new SubmissionToplevelDto();
+
+        final var fakeData = new SubmissionToplevelDto.UserData();
+
+        fakeData.setId(1);
+        fakeData.setUsername("duncte123");
+        fakeData.setAccepted(2);
+        fakeData.setTotal(69);
+
+        dto.setData(List.of(fakeData));
+
+        return dto;
+    }
+
+    ///////////
+    // V1 stuff
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {
@@ -306,7 +328,6 @@ public class SubmissionService {
         return answers;
     }
 
-    // TODO: exclude categories and games that are not in the search query
     public List<SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
