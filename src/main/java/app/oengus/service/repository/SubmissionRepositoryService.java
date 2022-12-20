@@ -1,13 +1,13 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.SubmissionRepository;
+import app.oengus.entity.dto.v2.marathon.SubmissionToplevelDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.CompletionContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,28 @@ public class SubmissionRepositoryService {
         this.submissionRepository = submissionRepository;
         this.pageSize = pageSize;
     }
+
+    ///////////
+    // V2 stuff
+
+    public List<SubmissionToplevelDto.UserData> getToplevelDataForMarathon(final Marathon marathon) {
+        return this.submissionRepository.findByMarathonToplevel(marathon)
+            .stream()
+            .map((data) -> {
+                var user = new SubmissionToplevelDto.UserData();
+
+                user.setUserId((Integer) data.get("userId"));
+                user.setUsername((String) data.get("username"));
+                user.setUsernameJapanese((String) data.get("usernameJapanese"));
+                user.setTotal((Long) data.get("total"));
+
+                return user;
+            })
+            .toList();
+    }
+
+    ////////////
+    // Old stuff
 
     public Submission save(final Submission submission) {
 		return this.submissionRepository.save(submission);

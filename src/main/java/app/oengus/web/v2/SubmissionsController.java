@@ -17,9 +17,9 @@ import java.util.List;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
-@RestController
 @CrossOrigin(maxAge = 3600)
 @Tag(name = "submissions-v2")
+@RestController("v2SubmissionController")
 @RequestMapping("/v2/marathons/{marathonId}/submissions")
 public class SubmissionsController {
 
@@ -45,7 +45,7 @@ public class SubmissionsController {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
             .body(
-                this.submissionService.getToplevelSubmissionsForMarathon()
+                this.submissionService.getToplevelSubmissionsForMarathon(marathonId)
             );
     }
 

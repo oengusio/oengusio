@@ -15,19 +15,19 @@ public class SubmissionToplevelDto {
     }
 
     public static class UserData {
-        private int id;
+        private int userId;
         private String username;
         @Nullable
         private String usernameJapanese;
         private int accepted;
-        private int total;
+        private long total;
 
-        public int getId() {
-            return id;
+        public int getUserId() {
+            return userId;
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public void setUserId(int userId) {
+            this.userId = userId;
         }
 
         public String getUsername() {
@@ -55,11 +55,11 @@ public class SubmissionToplevelDto {
             this.accepted = accepted;
         }
 
-        public int getTotal() {
+        public long getTotal() {
             return total;
         }
 
-        public void setTotal(int total) {
+        public void setTotal(long total) {
             this.total = total;
         }
     }

@@ -12,9 +12,23 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface SubmissionRepository extends CrudRepository<Submission, Integer> {
+    ///////////
+    // V2 stuff
+
+    @Query(value = "SELECT " +
+        "s.user.id as userId, " +
+        "s.user.username as username, " +
+        "s.user.usernameJapanese as usernameJapanese, " +
+        "(SELECT COUNT(c.id) FROM Category c WHERE c.game = (SELECT g FROM Game g WHERE g.submission = s)) as total " +
+        "FROM Submission s WHERE s.marathon = :marathon")
+    List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") Marathon marathon);
+
+    ////////////
+    // Old stuff
 
     Submission findByUserAndMarathon(User user, Marathon marathon);
 

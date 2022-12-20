@@ -61,17 +61,15 @@ public class SubmissionService {
     ///////////
     // v2 stuff
 
-    public SubmissionToplevelDto getToplevelSubmissionsForMarathon() {
+    public SubmissionToplevelDto getToplevelSubmissionsForMarathon(final String marathonId) {
         final var dto = new SubmissionToplevelDto();
+        final Marathon marathon = new Marathon();
 
-        final var fakeData = new SubmissionToplevelDto.UserData();
+        marathon.setId(marathonId);
 
-        fakeData.setId(1);
-        fakeData.setUsername("duncte123");
-        fakeData.setAccepted(2);
-        fakeData.setTotal(69);
+        final var submissionData = this.submissionRepositoryService.getToplevelDataForMarathon(marathon);
 
-        dto.setData(List.of(fakeData));
+        dto.setData(submissionData);
 
         return dto;
     }
