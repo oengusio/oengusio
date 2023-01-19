@@ -31,7 +31,7 @@ public class Marathon {
     @Column(name = "name")
     @JsonView(Views.Public.class)
     @Size(min = 4, max = 40)
-    @Pattern(regexp = "^[\\w\\- ]{4,40}$")
+    @Pattern(regexp = "^[\\w\\- \\p{L}]{4,40}$")
     private String name;
 
     @ManyToOne
