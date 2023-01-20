@@ -230,6 +230,7 @@ public class MarathonService {
         marathons.put("next", this.findNext());
         marathons.put("open", this.findSubmitsOpen());
         marathons.put("live", this.findLive());
+        // TODO: make own route for this
         final User user = PrincipalHelper.getCurrentUser();
         if (user != null) {
             marathons.put("moderated", this.findActiveMarathonsIModerate(user));
