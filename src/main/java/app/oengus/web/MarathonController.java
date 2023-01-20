@@ -143,7 +143,7 @@ public class MarathonController {
             throw new AccessDeniedException("No user");
         }
 
-        final List<MarathonBasicInfoDto> marathons = this.marathonService.findAllMarathonsIModerate(user);
+        final List<MarathonBasicInfoDto> marathons = this.marathonService.findActiveMarathonsIModerate(user);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
