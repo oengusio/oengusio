@@ -4,6 +4,7 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
+import app.oengus.entity.model.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.helper.PrincipalHelper.getNullableUserFromPrincipal;
 
 @Tag(name = "marathons-v1")
 @RestController
@@ -127,6 +130,26 @@ public class MarathonController {
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
             .body(marathons);
+    }
+
+    @GetMapping("/moderated-by/me")
+    @RolesAllowed({"ROLE_USER"})
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @Operation(summary = "Returns marathons that are moderated by the cueren logged in user")
+    public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate(final Principal principal) {
+        final User user = getNullableUserFromPrincipal(principal);
+
+        if (user == null) {
+            throw new AccessDeniedException("No user");
+        }
+
+        final List<MarathonBasicInfoDto> marathons = this.marathonService.findActiveMarathonsIModerate(user);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(Map.of(
+                "marathons", marathons
+            ));
     }
 
     @GetMapping("/forDates")

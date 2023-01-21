@@ -226,15 +226,11 @@ public class MarathonService {
     }
 
     public Map<String, List<MarathonBasicInfoDto>> findMarathons() {
-        final Map<String, List<MarathonBasicInfoDto>> marathons = new HashMap<>();
-        marathons.put("next", this.findNext());
-        marathons.put("open", this.findSubmitsOpen());
-        marathons.put("live", this.findLive());
-        final User user = PrincipalHelper.getCurrentUser();
-        if (user != null) {
-            marathons.put("moderated", this.findActiveMarathonsIModerate(user));
-        }
-        return marathons;
+        return Map.of(
+            "next", this.findNext(),
+            "open", this.findSubmitsOpen(),
+            "live", this.findLive()
+        );
     }
 
     public List<MarathonBasicInfoDto> findMarathonsForDates(final ZonedDateTime start, final ZonedDateTime end,

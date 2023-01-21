@@ -1057,4 +1057,8 @@
                              columnNames="marathon_id,category_id"
                              constraintName="uq_marathon_id_category_id"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20230119-1">
+        <modifyDataType tableName="marathon" columnName="language" newDataType="varchar(10)"/>
+    </changeSet>
 </databaseChangeLog>
