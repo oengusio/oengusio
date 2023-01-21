@@ -6,6 +6,8 @@ import app.oengus.entity.model.Schedule;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ScheduleRepositoryService {
 
@@ -17,7 +19,13 @@ public class ScheduleRepositoryService {
 
     @Nullable
 	public Schedule findByMarathon(final Marathon marathon) {
-		return this.scheduleRepository.findByMarathon(marathon);
+        final List<Schedule> schedules = this.scheduleRepository.findByMarathon(marathon);
+
+        if (schedules.isEmpty()) {
+            return null;
+        }
+
+        return schedules.get(0);
 	}
 
 	public void save(final Schedule schedule) {
