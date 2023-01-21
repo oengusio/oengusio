@@ -1,8 +1,10 @@
 package app.oengus.entity.dto.v2.marathon;
 
+import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.model.RunType;
 
 import java.time.Duration;
+import java.util.List;
 
 public class CategoryDto {
     private int id;
@@ -12,6 +14,7 @@ public class CategoryDto {
     private String video;
     // TODO: include code as well?
     private RunType type;
+    private List<OpponentCategoryDto> opponents;
 
     public int getId() {
         return id;
@@ -59,5 +62,13 @@ public class CategoryDto {
 
     public void setType(RunType type) {
         this.type = type;
+    }
+
+    public List<OpponentCategoryDto> getOpponents() {
+        return opponents;
+    }
+
+    public void setOpponents(List<OpponentCategoryDto> opponents) {
+        this.opponents = opponents;
     }
 }

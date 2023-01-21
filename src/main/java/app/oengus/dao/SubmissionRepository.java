@@ -20,6 +20,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
     // V2 stuff
 
     @Query(value = "SELECT " +
+        "s.id as id, " +
         "s.user.id as userId, " +
         "s.user.username as username, " +
         "s.user.usernameJapanese as usernameJapanese, " +
