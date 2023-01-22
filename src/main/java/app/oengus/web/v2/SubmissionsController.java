@@ -4,6 +4,7 @@ import app.oengus.entity.dto.DataListDto;
 import app.oengus.entity.dto.v2.marathon.CategoryDto;
 import app.oengus.entity.dto.v2.marathon.SubmissionDto;
 import app.oengus.entity.dto.v2.marathon.GameDto;
+import app.oengus.service.CategoryService;
 import app.oengus.service.ExportService;
 import app.oengus.service.GameService;
 import app.oengus.service.SubmissionService;
@@ -22,11 +23,13 @@ import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 @RequestMapping("/v2/marathons/{marathonId}/submissions")
 public class SubmissionsController {
 
-    private final GameService gameService;
+    private final CategoryService categoryService;
     private final ExportService exportService;
+    private final GameService gameService;
     private final SubmissionService submissionService;
 
-    public SubmissionsController(GameService gameService, ExportService exportService, SubmissionService submissionService) {
+    public SubmissionsController(CategoryService categoryService, GameService gameService, ExportService exportService, SubmissionService submissionService) {
+        this.categoryService = categoryService;
         this.gameService = gameService;
         this.exportService = exportService;
         this.submissionService = submissionService;
@@ -48,6 +51,8 @@ public class SubmissionsController {
             ));
     }
 
+    // TODO: do we really need the marathon id in the queries?
+    // (technically we don't, but is it better for security?)
     @GetMapping("/{submissionId}/games")
     @JsonView(Views.Public.class)
     public ResponseEntity<DataListDto<GameDto>> getGamesForSubmission(
@@ -61,15 +66,17 @@ public class SubmissionsController {
             ));
     }
 
-    @GetMapping("/users/{userId}/games/{gameId}/categories")
+    @GetMapping("/{submissionId}/games/{gameId}/categories")
     @JsonView(Views.Public.class)
     public ResponseEntity<DataListDto<CategoryDto>> getCatgegoriesForGame(
         @PathVariable("marathonId") final String marathonId,
-        @PathVariable("userId") final int userId,
+        @PathVariable("submissionId") final int submissionId,
         @PathVariable("gameId") final int gameId
     ) {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new DataListDto<>());
+            .body(new DataListDto<>(
+                this.categoryService.findByGameId(marathonId, submissionId, gameId)
+            ));
     }
 }
