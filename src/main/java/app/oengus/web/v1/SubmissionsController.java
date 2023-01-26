@@ -139,9 +139,9 @@ public class SubmissionsController {
 
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
+    @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission.id != null " +
-        "&& (#submission.user.id == principal.id || isAdmin())")
+        "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,
