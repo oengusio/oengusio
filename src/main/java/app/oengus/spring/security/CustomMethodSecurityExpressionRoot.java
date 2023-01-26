@@ -114,6 +114,12 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return marathon.isScheduleDone();
     }
 
+    public boolean canEditSubmissions(final String marathonId) throws NotFoundException {
+        final Marathon marathon = this.marathonService.getById(marathonId);
+
+        return marathon.isCanEditSubmissions();
+    }
+
     public boolean areSubmissionsOpen(final String id) throws NotFoundException {
         final Marathon marathon = this.marathonService.getById(id);
 

@@ -139,7 +139,7 @@ public class SubmissionsController {
 
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
+    @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission.id != null " +
         "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
