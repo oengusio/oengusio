@@ -17,6 +17,10 @@ public class ScheduleRepositoryService {
         this.scheduleRepository = scheduleRepository;
     }
 
+	public List<Schedule> findAllByMarathon(final Marathon marathon) {
+        return this.scheduleRepository.findByMarathon(marathon);
+	}
+
     @Nullable
 	public Schedule findByMarathon(final Marathon marathon) {
         final List<Schedule> schedules = this.scheduleRepository.findByMarathon(marathon);

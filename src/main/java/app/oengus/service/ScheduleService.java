@@ -26,6 +26,41 @@ public class ScheduleService {
         this.marathonRepositoryService = marathonRepositoryService;
     }
 
+    ///////////
+    // v2 stuff
+
+    public List<Schedule> findAllByMarathon(final String marathonId, boolean withCustomData) {
+        final List<Schedule> schedules = this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId));
+
+        schedules.forEach((schedule) -> {
+            List<ScheduleLine> lines = schedule.getLines();
+
+            if (lines != null && lines.size() > 0) {
+                lines.get(0).setDate(schedule.getMarathon().getStartDate());
+
+                for (int i = 1; i < lines.size(); i++) {
+                    final ScheduleLine previous = lines.get(i - 1);
+                    lines.get(i).setDate(
+                        previous.getDate()
+                            .plus(previous.getEstimate())
+                            .plus(previous.getSetupTime())
+                    );
+                }
+
+                if (withCustomData) {
+                    lines.forEach(
+                        (line) -> line.setCustomDataDTO(line.getCustomData())
+                    );
+                }
+            }
+        });
+
+        return schedules;
+    }
+
+    ///////////
+    // v1 stuff
+
     @Transactional
     public Schedule findByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();

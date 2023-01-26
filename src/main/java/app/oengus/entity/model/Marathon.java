@@ -626,4 +626,16 @@ public class Marathon {
     public void setTeams(List<Team> teams) {
         this.teams = teams;
     }
+
+    /**
+     *
+     * @param marathonId
+     * @return A fake marathon instance with this id
+     */
+    public static Marathon ofId(String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+
+        return marathon;
+    }
 }
