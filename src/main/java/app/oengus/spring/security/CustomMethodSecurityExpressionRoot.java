@@ -50,7 +50,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean isBanned() {
         final User user = this.getUser();
 
-        return user != null && user.getRoles().contains(Role.ROLE_BANNED);
+        if (user == null) {
+            return true;
+        }
+
+        return user.getRoles().contains(Role.ROLE_BANNED);
     }
 
     public boolean isMarathonArchived(final String id) throws NotFoundException {
