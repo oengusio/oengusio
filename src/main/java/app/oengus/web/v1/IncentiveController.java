@@ -1,4 +1,4 @@
-package app.oengus.web;
+package app.oengus.web.v1;
 
 import app.oengus.entity.model.Incentive;
 import app.oengus.service.IncentiveService;

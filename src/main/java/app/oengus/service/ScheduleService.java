@@ -1,6 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.v2.schedule.ScheduleDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
@@ -25,6 +26,25 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
         this.marathonRepositoryService = marathonRepositoryService;
     }
+
+    ///////////
+    // v2 stuff
+
+    public List<ScheduleDto> findAllByMarathon(final String marathonId, boolean withCustomData) {
+        return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))
+            .stream()
+            .map((schedule) -> ScheduleDto.fromSchedule(schedule, withCustomData))
+            .toList();
+    }
+
+    public ScheduleDto findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) throws NotFoundException {
+        final Schedule schedule = this.scheduleRepository.findById(Marathon.ofId(marathonId), scheduleId);
+
+        return ScheduleDto.fromSchedule(schedule, withCustomData);
+    }
+
+    ///////////
+    // v1 stuff
 
     @Transactional
     public Schedule findByMarathon(final String marathonId) {

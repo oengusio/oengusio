@@ -1,4 +1,4 @@
-package app.oengus.web;
+package app.oengus.web.v1;
 
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;

@@ -6,8 +6,9 @@ import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
-import app.oengus.entity.dto.v1.submissions.SubmissionDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
+import app.oengus.entity.dto.v2.marathon.GameDto;
+import app.oengus.entity.dto.v2.marathon.SubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
@@ -56,6 +57,23 @@ public class SubmissionService {
         this.gameRepositoryService = gameRepositoryService;
         this.webhookService = webhookService;
     }
+
+    ///////////
+    // v2 stuff
+
+    public List<SubmissionDto> getToplevelSubmissionsForMarathon(final String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+
+        return this.submissionRepositoryService.getToplevelDataForMarathon(marathon);
+    }
+
+    public List<GameDto> getGamesForSubmission(String marathonId, int submissionId) {
+        return List.of();
+    }
+
+    ///////////
+    // V1 stuff
 
     public Submission save(final Submission submission, final User submitter, final String marathonId)
         throws NotFoundException {
@@ -306,8 +324,7 @@ public class SubmissionService {
         return answers;
     }
 
-    // TODO: exclude categories and games that are not in the search query
-    public List<SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
+    public List<app.oengus.entity.dto.v1.submissions.SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         final String queryLower = query.toLowerCase();
@@ -334,7 +351,7 @@ public class SubmissionService {
             );
         }
 
-        final List<SubmissionDto> submissions = new ArrayList<>();
+        final List<app.oengus.entity.dto.v1.submissions.SubmissionDto> submissions = new ArrayList<>();
         final boolean qNotEmpty = !queryLower.isBlank();
         final Predicate<User> matchesUsername = (user) ->
             user.getUsername().toLowerCase().contains(queryLower) ||
@@ -404,12 +421,12 @@ public class SubmissionService {
         return submissions;
     }
 
-    public PageDto<SubmissionDto> findByMarathonNew(final String marathonId, int page) throws NotFoundException {
+    public PageDto<app.oengus.entity.dto.v1.submissions.SubmissionDto> findByMarathonNew(final String marathonId, int page) throws NotFoundException {
         // Get the marathon so that we can see if the selections are done
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
         final boolean selectionDone = marathon.isSelectionDone();
 
-        final Page<SubmissionDto> byMarathon = this.submissionRepositoryService
+        final Page<app.oengus.entity.dto.v1.submissions.SubmissionDto> byMarathon = this.submissionRepositoryService
             .findByMarathon(marathon, page)
             .map((s) -> this.mapSubmissionDto(s, selectionDone));
 
@@ -493,8 +510,8 @@ public class SubmissionService {
         }
     }
 
-    private SubmissionDto mapSubmissionDto(Submission submission, boolean selectionDone) {
-        final SubmissionDto dto = new SubmissionDto();
+    private app.oengus.entity.dto.v1.submissions.SubmissionDto mapSubmissionDto(Submission submission, boolean selectionDone) {
+        final app.oengus.entity.dto.v1.submissions.SubmissionDto dto = new app.oengus.entity.dto.v1.submissions.SubmissionDto();
 
         dto.setId(submission.getId());
         dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));

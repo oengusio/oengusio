@@ -3,7 +3,6 @@ package app.oengus.service.repository;
 import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.model.Category;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,15 @@ import java.util.List;
 @Service
 public class CategoryRepositoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public CategoryRepositoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    public List<Category> findByGameId(String marathonId, int submissionId, int gameId) {
+        return this.categoryRepository.findByGameId(marathonId, submissionId, gameId);
+    }
 
     public Iterable<Category> findAllById(final List<Integer> ids) {
         return this.categoryRepository.findAllById(ids);

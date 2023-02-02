@@ -104,8 +104,8 @@ public class MarathonService {
         return this.marathonRepositoryService.save(marathon);
     }
 
-    public boolean exists(final String name) {
-        return this.marathonRepositoryService.existsById(name);
+    public boolean exists(final String id) {
+        return this.marathonRepositoryService.existsById(id);
     }
 
     @Transactional
