@@ -83,6 +83,7 @@ public class SocialAccount {
             case SPEEDRUNCOM -> this.username.length() < 20 && this.username.matches(SPEEDRUN_COM_NAME_REGEX);
             case DISCORD -> this.username.matches(DISCORD_USERNAME_REGEX);
             case EMAIL -> this.username.matches(EMAIL_REGEX);
+            case MASTODON -> this.username.matches(MASTODON_REGEX);
             default -> this.username.matches(USERNAME_REGEX);
         };
     }
