@@ -56,6 +56,7 @@ public class ScheduleController {
             )
         }
     )
+    // TODO: use a DTO
     public ResponseEntity<DataListDto<Schedule>> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                                     @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         if (!this.marathonService.exists(marathonId)) {
