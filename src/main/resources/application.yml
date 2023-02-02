@@ -35,6 +35,17 @@ twitter:
         accessToken: ${TWITTER_ACCESS_TOKEN}
         accessTokenSecret: ${TWITTER_ACCESS_TOKEN_SECRET}
 
+# We have to make a new oauth client per instance, ew, hate that ngl.
+mastodon:
+    oauth:
+        clientId: ${MASTODON_OAUTH2_CLIENT_ID}
+        clientSecret: ${MASTODON_OAUTH2_CLIENT_SECRET}
+        redirectUri: '/login/mastodon'
+        syncRedirectUri: '/user/settings/sync/mastodon'
+        grantType: 'authorization_code'
+        scope:
+            - read
+
 paypal:
     clientId: ${PAYPAL_CLIENT_ID}
     clientSecret: ${PAYPAL_CLIENT_SECRET}

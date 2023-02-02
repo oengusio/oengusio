@@ -70,7 +70,7 @@ public class UserService {
         final User user = switch (service) {
             case "discord" -> this.discordService.login(code, host);
             case "twitch" -> this.twitchService.login(code, host);
-            case "twitter" -> this.twitterLoginService.login(code, host);
+            // case "twitter" -> this.twitterLoginService.login(code, host);
             default -> throw new LoginException("UNKNOWN_SERVICE");
         };
 
@@ -92,7 +92,7 @@ public class UserService {
         return switch (service) {
             case "discord" -> this.discordService.sync(code, host);
             case "twitch" -> this.twitchService.sync(code, host);
-            case "twitter" -> this.twitterLoginService.sync(code, host);
+            // case "twitter" -> this.twitterLoginService.sync(code, host);
             case "patreon" -> this.checkPatreonSync(code);
             default -> throw new LoginException("UNKNOWN_SERVICE");
         };
