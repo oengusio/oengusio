@@ -1,7 +1,7 @@
 package app.oengus.web.v2;
 
 import app.oengus.entity.dto.DataListDto;
-import app.oengus.entity.model.Schedule;
+import app.oengus.entity.dto.v2.schedule.ScheduleDto;
 import app.oengus.service.ExportService;
 import app.oengus.service.MarathonService;
 import app.oengus.service.ScheduleService;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @CrossOrigin(maxAge = 3600)
-@Tag(name = "schedules-v1")
+@Tag(name = "schedules-v2")
 @RestController("v2ScheduleController")
 @RequestMapping("/v2/marathons/{marathonId}/schedules")
 public class ScheduleController {
@@ -47,7 +47,7 @@ public class ScheduleController {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = Schedule.class))
+                    array = @ArraySchema(schema = @Schema(implementation = ScheduleDto.class))
                 )
             ),
             @ApiResponse(
@@ -56,9 +56,8 @@ public class ScheduleController {
             )
         }
     )
-    // TODO: use a DTO
-    public ResponseEntity<DataListDto<Schedule>> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-                                                                    @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
+    public ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                                       @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
         if (!this.marathonService.exists(marathonId)) {
             throw new NotFoundException("Marathon not found");
         }
@@ -68,5 +67,40 @@ public class ScheduleController {
             .body(new DataListDto<>(
                 this.scheduleService.findAllByMarathon(marathonId, withCustomData)
             ));
+    }
+
+    @GetMapping("/{scheduleId}")
+    @JsonView(Views.Public.class)
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")@Operation(
+        summary = "Get a schedules for a marathon by its id, has a 5 minute cache",
+        responses = {
+            @ApiResponse(
+                description = "The requested schedule",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ScheduleDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon not found",
+                responseCode = "404"
+            )
+        }
+    )
+    public ResponseEntity<ScheduleDto> findScheduleById(
+        @PathVariable("marathonId") final String marathonId,
+        @PathVariable("scheduleId") final int scheduleId,
+        @RequestParam(defaultValue = "false", required = false) boolean withCustomData
+    ) throws NotFoundException {
+        if (!this.marathonService.exists(marathonId)) {
+            throw new NotFoundException("Marathon not found");
+        }
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, false))
+            .body(
+                this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData)
+            );
     }
 }

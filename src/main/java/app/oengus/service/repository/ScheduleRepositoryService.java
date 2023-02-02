@@ -3,6 +3,7 @@ package app.oengus.service.repository;
 import app.oengus.dao.ScheduleRepository;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
+import javassist.NotFoundException;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,11 @@ public class ScheduleRepositoryService {
 
 	public List<Schedule> findAllByMarathon(final Marathon marathon) {
         return this.scheduleRepository.findByMarathon(marathon);
+	}
+
+	public Schedule findById(final Marathon marathon, final int scheduleId) throws NotFoundException {
+        return this.scheduleRepository.findByMarathonAndId(marathon, scheduleId)
+            .orElseThrow(() -> new NotFoundException("Schedule with id " + scheduleId + " not found."));
 	}
 
     @Nullable

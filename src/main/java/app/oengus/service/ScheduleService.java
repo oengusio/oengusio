@@ -1,6 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.v2.schedule.ScheduleDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
@@ -29,33 +30,17 @@ public class ScheduleService {
     ///////////
     // v2 stuff
 
-    public List<Schedule> findAllByMarathon(final String marathonId, boolean withCustomData) {
-        final List<Schedule> schedules = this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId));
+    public List<ScheduleDto> findAllByMarathon(final String marathonId, boolean withCustomData) {
+        return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))
+            .stream()
+            .map((schedule) -> ScheduleDto.fromSchedule(schedule, withCustomData))
+            .toList();
+    }
 
-        schedules.forEach((schedule) -> {
-            List<ScheduleLine> lines = schedule.getLines();
+    public ScheduleDto findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) throws NotFoundException {
+        final Schedule schedule = this.scheduleRepository.findById(Marathon.ofId(marathonId), scheduleId);
 
-            if (lines != null && lines.size() > 0) {
-                lines.get(0).setDate(schedule.getMarathon().getStartDate());
-
-                for (int i = 1; i < lines.size(); i++) {
-                    final ScheduleLine previous = lines.get(i - 1);
-                    lines.get(i).setDate(
-                        previous.getDate()
-                            .plus(previous.getEstimate())
-                            .plus(previous.getSetupTime())
-                    );
-                }
-
-                if (withCustomData) {
-                    lines.forEach(
-                        (line) -> line.setCustomDataDTO(line.getCustomData())
-                    );
-                }
-            }
-        });
-
-        return schedules;
+        return ScheduleDto.fromSchedule(schedule, withCustomData);
     }
 
     ///////////

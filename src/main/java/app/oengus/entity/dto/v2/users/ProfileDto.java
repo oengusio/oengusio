@@ -1,5 +1,7 @@
 package app.oengus.entity.dto.v2.users;
 
+import app.oengus.entity.model.User;
+import app.oengus.spring.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.annotation.Nullable;
@@ -35,8 +37,8 @@ public class ProfileDto {
     @Schema(description = "The country that this user resides in")
     private String country;
 
-    // TODO: add connections
-
+    @Schema(description = "Connected accounts of this user")
+    private List<ConnectionDto> connections;
 
     public int getId() {
         return id;
@@ -102,5 +104,47 @@ public class ProfileDto {
 
     public void setCountry(@Nullable String country) {
         this.country = country;
+    }
+
+    public List<ConnectionDto> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<ConnectionDto> connections) {
+        this.connections = connections;
+    }
+
+    public static ProfileDto fromUser(User user) {
+        final ProfileDto profile = new ProfileDto();
+        profile.setId(user.getId());
+        profile.setUsername(user.getUsername());
+        profile.setUsernameJapanese(user.getUsernameJapanese());
+        profile.setEnabled(user.isEnabled());
+        profile.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
+
+        final String pronouns = user.getPronouns();
+
+        if (pronouns != null) {
+            profile.setPronouns(
+                List.of(pronouns.split(","))
+            );
+        }
+
+        final String langs = user.getLanguagesSpoken();
+
+        if (langs != null && !langs.isBlank()) {
+            profile.setLanguagesSpoken(
+                List.of(langs.split(","))
+            );
+        }
+
+        profile.setConnections(
+            user.getConnections()
+                .stream()
+                .map(ConnectionDto::from)
+                .toList()
+        );
+
+        return profile;
     }
 }

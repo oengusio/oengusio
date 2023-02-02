@@ -385,28 +385,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final ProfileDto profile = new ProfileDto();
-
-        BeanUtils.copyProperties(user, profile);
-        profile.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
-
-        final String pronouns = user.getPronouns();
-
-        if (pronouns != null) {
-            profile.setPronouns(
-                List.of(pronouns.split(","))
-            );
-        }
-
-        final String langs = user.getLanguagesSpoken();
-
-        if (langs != null) {
-            profile.setLanguagesSpoken(
-                List.of(langs.split(","))
-            );
-        }
-
-        return profile;
+        return ProfileDto.fromUser(user);
     }
 
     public List<ModeratedHistoryDto> getUserModeratedHistory(final int userId) {

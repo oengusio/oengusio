@@ -25,9 +25,9 @@ import java.security.Principal;
  *
  *  Separate routes for questions as well
  */
-@Tag(name = "marathons-v2")
-@RestController("v2MarathonController")
-@RequestMapping("/v2/marathons")
+// @Tag(name = "marathons-v2")
+// @RestController("v2MarathonController")
+// @RequestMapping("/v2/marathons")
 public class MarathonController {
 
     private final MarathonService marathonService;
