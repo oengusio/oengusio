@@ -1,6 +1,5 @@
 package app.oengus.web.v2;
 
-import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.dto.v2.users.ProfileHistoryDto;
@@ -43,14 +42,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    // TODO: separate routes for connections?, history, moderated marathons and volunteering
     @PermitAll
     @GetMapping("/{name}")
     @JsonView(Views.Public.class)
     @Operation(
         summary = "Get a user's profile by their username",
         responses = {
-            @ApiResponse(description = "User profile", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserProfileDto.class))),
+            @ApiResponse(description = "User profile", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileDto.class))),
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )

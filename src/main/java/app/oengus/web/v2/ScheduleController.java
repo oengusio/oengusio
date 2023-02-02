@@ -72,7 +72,7 @@ public class ScheduleController {
     @GetMapping("/{scheduleId}")
     @JsonView(Views.Public.class)
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")@Operation(
-        summary = "Get a schedules for a marathon by its id, has a 5 minute cache",
+        summary = "Get a schedule for a marathon by its id, has a 5 minute cache",
         responses = {
             @ApiResponse(
                 description = "The requested schedule",

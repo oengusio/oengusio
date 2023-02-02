@@ -131,11 +131,7 @@ public class UserController {
     @PermitAll
     @Operation(summary = "Get a user's avatar")
     public ResponseEntity<?> getUserAvatar(@PathVariable("name") final String name, final HttpServletRequest httpServletRequest) {
-        String url = httpServletRequest.getRequestURL().toString();
-
-        if (!url.contains("v1")) {
-            url = url.replace("users", "v1/users");
-        }
+        final String url = httpServletRequest.getRequestURL().toString();
 
         // Redirect the user to the v2 endpoint, saves duplicated code
         return ResponseEntity.status(HttpStatus.FOUND)
