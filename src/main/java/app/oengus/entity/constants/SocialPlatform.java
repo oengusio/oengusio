@@ -12,5 +12,6 @@ public enum SocialPlatform {
     SNAPCHAT,
     SPEEDRUNCOM,
     TWITCH,
-    TWITTER
+    TWITTER,
+    MASTODON
 }

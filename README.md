@@ -12,7 +12,7 @@ _**Disclaimer**: self-hosted instances are not allowed to use the Oengus brandin
 
 ### Requirements
 
-- Java JDK 16
+- Java JDK 17
 - PostgreSQL 10+
 
 ### Instructions
