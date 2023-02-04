@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     java
     application
@@ -98,6 +100,39 @@ dependencies {
 }
 
 val wrapper: Wrapper by tasks
+val compileJava: JavaCompile by tasks
+
+val sourcesForRelease = task<Copy>("sourcesForRelease") {
+    from("src/main/java") {
+        include("**/CoreConfiguration.java")
+
+        val items = mapOf(
+            "OENGUS_VERSION" to project.version
+        )
+
+        filter<ReplaceTokens>(mapOf("tokens" to items))
+    }
+
+    into("build/filteredSrc")
+
+    includeEmptyDirs = false
+}
+
+val generateJavaSources = task<SourceTask>("generateJavaSources") {
+    val javaSources = sourceSets["main"].allJava.filter {
+        !arrayOf("CoreConfiguration.java").contains(it.name)
+    }.asFileTree
+
+    source = javaSources + fileTree(sourcesForRelease.destinationDir)
+
+    dependsOn(sourcesForRelease)
+}
+
+compileJava.apply {
+    source = generateJavaSources.source
+
+    dependsOn(generateJavaSources)
+}
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"

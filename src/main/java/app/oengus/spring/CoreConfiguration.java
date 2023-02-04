@@ -42,7 +42,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
                             .name("AGPL v3")
                             .url("https://github.com/esamarathon/oengusio/blob/master/LICENSE")
                     )
-                    .version("@OENGUS_VERSION@") // TODO: use replace tokens plugin
+                    .version("@OENGUS_VERSION@")
             );
             openApi.setServers(List.of(
                 new Server()
