@@ -3,6 +3,7 @@ package app.oengus.service;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
+import app.oengus.entity.dto.v2.MarathonHomeDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.User;
@@ -223,6 +224,14 @@ public class MarathonService {
     public List<MarathonBasicInfoDto> findAllMarathonsIModerate(final User user) {
         final List<Marathon> marathons = this.marathonRepositoryService.findAllMarathonsByCreatorOrModerator(user);
         return this.transform(marathons);
+    }
+
+    public MarathonHomeDto findMarathonsForHome() {
+        return new MarathonHomeDto(
+            this.findLive(),
+            this.findNext(),
+            this.findSubmitsOpen()
+        );
     }
 
     public Map<String, List<MarathonBasicInfoDto>> findMarathons() {

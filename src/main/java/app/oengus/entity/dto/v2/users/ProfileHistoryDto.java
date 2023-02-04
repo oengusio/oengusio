@@ -1,12 +1,11 @@
 package app.oengus.entity.dto.v2.users;
 
-import app.oengus.entity.dto.v2.SimpleGameDto;
-import app.oengus.entity.dto.v2.SimpleOpponentDto;
+import app.oengus.entity.dto.v2.simple.SimpleGameDto;
+import app.oengus.entity.dto.v2.simple.SimpleOpponentDto;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -83,7 +83,11 @@ public class MarathonDto {
     private boolean hideDiscord;
 
     @NotNull
-    @Schema(required = true, description = "The default length for the setup time field. This field is using the ISO-8601 duration format.")
+    @Schema(
+        required = true,
+        description = "The default length for the setup time field. This field is using the ISO-8601 duration format.",
+        example = "PT30M"
+    )
     private Duration defaultSetupTime;
 
     private boolean selectionDone;

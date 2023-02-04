@@ -28,9 +28,12 @@ public class PrincipalHelper {
 	}
 
 	public static User getCurrentUser() {
-		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
-			return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User) {
+			return (User) principal;
 		}
+
 		return null;
 	}
 

@@ -1,4 +1,4 @@
-package app.oengus.entity.dto.v2;
+package app.oengus.entity.dto.v2.simple;
 
 import app.oengus.entity.model.Status;
 import app.oengus.spring.model.Views;

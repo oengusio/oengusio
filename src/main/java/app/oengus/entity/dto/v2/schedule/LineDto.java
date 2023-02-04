@@ -31,9 +31,15 @@ public class LineDto {
     private List<ProfileDto> runners = new ArrayList<>();
     @Schema(description = "Category that will be showcased")
     private String category;
-    @Schema(description = "Approximate duration of the run. Formatted in the ISO-8601 duration format.")
+    @Schema(
+        description = "Approximate duration of the run. Formatted in the ISO-8601 duration format.",
+        example = "PT30M"
+    )
     private Duration estimate;
-    @Schema(description = "Time allocated to get the run set-up. Formatted in the ISO-8601 duration format.")
+    @Schema(
+        description = "Time allocated to get the run set-up. Formatted in the ISO-8601 duration format.",
+        example = "PT30M"
+    )
     private Duration setupTime;
 
     @Schema(description = "Position of this line in the schedule")

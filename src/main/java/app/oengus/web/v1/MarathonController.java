@@ -113,7 +113,7 @@ public class MarathonController {
         final MarathonStatsDto marathon = this.marathonService.getStats(id);
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5))
+            .headers(cachingHeaders(5, false))
             .body(marathon);
 
     }

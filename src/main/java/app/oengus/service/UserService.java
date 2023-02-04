@@ -5,8 +5,8 @@ import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.dto.*;
-import app.oengus.entity.dto.v2.SimpleCategoryDto;
-import app.oengus.entity.dto.v2.SimpleGameDto;
+import app.oengus.entity.dto.v2.simple.SimpleCategoryDto;
+import app.oengus.entity.dto.v2.simple.SimpleGameDto;
 import app.oengus.entity.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.dto.v2.users.ProfileHistoryDto;
@@ -15,7 +15,6 @@ import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
-import app.oengus.service.login.TwitterLoginService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final DiscordService discordService;
-    private final TwitterLoginService twitterLoginService;
     private final TwitchService twitchService;
     private final JWTUtil jwtUtil;
     private final UserRepositoryService userRepositoryService;
@@ -45,7 +43,7 @@ public class UserService {
 
     @Autowired
     public UserService(
-        final DiscordService discordService, final TwitterLoginService twitterLoginService,
+        final DiscordService discordService,
         final TwitchService twitchService, final JWTUtil jwtUtil, final UserRepositoryService userRepositoryService,
         final SubmissionRepositoryService submissionRepositoryService, final MarathonService marathonService,
         final SelectionService selectionService,
@@ -53,7 +51,6 @@ public class UserService {
         final ApplicationRepository applicationRepository
     ) {
         this.discordService = discordService;
-        this.twitterLoginService = twitterLoginService;
         this.twitchService = twitchService;
         this.jwtUtil = jwtUtil;
         this.userRepositoryService = userRepositoryService;
