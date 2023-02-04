@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +42,7 @@ public interface ScheduleApi {
     ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(defaultValue = "false", required = false) boolean withCustomData
-    ) throws NotFoundException;
+    );
 
     @GetMapping("/{scheduleId}")
     @JsonView(Views.Public.class)
@@ -68,5 +67,5 @@ public interface ScheduleApi {
         @PathVariable("marathonId") final String marathonId,
         @PathVariable("scheduleId") final int scheduleId,
         @RequestParam(defaultValue = "false", required = false) boolean withCustomData
-    ) throws NotFoundException;
+    );
 }

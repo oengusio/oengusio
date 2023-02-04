@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -375,11 +376,12 @@ public class UserService {
     }
 
     /* ==================== V2 stuff ==================== */
-    public ProfileDto getUserProfileV2(final String username) throws NotFoundException {
+    @Nullable
+    public ProfileDto getUserProfileV2(final String username) {
         final User user = this.userRepositoryService.findByUsername(username);
 
         if (user == null) {
-            throw new NotFoundException("Unknown user");
+            return null;
         }
 
         return ProfileDto.fromUser(user);

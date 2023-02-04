@@ -13,6 +13,7 @@ import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -31,19 +32,29 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<ProfileDto> profileByName(final String name) throws NotFoundException {
+    public ResponseEntity<ProfileDto> profileByName(final String name) {
         final ProfileDto profile = this.userService.getUserProfileV2(name);
+
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
 
         return ResponseEntity.ok(profile);
     }
 
     @Override
-    public ResponseEntity<byte[]> getUserAvatar(final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
-        final User user = this.userService.findByUsername(name);
+    public ResponseEntity<byte[]> getUserAvatar(final String name) throws NoSuchAlgorithmException, IOException {
+        final User user;
+        try {
+            user = this.userService.findByUsername(name);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
         final String mail = user.getMail();
 
         if (!user.isEnabled() || mail == null) {
-            throw new NotFoundException("This user does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         // Strip off any "+blah" parts with the regex

@@ -6,8 +6,10 @@ import app.oengus.service.ExportService;
 import app.oengus.service.MarathonService;
 import app.oengus.service.ScheduleService;
 import javassist.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
@@ -24,9 +26,9 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(final String marathonId, boolean withCustomData) throws NotFoundException {
+    public ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(final String marathonId, boolean withCustomData) {
         if (!this.marathonService.exists(marathonId)) {
-            throw new NotFoundException("Marathon not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
 
         return ResponseEntity.ok()
@@ -39,15 +41,20 @@ public class ScheduleApiController implements ScheduleApi {
     @Override
     public ResponseEntity<ScheduleDto> findScheduleById(
         final String marathonId, final int scheduleId, boolean withCustomData
-    ) throws NotFoundException {
+    ) {
         if (!this.marathonService.exists(marathonId)) {
-            throw new NotFoundException("Marathon not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
+        }
+
+        final ScheduleDto byScheduleId;
+        try {
+            byScheduleId = this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(
-                this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData)
-            );
+            .body(byScheduleId);
     }
 }

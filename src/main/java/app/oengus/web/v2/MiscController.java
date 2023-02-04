@@ -2,7 +2,6 @@ package app.oengus.web.v2;
 
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
-import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.LanguageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -11,9 +10,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -55,7 +56,7 @@ public class MiscController {
     )
     public ResponseEntity<List<String>> searchPronouns(@RequestParam final String search) {
         if (search.isBlank()) {
-            throw new OengusBusinessException("Missing search parameter");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing search parameter");
         }
 
         final String lower = search.toLowerCase().trim();
@@ -84,7 +85,7 @@ public class MiscController {
         @RequestParam(value = "locale", required = false, defaultValue = "") final String locale
     ) {
         if (search.isBlank()) {
-            throw new OengusBusinessException("Missing search parameter");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing search parameter");
         }
 
         final Locale searchLang;
@@ -98,10 +99,10 @@ public class MiscController {
         try {
             // I hate how these throw instead of return null, but checking is always good
             if (searchLang.getISO3Language() == null || searchLang.getISO3Country() == null) {
-                throw new OengusBusinessException("Locale is not valid");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Locale is not valid");
             }
         } catch (final MissingResourceException ignored) {
-            throw new OengusBusinessException("Locale is not valid");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Locale is not valid");
         }
 
         return ResponseEntity.ok(

@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public interface UserApi {
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )
-    ResponseEntity<ProfileDto> profileByName(@PathVariable("name") final String name) throws NotFoundException;
+    ResponseEntity<ProfileDto> profileByName(@PathVariable("name") final String name);
 
     @PermitAll
     @GetMapping("/{name}/avatar")
@@ -48,7 +47,7 @@ public interface UserApi {
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )
-    ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException;
+    ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NoSuchAlgorithmException, IOException;
 
     @PermitAll
     @GetMapping("/{id}/submission-history")
