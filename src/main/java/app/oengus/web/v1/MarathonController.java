@@ -184,6 +184,12 @@ public class MarathonController {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
+        final String newMstdn = patch.getMastodon();
+
+        if (newMstdn != null && newMstdn.isBlank()) {
+            patch.setMastodon(null);
+        }
+
         this.marathonService.update(id, patch);
 
         return ResponseEntity.noContent().build();

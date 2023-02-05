@@ -1061,4 +1061,10 @@
     <changeSet author="duncte123" id="20230119-1">
         <modifyDataType tableName="marathon" columnName="language" newDataType="varchar(10)"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="202030205-1">
+        <addColumn tableName="marathon">
+            <column name="mastodon" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import static app.oengus.entity.dto.UserDto.*;
 import static javax.persistence.CascadeType.*;
 
 @Entity
@@ -107,6 +108,12 @@ public class Marathon {
     @JsonView(Views.Public.class)
     @Size(max = 15)
     private String twitter;
+
+    @Nullable
+    @Column(name = "mastodon")
+    @JsonView(Views.Public.class)
+    @Size(max = 255)
+    private String mastodon;
 
     @Column(name = "discord")
     @JsonView(Views.Public.class)
@@ -365,6 +372,15 @@ public class Marathon {
 
     public void setTwitter(final String twitter) {
         this.twitter = twitter;
+    }
+
+    @Nullable
+    public String getMastodon() {
+        return mastodon;
+    }
+
+    public void setMastodon(@Nullable String mastodon) {
+        this.mastodon = mastodon;
     }
 
     public String getDiscord() {
@@ -627,9 +643,15 @@ public class Marathon {
         this.teams = teams;
     }
 
+    // Can't wait to drop v1 support
+    @JsonIgnore
+    @AssertTrue(message = "Mastodon instance is not in the valid format")
+    public boolean isMastodonValid() {
+        return this.mastodon == null || this.mastodon.matches(MASTODON_REGEX);
+    }
+
     /**
-     *
-     * @param marathonId
+     * @param marathonId the id of the marathon
      * @return A fake marathon instance with this id
      */
     public static Marathon ofId(String marathonId) {

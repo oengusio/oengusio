@@ -76,6 +76,7 @@ public class SocialAccount {
         this.username = username;
     }
 
+    // TODO: pull out to DTO
     @JsonIgnore
     @AssertTrue(message = "The username does not have a valid format for the platform")
     public boolean isUsernameValidForPlatform() {

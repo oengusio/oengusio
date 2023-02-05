@@ -1,11 +1,14 @@
 package app.oengus.entity.dto.v2.marathon;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+
+import static app.oengus.entity.dto.UserDto.MASTODON_REGEX;
 
 @Schema
 public class MarathonDto {
@@ -78,6 +81,7 @@ public class MarathonDto {
 
     private String twitch;
     private String twitter;
+    private String mastodon;
     private String discord;
     private String youtube;
     private boolean hideDiscord;
@@ -409,5 +413,11 @@ public class MarathonDto {
 
     public void setAnnounceAcceptedSubmissions(boolean announceAcceptedSubmissions) {
         this.announceAcceptedSubmissions = announceAcceptedSubmissions;
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "Mastodon instance is not in the valid format")
+    public boolean isMastodonValid() {
+        return this.mastodon == null || this.mastodon.matches(MASTODON_REGEX);
     }
 }
