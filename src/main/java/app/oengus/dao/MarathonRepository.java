@@ -77,7 +77,7 @@ public interface MarathonRepository extends JpaRepository<Marathon, String> {
     List<Marathon> findFutureMarathonsWithScheduleDone();
 
     @Modifying
-    @Query("UPDATE Marathon m SET m.submitsOpen = true WHERE m = :marathon")
+    @Query("UPDATE Marathon m SET m.submitsOpen = true, m.canEditSubmissions = true WHERE m = :marathon")
     void openSubmissions(@Param("marathon") Marathon marathon);
 
     @Modifying
