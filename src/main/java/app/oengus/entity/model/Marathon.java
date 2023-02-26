@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import static app.oengus.entity.dto.UserDto.*;
 import static javax.persistence.CascadeType.*;
 
 @Entity
@@ -31,7 +32,7 @@ public class Marathon {
     @Column(name = "name")
     @JsonView(Views.Public.class)
     @Size(min = 4, max = 40)
-    @Pattern(regexp = "^[\\w\\- ]{4,40}$")
+    @Pattern(regexp = "^[\\w\\- \\p{L}]{4,40}$")
     private String name;
 
     @ManyToOne
@@ -108,6 +109,12 @@ public class Marathon {
     @Size(max = 15)
     private String twitter;
 
+    @Nullable
+    @Column(name = "mastodon")
+    @JsonView(Views.Public.class)
+    @Size(max = 255)
+    private String mastodon;
+
     @Column(name = "discord")
     @JsonView(Views.Public.class)
     @Size(max = 20)
@@ -141,7 +148,7 @@ public class Marathon {
 
     @Column(name = "cleared")
     @JsonIgnore
-    private boolean cleared = false;
+    private boolean cleared = false; // what the fuck is this?
 
     @Column(name = "donation_open")
     @JsonView(Views.Public.class)
@@ -240,7 +247,7 @@ public class Marathon {
 
     @Column(name = "user_info_hidden")
     @JsonView(Views.Public.class)
-    private String userInfoHidden;
+    private String userInfoHidden; // what was I thinking?
 
     @JsonManagedReference
     @JsonView(Views.Internal.class)
@@ -365,6 +372,15 @@ public class Marathon {
 
     public void setTwitter(final String twitter) {
         this.twitter = twitter;
+    }
+
+    @Nullable
+    public String getMastodon() {
+        return mastodon;
+    }
+
+    public void setMastodon(@Nullable String mastodon) {
+        this.mastodon = mastodon;
     }
 
     public String getDiscord() {
@@ -625,5 +641,23 @@ public class Marathon {
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
+    }
+
+    // Can't wait to drop v1 support
+    @JsonIgnore
+    @AssertTrue(message = "Mastodon instance is not in the valid format")
+    public boolean isMastodonValid() {
+        return this.mastodon == null || this.mastodon.matches(MASTODON_REGEX);
+    }
+
+    /**
+     * @param marathonId the id of the marathon
+     * @return A fake marathon instance with this id
+     */
+    public static Marathon ofId(String marathonId) {
+        final Marathon marathon = new Marathon();
+        marathon.setId(marathonId);
+
+        return marathon;
     }
 }

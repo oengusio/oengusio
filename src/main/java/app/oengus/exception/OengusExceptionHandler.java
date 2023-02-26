@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
@@ -52,6 +54,11 @@ public class OengusExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(toMap(req, exc));
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<?> responseStatusEx(final ResponseStatusException ex, final HttpServletRequest req) {
+        return ResponseEntity.status(ex.getStatus()).body(toMap(req, ex));
+    }
+
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<?> loginExceptionHandler(final LoginException exc, final HttpServletRequest req) {
         final String header = req.getHeader("oengus-version");
@@ -73,6 +80,8 @@ public class OengusExceptionHandler {
             stringStringMap.put("errors", ex.getConstraintViolations());
 
             return ResponseEntity.badRequest().body(stringStringMap);
+        } else if (cause instanceof MissingServletRequestParameterException smh) {
+            return ResponseEntity.badRequest().body(toMap(req, smh));
         }
 
         Sentry.captureException(exc);

@@ -1,4 +1,4 @@
-package app.oengus.web;
+package app.oengus.web.v1;
 
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.PatreonStatusDto;
@@ -17,8 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -135,38 +130,13 @@ public class UserController {
     @GetMapping("/{name}/avatar")
     @PermitAll
     @Operation(summary = "Get a user's avatar")
-    public ResponseEntity<byte[]> getUserAvatar(@PathVariable("name") final String name) throws NotFoundException, NoSuchAlgorithmException, IOException {
-        final User user = this.userService.findByUsername(name);
-        final String mail = user.getMail();
+    public ResponseEntity<?> getUserAvatar(@PathVariable("name") final String name, final HttpServletRequest httpServletRequest) {
+        final String url = httpServletRequest.getRequestURL().toString();
 
-        if (!user.isEnabled() || mail == null) {
-            throw new NotFoundException("This user does not exist");
-        }
-
-        // Strip off any "+blah" parts with the regex
-        final String emailLower = mail.toLowerCase().trim().replaceAll("\\+.*@", "@");
-        final byte[] md5s = MessageDigest.getInstance("MD5").digest(emailLower.getBytes());
-        final String hash = DatatypeConverter.printHexBinary(md5s).toLowerCase();
-
-        final Request request = new Request.Builder()
-            .url("https://www.gravatar.com/avatar/" + hash + "?s=80&d=retro&r=pg")
-            .get()
-            // Send over the browser's user-agent
-            .header("User-Agent", "oengus.io-gravatar-proxy/1.0")
+        // Redirect the user to the v2 endpoint, saves duplicated code
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header("Location", url.replace("v1", "v2"))
             .build();
-
-        try (final Response res = this.client.newCall(request).execute()) {
-            try (final okhttp3.ResponseBody body = res.body()) {
-                return ResponseEntity.status(HttpStatus.OK)
-                    // copy over the headers we need
-                    .header("Content-Type", res.header("Content-Type"))
-                    .header("Cache-Control", res.header("Cache-Control"))
-                    .header("Expires", res.header("Expires"))
-                    .header("Last-Modified", res.header("Last-Modified"))
-                    .header("Content-Length", res.header("Content-Length"))
-                    .body(body.bytes());
-            }
-        }
     }
 
     @Operation(hidden = true)

@@ -3,6 +3,7 @@ package app.oengus.service;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
+import app.oengus.entity.dto.v2.MarathonHomeDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.User;
@@ -104,8 +105,8 @@ public class MarathonService {
         return this.marathonRepositoryService.save(marathon);
     }
 
-    public boolean exists(final String name) {
-        return this.marathonRepositoryService.existsById(name);
+    public boolean exists(final String id) {
+        return this.marathonRepositoryService.existsById(id);
     }
 
     @Transactional
@@ -225,16 +226,20 @@ public class MarathonService {
         return this.transform(marathons);
     }
 
+    public MarathonHomeDto findMarathonsForHome() {
+        return new MarathonHomeDto(
+            this.findLive(),
+            this.findNext(),
+            this.findSubmitsOpen()
+        );
+    }
+
     public Map<String, List<MarathonBasicInfoDto>> findMarathons() {
-        final Map<String, List<MarathonBasicInfoDto>> marathons = new HashMap<>();
-        marathons.put("next", this.findNext());
-        marathons.put("open", this.findSubmitsOpen());
-        marathons.put("live", this.findLive());
-        final User user = PrincipalHelper.getCurrentUser();
-        if (user != null) {
-            marathons.put("moderated", this.findActiveMarathonsIModerate(user));
-        }
-        return marathons;
+        return Map.of(
+            "next", this.findNext(),
+            "open", this.findSubmitsOpen(),
+            "live", this.findLive()
+        );
     }
 
     public List<MarathonBasicInfoDto> findMarathonsForDates(final ZonedDateTime start, final ZonedDateTime end,

@@ -40,14 +40,16 @@ public class MarathonStatsDto {
     }
 
     @Schema(
-        description = "The total duration of all submitted runs. Formatted in the ISO-8601 duration format."
+        description = "The total duration of all submitted runs. Formatted in the ISO-8601 duration format.",
+        example = "PT30M"
     )
     public String getTotalLength() {
         return totalLength.toString();
     }
 
     @Schema(
-        description = "The average estimate if all runs combined. Formatted in the ISO-8601 duration format."
+        description = "The average estimate if all runs combined. Formatted in the ISO-8601 duration format.",
+        example = "PT30M"
     )
     public String getAverageEstimate() {
         return averageEstimate.toString();

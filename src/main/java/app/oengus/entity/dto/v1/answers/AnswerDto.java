@@ -7,6 +7,7 @@ public class AnswerDto {
     private int questionId;
     private int submissionId;
     private String answer;
+    private String username;
 
     public int getId() {
         return id;
@@ -40,6 +41,14 @@ public class AnswerDto {
         this.answer = answer;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public static AnswerDto fromAnswer(Answer answer) {
         final AnswerDto dto = new AnswerDto();
 
@@ -47,6 +56,7 @@ public class AnswerDto {
         dto.setQuestionId(answer.getQuestion().getId());
         dto.setSubmissionId(answer.getSubmission().getId());
         dto.setAnswer(answer.getAnswer());
+        dto.setUsername(answer.getSubmission().getUser().getUsername());
 
         return dto;
     }

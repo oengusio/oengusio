@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     java
     application
@@ -13,7 +15,7 @@ dependencyManagement {
 }
 
 project.group = "app.oengus"
-project.version = "2022.09.10"
+project.version = "2023.02.14"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -46,7 +48,7 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
     implementation(group = "org.liquibase", name = "liquibase-core")
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
-    
+
     // POSTGRESQL
     implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
     implementation(group = "org.postgresql", name = "postgresql")
@@ -54,14 +56,14 @@ dependencies {
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
     implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-    
+
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
-    
+
     // FEIGN
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
-    
+
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
 
@@ -100,6 +102,39 @@ dependencies {
 }
 
 val wrapper: Wrapper by tasks
+val compileJava: JavaCompile by tasks
+
+val sourcesForRelease = task<Copy>("sourcesForRelease") {
+    from("src/main/java") {
+        include("**/CoreConfiguration.java")
+
+        val items = mapOf(
+            "OENGUS_VERSION" to project.version
+        )
+
+        filter<ReplaceTokens>(mapOf("tokens" to items))
+    }
+
+    into("build/filteredSrc")
+
+    includeEmptyDirs = false
+}
+
+val generateJavaSources = task<SourceTask>("generateJavaSources") {
+    val javaSources = sourceSets["main"].allJava.filter {
+        !arrayOf("CoreConfiguration.java").contains(it.name)
+    }.asFileTree
+
+    source = javaSources + fileTree(sourcesForRelease.destinationDir)
+
+    dependsOn(sourcesForRelease)
+}
+
+compileJava.apply {
+    source = generateJavaSources.source
+
+    dependsOn(generateJavaSources)
+}
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -108,6 +143,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "7.4.2"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "7.5.1"
+    distributionType = Wrapper.DistributionType.BIN
 }

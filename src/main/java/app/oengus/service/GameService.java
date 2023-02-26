@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.entity.dto.v2.marathon.GameDto;
 import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;
@@ -8,23 +9,51 @@ import app.oengus.service.repository.SubmissionRepositoryService;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GameService {
 
-    @Autowired
-    private SubmissionService submissionService;
+    private final SubmissionService submissionService;
 
-    @Autowired
-    private SubmissionRepositoryService submissionRepositoryService;
+    private final SubmissionRepositoryService submissionRepositoryService;
 
-    @Autowired
-    private GameRepositoryService gameRepositoryService;
+    private final GameRepositoryService gameRepositoryService;
 
-    @Autowired
-    private OengusWebhookService webhookService;
+    private final OengusWebhookService webhookService;
+
+    public GameService(SubmissionService submissionService, SubmissionRepositoryService submissionRepositoryService, GameRepositoryService gameRepositoryService, OengusWebhookService webhookService) {
+        this.submissionService = submissionService;
+        this.submissionRepositoryService = submissionRepositoryService;
+        this.gameRepositoryService = gameRepositoryService;
+        this.webhookService = webhookService;
+    }
+
+    ///////////
+    // v2 stuff
+
+    public List<GameDto> findBySubmissionId(final String marathonId, final int submissionId) {
+        return this.gameRepositoryService.findBySubmissionId(marathonId, submissionId)
+            .stream()
+            .map((game) -> {
+                GameDto gameDto = new GameDto();
+
+                gameDto.setId(game.getId());
+                gameDto.setName(game.getName());
+                gameDto.setDescription(game.getDescription());
+                gameDto.setConsole(game.getConsole());
+                gameDto.setRatio(game.getRatio());
+                gameDto.setEmulated(game.isEmulated());
+
+                return gameDto;
+            })
+            .toList();
+    }
+
+    ///////////
+    // v1 stuff
 
     public void update(final Game game) {
         this.gameRepositoryService.update(game);

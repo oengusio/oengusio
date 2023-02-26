@@ -1051,4 +1051,20 @@
                              columnNames="user_id,marathon_id"
                              constraintName="uq_submission_user_id_marathon_id"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20221014-1">
+        <addUniqueConstraint tableName="selection"
+                             columnNames="marathon_id,category_id"
+                             constraintName="uq_marathon_id_category_id"/>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20230119-1">
+        <modifyDataType tableName="marathon" columnName="language" newDataType="varchar(10)"/>
+    </changeSet>
+
+    <changeSet author="duncte123" id="202030205-1">
+        <addColumn tableName="marathon">
+            <column name="mastodon" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

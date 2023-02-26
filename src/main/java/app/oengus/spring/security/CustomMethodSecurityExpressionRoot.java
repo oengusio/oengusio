@@ -50,7 +50,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean isBanned() {
         final User user = this.getUser();
 
-        return user != null && user.getRoles().contains(Role.ROLE_BANNED);
+        if (user == null) {
+            return true;
+        }
+
+        return user.getRoles().contains(Role.ROLE_BANNED);
     }
 
     public boolean isMarathonArchived(final String id) throws NotFoundException {
@@ -108,6 +112,12 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean isScheduleDone(final String id) throws NotFoundException {
         final Marathon marathon = this.marathonService.getById(id);
         return marathon.isScheduleDone();
+    }
+
+    public boolean canEditSubmissions(final String marathonId) throws NotFoundException {
+        final Marathon marathon = this.marathonService.getById(marathonId);
+
+        return marathon.isCanEditSubmissions();
     }
 
     public boolean areSubmissionsOpen(final String id) throws NotFoundException {

@@ -1,4 +1,4 @@
-package app.oengus.web;
+package app.oengus.web.v1;
 
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
@@ -83,7 +83,7 @@ public class SubmissionsController {
     public ResponseEntity<PageDto<SubmissionDto>> findAllSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
-    ) {
+    ) throws NotFoundException {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
             .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
@@ -139,9 +139,9 @@ public class SubmissionsController {
 
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize(value = "!isBanned() && areSubmissionsOpen(#marathonId) " +
+    @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission.id != null " +
-        "&& (#submission.user.id == principal.id || isAdmin())")
+        "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
                                     @PathVariable("marathonId") final String marathonId,

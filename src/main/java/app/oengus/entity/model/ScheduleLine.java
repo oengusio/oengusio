@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "schedule_line")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduleLine {
-
+    // TODO: unique key out of schedule id + position?
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
