@@ -30,6 +30,9 @@ The redirect urls for this are:
 - Sync: \[base_url]/user/settings/sync/discord
 
 ```
+AMQP_URI=amqp://localhost/;
+AMQP_USERNAME=guest;
+AMQP_PASSWORD= guest;
 JWT_SECRET=<random string>;
 PAYPAL_CLIENT_ID=; //Unrequired if you don't work on donations
 PAYPAL_CLIENT_SECRET=; //Unrequired if you don't work on donations
