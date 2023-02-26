@@ -2,5 +2,7 @@ package app.oengus.service.rabbitmq;
 
 public interface IRabbitMQService {
 
-    void sendMessage(String message);
+    void queueBotMessage(String message);
+
+    void queueWebhookMessage(String url, String message);
 }
