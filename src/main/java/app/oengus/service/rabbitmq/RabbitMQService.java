@@ -24,11 +24,11 @@ public class RabbitMQService implements IRabbitMQService {
         // TODO: might make this durable
         this.channel.queueDeclareNoWait(QUEUE_NAME_BASE, false, false, false, Map.of());
 
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-            System.out.println(" [x] Received '" + message + "'");
-        };
-        channel.basicConsume(QUEUE_NAME_BASE, true, deliverCallback, consumerTag -> { });
+//        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+//            String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
+//            System.out.println(" [x] Received '" + message + "'");
+//        };
+//        channel.basicConsume(QUEUE_NAME_BASE, true, deliverCallback, consumerTag -> { });
     }
 
     @Override
@@ -37,9 +37,10 @@ public class RabbitMQService implements IRabbitMQService {
             this.channel.basicPublish(
                 "",
                 QUEUE_NAME_BASE,
-                new AMQP.BasicProperties.Builder()
-                    .contentType("application/json")
-                    .build(),
+                null,
+//                new AMQP.BasicProperties.Builder()
+//                    .contentType("application/json")
+//                    .build(),
                 message.getBytes(StandardCharsets.UTF_8)
             );
         } catch (Exception e) {

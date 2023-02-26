@@ -39,7 +39,7 @@ public class MiscController {
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> bonk() throws InterruptedException {
-        this.rabbitMq.queueBotMessage("COOL MESSAGE");
+        this.rabbitMq.queueBotMessage("COOL MESSAGE " + System.currentTimeMillis());
         return ResponseEntity.ok("(:");
     }
 
