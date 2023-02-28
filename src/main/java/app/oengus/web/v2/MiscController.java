@@ -3,6 +3,7 @@ package app.oengus.web.v2;
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
 import app.oengus.service.LanguageService;
+import app.oengus.service.auth.TOTPService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,17 +27,31 @@ public class MiscController {
 
     private final PronounsPageApi pronounsApi;
     private final LanguageService languageService;
+    private final TOTPService totp;
 
     @Autowired
-    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService) {
+    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService, final TOTPService totp) {
         this.pronounsApi = pronounsApi;
         this.languageService = languageService;
+        this.totp = totp;
     }
 
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> bonk() throws InterruptedException {
-        return ResponseEntity.ok("(:");
+    public ResponseEntity<Map<String, String>> bonk() throws Exception {
+        String secret = "XVUWUVXMM527EEPXEUNWUH2X2TUWJDEA"; // TEST SECRET
+        String totpCode = this.totp.getTOTPCode(secret);
+
+        // String qrCodeLink = this.totp.getGoogleAuthenticatorQRCode(secret, "contact@duncte123.me");
+
+        // this.totp.createQRCode(qrCodeLink, "./test.png", 500, 500);
+
+        return ResponseEntity.ok(
+            Map.of(
+                "secret", secret,
+                "totpCode", totpCode
+            )
+        );
     }
 
     @GetMapping("/pronouns")

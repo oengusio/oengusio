@@ -1073,4 +1073,11 @@
             <column name="email_verified" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="202030228-1">
+        <addColumn tableName="users">
+            <column name="mfa_enabled" type="boolean" defaultValueBoolean="false"/>
+            <column name="mfa_secret" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
