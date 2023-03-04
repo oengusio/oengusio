@@ -1,8 +1,10 @@
 package app.oengus.service;
 
+import app.oengus.entity.dto.v2.SelectionDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.OengusBotUrl;
 import app.oengus.helper.TimeHelpers;
+import app.oengus.service.rabbitmq.IRabbitMQService;
 import app.oengus.spring.model.Views;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
@@ -46,6 +48,7 @@ public class OengusWebhookService {
     private final ObjectMapper mapper;
     private final DiscordApiService jda;
     private final MarathonService marathonService;
+    private final IRabbitMQService rabbitMq;
 
     // NOTE: this can only do two at the same time
     private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
@@ -56,12 +59,13 @@ public class OengusWebhookService {
 
     public OengusWebhookService(
         @Value("${oengus.shortUrl}") String shortUrl,
-        ObjectMapper mapper, DiscordApiService jda, MarathonService marathonService
+        ObjectMapper mapper, DiscordApiService jda, MarathonService marathonService, IRabbitMQService rabbitMq
     ) {
         this.shortUrl = shortUrl;
         this.mapper = mapper;
         this.jda = jda;
         this.marathonService = marathonService;
+        this.rabbitMq = rabbitMq;
     }
 
     /// <editor-fold desc="event functions">
@@ -141,13 +145,19 @@ public class OengusWebhookService {
     }
 
     public void sendSelectionDoneEvent(final String url, final List<Selection> selections) throws IOException {
-        if (handleOnBot(url, () -> createParameters("selections", selections))) {
-            return;
-        }
+        final var dtos = selections.stream().map(SelectionDto::fromSelection).toList();
 
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SELECTION_DONE");
-        data.set("selections", parseJson(selections));
+        data.set("selections", parseJson(dtos));
+
+        final String jsonData = mapper.writeValueAsString(data);
+
+        this.rabbitMq.queueBotMessage(jsonData);
+
+        if (handleOnBot(url, () -> createParameters("selections", selections))) {
+            return;
+        }
 
         callAsync(url, data);
     }

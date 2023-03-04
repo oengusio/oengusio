@@ -1,7 +1,9 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
+import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.Availability;
+import app.oengus.entity.model.Opponent;
+import app.oengus.entity.model.Submission;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -12,7 +14,7 @@ public class OpponentCategoryDto {
 	private int id;
 
 	@JsonView(Views.Public.class)
-	private SubmissionUserDto user;
+	private ProfileDto user;
 
 	@JsonView(Views.Public.class)
 	private String video;
@@ -36,11 +38,11 @@ public class OpponentCategoryDto {
 		this.video = video;
 	}
 
-	public SubmissionUserDto getUser() {
+	public ProfileDto getUser() {
 		return this.user;
 	}
 
-	public void setUser(final SubmissionUserDto user) {
+	public void setUser(final ProfileDto user) {
 		this.user = user;
 	}
 
@@ -51,4 +53,16 @@ public class OpponentCategoryDto {
 	public void setAvailabilities(final List<Availability> availabilities) {
 		this.availabilities = availabilities;
 	}
+
+    public static OpponentCategoryDto fromOpponent(Opponent opponent) {
+        final OpponentCategoryDto dto = new OpponentCategoryDto();
+        final Submission submission = opponent.getSubmission();
+
+        dto.setId(opponent.getId());
+        dto.setVideo(opponent.getVideo());
+        dto.setUser(ProfileDto.fromUser(submission.getUser()));
+        dto.setAvailabilities(submission.getAvailabilities());
+
+        return dto;
+    }
 }

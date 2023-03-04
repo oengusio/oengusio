@@ -1,6 +1,8 @@
 package app.oengus.service.rabbitmq;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import io.sentry.Sentry;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -21,21 +23,14 @@ public class RabbitMQService implements IRabbitMQService {
         this.connection = rabbitMqConnectionFactory.newConnection();
         this.channel = this.connection.createChannel();
 
-        // TODO: might make this durable
-        this.channel.queueDeclareNoWait(QUEUE_NAME_BASE, false, false, false, Map.of());
-
-//        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-//            String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-//            System.out.println(" [x] Received '" + message + "'");
-//        };
-//        channel.basicConsume(QUEUE_NAME_BASE, true, deliverCallback, consumerTag -> { });
+        this.channel.queueDeclareNoWait(QUEUE_NAME_BASE, true, false, false, Map.of());
     }
 
     @Override
     public void queueBotMessage(String message) {
         try {
             this.channel.basicPublish(
-                "",
+                "amq.topic",
                 QUEUE_NAME_BASE,
                 null,
 //                new AMQP.BasicProperties.Builder()
@@ -51,6 +46,6 @@ public class RabbitMQService implements IRabbitMQService {
 
     @Override
     public void queueWebhookMessage(String url, String message) {
-        // TODO
+        // TODO: Do I want this?
     }
 }
