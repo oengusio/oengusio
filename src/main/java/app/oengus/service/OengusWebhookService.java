@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,11 +31,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static app.oengus.helper.StringHelper.escapeMarkdown;
-import static app.oengus.helper.WebhookHelper.createParameters;
 
 @Service
 public class OengusWebhookService {
@@ -68,78 +64,104 @@ public class OengusWebhookService {
         this.rabbitMq = rabbitMq;
     }
 
+    // TODO: replace bot webhook with settings.
     /// <editor-fold desc="event functions">
     public void sendDonationEvent(final String url, final Donation donation) throws IOException {
-        if (handleOnBot(url, () -> createParameters("donation", donation))) {
-            return;
-        }
-
-        final JsonNode data = mapper.createObjectNode()
+        final ObjectNode data = mapper.createObjectNode()
             .put("event", "DONATION")
             .set("donation", parseJson(donation));
+
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
 
         callAsync(url, data);
     }
 
+    // TODO: no notification for joining multiplayer run
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
-        if (handleOnBot(url, () -> createParameters("submission", submission))) {
-            return;
-        }
-
-        final JsonNode data = mapper.createObjectNode()
+        final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_ADD")
             .set("submission", parseJson(submission));
+
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
 
         callAsync(url, data);
     }
 
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
-        if (handleOnBot(url, () -> createParameters("submission", newSubmission, "oldSubmission", oldSubmission))) {
-            return;
-        }
-
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
         data.set("submission", parseJson(newSubmission));
         data.set("original_submission", parseJson(oldSubmission));
+
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
 
         callAsync(url, data);
     }
 
     public void sendSubmissionDeleteEvent(final String url, final Submission submission, final User deletedBy) throws IOException {
-        if (handleOnBot(url, () -> createParameters("oldSubmission", submission, "deletedBy", deletedBy))) {
-            return;
-        }
-
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_DELETE");
         data.set("submission", parseJson(submission));
         data.set("deleted_by", parseJson(deletedBy));
 
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
+
         callAsync(url, data);
     }
 
     public void sendGameDeleteEvent(final String url, final Game game, final User deletedBy) throws IOException {
-        if (handleOnBot(url, () -> createParameters("delGame", game, "deletedBy", deletedBy))) {
-            return;
-        }
-
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "GAME_DELETE");
         data.set("game", parseJson(game));
         data.set("deleted_by", parseJson(deletedBy));
 
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
+
         callAsync(url, data);
     }
 
     public void sendCategoryDeleteEvent(final String url, final Category category, final User deletedBy) throws IOException {
-        if (handleOnBot(url, () -> createParameters("delCategory", category, "deletedBy", deletedBy))) {
-            return;
-        }
-
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "CATEGORY_DELETE");
         data.set("category", parseJson(category));
         data.set("deleted_by", parseJson(deletedBy));
+
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
 
         callAsync(url, data);
     }
@@ -151,11 +173,11 @@ public class OengusWebhookService {
             .put("event", "SELECTION_DONE");
         data.set("selections", parseJson(dtos));
 
-        final String jsonData = mapper.writeValueAsString(data);
+        if (handleOnBot(url)) {
+            data.put("url", url);
+            final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
 
-        this.rabbitMq.queueBotMessage(jsonData);
-
-        if (handleOnBot(url, () -> createParameters("selections", selections))) {
             return;
         }
 
@@ -190,8 +212,7 @@ public class OengusWebhookService {
         return mapper.readTree(json);
     }
 
-    @SuppressWarnings("unchecked")
-    private boolean handleOnBot(final String rawUrl, final Supplier<Map<String, Object>> argsSupplier) {
+    private boolean handleOnBot(final String rawUrl) {
         if (!rawUrl.startsWith("oengus-bot")) {
             return false;
         }
@@ -200,100 +221,13 @@ public class OengusWebhookService {
         // parse the url
         final OengusBotUrl url = new OengusBotUrl(rawUrl);
 
+        // Checks for marathonId presence
         if (url.isEmpty()) {
             // still returning true since oengus-bot is no valid domain
             return true;
         }
 
-        // don't create the map if we don't need to
-        final Map<String, Object> args = argsSupplier.get();
-        final String marathon = url.get("marathon");
-
-        if (url.has("donation") && args.containsKey("donation")) {
-            sendDonationEvent(
-                marathon,
-                url.get("donation"),
-                (Donation) args.get("donation")
-            );
-
-            return true;
-        }
-
-        if (url.has("editsub")) {
-            final String editsub = url.get("editsub");
-
-            if(args.containsKey("oldSubmission")) {
-                final Submission oldSubmission = (Submission) args.get("oldSubmission");
-
-                if (!args.containsKey("submission")) {
-                    sendSubmissionDelete(
-                        marathon,
-                        editsub,
-                        oldSubmission,
-                        (User) args.get("deletedBy")
-                    );
-                    return true;
-                }
-
-                sendEditSubmission(
-                    marathon,
-                    editsub,
-                    // get the new submission channel for when there's a new game added, or get the edit channel
-                    url.has("newsub") ? url.get("newsub") : null,
-                    (Submission) args.get("submission"),
-                    oldSubmission
-                );
-            } else if (args.containsKey("delGame")) {
-                sendGameDelete(
-                    marathon,
-                    editsub,
-                    (Game) args.get("delGame"),
-                    (User) args.get("deletedBy")
-                );
-            } else if (args.containsKey("delCategory")) {
-                sendCategoryDelete(
-                    marathon,
-                    editsub,
-                    (Category) args.get("delCategory"),
-                    (User) args.get("deletedBy")
-                );
-            }
-        }
-
-        if (url.has("newsub")) {
-            final String newsub = url.get("newsub");
-
-            if (args.containsKey("submission") && !args.containsKey("oldSubmission")) {
-                final String marathonName = this.marathonService.getNameForCode(marathon);
-
-                sendNewSubmission(
-                    marathon,
-                    newsub,
-                    (Submission) args.get("submission"),
-                    marathonName
-                );
-
-                if (url.has("editsub") && !newsub.equals(url.get("editsub"))) {
-                    sendNewSubmission(
-                        marathon,
-                        url.get("editsub"),
-                        (Submission) args.get("submission"),
-                        marathonName
-                    );
-                }
-            } else if (args.containsKey("selections")) {
-                // Detach the selections and filter on accepted ones
-                final List<Selection> selections = ((List<Selection>) args.get("selections"))
-                    .stream()
-                    .filter((it) -> it.getStatus() == Status.VALIDATED)
-                    .map(Selection::createDetached)
-                    .collect(Collectors.toList());
-
-                this.sendApprovedSelections(newsub, selections);
-            }
-        }
-
-        return true;
+        return url.has("editsub") || url.has("newsub") || url.has("donation");
     }
 
     /// <editor-fold desc="sending functions" defaultstate="collapsed">

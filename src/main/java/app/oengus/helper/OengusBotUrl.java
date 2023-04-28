@@ -29,30 +29,21 @@ public class OengusBotUrl {
     }
 
     public boolean has(String type) {
-        switch (type) {
-            case "donation":
-                return this.donation != null;
-            case "newsub":
-                return this.newSubmission != null;
-            case "editsub":
-                return this.editSubmission != null;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case "donation" -> this.donation != null;
+            case "newsub" -> this.newSubmission != null;
+            case "editsub" -> this.editSubmission != null;
+            default -> false;
+        };
     }
 
     public String get(String type) {
-        switch (type) {
-            case "donation":
-                return this.donation;
-            case "newsub":
-                return this.newSubmission;
-            case "editsub":
-                return this.editSubmission;
-            case "marathon":
-                return this.marathonId;
-            default:
-                return null;
-        }
+        return switch (type) {
+            case "donation" -> this.donation;
+            case "newsub" -> this.newSubmission;
+            case "editsub" -> this.editSubmission;
+            case "marathon" -> this.marathonId;
+            default -> null;
+        };
     }
 }
