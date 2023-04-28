@@ -28,8 +28,11 @@ public class DonationsCsvExporter implements Exporter {
 			donations = this.donationService.findForMarathon(marathonId, i, 100);
 			if (donations.hasContent()) {
 				try (final CSVPrinter printer = new CSVPrinter(out,
-						CSVFormat.RFC4180.withHeader(donations.getContent().get(0).getCsvHeaders()).withQuoteMode(
-								QuoteMode.NON_NUMERIC))) {
+						CSVFormat.RFC4180.builder()
+                            .setHeader(donations.getContent().get(0).getCsvHeaders())
+                            .setQuoteMode(QuoteMode.NON_NUMERIC)
+                            .build()
+                )) {
 					for (final Donation donation : donations) {
 						printer.printRecords(donation.getCsvRecords(zoneId));
 					}

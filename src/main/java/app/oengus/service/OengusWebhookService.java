@@ -257,12 +257,12 @@ public class OengusWebhookService {
     // TODO: does currently not detect a category that was removed
     private void sendEditSubmission(final String marathon, final String channel, @Nullable final String newSubChannel,
                                     final Submission submission, final Submission oldSubmission) {
-        final String marathonName = this.marathonService.getNameForCode(marathon);
-
         // if the submissions is the same, ignore it
         if (Objects.equals(submission, oldSubmission)) {
             return;
         }
+
+        final String marathonName = this.marathonService.getNameForCode(marathon);
 
         final boolean canPostNew = newSubChannel != null;
 
