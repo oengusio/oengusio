@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.sentry.Sentry;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-@Profile("!prod")
+//@Profile("prod")
 public class RabbitMQService implements IRabbitMQService {
     private static final String QUEUE_NAME_BASE = "oengus.bot";
     private final Connection connection;
@@ -33,9 +32,6 @@ public class RabbitMQService implements IRabbitMQService {
                 "amq.topic",
                 QUEUE_NAME_BASE,
                 null,
-//                new AMQP.BasicProperties.Builder()
-//                    .contentType("application/json")
-//                    .build(),
                 message.getBytes(StandardCharsets.UTF_8)
             );
         } catch (Exception e) {
