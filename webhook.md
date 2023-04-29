@@ -84,6 +84,9 @@ Mentioned models are available on this page under the models section at the bott
     "game": {
         // GAME MODEL //
     },
+    "submission": {
+        // PARTIAL SUBMISSION MODEL (games missing) //
+    },
     "deleted_by": {
         // USER MODEL //
     }
@@ -95,6 +98,12 @@ Mentioned models are available on this page under the models section at the bott
     "event": "CATEGORY_DELETE",
     "category": {
         // CATEGORY MODEL //
+    },
+    "game": {
+        // PARTIAL GAME MODEL (categories missing) //
+    },
+    "submission": {
+        // PARTIAL SUBMISSION MODEL (games missing) //
     },
     "deleted_by": {
         // USER MODEL //
