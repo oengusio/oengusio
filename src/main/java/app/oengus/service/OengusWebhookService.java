@@ -19,12 +19,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -253,149 +251,6 @@ public class OengusWebhookService {
         });
     }
 
-    // TODO: extract to classes
-    // TODO: does currently not detect a category that was removed
-    private void sendEditSubmission(final String marathon, final String channel, @Nullable final String newSubChannel,
-                                    final Submission submission, final Submission oldSubmission) {
-        // if the submissions is the same, ignore it
-        if (Objects.equals(submission, oldSubmission)) {
-            return;
-        }
-
-        final String marathonName = this.marathonService.getNameForCode(marathon);
-
-        final boolean canPostNew = newSubChannel != null;
-
-        for (final Game newGame : submission.getGames()) {
-            final Game oldGame = oldSubmission.getGames()
-                .stream()
-                .filter((g) -> g.getId() == newGame.getId())
-                .findFirst()
-                .orElse(null);
-
-            // The game was just added
-            if (oldGame == null) {
-                if (canPostNew) {
-                    sendNewGame(marathon, newSubChannel, newGame, marathonName);
-                }
-
-                sendNewGame(marathon, channel, newGame, marathonName);
-                continue;
-            }
-
-            // NEVER check if equal games as they are always the same if a category is updated
-            for (final Category newCategory : newGame.getCategories()) {
-                final Category oldCategory = oldGame.getCategories()
-                    .stream()
-                    .filter((c) -> c.getId() == newCategory.getId())
-                    .findFirst()
-                    .orElse(null);
-
-                if (oldCategory == null) {
-                    if (canPostNew) {
-                        sendNewCategory(marathon, newSubChannel, newCategory, marathonName);
-                    }
-
-                    sendNewCategory(marathon, channel, newCategory, marathonName);
-                    continue;
-                }
-
-                // ignore the category if they are equal
-                // also check for the game in case a description got changed
-                if (Objects.equals(newCategory, oldCategory) && Objects.equals(newGame, oldGame)) {
-                    continue;
-                }
-
-                sendUpdatedCategory(marathon, channel, newCategory, oldCategory, marathonName);
-            }
-        }
-    }
-
-    private void sendNewSubmission(final String marathon, final String channel, final Submission submission, final String marathonName) {
-        for (final Game game : submission.getGames()) {
-            sendNewGame(marathon, channel, game, marathonName);
-        }
-    }
-
-    // send all categories
-    private void sendNewGame(final String marathon, final String channel, final Game newGame, final String marathonName) {
-        for (final Category category : newGame.getCategories()) {
-            sendNewCategory(marathon, channel, category, marathonName);
-        }
-    }
-
-    private void sendNewCategory(final String marathon, final String channel, final Category category, final String marathonName) {
-        final Game game = category.getGame();
-        final String username = game.getSubmission().getUser().getUsername();
-
-        final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
-            .setTitle(new WebhookEmbed.EmbedTitle(
-                escapeMarkdown(username + " submitted a run to " + marathonName),
-                this.shortUrl + '/' + marathon + "/submissions"
-            ))
-            .setDescription(String.format(
-                "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-                escapeMarkdown(game.getName()),
-                escapeMarkdown(category.getName()),
-                escapeMarkdown(game.getConsole()),
-                TimeHelpers.formatDuration(category.getEstimate())
-            ));
-
-        this.jda.sendMessage(channel, builder.build());
-    }
-
-    private void sendUpdatedCategory(final String marathon, final String channel, final Category category, final Category oldCategory, final String marathonName) {
-        final Game game = category.getGame();
-        final Game oldGame = oldCategory.getGame();
-        final String username = game.getSubmission().getUser().getUsername();
-
-        final WebhookEmbedBuilder builder = new WebhookEmbedBuilder()
-            .setTitle(new WebhookEmbed.EmbedTitle(
-                escapeMarkdown(username + " updated a run in " + marathonName),
-                this.shortUrl + '/' + marathon + "/submissions"
-            ));
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(String.format(
-            "**Game:** %s\n**Category:** %s\n**Platform:** %s\n**Estimate:** %s",
-            parseUpdatedString(game.getName(), oldGame.getName()),
-            parseUpdatedString(category.getName(), oldCategory.getName()),
-            parseUpdatedString(game.getConsole(), oldGame.getConsole()),
-            parseUpdatedString(TimeHelpers.formatDuration(category.getEstimate()), TimeHelpers.formatDuration(oldCategory.getEstimate()))
-        ));
-
-        if (!category.getVideo().equals(oldCategory.getVideo())) {
-            sb.append("\n**Video:** ").append(parseUpdatedString(category.getVideo(), oldCategory.getVideo()));
-        }
-
-        if (category.getType() != oldCategory.getType()) {
-            sb.append("\n**Type:** ")
-                .append(parseUpdatedString(category.getType().name(), oldCategory.getType().name()));
-        }
-
-        if (!category.getDescription().equals(oldCategory.getDescription())) {
-            sb.append("\n**Category Description:** ")
-                .append(parseUpdatedString(category.getDescription(), oldCategory.getDescription()));
-        }
-
-        if (!game.getDescription().equals(oldGame.getDescription())) {
-            sb.append("\n**Game Description:** ")
-                .append(parseUpdatedString(game.getDescription(), oldGame.getDescription()));
-        }
-
-        builder.setDescription(sb.toString());
-
-        this.jda.sendMessage(channel, builder.build());
-    }
-
-    private String parseUpdatedString(String current, String old) {
-        if (current.equals(old)) {
-            return escapeMarkdown(current);
-        }
-
-        return escapeMarkdown(current + " (was " + old + ')');
-    }
-
     private void sendDonationEvent(final String marathon, final String channel, final Donation donation) {
         final DecimalFormat df = new DecimalFormat("#.##");
         String formattedAmount = df.format(donation.getAmount().doubleValue());
@@ -420,7 +275,7 @@ public class OengusWebhookService {
 
         for (final Game game : submission.getGames()) {
             for (final Category category : game.getCategories()) {
-                messages.add(categoryToEmbed(
+                messages.add(removedCategoryToEmbed(
                     category,
                     deletedBy,
                     submission.getUser(),
@@ -443,7 +298,7 @@ public class OengusWebhookService {
         final String marathonName = this.marathonService.getNameForCode(marathonId);
 
         for (final Category category : game.getCategories()) {
-            messages.add(categoryToEmbed(
+            messages.add(removedCategoryToEmbed(
                 category,
                 deletedBy,
                 game.getSubmission().getUser(),
@@ -465,7 +320,7 @@ public class OengusWebhookService {
 
         final Game game = category.getGame();
 
-        final WebhookEmbed webhookEmbed = categoryToEmbed(
+        final WebhookEmbed webhookEmbed = removedCategoryToEmbed(
             category,
             deletedBy,
             game.getSubmission().getUser(),
@@ -477,8 +332,8 @@ public class OengusWebhookService {
         this.jda.sendMessage(channel, webhookEmbed);
     }
 
-    private WebhookEmbed categoryToEmbed(final Category category, final User deletedBy, final User owner,
-                                         final String marathonId, final String marathonName, final Game game) {
+    private WebhookEmbed removedCategoryToEmbed(final Category category, final User deletedBy, final User owner,
+                                                final String marathonId, final String marathonName, final Game game) {
         final String username = owner.getUsername();
         final String headerText = deletedBy.equals(owner) ?
             username + " deleted their own run" :
