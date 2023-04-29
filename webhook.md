@@ -197,7 +197,15 @@ Mentioned models are available on this page under the models section at the bott
     "code": "",
     "selection": null,
     "opponents": [],
-    "opponentDtos": [],
+    "opponentDtos": [
+        {
+            "id": 0,
+            "user": {
+                // USER MODEL //
+            },
+            "video": "https://youtu.be/9_N3c_WW6rI",
+        }
+    ],
     "status": null,
 }
 ```
@@ -205,8 +213,10 @@ Mentioned models are available on this page under the models section at the bott
 ```json5
 {
     "id": 0,
-    "marathon": null,
-    "category": null,
+    "marathonId": "BSG2023",
+    "category": {
+        // CATEGORY MODEL //
+    },
     "status": "TODO | REJECTED | BONUS | VALIDATED | BACKUP"
 }
 ```
