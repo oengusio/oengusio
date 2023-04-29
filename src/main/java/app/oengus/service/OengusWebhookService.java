@@ -135,6 +135,7 @@ public class OengusWebhookService {
             .put("event", "GAME_DELETE");
         data.set("game", parseJson(game));
         data.set("deleted_by", parseJson(deletedBy));
+        data.set("submission", parseJson(game.getSubmission().fresh(false)));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -151,6 +152,8 @@ public class OengusWebhookService {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "CATEGORY_DELETE");
         data.set("category", parseJson(category));
+        data.set("submission", parseJson(category.getGame().getSubmission().fresh(false)));
+        data.set("game", parseJson(category.getGame().fresh(false, false)));
         data.set("deleted_by", parseJson(deletedBy));
 
         if (handleOnBot(url)) {
@@ -267,30 +270,6 @@ public class OengusWebhookService {
             ));
 
         this.jda.sendMessage(channel, builder.build());
-    }
-
-    private void sendSubmissionDelete(final String marathonId, final String channel, final Submission submission, final User deletedBy) {
-        final List<WebhookEmbed> messages = new ArrayList<>();
-        final String marathonName = this.marathonService.getNameForCode(marathonId);
-
-        for (final Game game : submission.getGames()) {
-            for (final Category category : game.getCategories()) {
-                messages.add(removedCategoryToEmbed(
-                    category,
-                    deletedBy,
-                    submission.getUser(),
-                    marathonId,
-                    marathonName,
-                    game
-                ));
-            }
-        }
-
-        try (WebhookClient client = this.jda.forChannel(channel)) {
-            for (WebhookEmbed embed : messages) {
-                client.send(embed);
-            }
-        }
     }
 
     private void sendGameDelete(final String marathonId, final String channel, final Game game, final User deletedBy) {
