@@ -61,6 +61,10 @@ public class User implements UserDetails {
     @JsonView(Views.Internal.class)
     private String mail;
 
+    @Column(name = "email_verified")
+    @JsonView(Views.Public.class)
+    private boolean emailVerified;
+
     @Column(name = "discord_id")
     @JsonView(Views.Internal.class)
     private String discordId;

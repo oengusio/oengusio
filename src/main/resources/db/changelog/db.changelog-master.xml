@@ -1067,4 +1067,10 @@
             <column name="mastodon" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="202030227-1">
+        <addColumn tableName="users">
+            <column name="email_verified" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -647,7 +647,7 @@ public class Marathon {
     @JsonIgnore
     @AssertTrue(message = "Mastodon instance is not in the valid format")
     public boolean isMastodonValid() {
-        return this.mastodon == null || this.mastodon.matches(MASTODON_REGEX);
+        return this.mastodon == null || this.mastodon.isBlank() || this.mastodon.matches(MASTODON_REGEX);
     }
 
     /**

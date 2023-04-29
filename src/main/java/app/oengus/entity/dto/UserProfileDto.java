@@ -2,6 +2,8 @@ package app.oengus.entity.dto;
 
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.model.SocialAccount;
+import app.oengus.spring.model.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -12,6 +14,7 @@ import java.util.List;
 public class UserProfileDto {
 
     private int id;
+    private boolean emailVerified;
     private String username;
     private String usernameJapanese;
     private boolean enabled;
@@ -38,6 +41,14 @@ public class UserProfileDto {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public String getUsername() {
