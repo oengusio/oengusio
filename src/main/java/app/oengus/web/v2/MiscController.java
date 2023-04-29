@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import app.oengus.service.rabbitmq.IRabbitMQService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,19 +26,16 @@ public class MiscController {
 
     private final PronounsPageApi pronounsApi;
     private final LanguageService languageService;
-    private final IRabbitMQService rabbitMq;
 
     @Autowired
-    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService, IRabbitMQService rabbitMq) {
+    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService) {
         this.pronounsApi = pronounsApi;
         this.languageService = languageService;
-        this.rabbitMq = rabbitMq;
     }
 
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> bonk() throws InterruptedException {
-        this.rabbitMq.queueBotMessage("{\"event\": \"SUBMISSION_ADD\"}");
         return ResponseEntity.ok("(:");
     }
 
