@@ -83,8 +83,8 @@ public class GameService {
         game.setSubmission(null);
         submission.getGames().remove(game);
 
-        this.submissionRepositoryService.save(submission);
         this.gameRepositoryService.delete(id);
+        this.submissionRepositoryService.save(submission);
     }
 
 }
