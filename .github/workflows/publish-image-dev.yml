@@ -51,6 +51,6 @@ jobs:
                 run: echo ${{ steps.docker_build.outputs.digest }}
 
             -   name: Trigger dev webhook
-                uses: zzzze/webhook-trigger@v1.0.0
-                with:
+                uses: distributhor/workflow-webhook@v3
+                env:
                     webhook_url: ${{ secrets.DEV_WEBHOOK_URL }}
