@@ -9,6 +9,7 @@ import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
 import app.oengus.entity.dto.v2.marathon.GameDto;
 import app.oengus.entity.dto.v2.marathon.SubmissionDto;
+import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
@@ -273,7 +274,7 @@ public class SubmissionService {
                                 final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
                                 opponentCategoryDto.setId(opponent.getId());
                                 opponentCategoryDto.setVideo(opponent.getVideo());
-                                opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                                opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
                                 category.getOpponentDtos().add(opponentCategoryDto);
                             });
                         }
@@ -449,7 +450,7 @@ public class SubmissionService {
                             final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
                             opponentCategoryDto.setId(opponent.getId());
                             opponentCategoryDto.setVideo(opponent.getVideo());
-                            opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                            opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
                             opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
                             category.getOpponentDtos().add(opponentCategoryDto);
                         });
@@ -524,7 +525,7 @@ public class SubmissionService {
                         final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
                         opponentCategoryDto.setId(opponent.getId());
                         opponentCategoryDto.setVideo(opponent.getVideo());
-                        opponentCategoryDto.setUser(SubmissionUserDto.fromUser(opponent.getSubmission().getUser()));
+                        opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
                         opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
                         category.getOpponentDtos().add(opponentCategoryDto);
                     });

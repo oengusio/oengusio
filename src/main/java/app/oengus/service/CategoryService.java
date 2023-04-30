@@ -39,41 +39,7 @@ public class CategoryService {
     public List<CategoryDto> findByGameId(String marathonId, int submissionId, int gameId) {
         return this.categoryRepositoryService.findByGameId(marathonId, submissionId, gameId)
             .stream()
-            .map((cat) -> {
-                final CategoryDto dto = new CategoryDto();
-
-                dto.setId(cat.getId());
-                dto.setName(cat.getName());
-                dto.setEstimate(cat.getEstimate());
-                dto.setDescription(cat.getDescription());
-                dto.setVideo(cat.getVideo());
-                dto.setType(cat.getType());
-
-                final var opponents = cat.getOpponents();
-
-                if (opponents == null) {
-                    dto.setOpponents(new ArrayList<>());
-                } else {
-                    dto.setOpponents(
-                        opponents.stream()
-                            .map((opp) -> {
-                                final var opponentDto = new OpponentCategoryDto();
-
-                                opponentDto.setId(opp.getId());
-                                opponentDto.setUser(
-                                    SubmissionUserDto.fromUser(opp.getSubmission().getUser())
-                                );
-                                opponentDto.setVideo(opp.getVideo());
-                                opponentDto.setAvailabilities(opp.getSubmission().getAvailabilities());
-
-                                return opponentDto;
-                            })
-                            .toList()
-                    );
-                }
-
-                return dto;
-            })
+            .map(CategoryDto::fromCategory)
             .toList();
     }
 

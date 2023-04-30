@@ -56,6 +56,6 @@ jobs:
                     webhook_url: ${{ secrets.PROD_WEBHOOK_URL }}
 
             -   name: Trigger sandbox webhook
-                uses: zzzze/webhook-trigger@v1.0.0
-                with:
+                uses: distributhor/workflow-webhook@v3
+                env:
                     webhook_url: ${{ secrets.SANDBOX_WEBHOOK_URL }}

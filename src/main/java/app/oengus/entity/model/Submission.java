@@ -242,7 +242,7 @@ public class Submission {
         Hibernate.initialize(this.getAnswers());
 
         // the games will be copied separately
-        BeanUtils.copyProperties(this, submission);
+        BeanUtils.copyProperties(this, submission, "games");
 
         // only load the game if we say so
         // might cause issues if we load the submission from a game otherwise

@@ -1,6 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="OengusApplicationTemplate" type="Application" factoryName="Application">
     <envs>
+      <env name="AMQP_USERNAME" value="guest" />
+      <env name="AMQP_PASSWORD" value="guest" />
+      <env name="AMQP_URI" value="amqp://localhost:5672" />
       <env name="BASE_URL" value="http://localhost:4200" />
       <env name="DB_PASSWORD" value="password" />
       <env name="DB_URL" value="jdbc:postgresql://localhost:5432/oengus" />
