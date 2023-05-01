@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.sentry.Sentry;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-//@Profile("prod")
+@Profile("cheesecake") // TODO: disabled for now, random value should also keeo it disabled on sandbox
 public class RabbitMQService implements IRabbitMQService {
     private static final String QUEUE_NAME_BASE = "oengus.bot";
     private final Connection connection;
