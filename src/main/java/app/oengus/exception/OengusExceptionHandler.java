@@ -92,9 +92,13 @@ public class OengusExceptionHandler {
 
             stringStringMap.put("errors", ex.getConstraintViolations());
 
-            return ResponseEntity.badRequest().body(stringStringMap);
+            return ResponseEntity.badRequest()
+                .header("Content-Type", "application/json")
+                .body(stringStringMap);
         } else if (cause instanceof MissingServletRequestParameterException smh) {
-            return ResponseEntity.badRequest().body(toMap(req, smh));
+            return ResponseEntity.badRequest()
+                .header("Content-Type", "application/json")
+                .body(toMap(req, smh));
         }
 
         Sentry.captureException(exc);
