@@ -12,7 +12,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -37,10 +36,14 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .header("Content-Type", "text/plain")
+                .build();
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(toMap(req, exc));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .header("Content-Type", "application/json")
+            .body(toMap(req, exc));
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -48,15 +51,21 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .header("Content-Type", "text/plain")
+                .build();
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(toMap(req, exc));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .header("Content-Type", "application/json")
+            .body(toMap(req, exc));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> responseStatusEx(final ResponseStatusException ex, final HttpServletRequest req) {
-        return ResponseEntity.status(ex.getStatus()).body(toMap(req, ex));
+        return ResponseEntity.status(ex.getStatus())
+            .header("Content-Type", "application/json")
+            .body(toMap(req, ex));
     }
 
     @ExceptionHandler(LoginException.class)
@@ -64,10 +73,14 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ((ResponseEntity.BodyBuilder) ResponseEntity.notFound()).body(exc.getMessage());
+            return ((ResponseEntity.BodyBuilder) ResponseEntity.notFound())
+                .header("Content-Type", "text/plain")
+                .body(exc.getMessage());
         }
 
-        return ResponseEntity.badRequest().body(toMap(req, exc));
+        return ResponseEntity.badRequest()
+            .header("Content-Type", "application/json")
+            .body(toMap(req, exc));
     }
 
     @ExceptionHandler(NestedServletException.class)
@@ -87,11 +100,13 @@ public class OengusExceptionHandler {
         Sentry.captureException(exc);
         LOG.error("Uncaught NestedServletException", exc);
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(toMap(req, exc));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .header("Content-Type", "application/json")
+            .body(toMap(req, exc));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> constraintViolationException(final ConstraintViolationException exc, final HttpServletRequest req) {
+    public ResponseEntity<Map<String, Object>> constraintViolationException(final ConstraintViolationException exc, final HttpServletRequest req) {
         final List<Map<String, String>> test = exc.getConstraintViolations()
             .stream()
             .map((v) -> {
@@ -109,7 +124,9 @@ public class OengusExceptionHandler {
 
         stringStringMap.put("errors", test);
 
-        return ResponseEntity.badRequest().body(stringStringMap);
+        return ResponseEntity.badRequest()
+            .header("Content-Type", "application/json")
+            .body(stringStringMap);
     }
 
     @ExceptionHandler(OengusBusinessException.class)
@@ -118,16 +135,19 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest()
+                .header("Content-Type", "text/plain")
+                .body(e.getMessage());
         }
 
-        return ResponseEntity.badRequest().body(toMap(req, e));
+        return ResponseEntity.badRequest()
+            .header("Content-Type", "application/json")
+            .body(toMap(req, e));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(value=HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public Map<String, String> requestHandlingNoHandlerFound(final NoHandlerFoundException e) {
+    public ResponseEntity<Map<String, String>> requestHandlingNoHandlerFound(final NoHandlerFoundException e) {
         final Map<String, String> mapper = new HashMap<>();
 
         mapper.put("type", "NotFoundException");
@@ -135,7 +155,9 @@ public class OengusExceptionHandler {
         mapper.put("method", e.getHttpMethod());
         mapper.put("path", e.getRequestURL());
 
-        return mapper;
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .header("Content-Type", "application/json")
+            .body(mapper);
     }
 
     // SOURCE: https://mtyurt.net/post/spring-how-to-handle-ioexception-broken-pipe.html
