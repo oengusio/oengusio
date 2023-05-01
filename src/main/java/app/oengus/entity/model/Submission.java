@@ -199,7 +199,17 @@ public class Submission {
                 });
                 record.add(videos.toString());
             }
-            final String statusName = category.getSelection().getStatus().name();
+
+            // Selection might be null, ensure that the status defaults to "TO-DO"
+            final Selection selection = Optional.ofNullable(category.getSelection()).orElseGet(() -> {
+                final Selection fakeSelection = new Selection();
+
+                fakeSelection.setStatus(Status.TODO);
+
+                return fakeSelection;
+            });
+
+            final String statusName = selection.getStatus().name();
             record.add(resourceBundle.getString("run.status." + statusName));
             if (!CollectionUtils.isEmpty(this.getAnswers())) {
                 this.getAnswers()
