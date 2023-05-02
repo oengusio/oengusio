@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-@Profile("dev-sandbox") // TODO: disabled for now, random value should also keeo it disabled on sandbox
+@Profile("!sandbox")
 public class RabbitMQService implements IRabbitMQService {
     private static final String QUEUE_NAME_BASE = "oengus.bot";
     private final Connection connection;
