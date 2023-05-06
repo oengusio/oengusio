@@ -102,10 +102,6 @@ public class SubmissionService {
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 
-        if (!marathon.isSubmitsOpen()) {
-            throw new SubmissionsClosedException();
-        }
-
         // submission id is never null here
         final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
 
@@ -132,48 +128,53 @@ public class SubmissionService {
             availability.setFrom(availability.getFrom().withSecond(0));
             availability.setTo(availability.getTo().withSecond(0));
         });
-        submission.getGames().forEach(game -> {
-            game.setSubmission(submission);
-            game.getCategories().forEach(category -> {
-                category.setGame(game);
-                if (category.getId() <= 0) {
-                    this.createSelection(category, marathon);
-                } else {
-                    final Selection selection = this.selectionRepositoryService.findByCategory(category);
-                    if (selection == null) {
+
+        // TODO: make sure no new games can be added when submissions are closed
+        // Only allow to update availabilities when submissions are closed.
+        if (marathon.isSubmitsOpen()) {
+            submission.getGames().forEach(game -> {
+                game.setSubmission(submission);
+                game.getCategories().forEach(category -> {
+                    category.setGame(game);
+                    if (category.getId() <= 0) {
                         this.createSelection(category, marathon);
+                    } else {
+                        final Selection selection = this.selectionRepositoryService.findByCategory(category);
+                        if (selection == null) {
+                            this.createSelection(category, marathon);
+                        }
+                        category.setSelection(selection);
                     }
-                    category.setSelection(selection);
-                }
-                if (category.getEstimate().toSecondsPart() > 0) {
-                    category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
-                }
-                if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
-                    if (StringUtils.isEmpty(category.getCode())) {
-                        String code;
-                        do {
-                            code = RandomStringUtils.random(6, true, true).toUpperCase();
-                        } while (this.categoryRepository.existsByCode(code));
-                        category.setCode(code);
+                    if (category.getEstimate().toSecondsPart() > 0) {
+                        category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
                     }
-                } else {
-                    category.setCode(null);
-                }
+                    if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
+                        if (StringUtils.isEmpty(category.getCode())) {
+                            String code;
+                            do {
+                                code = RandomStringUtils.random(6, true, true).toUpperCase();
+                            } while (this.categoryRepository.existsByCode(code));
+                            category.setCode(code);
+                        }
+                    } else {
+                        category.setCode(null);
+                    }
+                });
             });
-        });
-        submission.getAnswers().forEach(answer -> answer.setSubmission(submission));
-        submission.setOpponents(new HashSet<>());
-        if (submission.getOpponentDtos() != null) {
-            submission.getOpponentDtos().forEach(opponentDto -> {
-                final Opponent opponent = new Opponent();
-                opponent.setId(opponentDto.getId());
-                opponent.setSubmission(submission);
-                opponent.setVideo(opponentDto.getVideo());
-                final Category category = new Category();
-                category.setId(opponentDto.getCategoryId());
-                opponent.setCategory(category);
-                submission.getOpponents().add(opponent);
-            });
+            submission.getAnswers().forEach(answer -> answer.setSubmission(submission));
+            submission.setOpponents(new HashSet<>());
+            if (submission.getOpponentDtos() != null) {
+                submission.getOpponentDtos().forEach(opponentDto -> {
+                    final Opponent opponent = new Opponent();
+                    opponent.setId(opponentDto.getId());
+                    opponent.setSubmission(submission);
+                    opponent.setVideo(opponentDto.getVideo());
+                    final Category category = new Category();
+                    category.setId(opponentDto.getCategoryId());
+                    opponent.setCategory(category);
+                    submission.getOpponents().add(opponent);
+                });
+            }
         }
 
         return this.submissionRepositoryService.save(submission);
