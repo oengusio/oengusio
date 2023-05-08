@@ -131,50 +131,48 @@ public class SubmissionService {
 
         // TODO: make sure no new games can be added when submissions are closed
         // Only allow to update availabilities when submissions are closed.
-        if (marathon.isSubmitsOpen()) {
-            submission.getGames().forEach(game -> {
-                game.setSubmission(submission);
-                game.getCategories().forEach(category -> {
-                    category.setGame(game);
-                    if (category.getId() <= 0) {
+        submission.getGames().forEach(game -> {
+            game.setSubmission(submission);
+            game.getCategories().forEach(category -> {
+                category.setGame(game);
+                if (category.getId() <= 0) {
+                    this.createSelection(category, marathon);
+                } else {
+                    final Selection selection = this.selectionRepositoryService.findByCategory(category);
+                    if (selection == null) {
                         this.createSelection(category, marathon);
-                    } else {
-                        final Selection selection = this.selectionRepositoryService.findByCategory(category);
-                        if (selection == null) {
-                            this.createSelection(category, marathon);
-                        }
-                        category.setSelection(selection);
                     }
-                    if (category.getEstimate().toSecondsPart() > 0) {
-                        category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
+                    category.setSelection(selection);
+                }
+                if (category.getEstimate().toSecondsPart() > 0) {
+                    category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
+                }
+                if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
+                    if (StringUtils.isEmpty(category.getCode())) {
+                        String code;
+                        do {
+                            code = RandomStringUtils.random(6, true, true).toUpperCase();
+                        } while (this.categoryRepository.existsByCode(code));
+                        category.setCode(code);
                     }
-                    if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
-                        if (StringUtils.isEmpty(category.getCode())) {
-                            String code;
-                            do {
-                                code = RandomStringUtils.random(6, true, true).toUpperCase();
-                            } while (this.categoryRepository.existsByCode(code));
-                            category.setCode(code);
-                        }
-                    } else {
-                        category.setCode(null);
-                    }
-                });
+                } else {
+                    category.setCode(null);
+                }
             });
-            submission.getAnswers().forEach(answer -> answer.setSubmission(submission));
-            submission.setOpponents(new HashSet<>());
-            if (submission.getOpponentDtos() != null) {
-                submission.getOpponentDtos().forEach(opponentDto -> {
-                    final Opponent opponent = new Opponent();
-                    opponent.setId(opponentDto.getId());
-                    opponent.setSubmission(submission);
-                    opponent.setVideo(opponentDto.getVideo());
-                    final Category category = new Category();
-                    category.setId(opponentDto.getCategoryId());
-                    opponent.setCategory(category);
-                    submission.getOpponents().add(opponent);
-                });
-            }
+        });
+        submission.getAnswers().forEach(answer -> answer.setSubmission(submission));
+        submission.setOpponents(new HashSet<>());
+        if (submission.getOpponentDtos() != null) {
+            submission.getOpponentDtos().forEach(opponentDto -> {
+                final Opponent opponent = new Opponent();
+                opponent.setId(opponentDto.getId());
+                opponent.setSubmission(submission);
+                opponent.setVideo(opponentDto.getVideo());
+                final Category category = new Category();
+                category.setId(opponentDto.getCategoryId());
+                opponent.setCategory(category);
+                submission.getOpponents().add(opponent);
+            });
         }
 
         return this.submissionRepositoryService.save(submission);
@@ -262,7 +260,11 @@ public class SubmissionService {
             if (submission.getOpponents() != null) {
                 submission.setOpponentDtos(new HashSet<>());
                 submission.getOpponents().forEach(opponent -> {
-                    submission.getOpponentDtos().add(this.mapOpponent(opponent, user));
+                    OpponentSubmissionDto opponentSubmissionDto = this.mapOpponent(opponent, user);
+
+                    if (opponentSubmissionDto != null) {
+                        submission.getOpponentDtos().add(opponentSubmissionDto);
+                    }
                 });
             }
 
@@ -289,21 +291,29 @@ public class SubmissionService {
 
     private OpponentSubmissionDto mapOpponent(final Opponent opponent, final User user) {
         final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
+
+        final Category opponentCategory = opponent.getCategory();
+
+        if (opponentCategory == null || opponentCategory.getGame() != null) {
+            return null;
+        }
+
         opponentDto.setId(opponent.getId());
-        opponentDto.setGameName(opponent.getCategory().getGame().getName());
-        opponentDto.setCategoryId(opponent.getCategory().getId());
-        opponentDto.setCategoryName(opponent.getCategory().getName());
+        opponentDto.setGameName(opponentCategory.getGame().getName());
+        opponentDto.setCategoryId(opponentCategory.getId());
+        opponentDto.setCategoryName(opponentCategory.getName());
         opponentDto.setVideo(opponent.getVideo());
         final List<User> users = new ArrayList<>();
-        users.add(opponent.getCategory().getGame().getSubmission().getUser());
-        users.addAll(opponent.getCategory()
-                             .getOpponents()
-                             .stream()
-                             .map(opponent1 -> opponent1.getSubmission().getUser())
-                             .filter(user1 -> !Objects.equals(user1.getId(), user.getId()))
-                             .collect(
-                                     Collectors.toSet()));
+        users.add(opponentCategory.getGame().getSubmission().getUser());
+        users.addAll(opponentCategory
+            .getOpponents()
+            .stream()
+            .map(opponent1 -> opponent1.getSubmission().getUser())
+            .filter(user1 -> !Objects.equals(user1.getId(), user.getId()))
+            .collect(
+                Collectors.toSet()));
         opponentDto.setUsers(users);
+
         return opponentDto;
     }
 
