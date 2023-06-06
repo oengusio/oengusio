@@ -167,12 +167,15 @@ public class OengusExceptionHandler {
     // SOURCE: https://mtyurt.net/post/spring-how-to-handle-ioexception-broken-pipe.html
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    public Object exceptionHandler(final HttpServletRequest req, final IOException e) {
+    public ResponseEntity<?> exceptionHandler(final HttpServletRequest req, final IOException e) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             return null;
         } else {
             Sentry.captureException(e);
-            return toMap(req, e);
+
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .header("Content-Type", "application/json")
+                .body(toMap(req, e));
         }
     }
 
