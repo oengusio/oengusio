@@ -952,7 +952,6 @@
         <modifyDataType tableName="application_auditlog" columnName="new_status" newDataType="varchar(10)"/>
     </changeSet>
 
-
     <changeSet id="20210721-1" author="duncte123">
         <dropForeignKeyConstraint baseTableName="applications" constraintName="fk_application_marathon"/>
         <renameColumn tableName="applications"
@@ -1072,5 +1071,17 @@
         <addColumn tableName="users">
             <column name="email_verified" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20230702-1">
+        <!-- <constraints nullable="false"/> -->
+        <sql>
+            UPDATE users SET username_ja = username WHERE username_ja = '' OR username_ja IS NULL;
+            UPDATE users set username = LOWER(username);
+        </sql>
+        <addUniqueConstraint tableName="users"
+                             columnNames="username"
+                             constraintName="uq_users_username"/>
+        <renameColumn tableName="users" oldColumnName="username_ja" newColumnName="display_name"/>
     </changeSet>
 </databaseChangeLog>

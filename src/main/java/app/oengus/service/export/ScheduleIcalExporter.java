@@ -2,6 +2,7 @@ package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.helper.StringHelper;
 import javassist.NotFoundException;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -62,10 +63,7 @@ public class ScheduleIcalExporter implements Exporter {
 		                            scheduleLineDto.getCategoryName(),
 		                            scheduleLineDto.getRunners()
 		                                           .stream()
-		                                           .map(user -> user.getUsername(
-				                                           resourceBundle
-						                                           .getLocale()
-						                                           .toLanguageTag()))
+		                                           .map(StringHelper::getUserDisplay)
 				                            .collect(Collectors.joining(", "))};
 		final String title = messageFormat.format(arguments);
 		final VEvent event = new VEvent(new DateTime(java.util.Date.from(scheduleLineDto.getTime().toInstant()), tz),

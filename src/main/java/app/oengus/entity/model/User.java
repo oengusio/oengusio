@@ -35,10 +35,10 @@ public class User implements UserDetails {
     @Pattern(regexp = USERNAME_REGEX)
     private String username;
 
-    @Column(name = "username_ja")
+    @Column(name = "display_name")
     @JsonView(Views.Public.class)
     @Size(max = 32)
-    private String usernameJapanese;
+    private String displayName;
 
     @Column(name = "active")
     @JsonView(Views.Public.class)
@@ -234,12 +234,12 @@ public class User implements UserDetails {
         this.connections.addAll(connections);
     }
 
-    public String getUsernameJapanese() {
-        return this.usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(final String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getTwitterId() {
@@ -279,14 +279,6 @@ public class User implements UserDetails {
 
     public void setLanguagesSpoken(@NotNull List<String> languagesSpoken) {
         this.languagesSpoken = String.join(",", languagesSpoken);
-    }
-
-    @JsonIgnore
-    public String getUsername(final String locale) {
-        if ("ja".equals(locale) && StringUtils.isNotEmpty(this.usernameJapanese)) {
-            return this.usernameJapanese;
-        }
-        return this.username;
     }
 
     @Override

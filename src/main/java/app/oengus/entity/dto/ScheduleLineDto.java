@@ -1,6 +1,7 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.model.ScheduleLine;
+import app.oengus.helper.StringHelper;
 import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -51,7 +52,7 @@ public class ScheduleLineDto extends ScheduleLine {
         record.add(DateTimeFormatter.ISO_ZONED_DATE_TIME.format(this.time));
         record.add(this.getRunners()
             .stream()
-            .map(user -> user.getUsername(locale.toLanguageTag()))
+            .map(StringHelper::getUserDisplay)
             .collect(Collectors.joining(", ")));
         record.add(this.getGameName());
         record.add(this.getCategoryName());

@@ -7,6 +7,7 @@ import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
 import app.oengus.exception.OengusBusinessException;
+import app.oengus.helper.StringHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
@@ -106,7 +107,7 @@ public class ScheduleJsonExporter implements Exporter {
                 StringUtils.defaultString(
                     scheduleLineDto.getRunners()
                         .stream()
-                        .map(user -> user.getUsername(resourceBundle.getLocale().toLanguageTag()))
+                        .map(StringHelper::getUserDisplay)
                         .collect(Collectors.joining(", "))
                 ),
                 StringUtils.defaultString(gameName),

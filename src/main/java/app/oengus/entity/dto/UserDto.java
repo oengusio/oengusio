@@ -21,7 +21,7 @@ public class UserDto {
     @JsonIgnore
     public static final String MASTODON_REGEX = "^[\\w\\-]{3,32}@[^.]+.\\w+$";
     @JsonIgnore
-    public static final String USERNAME_REGEX = "^[\\w\\-]{3,32}$";
+    public static final String USERNAME_REGEX = "^[\\w\\-0-9]{3,32}$";
     @JsonIgnore
     public static final String SPEEDRUN_COM_NAME_REGEX = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$";
 
@@ -32,7 +32,7 @@ public class UserDto {
 
     @JsonView(Views.Public.class)
     @Size(max = 32)
-    private String usernameJapanese;
+    private String displayName;
 
     @JsonView(Views.Public.class)
     private boolean enabled;
@@ -82,14 +82,18 @@ public class UserDto {
         this.username = username;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Deprecated
     public String getUsernameJapanese() {
-        return usernameJapanese;
+        return displayName;
     }
-
-    public void setUsernameJapanese(String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
