@@ -1,7 +1,6 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.model.SocialAccount;
-import app.oengus.entity.model.User;
 import app.oengus.service.LanguageService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -214,10 +213,4 @@ public class UserDto {
         return Arrays.stream(this.languagesSpoken.split(",")).allMatch(LanguageService::isSupportedLanguage);
     }
     /// </editor-fold>
-
-    public static UserDto fromUser(User user) {
-        final var dto = new UserDto();
-
-        return dto;
-    }
 }
