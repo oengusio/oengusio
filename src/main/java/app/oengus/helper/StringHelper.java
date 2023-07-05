@@ -1,5 +1,7 @@
 package app.oengus.helper;
 
+import app.oengus.entity.dto.UserDto;
+import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.User;
 
 public class StringHelper {
@@ -13,6 +15,10 @@ public class StringHelper {
     }
 
     public static String getUserDisplay(User user) {
+        return "%s (%s)".formatted(user.getDisplayName(), user.getUsername());
+    }
+
+    public static String getUserDisplay(UserProfileDto user) {
         return "%s (%s)".formatted(user.getDisplayName(), user.getUsername());
     }
 }

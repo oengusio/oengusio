@@ -1,6 +1,5 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.ScheduleLine;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,25 +7,25 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ApiResponse
 public class ScheduleTickerDto {
     @JsonView(Views.Public.class)
-    public ScheduleLine previous = null;
+    public ScheduleLineDto previous = null;
 
     @JsonView(Views.Public.class)
-    public ScheduleLine current = null;
+    public ScheduleLineDto current = null;
 
     @JsonView(Views.Public.class)
-    public ScheduleLine next = null;
+    public ScheduleLineDto next = null;
 
-    public ScheduleTickerDto setPrevious(ScheduleLine previous) {
+    public ScheduleTickerDto setPrevious(ScheduleLineDto previous) {
         this.previous = previous;
         return this;
     }
 
-    public ScheduleTickerDto setCurrent(ScheduleLine current) {
+    public ScheduleTickerDto setCurrent(ScheduleLineDto current) {
         this.current = current;
         return this;
     }
 
-    public ScheduleTickerDto setNext(ScheduleLine next) {
+    public ScheduleTickerDto setNext(ScheduleLineDto next) {
         this.next = next;
         return this;
     }

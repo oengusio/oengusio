@@ -1,13 +1,15 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.ScheduleDto;
+import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
+import app.oengus.entity.model.Marathon;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.StringHelper;
+import app.oengus.service.repository.MarathonRepositoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
@@ -35,41 +37,44 @@ public class ScheduleJsonExporter implements Exporter {
 
     private final ScheduleHelper scheduleHelper;
     private final ObjectMapper objectMapper;
+    private final MarathonRepositoryService marathonRepositoryService;
 
     @Autowired
-    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper) {
+    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper, MarathonRepositoryService marathonRepositoryService) {
         this.scheduleHelper = scheduleHelper;
         this.objectMapper = objectMapper;
+        this.marathonRepositoryService = marathonRepositoryService;
     }
 
     @Override
     public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
+        final V1ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
 
         if (scheduleDto == null) {
             throw new NotFoundException("Schedule not found");
         }
 
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();
         final HoraroSchedule horaroSchedule = new HoraroSchedule();
         final HoraroEvent horaroEvent = new HoraroEvent();
-        horaroEvent.setName(scheduleDto.getMarathon().getName());
-        horaroEvent.setSlug(scheduleDto.getMarathon().getId());
+        horaroEvent.setName(marathon.getName());
+        horaroEvent.setSlug(marathon.getId());
         horaroSchedule.setEvent(horaroEvent);
-        horaroSchedule.setName(scheduleDto.getMarathon().getName());
-        horaroSchedule.setSlug(scheduleDto.getMarathon().getId());
+        horaroSchedule.setName(marathon.getName());
+        horaroSchedule.setSlug(marathon.getId());
         horaroSchedule.setTimezone(zoneId);
         horaroSchedule.setStart(
-            scheduleDto.getMarathon()
+            marathon
                 .getStartDate()
                 .withFixedOffsetZone()
                 .withSecond(0)
                 .format(DateTimeFormatter.ISO_DATE_TIME)
         );
-        horaroSchedule.setTwitch(scheduleDto.getMarathon().getTwitch());
-        horaroSchedule.setTwitter(scheduleDto.getMarathon().getTwitter());
+        horaroSchedule.setTwitch(marathon.getTwitch());
+        horaroSchedule.setTwitter(marathon.getTwitter());
         horaroSchedule.setColumns(COLUMNS.stream()
             .map(column -> column.contains("[[") ? column : resourceBundle.getString(
                 "schedule.export.json.column." + column))
@@ -114,7 +119,7 @@ public class ScheduleJsonExporter implements Exporter {
                 StringUtils.defaultString(scheduleLineDto.getCategoryName()),
                 resourceBundle.getString("run.type." + scheduleLineDto.getType().name()),
                 StringUtils.defaultString(scheduleLineDto.getConsole()),
-                StringUtils.defaultString(scheduleLineDto.getCustomData()),
+                StringUtils.defaultString(scheduleLineDto.getCustomDataDTO()),
                 this.objectMapper.writeValueAsString(
                     Map.of("setup", this.formatCustomSetupTime(scheduleLineDto.getEffectiveSetupTime()))
                 )
