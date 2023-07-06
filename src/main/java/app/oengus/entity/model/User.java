@@ -281,6 +281,14 @@ public class User implements UserDetails {
         this.languagesSpoken = String.join(",", languagesSpoken);
     }
 
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

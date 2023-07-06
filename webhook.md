@@ -138,15 +138,22 @@ Mentioned models are available on this page under the models section at the bott
 {
     "id": 0,
     "username": "duncte123",
-    "usernameJapanese": null, // string
+    "displayName": "Dunsty",
+    "usernameJapanese": null, // string, deprecated
     "enabled": true,
     "roles": [
         "ROLE_USER"
     ],
-    "discordName": "duncte123#1245",
-    "twitterName": "duncte123",
-    "twitchName": "duncte123",
-    "speedruncomName": "duncte123"
+    "connections": [
+        {
+            "PLATFORM": "DISCORD",
+            "username": "duncte123#1245"
+        },
+        {
+            "PLATFORM": "SPEEDRUNCOM",
+            "username": "duncte123"
+        }
+    ],
 }
 ```
 ### Submission

@@ -2,6 +2,8 @@ package app.oengus.entity.dto;
 
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.model.SocialAccount;
+import app.oengus.entity.model.User;
+import app.oengus.spring.model.Role;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -27,7 +29,7 @@ public class UserProfileDto {
     private boolean banned;
     private String country;
 
-    public UserProfileDto() {
+    private UserProfileDto() {
         this.history = new ArrayList<>();
         this.moderatedMarathons = new ArrayList<>();
         this.volunteeringHistory = new ArrayList<>();
@@ -194,5 +196,25 @@ public class UserProfileDto {
             .map(SocialAccount::getUsername)
             .findFirst()
             .orElse("");
+    }
+
+    public static UserProfileDto fromUserNoHistory(User user) {
+        final var dto = new UserProfileDto();
+
+        dto.setId(user.getId());
+        dto.setEmailVerified(user.isEmailVerified());
+        dto.setUsername(user.getUsername());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setEnabled(user.isEnabled());
+        dto.setConnections(user.getConnections());
+        dto.setHistory(List.of());
+        dto.setModeratedMarathons(List.of());
+        dto.setVolunteeringHistory(List.of());
+        dto.setPronouns(user.getPronouns());
+        dto.setLanguagesSpoken(user.getLanguagesSpoken());
+        dto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
+        dto.setCountry(user.getCountry());
+
+        return dto;
     }
 }

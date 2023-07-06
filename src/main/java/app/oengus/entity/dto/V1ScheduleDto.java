@@ -41,6 +41,11 @@ public class V1ScheduleDto {
         final V1ScheduleDto dto = new V1ScheduleDto();
 
         dto.setId(schedule.getId());
+        dto.setLines(
+            schedule.getLines().stream()
+                .map(ScheduleLineDto::fromLine)
+                .toList()
+        );
 
         return dto;
     }

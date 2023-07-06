@@ -4,9 +4,7 @@ import app.oengus.entity.model.RunType;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.helper.StringHelper;
 import app.oengus.helper.TimeHelpers;
-import app.oengus.spring.model.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.BeanUtils;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -231,16 +229,8 @@ public class ScheduleLineDto {
         dto.setPosition(line.getPosition());
         dto.setType(line.getType());
         dto.setRunners(line.getRunners()
-          .stream()
-          .map((user) -> {
-              // TODO: make a fromUserMethod
-              final UserProfileDto userProfileDto = new UserProfileDto();
-
-              BeanUtils.copyProperties(user, userProfileDto);
-              userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
-
-              return userProfileDto;
-          })
+            .stream()
+            .map(UserProfileDto::fromUserNoHistory)
             .toList());
         dto.setSetupBlockText(line.getSetupBlockText());
         dto.setDate(line.getDate());
