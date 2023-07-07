@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.IUsername;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.service.LanguageService;
 import app.oengus.spring.model.Views;
@@ -13,7 +14,7 @@ import javax.validation.constraints.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class UserDto {
+public class UserDto implements IUsername {
     @JsonIgnore
     public static final String DISCORD_USERNAME_REGEX = "^\\S.{0,30}\\S\\s*(?:#\\d{4})?$";
     @JsonIgnore
@@ -21,7 +22,9 @@ public class UserDto {
     @JsonIgnore
     public static final String MASTODON_REGEX = "^[\\w\\-]{3,32}@[^.]+.\\w+$";
     @JsonIgnore
-    public static final String USERNAME_REGEX = "^[\\w\\-]{3,32}$";
+    public static final String USERNAME_REGEX = "^[\\w\\-0-9]{3,32}$";
+    @JsonIgnore
+    public static final String PRONOUN_REGEX = "^[\\w\\/,]+$";
     @JsonIgnore
     public static final String SPEEDRUN_COM_NAME_REGEX = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$";
 
@@ -31,8 +34,8 @@ public class UserDto {
     private String username;
 
     @JsonView(Views.Public.class)
-    @Size(max = 32)
-    private String usernameJapanese;
+    @Size(min = 3, max = 32)
+    private String displayName;
 
     @JsonView(Views.Public.class)
     private boolean enabled;
@@ -63,7 +66,8 @@ public class UserDto {
 
     @Nullable
     @JsonView(Views.Public.class)
-    @Size(max = 20)
+    @Size(max = 255)
+    @Pattern(regexp = PRONOUN_REGEX)
     private String pronouns;
 
     @Nullable
@@ -82,12 +86,17 @@ public class UserDto {
         this.username = username;
     }
 
-    public String getUsernameJapanese() {
-        return usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Deprecated
+    public String getUsernameJapanese() {
+        return displayName;
     }
 
     public boolean isEnabled() {

@@ -1,6 +1,6 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.ScheduleDto;
+import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
 import javassist.NotFoundException;
 import org.apache.commons.csv.CSVFormat;
@@ -23,7 +23,7 @@ public class ScheduleCsvExporter implements Exporter {
 
 	@Override
 	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final ScheduleDto schedule = this.scheduleHelper.getSchedule(marathonId, zoneId);
+        final V1ScheduleDto schedule = this.scheduleHelper.getSchedule(marathonId, zoneId);
 
         if (schedule == null) {
             throw new NotFoundException("Schedule not found");

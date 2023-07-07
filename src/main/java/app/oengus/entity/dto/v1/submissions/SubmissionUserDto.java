@@ -8,7 +8,7 @@ import java.util.List;
 public class SubmissionUserDto {
     private int id;
     private String username;
-    private String usernameJapanese;
+    private String displayName;
     public boolean enabled;
     public List<String> pronouns;
     private String country;
@@ -31,12 +31,16 @@ public class SubmissionUserDto {
         this.username = username;
     }
 
-    public String getUsernameJapanese() {
-        return usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getUsernameJapanese() {
+        return displayName;
     }
 
     public boolean isEnabled() {
@@ -84,7 +88,7 @@ public class SubmissionUserDto {
 
         model.setId(user.getId());
         model.setUsername(user.getUsername());
-        model.setUsernameJapanese(user.getUsernameJapanese());
+        model.setDisplayName(user.getDisplayName());
         model.setEnabled(user.isEnabled());
 
         final String pronouns = user.getPronouns();

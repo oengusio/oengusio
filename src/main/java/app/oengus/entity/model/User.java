@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.entity.IUsername;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,11 +19,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static app.oengus.entity.dto.UserDto.PRONOUN_REGEX;
 import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, IUsername {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,10 +37,10 @@ public class User implements UserDetails {
     @Pattern(regexp = USERNAME_REGEX)
     private String username;
 
-    @Column(name = "username_ja")
+    @Column(name = "display_name")
     @JsonView(Views.Public.class)
     @Size(max = 32)
-    private String usernameJapanese;
+    private String displayName;
 
     @Column(name = "active")
     @JsonView(Views.Public.class)
@@ -84,7 +86,8 @@ public class User implements UserDetails {
     @Nullable
     @Column(name = "pronouns")
     @JsonView(Views.Public.class)
-    @Size(max = 20)
+    @Size(max = 255)
+    @Pattern(regexp = PRONOUN_REGEX)
     private String pronouns;
 
     @Nullable
@@ -234,12 +237,12 @@ public class User implements UserDetails {
         this.connections.addAll(connections);
     }
 
-    public String getUsernameJapanese() {
-        return this.usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(final String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getTwitterId() {
@@ -281,12 +284,12 @@ public class User implements UserDetails {
         this.languagesSpoken = String.join(",", languagesSpoken);
     }
 
-    @JsonIgnore
-    public String getUsername(final String locale) {
-        if ("ja".equals(locale) && StringUtils.isNotEmpty(this.usernameJapanese)) {
-            return this.usernameJapanese;
-        }
-        return this.username;
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     @Override

@@ -1,16 +1,17 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.model.Availability;
+import app.oengus.entity.model.User;
+
+import static app.oengus.helper.StringHelper.getUserDisplay;
 
 public class AvailabilityDto extends Availability {
 
 	private String username;
-	private String usernameJapanese;
 
-	public AvailabilityDto(final String username, final String usernameJapanese) {
-		this.username = username;
-		this.usernameJapanese = usernameJapanese;
-	}
+    public AvailabilityDto(User user) {
+        this.username = getUserDisplay(user);
+    }
 
 	public String getUsername() {
 		return this.username;
@@ -18,13 +19,5 @@ public class AvailabilityDto extends Availability {
 
 	public void setUsername(final String username) {
 		this.username = username;
-	}
-
-	public String getUsernameJapanese() {
-		return this.usernameJapanese;
-	}
-
-	public void setUsernameJapanese(final String usernameJapanese) {
-		this.usernameJapanese = usernameJapanese;
 	}
 }

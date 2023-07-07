@@ -4,6 +4,7 @@ import app.oengus.entity.model.User;
 import app.oengus.spring.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,8 @@ public class ProfileDto {
     @Schema(description = "The unique username of this user")
     private String username;
 
-    @Nullable
-    @Schema(description = "The username that should be displayed when the site is switched to japanese")
-    private String usernameJapanese;
+    @Schema(description = "The name that will be shown for the user in the interface")
+    private String displayName;
 
     @Schema(description = "True if this profile is enabled, false otherwise")
     private boolean enabled;
@@ -56,13 +56,12 @@ public class ProfileDto {
         this.username = username;
     }
 
-    @Nullable
-    public String getUsernameJapanese() {
-        return usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(@Nullable String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(@Nonnull String displayName) {
+        this.displayName = displayName;
     }
 
     public boolean isEnabled() {
@@ -118,7 +117,7 @@ public class ProfileDto {
         final ProfileDto profile = new ProfileDto();
         profile.setId(user.getId());
         profile.setUsername(user.getUsername());
-        profile.setUsernameJapanese(user.getUsernameJapanese());
+        profile.setDisplayName(user.getDisplayName());
         profile.setEnabled(user.isEnabled());
         profile.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
 

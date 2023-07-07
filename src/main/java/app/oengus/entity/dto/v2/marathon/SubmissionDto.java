@@ -6,7 +6,7 @@ public class SubmissionDto {
     private int submissionId;
     private int userId;
     private String username;
-    @Nullable private String usernameJapanese;
+    private String displayName;
     private int accepted;
     private long total;
 
@@ -34,13 +34,12 @@ public class SubmissionDto {
         this.username = username;
     }
 
-    @Nullable
-    public String getUsernameJapanese() {
-        return usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(@Nullable String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public int getAccepted() {

@@ -135,7 +135,7 @@ public class UserService {
                 for (final SocialPlatform platform : SocialPlatform.values()) {
                     final List<SocialAccount> current = currentConnections.stream()
                         .filter((c) -> c.getPlatform() == platform)
-                        .collect(Collectors.toList());
+                        .toList();
                     final List<SocialAccount> update = updateConnections.stream()
                         .filter((c) -> c.getPlatform() == platform)
                         .collect(Collectors.toList());
@@ -190,7 +190,6 @@ public class UserService {
         // TODO: delete all connections
 
         user.getConnections().clear();
-        user.setUsernameJapanese(null);
         user.setDiscordId(null);
         user.setTwitchId(null);
         user.setTwitterId(null);
@@ -202,6 +201,7 @@ public class UserService {
 
         // "Deleted" is 7 in length
         user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
+        user.setDisplayName("Deleted user");
 
         this.userRepositoryService.save(user);
     }
@@ -249,10 +249,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final UserProfileDto userProfileDto = new UserProfileDto();
-
-        BeanUtils.copyProperties(user, userProfileDto);
-        userProfileDto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
+        final UserProfileDto userProfileDto = UserProfileDto.fromUserNoHistory(user);
 
         this.addSubmissionsToProfile(
             userProfileDto,

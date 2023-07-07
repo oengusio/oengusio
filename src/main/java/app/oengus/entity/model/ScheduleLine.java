@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "schedule_line")
@@ -261,5 +262,18 @@ public class ScheduleLine {
 
     public void setCustomDataDTO(String customDataDTO) {
         this.customDataDTO = customDataDTO;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScheduleLine that = (ScheduleLine) o;
+        return id == that.id && emulated == that.emulated && setupBlock == that.setupBlock && customRun == that.customRun && Objects.equals(gameName, that.gameName) && Objects.equals(console, that.console) && Objects.equals(ratio, that.ratio) && Objects.equals(categoryName, that.categoryName) && Objects.equals(estimate, that.estimate) && Objects.equals(setupTime, that.setupTime) && Objects.equals(categoryId, that.categoryId) && type == that.type && Objects.equals(setupBlockText, that.setupBlockText) && Objects.equals(customData, that.customData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, gameName, console, emulated, ratio, categoryName, estimate, setupTime, setupBlock, customRun, categoryId, type, setupBlockText, customData);
     }
 }

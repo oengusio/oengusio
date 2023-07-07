@@ -21,8 +21,6 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     boolean existsByUsernameIgnoreCase(String username);
 
-    boolean existsByUsernameJapanese(String username);
-
     boolean existsByDiscordId(String discordId);
 
     boolean existsByTwitchId(String twitchId);

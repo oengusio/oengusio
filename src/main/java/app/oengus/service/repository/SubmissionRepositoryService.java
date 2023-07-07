@@ -38,7 +38,7 @@ public class SubmissionRepositoryService {
                 data.setSubmissionId((Integer) rwData.get("id"));
                 data.setUserId((Integer) rwData.get("userId"));
                 data.setUsername((String) rwData.get("username"));
-                data.setUsernameJapanese((String) rwData.get("usernameJapanese"));
+                data.setDisplayName((String) rwData.get("displayName"));
                 data.setTotal((Long) rwData.get("total"));
 
                 return data;

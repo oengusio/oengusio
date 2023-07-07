@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static app.oengus.helper.StringHelper.getUserDisplay;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
@@ -169,12 +170,12 @@ public class Submission {
                 opponents = category.getOpponents()
                     .stream()
                     .map(
-                        opponent -> opponent.getSubmission().getUser().getUsername(locale.toLanguageTag())
+                        opponent -> getUserDisplay(opponent.getSubmission().getUser())
                     )
                     .collect(Collectors.joining(", "));
             }
             record.add(
-                this.user.getUsername(locale.toLanguageTag()) +
+                getUserDisplay(this.user) +
                     (StringUtils.isEmpty(opponents) ? StringUtils.EMPTY : ", " + opponents));
             record.add(game.getName());
             record.add(StringUtils.normalizeSpace(game.getDescription()));
@@ -188,9 +189,9 @@ public class Submission {
                 record.add(category.getVideo());
             } else {
                 final StringBuilder videos = new StringBuilder(
-                    this.user.getUsername(locale.toLanguageTag()) + ": " + category.getVideo() + " - ");
+                    getUserDisplay(this.user) + ": " + category.getVideo() + " - ");
                 category.getOpponents().forEach(opponent -> {
-                    videos.append(opponent.getSubmission().getUser().getUsername(locale.toLanguageTag()))
+                    videos.append(getUserDisplay(opponent.getSubmission().getUser()))
                         .append(":  ")
                         .append(opponent.getVideo());
                     if (category.getOpponents().indexOf(opponent) != category.getOpponents().size() - 1) {

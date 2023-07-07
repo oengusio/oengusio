@@ -188,8 +188,7 @@ public class SubmissionService {
             final List<AvailabilityDto> availabilityDtoList = new ArrayList<>();
             submission.getAvailabilities().forEach(availability -> {
                 final AvailabilityDto availabilityDto =
-                        new AvailabilityDto(submission.getUser().getUsername(),
-                                submission.getUser().getUsername("ja"));
+                        new AvailabilityDto(submission.getUser());
                 availabilityDto.setFrom(availability.getFrom());
                 availabilityDto.setTo(availability.getTo());
                 availabilityDtoList.add(availabilityDto);
@@ -202,8 +201,7 @@ public class SubmissionService {
                             final List<AvailabilityDto> opponentAvailabilityDtoList = new ArrayList<>();
                             opponent.getSubmission().getAvailabilities().forEach(availability -> {
                                 final AvailabilityDto availabilityDto =
-                                        new AvailabilityDto(opponent.getSubmission().getUser().getUsername(),
-                                                opponent.getSubmission().getUser().getUsername("ja"));
+                                        new AvailabilityDto(opponent.getSubmission().getUser());
                                 availabilityDto.setFrom(availability.getFrom());
                                 availabilityDto.setTo(availability.getTo());
                                 opponentAvailabilityDtoList.add(availabilityDto);
@@ -232,7 +230,7 @@ public class SubmissionService {
         if (submission != null) {
             submission.getAvailabilities().forEach(availability -> {
                 final AvailabilityDto availabilityDto =
-                        new AvailabilityDto(user.getUsername(), user.getUsername("ja"));
+                        new AvailabilityDto(user);
                 availabilityDto.setFrom(availability.getFrom());
                 availabilityDto.setTo(availability.getTo());
                 availabilityDtoList.add(availabilityDto);
@@ -367,7 +365,7 @@ public class SubmissionService {
         final boolean qNotEmpty = !queryLower.isBlank();
         final Predicate<User> matchesUsername = (user) ->
             user.getUsername().toLowerCase().contains(queryLower) ||
-                (user.getUsernameJapanese() != null && user.getUsernameJapanese().toLowerCase().contains(queryLower));
+                user.getDisplayName().toLowerCase().contains(queryLower);
 
         bySearch.stream()
             .filter(
