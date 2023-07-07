@@ -6,6 +6,7 @@ import app.oengus.helper.StringHelper;
 import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +26,9 @@ public class ScheduleLineDto {
     private boolean emulated;
     private String ratio;
     private String categoryName;
+    // Sigh, I hate that this is stored
+    @Nullable
+    private Integer categoryId;
     private Duration estimate;
     private Duration setupTime;
     private boolean setupBlock;
@@ -86,6 +90,15 @@ public class ScheduleLineDto {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    @Nullable
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(@Nullable Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Duration getEstimate() {
@@ -222,6 +235,7 @@ public class ScheduleLineDto {
         dto.setEmulated(line.isEmulated());
         dto.setRatio(line.getRatio());
         dto.setCategoryName(line.getCategoryName());
+        dto.setCategoryId(line.getCategoryId());
         dto.setEstimate(line.getEstimate());
         dto.setSetupTime(line.getSetupTime());
         dto.setSetupBlock(line.isSetupBlock());
