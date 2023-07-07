@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static app.oengus.entity.dto.UserDto.PRONOUN_REGEX;
 import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
 @Entity
@@ -84,7 +85,8 @@ public class User implements UserDetails {
     @Nullable
     @Column(name = "pronouns")
     @JsonView(Views.Public.class)
-    @Size(max = 20)
+    @Size(max = 255)
+    @Pattern(regexp = PRONOUN_REGEX)
     private String pronouns;
 
     @Nullable

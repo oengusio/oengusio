@@ -23,6 +23,8 @@ public class UserDto {
     @JsonIgnore
     public static final String USERNAME_REGEX = "^[\\w\\-0-9]{3,32}$";
     @JsonIgnore
+    public static final String PRONOUN_REGEX = "^[\\w\\/,]+$";
+    @JsonIgnore
     public static final String SPEEDRUN_COM_NAME_REGEX = "^[\\w\\.\\-À-Üà-øoù-ÿŒœ]{0,20}$";
 
     @JsonView(Views.Public.class)
@@ -63,7 +65,8 @@ public class UserDto {
 
     @Nullable
     @JsonView(Views.Public.class)
-    @Size(max = 20)
+    @Size(max = 255)
+    @Pattern(regexp = PRONOUN_REGEX)
     private String pronouns;
 
     @Nullable

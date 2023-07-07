@@ -1084,4 +1084,8 @@
                              constraintName="uq_users_username"/>
         <renameColumn tableName="users" oldColumnName="username_ja" newColumnName="display_name"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20230707-1">
+        <modifyDataType tableName="users" columnName="pronouns" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

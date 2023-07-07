@@ -120,7 +120,7 @@ public class UserProfileDto {
         this.pronouns = pronouns;
     }
 
-    @Nullable
+    @NotNull
     public String[] getLanguagesSpoken() {
         if (this.languagesSpoken == null || this.languagesSpoken.isBlank()) {
             return new String[0];
@@ -201,15 +201,13 @@ public class UserProfileDto {
     public static UserProfileDto fromUserNoHistory(User user) {
         final var dto = new UserProfileDto();
 
+        // Arrays get set within the constructor, we don't need to set them here as a result.
         dto.setId(user.getId());
         dto.setEmailVerified(user.isEmailVerified());
         dto.setUsername(user.getUsername());
         dto.setDisplayName(user.getDisplayName());
         dto.setEnabled(user.isEnabled());
         dto.setConnections(user.getConnections());
-        dto.setHistory(List.of());
-        dto.setModeratedMarathons(List.of());
-        dto.setVolunteeringHistory(List.of());
         dto.setPronouns(user.getPronouns());
         dto.setLanguagesSpoken(user.getLanguagesSpoken());
         dto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
