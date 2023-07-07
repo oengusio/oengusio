@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.IUsername;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.service.LanguageService;
 import app.oengus.spring.model.Views;
@@ -13,7 +14,7 @@ import javax.validation.constraints.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class UserDto {
+public class UserDto implements IUsername {
     @JsonIgnore
     public static final String DISCORD_USERNAME_REGEX = "^\\S.{0,30}\\S\\s*(?:#\\d{4})?$";
     @JsonIgnore
@@ -33,7 +34,7 @@ public class UserDto {
     private String username;
 
     @JsonView(Views.Public.class)
-    @Size(max = 32)
+    @Size(min = 3, max = 32)
     private String displayName;
 
     @JsonView(Views.Public.class)
@@ -97,6 +98,7 @@ public class UserDto {
     public String getUsernameJapanese() {
         return displayName;
     }
+
     public boolean isEnabled() {
         return enabled;
     }

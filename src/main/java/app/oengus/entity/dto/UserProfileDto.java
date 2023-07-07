@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.IUsername;
 import app.oengus.entity.constants.SocialPlatform;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class UserProfileDto {
+public class UserProfileDto implements IUsername {
 
     private int id;
     private boolean emailVerified;

@@ -8,7 +8,7 @@ public class V1ScheduleDto {
 
     private int id;
     private List<ScheduleLineDto> lines;
-	private List<ScheduleLineDto> linesWithTime;
+    private List<ScheduleLineDto> linesWithTime;
 
     private V1ScheduleDto() {
     }
@@ -30,12 +30,12 @@ public class V1ScheduleDto {
     }
 
     public List<ScheduleLineDto> getLinesWithTime() {
-		return linesWithTime;
-	}
+        return linesWithTime;
+    }
 
-	public void setLinesWithTime(List<ScheduleLineDto> linesWithTime) {
-		this.linesWithTime = linesWithTime;
-	}
+    public void setLinesWithTime(List<ScheduleLineDto> linesWithTime) {
+        this.linesWithTime = linesWithTime;
+    }
 
     public static V1ScheduleDto fromSchedule(Schedule schedule) {
         final V1ScheduleDto dto = new V1ScheduleDto();

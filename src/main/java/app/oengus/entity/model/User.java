@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.entity.IUsername;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +24,7 @@ import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, IUsername {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
