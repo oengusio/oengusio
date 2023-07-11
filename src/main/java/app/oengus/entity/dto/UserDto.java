@@ -34,7 +34,8 @@ public class UserDto implements IUsername {
     private String username;
 
     @JsonView(Views.Public.class)
-    @Size(min = 3, max = 32)
+    // Japanese users can have one character in their username
+    @Size(min = 1, max = 32)
     private String displayName;
 
     @JsonView(Views.Public.class)
