@@ -2,6 +2,7 @@ package app.oengus.entity.dto;
 
 import app.oengus.entity.IUsername;
 import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.entity.model.ScheduleLineRunner;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;
 import app.oengus.spring.model.Role;
@@ -215,5 +216,26 @@ public class UserProfileDto implements IUsername {
         dto.setCountry(user.getCountry());
 
         return dto;
+    }
+
+    public static UserProfileDto fromScheduleLine(ScheduleLineRunner runner) {
+        final var dto = new UserProfileDto();
+
+        final User user = runner.getUser();
+
+        if (user == null) {
+            dto.setId(-1);
+            dto.setUsername(runner.getRunnerName());
+            dto.setDisplayName(runner.getRunnerName());
+            dto.setEnabled(true);
+            dto.setConnections(List.of());
+            dto.setPronouns(null);
+            dto.setLanguagesSpoken(null);
+            dto.setBanned(false);
+            dto.setCountry(null);
+            return dto;
+        }
+
+        return fromUserNoHistory(user);
     }
 }

@@ -244,7 +244,7 @@ public class ScheduleLineDto {
         dto.setType(line.getType());
         dto.setRunners(line.getRunners()
             .stream()
-            .map(UserProfileDto::fromUserNoHistory)
+            .map(UserProfileDto::fromScheduleLine)
             .toList());
         dto.setSetupBlockText(line.getSetupBlockText());
         dto.setDate(line.getDate());

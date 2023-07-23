@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.validator.constraints.time.DurationMin;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -79,22 +80,24 @@ public class ScheduleLine {
 
     @Column(name = "category_id")
     @JsonView(Views.Public.class)
-    // nullable
+    @Nullable
     private Integer categoryId;
 
     @Column(name = "run_type")
     @JsonView(Views.Public.class)
     private RunType type;
 
-    @ManyToMany
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
         name = "schedule_line_runner",
-        joinColumns = {@JoinColumn(name = "schedule_line_id")},
-        inverseJoinColumns = {@JoinColumn(name = "user_id")}
+        joinColumns = {@JoinColumn(name = "schedule_line_id")}
     )
-    @OrderBy(value = "id ASC")
+    @AttributeOverrides({
+        @AttributeOverride(name = "user", column = @Column(name = "user_id")),
+        @AttributeOverride(name = "runnerName", column = @Column(name = "runner_name"))
+    })
     @JsonView(Views.Public.class)
-    private List<User> runners;
+    private List<ScheduleLineRunner> runners;
 
     @Column(name = "setup_block_text")
     @JsonView(Views.Public.class)
@@ -192,19 +195,20 @@ public class ScheduleLine {
         this.position = position;
     }
 
-    public List<User> getRunners() {
+    public List<ScheduleLineRunner> getRunners() {
         return this.runners;
     }
 
-    public void setRunners(final List<User> runners) {
+    public void setRunners(final List<ScheduleLineRunner> runners) {
         this.runners = runners;
     }
 
+    @Nullable
     public Integer getCategoryId() {
         return this.categoryId;
     }
 
-    public void setCategoryId(final Integer categoryId) {
+    public void setCategoryId(@Nullable final Integer categoryId) {
         this.categoryId = categoryId;
     }
 

@@ -1088,4 +1088,19 @@
     <changeSet author="duncte123" id="20230707-1">
         <modifyDataType tableName="users" columnName="pronouns" newDataType="varchar(255)"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20230713-1">
+        <addColumn tableName="schedule_line_runner">
+            <column name="runner_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <sql>
+            ALTER TABLE schedule_line_runner
+                ADD CONSTRAINT user_id_runner_name_exclusive
+                    CHECK ( ( user_id IS NULL ) &lt;&gt; ( runner_name IS NULL ) );
+        </sql>
+        <!-- TODO unique index? Just schedule line? -->
+    </changeSet>
 </databaseChangeLog>

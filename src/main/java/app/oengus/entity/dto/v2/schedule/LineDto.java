@@ -1,6 +1,5 @@
 package app.oengus.entity.dto.v2.schedule;
 
-import app.oengus.entity.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.RunType;
 import app.oengus.entity.model.ScheduleLine;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,10 +24,8 @@ public class LineDto {
     private String ratio;
     @Schema(description = "The specific run type")
     private RunType type;
-
-    // TODO: separate DTO for setting these settings, we only need the user ids here
     @Schema(description = "People that will participate in this run")
-    private List<ProfileDto> runners = new ArrayList<>();
+    private List<LineRunnerDto> runners = new ArrayList<>();
     @Schema(description = "Category that will be showcased")
     private String category;
     @Schema(
@@ -103,11 +100,11 @@ public class LineDto {
         this.type = type;
     }
 
-    public List<ProfileDto> getRunners() {
+    public List<LineRunnerDto> getRunners() {
         return runners;
     }
 
-    public void setRunners(List<ProfileDto> runners) {
+    public void setRunners(List<LineRunnerDto> runners) {
         this.runners = runners;
     }
 
@@ -208,7 +205,7 @@ public class LineDto {
         dto.setEmulated(line.isEmulated());
         dto.setRatio(line.getRatio());
         dto.setType(line.getType());
-        dto.setRunners(line.getRunners().stream().map(ProfileDto::fromUser).toList());
+        dto.setRunners(line.getRunners().stream().map(LineRunnerDto::fromLineRunner).toList());
         dto.setCategory(line.getCategoryName());
         dto.setEstimate(line.getEstimate());
         dto.setSetupTime(line.getSetupTime());

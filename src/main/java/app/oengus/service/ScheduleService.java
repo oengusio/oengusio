@@ -157,7 +157,15 @@ public class ScheduleService {
         final Marathon marathon =
             this.marathonRepositoryService.findById(marathonId);
         schedule.setMarathon(marathon);
-        schedule.getLines().forEach(scheduleLine -> scheduleLine.setSchedule(schedule));
+        schedule.getLines().forEach(scheduleLine -> {
+            scheduleLine.setSchedule(schedule);
+
+            scheduleLine.getRunners().forEach((runner) -> {
+                if (runner.getUser() != null) {
+                    runner.setRunnerName(null);
+                }
+            });
+        });
         this.scheduleRepository.save(schedule);
         if (marathon.isScheduleDone()) {
             this.computeEndDate(marathon, schedule);
