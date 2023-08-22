@@ -31,7 +31,7 @@
       <env name="TWITTER_OAUTH2_CLIENT_SECRET" value="" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="app.oengus.OengusApplication" />
-    <module name="oengusio.main" />
+    <module name="app.oengus.oengusio.main" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
