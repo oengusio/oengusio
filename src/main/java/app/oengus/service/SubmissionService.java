@@ -289,25 +289,26 @@ public class SubmissionService {
 
     private OpponentSubmissionDto mapOpponent(final Opponent opponent, final User user) {
         final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
-
         final Category opponentCategory = opponent.getCategory();
 
-        if (opponentCategory == null || opponentCategory.getGame() != null) {
+        if (opponentCategory == null || opponentCategory.getGame() == null) {
             return null;
         }
 
+        final Game opponentGame = opponentCategory.getGame();
+
         opponentDto.setId(opponent.getId());
-        opponentDto.setGameName(opponentCategory.getGame().getName());
+        opponentDto.setGameName(opponentGame.getName());
         opponentDto.setCategoryId(opponentCategory.getId());
         opponentDto.setCategoryName(opponentCategory.getName());
         opponentDto.setVideo(opponent.getVideo());
         final List<User> users = new ArrayList<>();
-        users.add(opponentCategory.getGame().getSubmission().getUser());
+        users.add(opponentGame.getSubmission().getUser());
         users.addAll(opponentCategory
             .getOpponents()
             .stream()
-            .map(opponent1 -> opponent1.getSubmission().getUser())
-            .filter(user1 -> !Objects.equals(user1.getId(), user.getId()))
+            .map((opponent1) -> opponent1.getSubmission().getUser())
+            .filter((user1) -> !Objects.equals(user1.getId(), user.getId()))
             .collect(
                 Collectors.toSet()));
         opponentDto.setUsers(users);
