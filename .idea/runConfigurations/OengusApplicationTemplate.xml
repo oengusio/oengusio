@@ -1,6 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="OengusApplicationTemplate" type="Application" factoryName="Application">
     <envs>
+      <env name="AMQP_USERNAME" value="guest" />
+      <env name="AMQP_PASSWORD" value="guest" />
+      <env name="AMQP_URI" value="amqp://localhost:5672" />
       <env name="BASE_URL" value="http://localhost:4200" />
       <env name="DB_PASSWORD" value="password" />
       <env name="DB_URL" value="jdbc:postgresql://localhost:5432/oengus" />
@@ -28,7 +31,7 @@
       <env name="TWITTER_OAUTH2_CLIENT_SECRET" value="" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="app.oengus.OengusApplication" />
-    <module name="oengusio.main" />
+    <module name="app.oengus.oengusio.main" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

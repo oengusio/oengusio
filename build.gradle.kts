@@ -15,7 +15,7 @@ dependencyManagement {
 }
 
 project.group = "app.oengus"
-project.version = "2023.02.14"
+project.version = "2023.09.04"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -88,9 +88,6 @@ dependencies {
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
-    // WEBHOOKS
-    implementation(group = "com.github.esamarathon", name = "oengus-discord-webhooks", version = "b9bd477")
-
     // COUNTRY SUPPORT
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.28")
 
@@ -103,6 +100,9 @@ dependencies {
 
     // idk
     implementation("org.javassist:javassist:3.29.1-GA")
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
+
+    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.16.0")
 }
 
 val wrapper: Wrapper by tasks

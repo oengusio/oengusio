@@ -1,6 +1,8 @@
 package app.oengus.service;
 
+import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.v2.schedule.ScheduleDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
@@ -12,6 +14,7 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -56,6 +59,7 @@ public class ScheduleService {
         if (schedule != null && schedule.getLines() != null && schedule.getLines().size() > 0) {
             final List<ScheduleLine> lines = schedule.getLines();
 
+            // TODO: i hate this
             lines.get(0).setDate(schedule.getMarathon().getStartDate());
 
             for (int i = 1; i < lines.size(); i++) {
@@ -71,22 +75,30 @@ public class ScheduleService {
         return schedule;
     }
 
-    public Schedule findByMarathonCustomDataControl(final String marathonId, boolean withCustomData) {
+    @Nullable
+    public V1ScheduleDto findByMarathonCustomDataControl(final String marathonId, boolean withCustomData) {
         final Schedule byMarathon = this.findByMarathon(marathonId);
 
-        if (withCustomData && byMarathon != null) {
-            final List<ScheduleLine> lines = byMarathon.getLines();
+        if (byMarathon == null) {
+            return null;
+        }
+
+        final var schedule = V1ScheduleDto.fromSchedule(byMarathon);
+
+        // Strip custom data instead of adding them :)
+        if (!withCustomData) {
+            final List<ScheduleLineDto> lines = schedule.getLines();
 
             // lines can be null so we check if they are not
             if (lines != null && !lines.isEmpty()) {
-                // Make the custom data public if requested
+                // Remove custom data if not requested
                 lines.forEach(
-                    (line) -> line.setCustomDataDTO(line.getCustomData())
+                    (line) -> line.setCustomDataDTO(null)
                 );
             }
         }
 
-        return byMarathon;
+        return schedule;
     }
 
     @Transactional
@@ -97,15 +109,16 @@ public class ScheduleService {
     }
 
     public ScheduleTickerDto getForTicker(final String marathonId, boolean withCustomData) throws NotFoundException {
-        final Schedule schedule = this.findByMarathonCustomDataControl(marathonId, withCustomData);
+        final V1ScheduleDto schedule = this.findByMarathonCustomDataControl(marathonId, withCustomData);
 
         if (schedule == null) {
             throw new NotFoundException("Schedule not found");
         }
 
-        final ZonedDateTime endDate = schedule.getMarathon().getEndDate();
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final ZonedDateTime endDate = marathon.getEndDate();
         final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
-        final List<ScheduleLine> lines = schedule.getLines();
+        final List<ScheduleLineDto> lines = schedule.getLines();
 
         if (lines.isEmpty()) {
             throw new EmptyScheduleException("This schedule is empty");
@@ -118,11 +131,11 @@ public class ScheduleService {
             );
         }
 
-        ScheduleLine previous = null;
-        ScheduleLine current = null;
-        ScheduleLine next = null;
+        ScheduleLineDto previous = null;
+        ScheduleLineDto current = null;
+        ScheduleLineDto next = null;
 
-        for (final ScheduleLine line : lines) {
+        for (final ScheduleLineDto line : lines) {
             if (now.isEqual(line.getDate()) || now.isAfter(line.getDate())) {
                 previous = current;
                 current = line;
@@ -144,7 +157,15 @@ public class ScheduleService {
         final Marathon marathon =
             this.marathonRepositoryService.findById(marathonId);
         schedule.setMarathon(marathon);
-        schedule.getLines().forEach(scheduleLine -> scheduleLine.setSchedule(schedule));
+        schedule.getLines().forEach(scheduleLine -> {
+            scheduleLine.setSchedule(schedule);
+
+            scheduleLine.getRunners().forEach((runner) -> {
+                if (runner.getUser() != null) {
+                    runner.setRunnerName(null);
+                }
+            });
+        });
         this.scheduleRepository.save(schedule);
         if (marathon.isScheduleDone()) {
             this.computeEndDate(marathon, schedule);

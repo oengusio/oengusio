@@ -952,7 +952,6 @@
         <modifyDataType tableName="application_auditlog" columnName="new_status" newDataType="varchar(10)"/>
     </changeSet>
 
-
     <changeSet id="20210721-1" author="duncte123">
         <dropForeignKeyConstraint baseTableName="applications" constraintName="fk_application_marathon"/>
         <renameColumn tableName="applications"
@@ -1072,6 +1071,37 @@
         <addColumn tableName="users">
             <column name="email_verified" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20230702-1">
+        <!-- <constraints nullable="false"/> -->
+        <sql>
+            UPDATE users SET username_ja = username WHERE username_ja = '' OR username_ja IS NULL;
+            UPDATE users set username = LOWER(username);
+        </sql>
+        <addUniqueConstraint tableName="users"
+                             columnNames="username"
+                             constraintName="uq_users_username"/>
+        <renameColumn tableName="users" oldColumnName="username_ja" newColumnName="display_name"/>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20230707-1">
+        <modifyDataType tableName="users" columnName="pronouns" newDataType="varchar(255)"/>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20230713-1">
+        <addColumn tableName="schedule_line_runner">
+            <column name="runner_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <sql>
+            ALTER TABLE schedule_line_runner
+                ADD CONSTRAINT user_id_runner_name_exclusive
+                    CHECK ( ( user_id IS NULL ) &lt;&gt; ( runner_name IS NULL ) );
+        </sql>
+        <!-- TODO unique index? Just schedule line? -->
     </changeSet>
 
     <changeSet author="duncte123" id="202030228-1">

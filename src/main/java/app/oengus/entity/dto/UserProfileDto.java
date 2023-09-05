@@ -1,9 +1,11 @@
 package app.oengus.entity.dto;
 
+import app.oengus.entity.IUsername;
 import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.entity.model.ScheduleLineRunner;
 import app.oengus.entity.model.SocialAccount;
-import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonView;
+import app.oengus.entity.model.User;
+import app.oengus.spring.model.Role;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -11,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class UserProfileDto {
+public class UserProfileDto implements IUsername {
 
     private int id;
     private boolean emailVerified;
     private String username;
-    private String usernameJapanese;
+    private String displayName;
     private boolean enabled;
     private List<SocialAccount> connections;
     private List<UserHistoryDto> history;
@@ -29,7 +31,7 @@ public class UserProfileDto {
     private boolean banned;
     private String country;
 
-    public UserProfileDto() {
+    private UserProfileDto() {
         this.history = new ArrayList<>();
         this.moderatedMarathons = new ArrayList<>();
         this.volunteeringHistory = new ArrayList<>();
@@ -59,12 +61,16 @@ public class UserProfileDto {
         this.username = username;
     }
 
-    public String getUsernameJapanese() {
-        return this.usernameJapanese;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setUsernameJapanese(final String usernameJapanese) {
-        this.usernameJapanese = usernameJapanese;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getUsernameJapanese() {
+        return this.displayName;
     }
 
     public boolean getEnabled() {
@@ -116,7 +122,7 @@ public class UserProfileDto {
         this.pronouns = pronouns;
     }
 
-    @Nullable
+    @NotNull
     public String[] getLanguagesSpoken() {
         if (this.languagesSpoken == null || this.languagesSpoken.isBlank()) {
             return new String[0];
@@ -192,5 +198,44 @@ public class UserProfileDto {
             .map(SocialAccount::getUsername)
             .findFirst()
             .orElse("");
+    }
+
+    public static UserProfileDto fromUserNoHistory(User user) {
+        final var dto = new UserProfileDto();
+
+        // Arrays get set within the constructor, we don't need to set them here as a result.
+        dto.setId(user.getId());
+        dto.setEmailVerified(user.isEmailVerified());
+        dto.setUsername(user.getUsername());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setEnabled(user.isEnabled());
+        dto.setConnections(user.getConnections());
+        dto.setPronouns(user.getPronouns());
+        dto.setLanguagesSpoken(user.getLanguagesSpoken());
+        dto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
+        dto.setCountry(user.getCountry());
+
+        return dto;
+    }
+
+    public static UserProfileDto fromScheduleLine(ScheduleLineRunner runner) {
+        final var dto = new UserProfileDto();
+
+        final User user = runner.getUser();
+
+        if (user == null) {
+            dto.setId(-1);
+            dto.setUsername(runner.getRunnerName());
+            dto.setDisplayName(runner.getRunnerName());
+            dto.setEnabled(true);
+            dto.setConnections(List.of());
+            dto.setPronouns(null);
+            dto.setLanguagesSpoken(null);
+            dto.setBanned(false);
+            dto.setCountry(null);
+            return dto;
+        }
+
+        return fromUserNoHistory(user);
     }
 }

@@ -3,7 +3,6 @@ package app.oengus.service.repository;
 import app.oengus.dao.UserRepository;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +10,13 @@ import java.util.List;
 @Service
 public class UserRepositoryService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	public User findById(final int runnerId) throws NotFoundException {
+    public UserRepositoryService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User findById(final int runnerId) throws NotFoundException {
 		return this.userRepository.findById(runnerId)
 		                          .orElseThrow(() -> new NotFoundException("User not found"));
 	}
@@ -32,7 +34,7 @@ public class UserRepositoryService {
 	}
 
 	public boolean existsByUsername(final String name) {
-		return this.userRepository.existsByUsernameIgnoreCase(name) || this.userRepository.existsByUsernameJapanese(name);
+		return this.userRepository.existsByUsernameIgnoreCase(name);
 	}
 
 	public boolean existsByDiscordId(final String discordId) {

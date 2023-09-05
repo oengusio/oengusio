@@ -142,6 +142,10 @@ public class Game {
     }
 
     public Game fresh(boolean withSubmission) {
+        return this.fresh(withSubmission, true);
+    }
+
+    public Game fresh(boolean withSubmission, boolean withCategories) {
         final Game game = new Game();
 
         // load all the items needed from the old game
@@ -149,10 +153,12 @@ public class Game {
 
         BeanUtils.copyProperties(this, game, "categories");
 
-        // De-reference :D
-        game.setCategories(
-            this.getCategories().stream().map((c) -> c.fresh(game)).toList()
-        );
+        if (withCategories) {
+            // De-reference :D
+            game.setCategories(
+                this.getCategories().stream().map((c) -> c.fresh(game)).toList()
+            );
+        }
 
         if (withSubmission) {
             game.setSubmission(this.getSubmission().fresh(false));

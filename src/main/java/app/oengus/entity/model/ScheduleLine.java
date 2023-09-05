@@ -6,12 +6,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.validator.constraints.time.DurationMin;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "schedule_line")
@@ -78,22 +80,24 @@ public class ScheduleLine {
 
     @Column(name = "category_id")
     @JsonView(Views.Public.class)
-    // nullable
+    @Nullable
     private Integer categoryId;
 
     @Column(name = "run_type")
     @JsonView(Views.Public.class)
     private RunType type;
 
-    @ManyToMany
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
         name = "schedule_line_runner",
-        joinColumns = {@JoinColumn(name = "schedule_line_id")},
-        inverseJoinColumns = {@JoinColumn(name = "user_id")}
+        joinColumns = {@JoinColumn(name = "schedule_line_id")}
     )
-    @OrderBy(value = "id ASC")
+    @AttributeOverrides({
+        @AttributeOverride(name = "user", column = @Column(name = "user_id")),
+        @AttributeOverride(name = "runnerName", column = @Column(name = "runner_name"))
+    })
     @JsonView(Views.Public.class)
-    private List<User> runners;
+    private List<ScheduleLineRunner> runners;
 
     @Column(name = "setup_block_text")
     @JsonView(Views.Public.class)
@@ -191,19 +195,20 @@ public class ScheduleLine {
         this.position = position;
     }
 
-    public List<User> getRunners() {
+    public List<ScheduleLineRunner> getRunners() {
         return this.runners;
     }
 
-    public void setRunners(final List<User> runners) {
+    public void setRunners(final List<ScheduleLineRunner> runners) {
         this.runners = runners;
     }
 
+    @Nullable
     public Integer getCategoryId() {
         return this.categoryId;
     }
 
-    public void setCategoryId(final Integer categoryId) {
+    public void setCategoryId(@Nullable final Integer categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -261,5 +266,18 @@ public class ScheduleLine {
 
     public void setCustomDataDTO(String customDataDTO) {
         this.customDataDTO = customDataDTO;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScheduleLine that = (ScheduleLine) o;
+        return id == that.id && emulated == that.emulated && setupBlock == that.setupBlock && customRun == that.customRun && Objects.equals(gameName, that.gameName) && Objects.equals(console, that.console) && Objects.equals(ratio, that.ratio) && Objects.equals(categoryName, that.categoryName) && Objects.equals(estimate, that.estimate) && Objects.equals(setupTime, that.setupTime) && Objects.equals(categoryId, that.categoryId) && type == that.type && Objects.equals(setupBlockText, that.setupBlockText) && Objects.equals(customData, that.customData);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, gameName, console, emulated, ratio, categoryName, estimate, setupTime, setupBlock, customRun, categoryId, type, setupBlockText, customData);
     }
 }

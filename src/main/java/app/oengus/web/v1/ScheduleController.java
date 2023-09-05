@@ -1,6 +1,7 @@
 package app.oengus.web.v1;
 
 import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.model.Schedule;
 import app.oengus.service.ExportService;
 import app.oengus.service.ScheduleService;
@@ -40,8 +41,8 @@ public class ScheduleController {
     @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
     @JsonView(Views.Public.class)
     @Operation(summary = "Get schedule for a marathon, has a 5 minute cache"/*, response = Schedule.class*/)
-    public ResponseEntity<?> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
-                                                @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
+    public ResponseEntity<V1ScheduleDto> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
+                                                            @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
@@ -67,7 +68,7 @@ public class ScheduleController {
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
-    public ResponseEntity<?> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId) {
+    public ResponseEntity<V1ScheduleDto> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache()) // Always fetch custom data for the admin page
             .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, true));

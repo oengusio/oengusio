@@ -34,6 +34,10 @@ public class DiscordUser {
     }
 
     public String getAsTag() {
+        if (this.discriminator == null || "0".equals(this.discriminator)) {
+            return this.getUsername();
+        }
+
         return this.getUsername() + '#' + this.getDiscriminator();
     }
 }

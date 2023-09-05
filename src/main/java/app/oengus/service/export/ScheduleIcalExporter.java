@@ -1,7 +1,10 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.V1ScheduleDto;
+import app.oengus.entity.model.Marathon;
+import app.oengus.helper.StringHelper;
+import app.oengus.service.repository.MarathonRepositoryService;
 import javassist.NotFoundException;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -9,7 +12,6 @@ import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.util.RandomUidGenerator;
 import net.fortuna.ical4j.util.UidGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,25 +25,31 @@ import java.util.stream.Collectors;
 @Component
 public class ScheduleIcalExporter implements Exporter {
 
-	@Autowired
-	private ScheduleHelper scheduleHelper;
+	private final ScheduleHelper scheduleHelper;
+    private final MarathonRepositoryService marathonRepositoryService;
 
-	TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-	UidGenerator ug = new RandomUidGenerator();
+	private final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+	private final UidGenerator ug = new RandomUidGenerator();
 
-	@Override
+    public ScheduleIcalExporter(ScheduleHelper scheduleHelper, MarathonRepositoryService marathonRepositoryService) {
+        this.scheduleHelper = scheduleHelper;
+        this.marathonRepositoryService = marathonRepositoryService;
+    }
+
+    @Override
 	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-		final ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
+		final V1ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
 
         if (scheduleDto == null) {
             throw new NotFoundException("Schedule not found");
         }
 
+        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 		final ResourceBundle resourceBundle =
 				ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
 
 		final Calendar calendar = new Calendar();
-		calendar.getProperties().add(new ProdId(scheduleDto.getMarathon().getName()));
+		calendar.getProperties().add(new ProdId(marathon.getName()));
 		calendar.getProperties().add(CalScale.GREGORIAN);
 		final TimeZone timeZone = this.registry.getTimeZone(zoneId);
 		scheduleDto.getLinesWithTime()
@@ -62,10 +70,7 @@ public class ScheduleIcalExporter implements Exporter {
 		                            scheduleLineDto.getCategoryName(),
 		                            scheduleLineDto.getRunners()
 		                                           .stream()
-		                                           .map(user -> user.getUsername(
-				                                           resourceBundle
-						                                           .getLocale()
-						                                           .toLanguageTag()))
+		                                           .map(StringHelper::getUserDisplay)
 				                            .collect(Collectors.joining(", "))};
 		final String title = messageFormat.format(arguments);
 		final VEvent event = new VEvent(new DateTime(java.util.Date.from(scheduleLineDto.getTime().toInstant()), tz),
