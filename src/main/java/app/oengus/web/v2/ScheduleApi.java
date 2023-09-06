@@ -46,7 +46,8 @@ public interface ScheduleApi {
 
     @GetMapping("/{scheduleId}")
     @JsonView(Views.Public.class)
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")@Operation(
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
+    @Operation(
         summary = "Get a schedule for a marathon by its id, has a 5 minute cache",
         responses = {
             @ApiResponse(

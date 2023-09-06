@@ -3,12 +3,18 @@ package app.oengus.entity.dto.v2.auth;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Schema
 public class LoginDto {
+    @NotNull
+    @NotBlank
     @Schema(description = "Your username")
     private String username;
 
+    @NotNull
+    @NotBlank
     @Schema(description = "Your password")
     private String password;
 

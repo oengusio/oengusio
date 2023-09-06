@@ -101,6 +101,15 @@ public class User implements UserDetails, IUsername {
     @JsonView(Views.Public.class)
     private String languagesSpoken;
 
+    @Column(name = "mfa_enabled")
+    @JsonView(Views.Internal.class)
+    private boolean mfaEnabled;
+
+    @Nullable
+    @Column(name = "mfa_secret")
+    @JsonView(Views.Internal.class)
+    private String mfaSecret;
+
     @Override
     public boolean isEnabled() {
         return this.enabled;
@@ -290,6 +299,23 @@ public class User implements UserDetails, IUsername {
 
     public void setEmailVerified(boolean emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public boolean isMfaEnabled() {
+        return mfaEnabled;
+    }
+
+    public void setMfaEnabled(boolean mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
+    }
+
+    @Nullable
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(@Nullable String mfaSecret) {
+        this.mfaSecret = mfaSecret;
     }
 
     @Override
