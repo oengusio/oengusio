@@ -50,9 +50,7 @@ dependencies {
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
 
     // Authentication + OTP
-    // TODO: see if we can get away with just core
-//    implementation(group = "com.google.zxing", name = "core", version = "3.5.1")
-    implementation(group = "com.google.zxing", name = "javase", version = "3.5.1")
+    implementation(group = "com.google.zxing", name = "core", version = "3.5.1")
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL

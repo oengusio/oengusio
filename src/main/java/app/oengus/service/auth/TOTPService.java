@@ -3,18 +3,21 @@ package app.oengus.service.auth;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 import de.taimos.totp.TOTP;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 // https://medium.com/@ihorsokolyk/two-factor-authentication-with-java-and-google-authenticator-9d7ea15ffee6
 @Service
@@ -46,12 +49,50 @@ public class TOTPService {
             + "&issuer=" + URLEncoder.encode(ISSUER, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
-    public void createQRCode(String barCodeData, String filePath, int height, int width)
+    public byte[] createQRCode(String barCodeData, int height, int width)
         throws WriterException, IOException {
+        final String format = "png";
         final BitMatrix matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height);
 
-        try (FileOutputStream out = new FileOutputStream(filePath)) {
-            MatrixToImageWriter.writeToStream(matrix, "png", out);
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            final BufferedImage image = toBufferedImage(matrix);
+
+            if (!ImageIO.write(image, format, out)) {
+                throw new IOException("Could not write an image of format " + format);
+            }
+
+            return out.toByteArray();
         }
+    }
+
+    public String createQRCodeBase64(String barCodeData, int height, int width)
+        throws WriterException, IOException {
+        return Base64.getEncoder().encodeToString(createQRCode(barCodeData, height, width));
+    }
+
+    // Code below has been inspired from google's zxing javase code. See the following url for license information and source code:
+    // https://github.com/zxing/zxing/blob/master/javase/src/main/java/com/google/zxing/client/j2se/MatrixToImageWriter.java#L60
+
+    private BufferedImage toBufferedImage(BitMatrix matrix) {
+        final int width = matrix.getWidth();
+        final int height = matrix.getHeight();
+        final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
+
+        final int[] rowPixels = new int[width];
+        BitArray row = new BitArray(width);
+
+        for (int y = 0; y < height; y++) {
+            row = matrix.getRow(y, row);
+
+            for (int x = 0; x < width; x++) {
+                // HEX colour codes, first one is black, second one is white.
+                // First two bytes are transparency
+                rowPixels[x] = row.get(x) ? 0xFF000000 : 0xFFFFFFFF;
+            }
+
+            image.setRGB(0, y, width, 1, rowPixels, 0, width);
+        }
+
+        return image;
     }
 }
