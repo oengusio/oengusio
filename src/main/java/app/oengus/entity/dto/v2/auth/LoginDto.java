@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Schema
 public class LoginDto {
@@ -15,6 +16,8 @@ public class LoginDto {
 
     @NotNull
     @NotBlank
+    // not limiting causes a security problem by forcing too much stuff into bcrypt.
+    @Size(min = 8, max = 100)
     @Schema(description = "Your password")
     private String password;
 

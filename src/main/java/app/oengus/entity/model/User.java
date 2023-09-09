@@ -63,6 +63,10 @@ public class User implements UserDetails, IUsername {
     @JsonView(Views.Internal.class)
     private String mail;
 
+    @JsonView(Views.Internal.class)
+    @Column("hashed_password")
+    private String hashedPassword;
+
     @Column(name = "email_verified")
     @JsonView(Views.Public.class)
     private boolean emailVerified;
@@ -128,7 +132,7 @@ public class User implements UserDetails, IUsername {
     @Override
     @JsonIgnore
     public String getPassword() {
-        return null;
+        return hashedPassword;
     }
 
     @Override
@@ -207,6 +211,16 @@ public class User implements UserDetails, IUsername {
 
     public void setMail(final String mail) {
         this.mail = mail;
+    }
+
+    @JsonIgnore
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    @JsonIgnore
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     public String getDiscordId() {

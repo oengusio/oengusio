@@ -134,7 +134,7 @@ public class UserController {
         final String url = httpServletRequest.getRequestURL().toString();
 
         // Redirect the user to the v2 endpoint, saves duplicated code
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
             .header("Location", url.replace("v1", "v2"))
             .build();
     }

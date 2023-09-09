@@ -49,4 +49,9 @@ public interface AuthApi {
         }
     )
     ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto body);
+
+    // TODO
+    default ResponseEntity<?> signUp(@RequestBody @Valid Object body) {
+        return null;
+    }
 }

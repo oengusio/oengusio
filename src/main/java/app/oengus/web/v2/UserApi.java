@@ -86,4 +86,13 @@ public interface UserApi {
         }
     )
     ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(@PathVariable("id") final int id);
+
+    // TODO: implement
+    default ResponseEntity<?> initMFA() {
+        return null;
+    }
+
+    default ResponseEntity<?> verifyAndStoreMFA(final String code) {
+        return null;
+    }
 }

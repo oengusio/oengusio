@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -232,6 +233,7 @@ public class UserService {
         return this.userRepositoryService.findById(id);
     }
 
+    @Nonnull
     public User findByUsername(final String username) throws NotFoundException {
         final User user = this.userRepositoryService.findByUsername(username);
 

@@ -7,6 +7,7 @@ import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
+import app.oengus.spring.JWTUtil;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,16 @@ public class AuthController implements AuthApi {
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
+    private final JWTUtil jwtUtil;
 
-    public AuthController(TOTPService totpService, AuthService authService, UserService userService) {
+    public AuthController(
+        TOTPService totpService, AuthService authService, UserService userService,
+        final JWTUtil jwtUtil
+    ) {
         this.totpService = totpService;
         this.authService = authService;
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -55,7 +61,23 @@ public class AuthController implements AuthApi {
                 throw new OengusBusinessException("2FA_STATE_INVALID");
             }
 
-            // TODO: validate password
+            if (this.authService.validatePassword(body.getPassword(), user.getPassword())) {
+                // login successful, return body
+                return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(
+                        new LoginResponseDto()
+                            .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
+                            .setToken(this.jwtUtil.generateToken(user))
+                    );
+            }
+
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                    new LoginResponseDto()
+                        .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
+                );
         } catch (NotFoundException ignored) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -64,7 +86,5 @@ public class AuthController implements AuthApi {
                         .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
                 );
         }
-
-        return null;
     }
 }

@@ -36,9 +36,6 @@ public class LoginResponseDto {
 
     @Schema
     public enum Status {
-        // TODO: just return USERNAME_PASSWORD_INCORRECT for incorrect usernames?
-        @Schema(description = "Returned when the account does not exist")
-        ACCOUNT_UNKNOWN,
         @Schema(description = "Returned when the account exists, but the application expects a 2fa code")
         MFA_REQUIRED,
         @Schema(description = "Returned when the 2fa code is no longer valid.")
