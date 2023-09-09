@@ -1110,4 +1110,10 @@
             <column name="mfa_secret" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20230909-1">
+        <addColumn tableName="users">
+            <column name="hashed_password" type="varchar(69)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -64,7 +64,7 @@ public class User implements UserDetails, IUsername {
     private String mail;
 
     @JsonView(Views.Internal.class)
-    @Column("hashed_password")
+    @Column(name = "hashed_password")
     private String hashedPassword;
 
     @Column(name = "email_verified")
