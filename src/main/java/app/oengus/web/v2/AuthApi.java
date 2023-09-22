@@ -4,6 +4,7 @@ import app.oengus.entity.dto.BooleanStatusDto;
 import app.oengus.entity.dto.v2.auth.InitMFADto;
 import app.oengus.entity.dto.v2.auth.LoginDto;
 import app.oengus.entity.dto.v2.auth.LoginResponseDto;
+import app.oengus.entity.dto.v2.auth.SignUpDto;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,7 +55,7 @@ public interface AuthApi {
     ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto body);
 
     // TODO
-    default ResponseEntity<?> signUp(@RequestBody @Valid Object body) {
+    default ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto body) {
         return null;
     }
 

@@ -122,11 +122,10 @@ public class User implements UserDetails, IUsername {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        final List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (final Role r : this.roles) {
-            authorities.add(new SimpleGrantedAuthority(r.toString()));
-        }
-        return authorities;
+        return this.roles.stream()
+            .map(Enum::toString)
+            .map(SimpleGrantedAuthority::new)
+            .toList();
     }
 
     @Override
