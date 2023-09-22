@@ -23,13 +23,13 @@ import java.security.Principal;
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 @RestController
-public class AuthController implements AuthApi {
+public class AuthApiController implements AuthApi {
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
-    public AuthController(
+    public AuthApiController(
         TOTPService totpService, AuthService authService, UserService userService,
         final JWTUtil jwtUtil
     ) {
@@ -137,6 +137,7 @@ public class AuthController implements AuthApi {
 
         final String serverCode = this.totpService.getTOTPCode(mfaSecret);
 
+        // In case of an invalid code, abort.
         if (!serverCode.equals(code)) {
             return ResponseEntity
                .status(HttpStatus.OK)
