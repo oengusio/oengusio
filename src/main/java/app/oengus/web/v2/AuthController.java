@@ -1,5 +1,7 @@
 package app.oengus.web.v2;
 
+import app.oengus.entity.dto.BooleanStatusDto;
+import app.oengus.entity.dto.v2.auth.InitMFADto;
 import app.oengus.entity.dto.v2.auth.LoginDto;
 import app.oengus.entity.dto.v2.auth.LoginResponseDto;
 import app.oengus.entity.model.User;
@@ -8,10 +10,17 @@ import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.spring.JWTUtil;
+import com.google.zxing.WriterException;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.security.Principal;
+
+import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 @RestController
 public class AuthController implements AuthApi {
@@ -86,5 +95,60 @@ public class AuthController implements AuthApi {
                         .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
                 );
         }
+    }
+
+    @Override
+    public ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException {
+        final User principaluser = getUserFromPrincipal(principal);
+        final User databaseUser = this.userService.getUser(principaluser.getId());
+
+        final String newSecret = this.totpService.generateSecretKey();
+
+        // Reset mfa for the user.
+        databaseUser.setMfaEnabled(false);
+        databaseUser.setMfaSecret(newSecret);
+
+        this.userService.update(databaseUser);
+
+        final String qrUrl = this.totpService.getGoogleAuthenticatorQRCode(newSecret, databaseUser.getUsername());
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                new InitMFADto()
+                    .setSecretKey(newSecret)
+                    .setQrCode(
+                        this.totpService.createQRCodeBase64(qrUrl, 500, 500)
+                    )
+            );
+    }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, final String code) throws NotFoundException {
+        final User principaluser = getUserFromPrincipal(principal);
+        final User databaseUser = this.userService.getUser(principaluser.getId());
+        final String mfaSecret = databaseUser.getMfaSecret();
+
+        if (databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new BooleanStatusDto(false));
+        }
+
+        final String serverCode = this.totpService.getTOTPCode(mfaSecret);
+
+        if (!serverCode.equals(code)) {
+            return ResponseEntity
+               .status(HttpStatus.OK)
+               .body(new BooleanStatusDto(false));
+        }
+
+        databaseUser.setMfaEnabled(true);
+
+        this.userService.update(databaseUser);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new BooleanStatusDto(true));
     }
 }

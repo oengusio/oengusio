@@ -185,6 +185,15 @@ public class UserService {
         this.userRepositoryService.update(user);
     }
 
+    /**
+     * WATCH OUT!
+     * Only use this method if you know what you are doing.
+     * @param user the user to save.
+     */
+    public void update(final User user) {
+        this.userRepositoryService.update(user);
+    }
+
     public void markDeleted(final int id) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
 
