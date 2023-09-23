@@ -4,7 +4,7 @@ import app.oengus.entity.dto.LanguageDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,12 +81,14 @@ public class LanguageService {
         final List<LanguageDto> result = new ArrayList<>();
 
         for (final String lang : SUPPORTED_LANGUAGES) {
+            final String displayName = Locale.forLanguageTag(lang).getDisplayName(clientLang);
+
             if (
                 lang.contains(search) ||
-                Locale.forLanguageTag(lang).getDisplayName(clientLang).toLowerCase().contains(search.toLowerCase())
+                displayName.toLowerCase().contains(search.toLowerCase())
             ) {
                 result.add(new LanguageDto(
-                    Locale.forLanguageTag(lang).getDisplayName(clientLang),
+                    displayName,
                     lang
                 ));
             }
@@ -96,6 +98,10 @@ public class LanguageService {
     }
 
     public static boolean isSupportedLanguage(String lang) {
-        return Arrays.asList(SUPPORTED_LANGUAGES).contains(lang);
+        return List.of(SUPPORTED_LANGUAGES).contains(lang);
+    }
+
+    public static boolean areLanguagesSupported(List<String> langs) {
+        return new HashSet<>(List.of(SUPPORTED_LANGUAGES)).containsAll(langs);
     }
 }
