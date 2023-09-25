@@ -58,7 +58,8 @@ dependencies {
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
-    implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
+    implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
@@ -95,6 +96,7 @@ dependencies {
 
     // security and shit
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.18.0")
+    implementation("org.passay:passay:1.6.4")
 
     // idk
     implementation("org.javassist:javassist:3.29.1-GA")

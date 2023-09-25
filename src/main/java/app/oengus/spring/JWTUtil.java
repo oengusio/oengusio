@@ -1,12 +1,17 @@
 package app.oengus.spring;
 
 import app.oengus.entity.model.User;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Base64;
+import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,55 +19,71 @@ import java.util.Map;
 @Component
 public class JWTUtil implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-	@Value("${oengus.jwt.secret}")
-	private String secret;
+    @Value("${oengus.jwt.secret}")
+    private String secret;
 
-	@Value("${oengus.jwt.expiration}")
-	private String expirationTime;
+    @Value("${oengus.jwt.expiration}") // 604800
+    private String expirationTime;
 
-	public Claims getAllClaimsFromToken(final String token) {
-		return Jwts.parser()
-		           .setSigningKey(Base64.getEncoder().encodeToString(this.secret.getBytes()))
-		           .parseClaimsJws(token)
-		           .getBody();
-	}
+    public Claims getAllClaimsFromToken(final String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(getKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
 
-	private boolean isTokenExpired(final String token) {
-		try {
-			this.getAllClaimsFromToken(token);
-			return false;
-		} catch (final ExpiredJwtException | SignatureException e) {
-			return true;
-		}
-	}
+    @Deprecated
+    private boolean isTokenExpired(final String token) {
+        return !this.isTokenValid(token);
+    }
 
-	public String generateToken(final User user) {
-		final Map<String, Object> claims = new HashMap<>();
-		claims.put("role", user.getRoles());
-		claims.put("enabled", user.isEnabled());
-		claims.put("id", user.getId());
-		return this.doGenerateToken(claims, user.getUsername(), user.getId());
-	}
+    public boolean isTokenValid(final String token) {
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
 
-	private String doGenerateToken(final Map<String, Object> claims, final String username, final int id) {
-		final long expirationTimeLong = Long.parseLong(this.expirationTime); //in second
+            return claims.getExpiration().before(new Date());
+        } catch (final ExpiredJwtException | SecurityException e) {
+            return false;
+        }
+    }
 
-		final Date createdDate = new Date();
-		final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
-		return Jwts.builder()
-		           .setClaims(claims)
-		           .setSubject(username)
-		           .setIssuedAt(createdDate)
-		           .setId(Integer.toString(id))
-		           .setExpiration(expirationDate)
-		           .signWith(SignatureAlgorithm.HS512, Base64.getEncoder().encodeToString(this.secret.getBytes()))
-		           .compact();
-	}
+    public String generateToken(final User user) {
+        final Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRoles());
+        claims.put("enabled", user.isEnabled());
+        claims.put("id", user.getId());
+        return this.doGenerateToken(claims, user.getUsername(), user.getId());
+    }
 
-	public boolean validateToken(final String token) {
-		return !this.isTokenExpired(token);
-	}
+    private String doGenerateToken(final Map<String, Object> claims, final String username, final int id) {
+        final long expirationTimeLong = Long.parseLong(this.expirationTime); //in second
+
+        final Instant now = Instant.now();
+
+        final Date createdDate = new Date();
+        final Date expirationDate = new Date(createdDate.getTime() + (expirationTimeLong * 1000));
+        return Jwts.builder()
+            .setClaims(claims)
+            .setSubject(username)
+            .setIssuedAt(createdDate)
+            .setNotBefore(createdDate)
+            .setId(Integer.toString(id))
+            .setExpiration(expirationDate)
+            .signWith(getKey())
+            .compact();
+    }
+
+    @Deprecated
+    public boolean validateToken(final String token) {
+        return this.isTokenValid(token);
+    }
+
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(this.secret.getBytes());
+    }
 
 }

@@ -48,4 +48,14 @@ public class ConnectionDto {
 
         return dto;
     }
+
+    public SocialAccount toSocialAccount() {
+        final SocialAccount account = new SocialAccount();
+
+        account.setId(this.id);
+        account.setPlatform(this.platform);
+        account.setUsername(this.username);
+
+        return account;
+    }
 }

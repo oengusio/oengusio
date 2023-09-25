@@ -45,9 +45,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 		final String authHeader = request.getHeader(AUTH_HEADER);
 
+        // TODO: there is probably a better way of going about this
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			final String token = authHeader.substring(7);
-			if (this.jwtUtil.validateToken(token)) {
+			if (this.jwtUtil.isTokenValid(token)) {
 				try {
 					final Claims claims = this.jwtUtil.getAllClaimsFromToken(token);
 					final List<String> rolesString = claims.get("role", List.class);
@@ -72,7 +73,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     Sentry.captureException(e);
 					//log.error("ERROR ", e);
 				}
-			}
+			} else {
+                // cancel request, token is not valid
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
 		}
 		if (!request.getMethod().equalsIgnoreCase("OPTIONS")) {
 			chain.doFilter(request, response);

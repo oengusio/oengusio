@@ -1,15 +1,15 @@
 package app.oengus.web.v2;
 
 import app.oengus.entity.dto.BooleanStatusDto;
-import app.oengus.entity.dto.v2.auth.InitMFADto;
-import app.oengus.entity.dto.v2.auth.LoginDto;
-import app.oengus.entity.dto.v2.auth.LoginResponseDto;
+import app.oengus.entity.dto.v2.auth.*;
+import app.oengus.entity.dto.v2.users.ConnectionDto;
 import app.oengus.entity.model.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.spring.JWTUtil;
+import app.oengus.spring.model.Role;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
@@ -98,6 +99,50 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
+    public ResponseEntity<SignupResponseDto> signUp(SignUpDto body) {
+        // Check if username is already taken
+
+        if (this.userService.exists(body.getUsername())) {
+            return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(
+                    new SignupResponseDto().setStatus(SignupResponseDto.Status.USERNAME_TAKEN)
+                );
+        }
+
+        final User user = new User();
+
+        user.setRoles(List.of(Role.ROLE_USER));
+        user.setEnabled(true);
+        user.setEmailVerified(false);
+        user.setDisplayName(body.getDisplayName());
+        user.setUsername(body.getUsername());
+        user.setMail(body.getEmail());
+        user.setHashedPassword(
+            this.authService.encodePassword(body.getPassword())
+        );
+        user.setCountry(body.getCountry());
+        user.setPronouns(String.join(",", body.getPronouns()));
+        user.setLanguagesSpoken(body.getLanguagesSpoken());
+        user.setConnections(
+            body.getConnections()
+                .stream()
+                .map(ConnectionDto::toSocialAccount)
+                .toList()
+        );
+
+        this.userService.update(user);
+
+        // TODO: send verification email
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                new SignupResponseDto().setStatus(SignupResponseDto.Status.SIGNUP_SUCCESS)
+            );
+    }
+
+    @Override
     public ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException {
         final User principaluser = getUserFromPrincipal(principal);
         final User databaseUser = this.userService.getUser(principaluser.getId());
@@ -151,5 +196,10 @@ public class AuthApiController implements AuthApi {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new BooleanStatusDto(true));
+    }
+
+    @Override
+    public ResponseEntity<?> removeMFA(Principal principal, String code) {
+        return null;
     }
 }

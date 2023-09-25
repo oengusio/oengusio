@@ -1,10 +1,7 @@
 package app.oengus.web.v2;
 
 import app.oengus.entity.dto.BooleanStatusDto;
-import app.oengus.entity.dto.v2.auth.InitMFADto;
-import app.oengus.entity.dto.v2.auth.LoginDto;
-import app.oengus.entity.dto.v2.auth.LoginResponseDto;
-import app.oengus.entity.dto.v2.auth.SignUpDto;
+import app.oengus.entity.dto.v2.auth.*;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,16 +45,40 @@ public interface AuthApi {
             ),
             @ApiResponse(
                 description = "You sent invalid data. (duncan document error response)",
-                responseCode = "422"
+                responseCode = "422",
+                content = @Content(
+                    mediaType = "application/json"
+                )
             )
         }
     )
     ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto body);
 
-    // TODO
-    default ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto body) {
-        return null;
-    }
+    @PostMapping("/signup")
+    @PreAuthorize("isAnonymous()")
+    @Operation(
+        summary = "Sign up for a new Oengus account.",
+        responses = {
+            @ApiResponse(
+                description = "Signup was successful, check you email address for a verification link.",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SignupResponseDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "You sent invalid data. (duncan document error response)",
+                responseCode = "422",
+                content = @Content(
+                    mediaType = "application/json"
+                )
+            )
+        }
+    )
+    ResponseEntity<SignupResponseDto> signUp(@RequestBody @Valid SignUpDto body);
+
+    // TODO: email verification route
 
     @PutMapping("/mfa/init")
     @PreAuthorize("isAuthenticated()")
@@ -80,7 +101,7 @@ public interface AuthApi {
     )
     ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException;
 
-    @DeleteMapping("/mfa")
+    @PostMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
     @Operation(
         summary = "Verify and enable MFA/2fa for your account.",
@@ -103,15 +124,18 @@ public interface AuthApi {
             ),
             @ApiResponse(
                 description = "You are not logged in",
-                responseCode = "401"
+                responseCode = "401",
+                content = @Content(
+                    mediaType = "application/json"
+                )
             )
         }
     )
     ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
 
+    // TODO: password reset
+
     @DeleteMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
-    default ResponseEntity<?> removeMFA(final Principal principal, @RequestParam final String code) {
-        return null;
-    }
+    ResponseEntity<?> removeMFA(final Principal principal, @RequestParam final String code);
 }

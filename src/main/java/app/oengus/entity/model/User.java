@@ -22,6 +22,8 @@ import java.util.Objects;
 import static app.oengus.entity.dto.UserDto.PRONOUN_REGEX;
 import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
+// TODO: add created time so we can delete accounts 1 year days of not verifying the email.
+
 @Entity
 @Table(name = "users")
 public class User implements UserDetails, IUsername {
