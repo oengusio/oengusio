@@ -31,6 +31,7 @@ public class JWTUtil implements Serializable {
     public Claims getAllClaimsFromToken(final String token) {
         return Jwts.parserBuilder()
             .setSigningKey(getKey())
+            .requireIssuer("OengusIO")
             .build()
             .parseClaimsJws(token)
             .getBody();
@@ -69,6 +70,7 @@ public class JWTUtil implements Serializable {
         return Jwts.builder()
             .setClaims(claims)
             .setSubject(username)
+            .setIssuer("OengusIO")
             .setIssuedAt(createdDate)
             .setNotBefore(createdDate)
             .setId(Integer.toString(id))
