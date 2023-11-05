@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -41,7 +42,7 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> login(LoginDto body) {
+    public ResponseEntity<LoginResponseDto> login(@Valid LoginDto body) {
         try {
             final String mfaCode = body.getTwoFactorCode();
             final User user = this.userService.findByUsername(body.getUsername());
@@ -99,7 +100,7 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<SignupResponseDto> signUp(SignUpDto body) {
+    public ResponseEntity<SignupResponseDto> signUp(@Valid SignUpDto body) {
         // Check if username is already taken
 
         if (this.userService.exists(body.getUsername())) {
@@ -199,7 +200,33 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<?> removeMFA(Principal principal, String code) {
-        return null;
+    public ResponseEntity<BooleanStatusDto> removeMFA(Principal principal, String code) throws NotFoundException {
+        final User principaluser = getUserFromPrincipal(principal);
+        final User databaseUser = this.userService.getUser(principaluser.getId());
+        final String mfaSecret = databaseUser.getMfaSecret();
+
+        if (!databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new BooleanStatusDto(false));
+        }
+        final String serverCode = this.totpService.getTOTPCode(mfaSecret);
+
+        // In case of an invalid code, abort.
+        if (!serverCode.equals(code)) {
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new BooleanStatusDto(false));
+        }
+
+
+        databaseUser.setMfaEnabled(false);
+        databaseUser.setMfaSecret(null);
+
+        this.userService.update(databaseUser);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new BooleanStatusDto(true));
     }
 }

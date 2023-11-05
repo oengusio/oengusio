@@ -137,5 +137,33 @@ public interface AuthApi {
 
     @DeleteMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
-    ResponseEntity<?> removeMFA(final Principal principal, @RequestParam final String code);
+    @Operation(
+        summary = "Verify and remove MFA/2fa for your account.",
+        responses = {
+            @ApiResponse(
+                description = "Status: true, 2fa has been removed for your account. Status: false, 2fa code is invalid.",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = BooleanStatusDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Status: false, 2fa has not been initialized for your account.",
+                responseCode = "400",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = BooleanStatusDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "You are not logged in",
+                responseCode = "401",
+                content = @Content(
+                    mediaType = "application/json"
+                )
+            )
+        }
+    )
+    ResponseEntity<BooleanStatusDto> removeMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
 }
