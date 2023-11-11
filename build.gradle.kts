@@ -6,6 +6,7 @@ plugins {
 
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.freefair.lombok") version "8.4"
 }
 
 dependencyManagement {
@@ -41,6 +42,7 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-actuator")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-security")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-mail")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-web") {
         // remove tomcat as we replace it with undertow
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
