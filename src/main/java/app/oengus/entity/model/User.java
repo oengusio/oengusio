@@ -6,6 +6,8 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +27,8 @@ import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 // TODO: add created time so we can delete accounts 1 year days of not verifying the email.
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
 public class User implements UserDetails, IUsername {
 
@@ -182,38 +186,6 @@ public class User implements UserDetails, IUsername {
         return true;
     }
 
-    public void setUsername(final String username) {
-        this.username = username;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<Role> getRoles() {
-        return this.roles;
-    }
-
-    public void setRoles(final List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
-    public String getMail() {
-        return this.mail;
-    }
-
-    public void setMail(final String mail) {
-        this.mail = mail;
-    }
-
     @JsonIgnore
     public String getHashedPassword() {
         return hashedPassword;
@@ -222,34 +194,6 @@ public class User implements UserDetails, IUsername {
     @JsonIgnore
     public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
-    }
-
-    public String getDiscordId() {
-        return this.discordId;
-    }
-
-    public void setDiscordId(final String discordId) {
-        this.discordId = discordId;
-    }
-
-    public String getTwitchId() {
-        return this.twitchId;
-    }
-
-    public void setTwitchId(final String twitchId) {
-        this.twitchId = twitchId;
-    }
-
-    public String getPatreonId() {
-        return patreonId;
-    }
-
-    public void setPatreonId(String patreonId) {
-        this.patreonId = patreonId;
-    }
-
-    public List<SocialAccount> getConnections() {
-        return connections;
     }
 
     public void setConnections(List<SocialAccount> connections) {
@@ -261,78 +205,11 @@ public class User implements UserDetails, IUsername {
         this.connections.addAll(connections);
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getTwitterId() {
-        return this.twitterId;
-    }
-
-    public void setTwitterId(final String twitterId) {
-        this.twitterId = twitterId;
-    }
-
-    public void setPronouns(@Nullable String pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    @Nullable
-    public String getPronouns() {
-        return pronouns;
-    }
-
-    @Nullable
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(@Nullable String country) {
-        this.country = country;
-    }
-
-    @Nullable
-    public String getLanguagesSpoken() {
-        return languagesSpoken;
-    }
-
-    public void setLanguagesSpoken(@Nullable String languagesSpoken) {
-        this.languagesSpoken = languagesSpoken;
-    }
-
     public void setLanguagesSpoken(@NotNull List<String> languagesSpoken) {
         this.languagesSpoken = String.join(",", languagesSpoken);
     }
 
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public boolean isMfaEnabled() {
-        return mfaEnabled;
-    }
-
-    public void setMfaEnabled(boolean mfaEnabled) {
-        this.mfaEnabled = mfaEnabled;
-    }
-
-    @Nullable
-    public String getMfaSecret() {
-        return mfaSecret;
-    }
-
-    public void setMfaSecret(@Nullable String mfaSecret) {
-        this.mfaSecret = mfaSecret;
-    }
-
+    // TODO: better models, this should not be here
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

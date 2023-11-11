@@ -43,6 +43,7 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-security")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-mail")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-web") {
         // remove tomcat as we replace it with undertow
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
@@ -105,6 +106,9 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.16.0")
+
+    // development tools, will be removed in production builds
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
 
 val wrapper: Wrapper by tasks
