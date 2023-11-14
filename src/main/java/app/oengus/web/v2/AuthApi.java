@@ -78,6 +78,23 @@ public interface AuthApi {
     )
     ResponseEntity<SignupResponseDto> signUp(@RequestBody @Valid SignUpDto body);
 
+    @PostMapping("/refresh-token")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+        summary = "Refresh the JWT token",
+        responses = {
+            @ApiResponse(
+                description = "Login was successful",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = LoginResponseDto.class)
+                )
+            )
+        }
+    )
+    ResponseEntity<LoginResponseDto> refreshUserToken();
+
     // TODO: email verification route
 
     @PutMapping("/mfa/init")

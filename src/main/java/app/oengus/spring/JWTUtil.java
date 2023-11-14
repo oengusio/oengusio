@@ -2,52 +2,44 @@ package app.oengus.spring;
 
 import app.oengus.entity.model.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JWTUtil implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class JWTUtil {
+    private static final String JWT_ISS = "OengusIO";
 
     @Value("${oengus.jwt.secret}")
     private String secret;
 
-    @Value("${oengus.jwt.expiration}") // 604800
+    @Value("${oengus.jwt.expiration}") // 604800 seconds == 7 days
     private String expirationTime;
 
     public Claims getAllClaimsFromToken(final String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(getKey())
-            .requireIssuer("OengusIO")
+        return Jwts.parser()
+            .verifyWith(getKey())
+            .requireIssuer(JWT_ISS)
             .build()
-            .parseClaimsJws(token)
-            .getBody();
-    }
-
-    @Deprecated
-    private boolean isTokenExpired(final String token) {
-        return !this.isTokenValid(token);
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     public boolean isTokenValid(final String token) {
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
 
-            return claims.getExpiration().before(new Date());
-        } catch (final ExpiredJwtException | SecurityException e) {
+            return new Date().before(claims.getExpiration());
+//            return true;
+        } catch (final SecurityException | JwtException e) {
             return false;
         }
     }
@@ -67,24 +59,20 @@ public class JWTUtil implements Serializable {
 
         final Date createdDate = new Date();
         final Date expirationDate = new Date(createdDate.getTime() + (expirationTimeLong * 1000));
+
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(username)
-            .setIssuer("OengusIO")
-            .setIssuedAt(createdDate)
-            .setNotBefore(createdDate)
-            .setId(Integer.toString(id))
-            .setExpiration(expirationDate)
+            .claims(claims)
+            .subject(username)
+            .issuer(JWT_ISS)
+            .issuedAt(createdDate)
+            .notBefore(createdDate)
+            .expiration(expirationDate)
+            .id(Integer.toString(id))
             .signWith(getKey())
             .compact();
     }
 
-    @Deprecated
-    public boolean validateToken(final String token) {
-        return this.isTokenValid(token);
-    }
-
-    private Key getKey() {
+    private SecretKey getKey() {
         return Keys.hmacShaKeyFor(this.secret.getBytes());
     }
 

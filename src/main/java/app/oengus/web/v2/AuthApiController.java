@@ -4,7 +4,7 @@ import app.oengus.entity.dto.BooleanStatusDto;
 import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.dto.v2.users.ConnectionDto;
 import app.oengus.entity.model.User;
-import app.oengus.exception.OengusBusinessException;
+import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
@@ -44,32 +44,43 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<LoginResponseDto> login(@Valid LoginDto body) {
         try {
-            final String mfaCode = body.getTwoFactorCode();
             final User user = this.userService.findByUsername(body.getUsername());
-            final String user2FaSecret = user.getMfaSecret();
-            boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
-            boolean mfaCodeCorrect = mfaCode == null;
 
-            if (mfaCode == null && userHas2fa) {
+            // Fast return if the user does not have a password set
+            if (StringUtils.isEmpty(user.getPassword())) {
                 return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(
                         new LoginResponseDto()
-                            .setStatus(LoginResponseDto.Status.MFA_REQUIRED)
+                            .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
                     );
-            } else if (mfaCode != null && userHas2fa) {
-                final String totpCode = this.totpService.getTOTPCode(user2FaSecret);
+            }
 
-                if (!totpCode.equals(mfaCode)) {
+            final String mfaCode = body.getTwoFactorCode();
+            final String user2FaSecret = user.getMfaSecret();
+            boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
+            boolean mfaCodeCorrect = mfaCode == null;
+
+            if (userHas2fa) {
+                if (mfaCode == null) {
                     return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
                         .body(
                             new LoginResponseDto()
-                                .setStatus(LoginResponseDto.Status.MFA_INVALID)
+                                .setStatus(LoginResponseDto.Status.MFA_REQUIRED)
                         );
+                } else {
+                    final String totpCode = this.totpService.getTOTPCode(user2FaSecret);
+
+                    if (!totpCode.equals(mfaCode)) {
+                        return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(
+                                new LoginResponseDto()
+                                    .setStatus(LoginResponseDto.Status.MFA_INVALID)
+                            );
+                    }
                 }
-            } else {
-                throw new OengusBusinessException("2FA_STATE_INVALID");
             }
 
             if (this.authService.validatePassword(body.getPassword(), user.getPassword())) {
@@ -140,6 +151,17 @@ public class AuthApiController implements AuthApi {
             .status(HttpStatus.OK)
             .body(
                 new SignupResponseDto().setStatus(SignupResponseDto.Status.SIGNUP_SUCCESS)
+            );
+    }
+
+    @Override
+    public ResponseEntity<LoginResponseDto> refreshUserToken() {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                new LoginResponseDto()
+                    .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
+                    .setToken(this.jwtUtil.generateToken(PrincipalHelper.getCurrentUser()))
             );
     }
 

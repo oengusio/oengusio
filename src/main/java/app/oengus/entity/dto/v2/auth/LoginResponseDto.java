@@ -1,9 +1,12 @@
 package app.oengus.entity.dto.v2.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 
+@Getter
 @Schema
 public class LoginResponseDto {
     @Schema(description = "The current status of the login attempt")
@@ -15,18 +18,9 @@ public class LoginResponseDto {
 
     // TODO: include user model?
 
-    public Status getStatus() {
-        return status;
-    }
-
     public LoginResponseDto setStatus(Status status) {
         this.status = status;
         return this;
-    }
-
-    @Nullable
-    public String getToken() {
-        return token;
     }
 
     public LoginResponseDto setToken(@Nullable String token) {
