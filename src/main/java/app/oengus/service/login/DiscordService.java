@@ -59,7 +59,7 @@ public class DiscordService {
                     StringUtils.substring(
                         discordUser.getUsername().replace(' ', '_').replaceAll("[^\\w\\-]", ""),
                         0, 32
-                    )
+                    ).toLowerCase()
             );
 
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {

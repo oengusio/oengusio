@@ -55,7 +55,9 @@ public class TwitchService {
             user = new User();
             user.setRoles(List.of(Role.ROLE_USER));
             user.setEnabled(true);
-            user.setUsername(StringUtils.substring(twitchUser.getLogin(), 0, 32));
+            user.setUsername(
+                StringUtils.substring(twitchUser.getLogin(), 0, 32).toLowerCase()
+            );
 
             if (this.userRepositoryService.existsByUsername(user.getUsername())) {
                 throw new LoginException("USERNAME_EXISTS");
