@@ -116,6 +116,8 @@ public class UserService {
 
         BeanHelper.copyProperties(userPatch, user, "connections");
 
+        user.setUsername(user.getUsername().toLowerCase());
+
         // TODO: extract method to request
         if (userPatch.getConnections() == null || userPatch.getConnections().isEmpty()) {
             user.getConnections().clear();
