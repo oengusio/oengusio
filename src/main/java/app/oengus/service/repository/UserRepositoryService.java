@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,12 @@ public class UserRepositoryService {
 		                          .orElseThrow(() -> new NotFoundException("User not found"));
 	}
 
-	public User findByUsername(final String username) {
+	public User findByUsername(final String username) throws NotFoundException {
+		return this.userRepository.findByUsername(username)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+	}
+
+	public Optional<User> findByUsernameRaw(final String username) {
 		return this.userRepository.findByUsername(username);
 	}
 

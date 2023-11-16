@@ -8,10 +8,12 @@ import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
+import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,26 +27,18 @@ import java.util.List;
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
+    private final UserRepositoryService userRepositoryService;
     private final JWTUtil jwtUtil;
-
-    public AuthApiController(
-        TOTPService totpService, AuthService authService, UserService userService,
-        final JWTUtil jwtUtil
-    ) {
-        this.totpService = totpService;
-        this.authService = authService;
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     public ResponseEntity<LoginResponseDto> login(@Valid LoginDto body) {
         try {
-            final User user = this.userService.findByUsername(body.getUsername());
+            final User user = this.userRepositoryService.findByUsername(body.getUsername());
 
             // Fast return if the user does not have a password set
             if (StringUtils.isEmpty(user.getPassword())) {
@@ -145,7 +139,7 @@ public class AuthApiController implements AuthApi {
                 .toList()
         );
 
-        this.userService.update(user);
+        this.userRepositoryService.update(user);
 
         // TODO: send verification email
 
@@ -170,7 +164,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
+        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
 
         final String newSecret = this.totpService.generateSecretKey();
 
@@ -178,7 +172,7 @@ public class AuthApiController implements AuthApi {
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(newSecret);
 
-        this.userService.update(databaseUser);
+        this.userRepositoryService.update(databaseUser);
 
         final String qrUrl = this.totpService.getGoogleAuthenticatorQRCode(newSecret, databaseUser.getUsername());
 
@@ -196,7 +190,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, final String code) throws NotFoundException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
+        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -216,7 +210,7 @@ public class AuthApiController implements AuthApi {
 
         databaseUser.setMfaEnabled(true);
 
-        this.userService.update(databaseUser);
+        this.userRepositoryService.update(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -226,7 +220,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<BooleanStatusDto> removeMFA(Principal principal, String code) throws NotFoundException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
+        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (!databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -247,7 +241,7 @@ public class AuthApiController implements AuthApi {
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(null);
 
-        this.userService.update(databaseUser);
+        this.userRepositoryService.update(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)
