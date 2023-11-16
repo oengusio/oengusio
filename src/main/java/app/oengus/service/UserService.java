@@ -46,7 +46,6 @@ public class UserService {
     private final SelectionService selectionService;
     private final ApplicationUserInformationRepository applicationUserInformationRepository;
 
-
     public Token login(final String host, final LoginRequest request) throws LoginException {
         final String service = request.getService();
         final String code = request.getCode();

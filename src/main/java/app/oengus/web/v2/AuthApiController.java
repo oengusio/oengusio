@@ -182,7 +182,7 @@ public class AuthApiController implements AuthApi {
                 new InitMFADto()
                     .setSecretKey(newSecret)
                     .setQrCode(
-                        this.totpService.createQRCodeBase64(qrUrl, 500, 500)
+                        "data:image/png;base64," + this.totpService.createQRCodeBase64(qrUrl, 500, 500)
                     )
             );
     }
