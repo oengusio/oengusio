@@ -56,6 +56,17 @@ public class AuthApiController implements AuthApi {
                     );
             }
 
+            // Validate password before 2fa, that feels more secure
+            // If the password fails, send them an error.
+            if (!this.authService.validatePassword(body.getPassword(), user.getPassword())) {
+                return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(
+                        new LoginResponseDto()
+                            .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
+                    );
+            }
+
             final String mfaCode = body.getTwoFactorCode();
             final String user2FaSecret = user.getMfaSecret();
             boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
@@ -64,7 +75,7 @@ public class AuthApiController implements AuthApi {
             if (userHas2fa) {
                 if (mfaCode == null) {
                     return ResponseEntity
-                        .status(HttpStatus.UNAUTHORIZED)
+                        .status(HttpStatus.OK) // return OK because we already verified the password
                         .body(
                             new LoginResponseDto()
                                 .setStatus(LoginResponseDto.Status.MFA_REQUIRED)
@@ -83,22 +94,13 @@ public class AuthApiController implements AuthApi {
                 }
             }
 
-            if (this.authService.validatePassword(body.getPassword(), user.getPassword())) {
-                // login successful, return body
-                return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(
-                        new LoginResponseDto()
-                            .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-                            .setToken(this.jwtUtil.generateToken(user))
-                    );
-            }
-
+            // login successful, return body
             return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.OK)
                 .body(
                     new LoginResponseDto()
-                        .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
+                        .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
+                        .setToken(this.jwtUtil.generateToken(user))
                 );
         } catch (NotFoundException ignored) {
             return ResponseEntity

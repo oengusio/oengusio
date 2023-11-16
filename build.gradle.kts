@@ -35,6 +35,7 @@ repositories {
 }
 
 val sentryVersion = "5.7.0"
+val mapstructVersion = "1.5.5.Final"
 
 dependencies {
     // SPRING
@@ -64,7 +65,7 @@ dependencies {
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.3")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.12.3")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.12.3")
-    implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
+    // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
@@ -107,9 +108,12 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.16.0")
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 }
 
 val wrapper: Wrapper by tasks

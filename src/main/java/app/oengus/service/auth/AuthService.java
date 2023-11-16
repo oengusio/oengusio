@@ -17,6 +17,10 @@ public class AuthService {
     }
 
     public boolean validatePassword(String password, String encodedPassword) {
+        if (encodedPassword == null || encodedPassword.isEmpty()) {
+            return false;
+        }
+
         return this.pwEncoder.matches(password, encodedPassword);
     }
 }

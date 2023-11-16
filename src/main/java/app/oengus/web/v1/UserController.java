@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +44,6 @@ public class UserController {
     private final UserService userService;
     private final List<String> oauthOrigins;
     private final PatreonStatusRepositoryService patreonStatusRepositoryService;
-    private final OkHttpClient client = new OkHttpClient();
 
     public UserController(
         final UserService userService,

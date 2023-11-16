@@ -3,18 +3,15 @@ package app.oengus.service.repository;
 import app.oengus.dao.UserRepository;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserRepositoryService {
-
 	private final UserRepository userRepository;
-
-    public UserRepositoryService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User findById(final int runnerId) throws NotFoundException {
 		return this.userRepository.findById(runnerId)
