@@ -37,73 +37,11 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<LoginResponseDto> login(@Valid LoginDto body) {
-        try {
-            final User user = this.userRepositoryService.findByUsername(body.getUsername());
-
-            // Fast return if the user does not have a password set
-            if (StringUtils.isEmpty(user.getPassword())) {
-                return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(
-                        new LoginResponseDto()
-                            .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
-                    );
-            }
-
-            // Validate password before 2fa, that feels more secure
-            // If the password fails, send them an error.
-            if (!this.authService.validatePassword(body.getPassword(), user.getPassword())) {
-                return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(
-                        new LoginResponseDto()
-                            .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
-                    );
-            }
-
-            final String mfaCode = body.getTwoFactorCode();
-            final String user2FaSecret = user.getMfaSecret();
-            boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
-            boolean mfaCodeCorrect = mfaCode == null;
-
-            if (userHas2fa) {
-                if (mfaCode == null) {
-                    return ResponseEntity
-                        .status(HttpStatus.OK) // return OK because we already verified the password
-                        .body(
-                            new LoginResponseDto()
-                                .setStatus(LoginResponseDto.Status.MFA_REQUIRED)
-                        );
-                } else {
-                    final String totpCode = this.totpService.getTOTPCode(user2FaSecret);
-
-                    if (!totpCode.equals(mfaCode)) {
-                        return ResponseEntity
-                            .status(HttpStatus.UNAUTHORIZED)
-                            .body(
-                                new LoginResponseDto()
-                                    .setStatus(LoginResponseDto.Status.MFA_INVALID)
-                            );
-                    }
-                }
-            }
-
-            // login successful, return body
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(
-                    new LoginResponseDto()
-                        .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-                        .setToken(this.jwtUtil.generateToken(user))
-                );
-        } catch (NotFoundException ignored) {
-            return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(
-                    new LoginResponseDto()
-                        .setStatus(LoginResponseDto.Status.USERNAME_PASSWORD_INCORRECT)
-                );
-        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                this.authService.login(body)
+            );
     }
 
     @Override
