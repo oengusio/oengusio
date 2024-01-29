@@ -6,45 +6,60 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration {
 
 	@Bean
-	public UnauthorizedHandler unauthorizedHandler() throws Exception {
+	public UnauthorizedHandler unauthorizedHandler() {
 		return new UnauthorizedHandler();
 	}
 
 	@Bean
-	public ForbiddenHandler forbiddenHandler() throws Exception {
+	public ForbiddenHandler forbiddenHandler() {
 		return new ForbiddenHandler();
 	}
 
 	@Bean
-	public AuthenticationFilter authenticationFilterBean() throws Exception {
+	public AuthenticationFilter authenticationFilterBean() {
 		return new AuthenticationFilter();
 	}
 
-	@Override
-	protected void configure(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
-				// we don't need CSRF because our token is invulnerable
-				.csrf().disable()
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
 
-				.exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler()).and()
-				.exceptionHandling().accessDeniedHandler(this.forbiddenHandler()).and()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+            // we don't need CSRF because our token is invulnerable
+            .csrf(AbstractHttpConfigurer::disable)
 
-				// don't create session
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .exceptionHandling((handler) ->
+                handler.authenticationEntryPoint(this.unauthorizedHandler())
+                       .accessDeniedHandler(this.forbiddenHandler())
+            )
 
-		// custom JWT based security filter
-		httpSecurity.addFilterBefore(this.authenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
+            // don't create session
+            .sessionManagement(
+                (manager) -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
-		// enable page caching
-		httpSecurity.headers().cacheControl();
-	}
+            // custom JWT based security filter
+            .addFilterBefore(this.authenticationFilterBean(), UsernamePasswordAuthenticationFilter.class)
+
+            // enable page caching
+            .headers(HeadersConfigurer::cacheControl)
+
+            .build();
+    }
 }

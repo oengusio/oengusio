@@ -11,9 +11,6 @@ import app.oengus.spring.JWTUtil;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +21,7 @@ public class AuthService {
     private final UserService userService;
     private final JWTUtil jwtUtil;
     private final UserRepositoryService userRepositoryService;
-    private final PasswordEncoder pwEncoder = new BCryptPasswordEncoder(10);
+    private final PasswordEncoder passwordEncoder;
 
     public LoginResponseDto login(LoginDto body) {
         try {
@@ -69,7 +66,7 @@ public class AuthService {
     }
 
     public String encodePassword(String password) {
-        return this.pwEncoder.encode(password);
+        return this.passwordEncoder.encode(password);
     }
 
     public boolean validatePassword(String password, String encodedPassword) {
@@ -77,6 +74,6 @@ public class AuthService {
             return false;
         }
 
-        return this.pwEncoder.matches(password, encodedPassword);
+        return this.passwordEncoder.matches(password, encodedPassword);
     }
 }
