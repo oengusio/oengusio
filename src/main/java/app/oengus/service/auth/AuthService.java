@@ -15,6 +15,7 @@ import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    @Value("${oengus.baseUrl}")
+    private String baseUrl;
+
     private final TOTPService totpService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
@@ -103,7 +107,7 @@ public class AuthService {
         this.emailService.sendEmailVerification(
             user,
             "",
-            "oengus.io"
+            this.baseUrl
         );
 
         return SignupResponseDto.Status.SIGNUP_SUCCESS;

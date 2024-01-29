@@ -31,11 +31,10 @@ import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 @Setter
 @Table(name = "users")
 public class User implements UserDetails, IUsername {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private int id;
+    private Integer id;
 
     @Column
     @JsonView(Views.Public.class)
@@ -215,7 +214,7 @@ public class User implements UserDetails, IUsername {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && username.equals(user.username);
+        return (id != null && id.equals(user.id)) && username.equals(user.username);
     }
 
     @Override
