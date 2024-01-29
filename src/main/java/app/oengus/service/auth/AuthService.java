@@ -6,10 +6,11 @@ import app.oengus.entity.dto.v2.auth.LoginDto;
 import app.oengus.entity.dto.v2.auth.LoginResponseDto;
 import app.oengus.entity.dto.v2.auth.SignUpDto;
 import app.oengus.entity.dto.v2.auth.SignupResponseDto;
-import app.oengus.entity.dto.v2.users.ConnectionDto;
+import app.oengus.entity.model.EmailVerification;
 import app.oengus.entity.model.User;
 import app.oengus.service.EmailService;
 import app.oengus.service.UserService;
+import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final EmailVerificationRepositoryService emailVerificationRepositoryService;
 
     public LoginResponseDto login(LoginDto body) {
         try {
@@ -98,15 +101,28 @@ public class AuthService {
         user.setConnections(
             body.getConnections()
                 .stream()
-                .map(ConnectionDto::toSocialAccount)
+                .map((connection) -> {
+                    final var conn = connection.toSocialAccount();
+
+                    conn.setUser(user);
+
+                    return conn;
+                })
                 .toList()
         );
 
-        this.userService.update(user);
+        final var updatedUser = this.userService.update(user);
+        final var verificationHash = UUID.randomUUID().toString();
+        final var emailVerification = new EmailVerification();
+
+        emailVerification.setUser(updatedUser);
+        emailVerification.setVerificationHash(verificationHash);
+
+        this.emailVerificationRepositoryService.save(emailVerification);
 
         this.emailService.sendEmailVerification(
-            user,
-            "",
+            updatedUser,
+            verificationHash,
             this.baseUrl
         );
 

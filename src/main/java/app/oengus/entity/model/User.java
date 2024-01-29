@@ -68,7 +68,7 @@ public class User implements UserDetails, IUsername {
     @JsonView(Views.Internal.class)
     private String mail;
 
-    @JsonView(Views.Internal.class)
+    @JsonView(Views.NeverFuckingShow.class)
     @Column(name = "hashed_password")
     private String hashedPassword;
 
@@ -116,7 +116,7 @@ public class User implements UserDetails, IUsername {
 
     @Nullable
     @Column(name = "mfa_secret")
-    @JsonView(Views.Internal.class)
+    @JsonView(Views.NeverFuckingShow.class)
     private String mfaSecret;
 
     @Override
@@ -166,7 +166,7 @@ public class User implements UserDetails, IUsername {
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
-        if (!this.enabled) {
+        if (!this.enabled || StringUtils.isNotEmpty(this.hashedPassword)) {
             return true;
         }
 
@@ -178,7 +178,7 @@ public class User implements UserDetails, IUsername {
     @JsonIgnore
     @AssertTrue
     public boolean isEmailPresentForExistingUser() {
-        if (this.id > 0 && this.enabled) {
+        if (this.id != null && this.enabled) {
             return StringUtils.isNotEmpty(this.mail);
         }
 

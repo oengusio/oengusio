@@ -82,7 +82,7 @@ public class UserProfileDto implements IUsername {
         dto.setEnabled(user.isEnabled());
         dto.setConnections(user.getConnections());
         dto.setPronouns(
-            user.getPronouns() == null ? List.of() : List.of(user.getPronouns().split(","))
+            user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(","))
         );
         dto.setLanguagesSpoken(
             user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(","))

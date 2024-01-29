@@ -161,9 +161,10 @@ public class UserService {
     /**
      * Update an entity, don't use on direct user input please.
      * @param user The user model to save in the database.
+     * @return the Updated user
      */
-    public void update(User user) {
-        this.userRepositoryService.update(user);
+    public User update(User user) {
+        return this.userRepositoryService.update(user);
     }
 
     @Deprecated

@@ -28,8 +28,8 @@ public class UserRepositoryService {
 		return this.userRepository.findByUsername(username);
 	}
 
-	public void update(final User user) {
-		this.userRepository.save(user);
+	public User update(final User user) {
+		return this.userRepository.save(user);
 	}
 
 	public List<User> findByUsernameContainingIgnoreCase(final String username) {

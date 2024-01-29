@@ -1116,4 +1116,19 @@
             <column name="hashed_password" type="varchar(69)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20240129-1">
+        <createTable tableName="email_verification">
+            <column name="user_id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="verify_hash" type="varchar(100)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="email_verification" baseColumnNames="user_id"
+                                 constraintName="fk_verify_email_user_id"
+                                 referencedTableName="users"
+                                 deleteCascade="true"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>
