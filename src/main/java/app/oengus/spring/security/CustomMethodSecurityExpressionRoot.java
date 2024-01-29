@@ -89,6 +89,22 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return team.isApplicationsOpen();
     }
 
+    public boolean isMarathonAdmin(final String marathonId) throws NotFoundException {
+        final User user = this.getUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        if (this.isAdmin()) {
+            return true;
+        }
+
+        final Marathon marathon = this.marathonService.getById(marathonId);
+
+        return marathon.getCreator().getId() == user.getId();
+    }
+
     public boolean canUpdateMarathon(final String id) throws NotFoundException {
         final User user = this.getUser();
 
