@@ -166,7 +166,7 @@ public class MarathonController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("isAuthenticated() && isMarathonAdmin(#id) && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final String id) throws NotFoundException {
         this.marathonService.delete(id);
