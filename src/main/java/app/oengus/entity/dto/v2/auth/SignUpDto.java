@@ -7,6 +7,8 @@ import app.oengus.validation.ValidPassword;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neovisionaries.i18n.CountryCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.AssertTrue;
@@ -15,6 +17,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+@Getter
+@Setter
 @Schema(description = "The data needed when a user signs up.")
 public class SignUpDto {
     @Size(min = 1, max = 32)
@@ -47,71 +51,6 @@ public class SignUpDto {
 
     @Schema(description = "List of connections that will be displayed on the user's profile page.")
     private List<ConnectionDto> connections;
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Nullable
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(@Nullable String country) {
-        this.country = country;
-    }
-
-    public List<String> getPronouns() {
-        return pronouns;
-    }
-
-    public void setPronouns(List<String> pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    public List<String> getLanguagesSpoken() {
-        return languagesSpoken;
-    }
-
-    public void setLanguagesSpoken(List<String> languagesSpoken) {
-        this.languagesSpoken = languagesSpoken;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<ConnectionDto> getConnections() {
-        return connections;
-    }
-
-    public void setConnections(List<ConnectionDto> connections) {
-        this.connections = connections;
-    }
 
     // Validation below.
 

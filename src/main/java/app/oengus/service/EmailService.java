@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.application.exception.WrappedException;
 import app.oengus.entity.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -41,19 +42,23 @@ public class EmailService {
         return message;
     }
 
-    public void sendEmailVerification(User to, String verifyHash, String domain) throws Exception {
-        final MimeMessage message = getDefaultEmailSettings();
+    public void sendEmailVerification(User to, String verifyHash, String domain) {
+        try {
+            final MimeMessage message = getDefaultEmailSettings();
 
-        Context myContext = new Context();
-        myContext.setVariable("domain", domain);
-        myContext.setVariable("hash", verifyHash);
+            Context myContext = new Context();
+            myContext.setVariable("domain", domain);
+            myContext.setVariable("hash", verifyHash);
 
-        String htmlTemplate = templateEngine.process("email-verification.html", myContext);
+            String htmlTemplate = templateEngine.process("email-verification.html", myContext);
 
-        message.setText(htmlTemplate, "UTF-8", "html");
-        message.setSubject("Verify your email!");
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getMail(), to.getDisplayName()));
+            message.setText(htmlTemplate, "UTF-8", "html");
+            message.setSubject("Verify your email!");
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getMail(), to.getDisplayName()));
 
-        this.mailSender.send(message);
+            this.mailSender.send(message);
+        } catch (Exception e) {
+            throw new WrappedException(e);
+        }
     }
 }

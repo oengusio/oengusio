@@ -158,6 +158,14 @@ public class UserService {
         this.userRepositoryService.update(user);
     }
 
+    /**
+     * Update an entity, don't use on direct user input please.
+     * @param user The user model to save in the database.
+     */
+    public void update(User user) {
+        this.userRepositoryService.update(user);
+    }
+
     @Deprecated
     public void update(final int id, final User userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
@@ -179,11 +187,16 @@ public class UserService {
         user.setDiscordId(null);
         user.setTwitchId(null);
         user.setTwitterId(null);
-        user.setMail(null);
 //        user.setMail("deleted-user@oengus.io");
         user.setEnabled(false);
+        user.setMfaEnabled(false);
+        user.setMfaSecret(null);
+        user.setHashedPassword(null);
 
         final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
+
+        // We need an email or stuff breaks, this anonymizes it.
+        user.setMail(randomHash + "@example.com");
 
         // "Deleted" is 7 in length
         user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
@@ -214,12 +227,14 @@ public class UserService {
         }
     }
 
+    // We need to stop throwing the exceptions and start using optionals.
     @Deprecated
     public User getUser(final int id) throws NotFoundException {
         return this.userRepositoryService.findById(id);
     }
 
     @Nonnull
+    @Deprecated
     public User findByUsername(final String username) throws NotFoundException {
         final User user = this.userRepositoryService.findByUsername(username);
 
@@ -228,6 +243,10 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public Optional<User> findOptionalByUsername(final String username) {
+        return this.userRepositoryService.findByUsernameRaw(username);
     }
 
     public UserProfileDto getUserProfile(final String username) throws NotFoundException {

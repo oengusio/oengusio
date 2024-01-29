@@ -2,15 +2,12 @@ package app.oengus.web.v2;
 
 import app.oengus.entity.dto.BooleanStatusDto;
 import app.oengus.entity.dto.v2.auth.*;
-import app.oengus.entity.dto.v2.users.ConnectionDto;
 import app.oengus.entity.model.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
-import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
-import app.oengus.spring.model.Role;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
+// TODO: cleanup
 @RestController
 @RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
-    private final UserRepositoryService userRepositoryService;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -46,45 +42,20 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<SignupResponseDto> signUp(@Valid SignUpDto body) {
-        // Check if username is already taken
+        final var status = this.authService.signUp(body);
 
-        if (this.userService.exists(body.getUsername())) {
+        if (status == SignupResponseDto.Status.SIGNUP_SUCCESS) {
             return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .status(HttpStatus.OK)
                 .body(
-                    new SignupResponseDto().setStatus(SignupResponseDto.Status.USERNAME_TAKEN)
+                    new SignupResponseDto().setStatus(SignupResponseDto.Status.SIGNUP_SUCCESS)
                 );
         }
 
-        final User user = new User();
-
-        user.setRoles(List.of(Role.ROLE_USER));
-        user.setEnabled(true);
-        user.setEmailVerified(false);
-        user.setDisplayName(body.getDisplayName());
-        user.setUsername(body.getUsername());
-        user.setMail(body.getEmail());
-        user.setHashedPassword(
-            this.authService.encodePassword(body.getPassword())
-        );
-        user.setCountry(body.getCountry());
-        user.setPronouns(String.join(",", body.getPronouns()));
-        user.setLanguagesSpoken(body.getLanguagesSpoken());
-        user.setConnections(
-            body.getConnections()
-                .stream()
-                .map(ConnectionDto::toSocialAccount)
-                .toList()
-        );
-
-        this.userRepositoryService.update(user);
-
-        // TODO: send verification email
-
         return ResponseEntity
-            .status(HttpStatus.OK)
+            .status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
-                new SignupResponseDto().setStatus(SignupResponseDto.Status.SIGNUP_SUCCESS)
+                new SignupResponseDto().setStatus(status)
             );
     }
 
@@ -102,7 +73,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
+        final User databaseUser = this.userService.getUser(principaluser.getId());
 
         final String newSecret = this.totpService.generateSecretKey();
 
@@ -110,7 +81,7 @@ public class AuthApiController implements AuthApi {
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(newSecret);
 
-        this.userRepositoryService.update(databaseUser);
+        this.userService.update(databaseUser);
 
         final String qrUrl = this.totpService.getGoogleAuthenticatorQRCode(newSecret, databaseUser.getUsername());
 
@@ -128,7 +99,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, final String code) throws NotFoundException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
+        final User databaseUser = this.userService.getUser(principaluser.getId());
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -148,7 +119,7 @@ public class AuthApiController implements AuthApi {
 
         databaseUser.setMfaEnabled(true);
 
-        this.userRepositoryService.update(databaseUser);
+        this.userService.update(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -158,7 +129,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<BooleanStatusDto> removeMFA(Principal principal, String code) throws NotFoundException {
         final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userRepositoryService.findById(principaluser.getId());
+        final User databaseUser = this.userService.getUser(principaluser.getId());
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (!databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -179,7 +150,7 @@ public class AuthApiController implements AuthApi {
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(null);
 
-        this.userRepositoryService.update(databaseUser);
+        this.userService.update(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)

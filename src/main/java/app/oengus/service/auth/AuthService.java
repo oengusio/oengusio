@@ -4,15 +4,21 @@ import app.oengus.application.exception.InvalidMFACodeException;
 import app.oengus.application.exception.InvalidPasswordException;
 import app.oengus.entity.dto.v2.auth.LoginDto;
 import app.oengus.entity.dto.v2.auth.LoginResponseDto;
+import app.oengus.entity.dto.v2.auth.SignUpDto;
+import app.oengus.entity.dto.v2.auth.SignupResponseDto;
+import app.oengus.entity.dto.v2.users.ConnectionDto;
 import app.oengus.entity.model.User;
+import app.oengus.service.EmailService;
 import app.oengus.service.UserService;
-import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
+import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +26,12 @@ public class AuthService {
     private final TOTPService totpService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
-    private final UserRepositoryService userRepositoryService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public LoginResponseDto login(LoginDto body) {
         try {
-            final User user = this.userRepositoryService.findByUsername(body.getUsername());
+            final User user = this.userService.findByUsername(body.getUsername());
 
             // Fast return if the user does not have a password set
             if (StringUtils.isEmpty(user.getPassword())) {
@@ -63,6 +69,44 @@ public class AuthService {
         } catch (NotFoundException ignored) {
             throw new InvalidPasswordException();
         }
+    }
+
+    public SignupResponseDto.Status signUp(SignUpDto body) {
+        // Check if username is already taken
+        if (this.userService.exists(body.getUsername())) {
+            return SignupResponseDto.Status.USERNAME_TAKEN;
+        }
+
+        final User user = new User();
+
+        user.setRoles(List.of(Role.ROLE_USER));
+        user.setEnabled(true);
+        user.setEmailVerified(false);
+        user.setDisplayName(body.getDisplayName());
+        user.setUsername(body.getUsername());
+        user.setMail(body.getEmail());
+        user.setHashedPassword(
+            this.encodePassword(body.getPassword())
+        );
+        user.setCountry(body.getCountry());
+        user.setPronouns(String.join(",", body.getPronouns()));
+        user.setLanguagesSpoken(body.getLanguagesSpoken());
+        user.setConnections(
+            body.getConnections()
+                .stream()
+                .map(ConnectionDto::toSocialAccount)
+                .toList()
+        );
+
+        this.userService.update(user);
+
+        this.emailService.sendEmailVerification(
+            user,
+            "",
+            "oengus.io"
+        );
+
+        return SignupResponseDto.Status.SIGNUP_SUCCESS;
     }
 
     public String encodePassword(String password) {
