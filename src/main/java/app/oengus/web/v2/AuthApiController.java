@@ -7,6 +7,7 @@ import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.UserService;
 import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
+import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.spring.JWTUtil;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
@@ -29,6 +30,8 @@ public class AuthApiController implements AuthApi {
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
+    // TODO: hexagonal architecture.
+    private final EmailVerificationRepositoryService emailVerificationRepositoryService;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -68,6 +71,39 @@ public class AuthApiController implements AuthApi {
                     .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
                     .setToken(this.jwtUtil.generateToken(PrincipalHelper.getCurrentUser()))
             );
+    }
+
+    @Override
+    public ResponseEntity<?> verifyEmail(final String hash) throws NotFoundException {
+        final var verification = this.emailVerificationRepositoryService.findByHash(hash)
+            .orElseThrow(() -> new NotFoundException("Email verification not found."));
+       final User user = verification.getUser();
+
+       user.setEmailVerified(true);
+
+       this.userService.update(user);
+       this.emailVerificationRepositoryService.delete(verification);
+
+        return ResponseEntity.ok()
+            .body("<h1>Thank you for verifying your email address.</h1><p>If you haven't already, you can <a href=\"https://oengus.io/\">log-in on Oengus</a></p>");
+    }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> requestNewEmailVerification(Principal principal) throws NotFoundException {
+        final User principaluser = getUserFromPrincipal(principal);
+        final User user = this.userService.getUser(principaluser.getId());
+
+        if (user.isEmailVerified()) {
+            return ResponseEntity
+              .status(HttpStatus.BAD_REQUEST)
+              .body(new BooleanStatusDto(false));
+        }
+
+        this.authService.sendNewVerificationEmail(user);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new BooleanStatusDto(true));
     }
 
     @Override

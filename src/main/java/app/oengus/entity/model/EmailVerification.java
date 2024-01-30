@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -20,6 +21,10 @@ public class EmailVerification {
 
     @Column(name = "verify_hash")
     private String verificationHash;
+
+    // TODO: Schedule automatic removal after 3 hours.
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 
     public void setUser(User user) {
         this.user = user;

@@ -95,7 +95,13 @@ public interface AuthApi {
     )
     ResponseEntity<LoginResponseDto> refreshUserToken();
 
-    // TODO: email verification route
+    @GetMapping("/verify-email/{hash}")
+    @PreAuthorize("isAnonymous()")
+    ResponseEntity<?> verifyEmail(@PathVariable final String hash) throws NotFoundException;
+
+    @PostMapping("/verify-email")
+    @PreAuthorize("!isBanned()")
+    ResponseEntity<BooleanStatusDto> requestNewEmailVerification(final Principal principal) throws NotFoundException;
 
     @PutMapping("/mfa/init")
     @PreAuthorize("isAuthenticated()")

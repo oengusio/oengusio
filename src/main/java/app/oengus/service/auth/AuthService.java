@@ -96,7 +96,13 @@ public class AuthService {
             this.encodePassword(body.getPassword())
         );
         user.setCountry(body.getCountry());
-        user.setPronouns(String.join(",", body.getPronouns()));
+
+        if (body.getPronouns().isEmpty()) {
+            user.setPronouns(null);
+        } else {
+            user.setPronouns(String.join(",", body.getPronouns()));
+        }
+
         user.setLanguagesSpoken(body.getLanguagesSpoken());
         user.setConnections(
             body.getConnections()
@@ -112,21 +118,26 @@ public class AuthService {
         );
 
         final var updatedUser = this.userService.update(user);
+
+        this.sendNewVerificationEmail(user);
+
+        return SignupResponseDto.Status.SIGNUP_SUCCESS;
+    }
+
+    public void sendNewVerificationEmail(User user) {
         final var verificationHash = UUID.randomUUID().toString();
         final var emailVerification = new EmailVerification();
 
-        emailVerification.setUser(updatedUser);
+        emailVerification.setUser(user);
         emailVerification.setVerificationHash(verificationHash);
 
         this.emailVerificationRepositoryService.save(emailVerification);
 
         this.emailService.sendEmailVerification(
-            updatedUser,
+            user,
             verificationHash,
             this.baseUrl
         );
-
-        return SignupResponseDto.Status.SIGNUP_SUCCESS;
     }
 
     public String encodePassword(String password) {

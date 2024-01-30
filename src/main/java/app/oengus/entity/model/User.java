@@ -124,6 +124,12 @@ public class User implements UserDetails, IUsername {
         return this.enabled;
     }
 
+    // TODO: I hate v1, this should be a DTO
+    @JsonView(Views.Public.class)
+    public boolean hasPassword() {
+        return StringUtils.isNotEmpty(this.hashedPassword);
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -153,7 +159,7 @@ public class User implements UserDetails, IUsername {
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return false;
+        return !roles.contains(Role.ROLE_BANNED);
     }
 
     @Override

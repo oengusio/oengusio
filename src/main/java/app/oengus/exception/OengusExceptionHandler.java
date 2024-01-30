@@ -51,9 +51,9 @@ public class OengusExceptionHandler {
         final String header = req.getHeader("oengus-version");
 
         if (!"2".equals(header)) {
-            return ResponseEntity.notFound()
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .header("Content-Type", "text/plain")
-                .build();
+                .body(exc.getMessage());
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

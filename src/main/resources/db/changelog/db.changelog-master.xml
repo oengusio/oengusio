@@ -1131,4 +1131,10 @@
                                  deleteCascade="true"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet author="duncte123" id="20240130-1">
+        <addColumn tableName="email_verification">
+            <column name="created_at" type="date" defaultValueDate="now()"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

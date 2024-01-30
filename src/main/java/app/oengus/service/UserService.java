@@ -164,6 +164,11 @@ public class UserService {
      * @return the Updated user
      */
     public User update(User user) {
+        // Whoops, that is a bug.
+        if (user.getPronouns() != null && user.getPronouns().isBlank()) {
+            user.setPronouns(null);
+        }
+
         return this.userRepositoryService.update(user);
     }
 
