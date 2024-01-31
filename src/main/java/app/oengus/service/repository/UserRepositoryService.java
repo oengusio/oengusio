@@ -24,6 +24,10 @@ public class UserRepositoryService {
             .orElseThrow(() -> new NotFoundException("User not found"));
 	}
 
+    public Optional<User> findByEmail(final String email) {
+        return this.userRepository.findByMail(email);
+    }
+
 	public Optional<User> findByUsernameRaw(final String username) {
 		return this.userRepository.findByUsername(username);
 	}

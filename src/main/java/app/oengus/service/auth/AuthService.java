@@ -2,21 +2,20 @@ package app.oengus.service.auth;
 
 import app.oengus.application.exception.InvalidMFACodeException;
 import app.oengus.application.exception.InvalidPasswordException;
-import app.oengus.entity.dto.v2.auth.LoginDto;
-import app.oengus.entity.dto.v2.auth.LoginResponseDto;
-import app.oengus.entity.dto.v2.auth.SignUpDto;
-import app.oengus.entity.dto.v2.auth.SignupResponseDto;
+import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.model.EmailVerification;
+import app.oengus.entity.model.PasswordReset;
 import app.oengus.entity.model.User;
 import app.oengus.service.EmailService;
 import app.oengus.service.UserService;
 import app.oengus.service.repository.EmailVerificationRepositoryService;
+import app.oengus.service.repository.PasswordResetRepositoryService;
+import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +25,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    @Value("${oengus.baseUrl}")
-    private String baseUrl;
-
     private final TOTPService totpService;
     private final UserService userService;
+    private final PasswordResetRepositoryService passwordResetRepositoryService;
+    private final UserRepositoryService userRepositoryService;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -135,9 +133,35 @@ public class AuthService {
 
         this.emailService.sendEmailVerification(
             user,
-            verificationHash,
-            this.baseUrl
+            verificationHash
         );
+    }
+
+    public PasswordResetResponseDto.Status initPasswordReset(PasswordResetRequestDto body) {
+        final var searchUser = this.userRepositoryService.findByEmail(body.getEmail());
+
+        // Always tell the user that a password reset has been sent
+        // I guess this prevents people from datamining emails.
+        if (searchUser.isEmpty()) {
+            return PasswordResetResponseDto.Status.PASSWORD_RESET_SENT;
+        }
+
+        final var user = searchUser.get();
+
+        if (!user.isEmailVerified()) {
+            return PasswordResetResponseDto.Status.EMAIL_VERIFICATION_REQUIRED;
+        }
+
+        final var passwordReset = new PasswordReset();
+
+        passwordReset.setUser(user);
+        passwordReset.setToken(UUID.randomUUID().toString());
+
+        final var updatedReset = this.passwordResetRepositoryService.save(passwordReset);
+
+        this.emailService.sendPasswordReset(user, updatedReset.getToken());
+
+        return PasswordResetResponseDto.Status.PASSWORD_RESET_SENT;
     }
 
     public String encodePassword(String password) {

@@ -3,7 +3,6 @@ package app.oengus.service;
 import app.oengus.application.exception.WrappedException;
 import app.oengus.entity.model.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -14,10 +13,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 @Service
 public class EmailService {
+    private final String baseUrl;
     private final String mailFrom;
     private final String mailFromName;
     private final SpringTemplateEngine templateEngine;
@@ -27,7 +26,9 @@ public class EmailService {
         JavaMailSender mailSender,
         @Value("${spring.mail.properties.mail.from.address}") String mailFrom,
         @Value("${spring.mail.properties.mail.from.name}") String mailFromName,
+        @Value("${oengus.baseUrl}") String baseUrl,
         SpringTemplateEngine templateEngine) {
+        this.baseUrl = baseUrl;
         this.mailSender = mailSender;
         this.mailFrom = mailFrom;
         this.mailFromName = mailFromName;
@@ -42,12 +43,32 @@ public class EmailService {
         return message;
     }
 
-    public void sendEmailVerification(User to, String verifyHash, String domain) {
+    public void sendEmailVerification(User to, String resetToken) {
         try {
             final MimeMessage message = getDefaultEmailSettings();
 
             Context myContext = new Context();
-            myContext.setVariable("domain", domain);
+            myContext.setVariable("domain", this.baseUrl);
+            myContext.setVariable("token", resetToken);
+
+            String htmlTemplate = templateEngine.process("password-reset.html", myContext);
+
+            message.setText(htmlTemplate, "UTF-8", "html");
+            message.setSubject("Reset your password.");
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getMail(), to.getDisplayName()));
+
+            this.mailSender.send(message);
+        } catch (Exception e) {
+            throw new WrappedException(e);
+        }
+    }
+
+    public void sendPasswordReset(User to, String verifyHash) {
+        try {
+            final MimeMessage message = getDefaultEmailSettings();
+
+            Context myContext = new Context();
+            myContext.setVariable("domain", this.baseUrl);
             myContext.setVariable("hash", verifyHash);
 
             String htmlTemplate = templateEngine.process("email-verification.html", myContext);

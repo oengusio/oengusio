@@ -192,4 +192,15 @@ public class AuthApiController implements AuthApi {
             .status(HttpStatus.OK)
             .body(new BooleanStatusDto(true));
     }
+
+    @Override
+    public ResponseEntity<PasswordResetResponseDto> requestPasswordReset(PasswordResetRequestDto body) {
+        final var resetResponse = this.authService.initPasswordReset(body);
+
+        if (resetResponse == PasswordResetResponseDto.Status.PASSWORD_RESET_SENT) {
+            return ResponseEntity.ok(new PasswordResetResponseDto(resetResponse));
+        }
+
+        return ResponseEntity.badRequest().body(new PasswordResetResponseDto(resetResponse));
+    }
 }

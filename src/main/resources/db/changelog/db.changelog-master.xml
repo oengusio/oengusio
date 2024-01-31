@@ -1137,4 +1137,20 @@
             <column name="created_at" type="date" defaultValueDate="now()"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20240131-1">
+        <createTable tableName="password_resets">
+            <column name="user_id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="varchar(255)"/>
+            <column name="created_at" type="date" defaultValueDate="now()"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="password_resets" baseColumnNames="user_id"
+                                 constraintName="fk_password_resets_user_id"
+                                 referencedTableName="users"
+                                 deleteCascade="true"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

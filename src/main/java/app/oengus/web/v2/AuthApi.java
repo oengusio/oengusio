@@ -189,4 +189,7 @@ public interface AuthApi {
         }
     )
     ResponseEntity<BooleanStatusDto> removeMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
+
+    @PostMapping("/password-reset/request")
+    ResponseEntity<PasswordResetResponseDto> requestPasswordReset(@RequestBody @Valid PasswordResetRequestDto body);
 }
