@@ -43,7 +43,7 @@ public class EmailService {
         return message;
     }
 
-    public void sendEmailVerification(User to, String resetToken) {
+    public void sendPasswordReset(User to, String resetToken) {
         try {
             final MimeMessage message = getDefaultEmailSettings();
 
@@ -63,7 +63,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordReset(User to, String verifyHash) {
+    public void sendEmailVerification(User to, String verifyHash) {
         try {
             final MimeMessage message = getDefaultEmailSettings();
 
