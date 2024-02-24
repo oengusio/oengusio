@@ -192,4 +192,7 @@ public interface AuthApi {
 
     @PostMapping("/password-reset/request")
     ResponseEntity<PasswordResetResponseDto> requestPasswordReset(@RequestBody @Valid PasswordResetRequestDto body);
+
+    @PostMapping("/password-reset")
+    ResponseEntity<PasswordResetResponseDto> completePasswordReset(@RequestBody @Valid PasswordResetDto body);
 }

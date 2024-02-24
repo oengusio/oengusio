@@ -16,6 +16,10 @@ public class PasswordResetRepositoryService {
         return this.passwordResetRepository.save(passwordReset);
     }
 
+    public void delete(PasswordReset passwordReset) {
+        this.passwordResetRepository.delete(passwordReset);
+    }
+
     public Optional<PasswordReset> findByToken(String token) {
         return this.passwordResetRepository.findByToken(token);
     }

@@ -19,7 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -156,12 +158,37 @@ public class AuthService {
 
         passwordReset.setUser(user);
         passwordReset.setToken(UUID.randomUUID().toString());
+        // This should not be null by default, thanks JPA
+        passwordReset.setCreatedAt(LocalDate.now());
 
         final var updatedReset = this.passwordResetRepositoryService.save(passwordReset);
 
         this.emailService.sendPasswordReset(user, updatedReset.getToken());
 
         return PasswordResetResponseDto.Status.PASSWORD_RESET_SENT;
+    }
+
+    // TODO: make this a bit more secure
+    //  In theory people can reset the password for random users. (not sure how guessable UUID 4 is)
+    //  But since this is (probably) not a security issue because they don't know who's password they just reset.
+    public PasswordResetResponseDto.Status resetUserPassword(PasswordResetDto reset) {
+        final Optional<PasswordReset> byToken = this.passwordResetRepositoryService.findByToken(reset.getToken());
+
+        if (byToken.isEmpty()) {
+            return PasswordResetResponseDto.Status.PASSWORD_RESET_CODE_INVALID;
+        }
+
+        final var passwordReset = byToken.get();
+        final var user = passwordReset.getUser();
+
+        user.setHashedPassword(
+            this.encodePassword(reset.getPassword())
+        );
+
+        this.userService.update(user);
+        this.passwordResetRepositoryService.delete(passwordReset);
+
+        return PasswordResetResponseDto.Status.PASSWORD_RESET_SUCCESS;
     }
 
     public String encodePassword(String password) {

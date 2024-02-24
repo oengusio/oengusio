@@ -210,6 +210,11 @@ public class User implements UserDetails, IUsername {
         this.connections.addAll(connections);
     }
 
+    // TODO: better mappers
+    public void setLanguagesSpoken(@Nullable String languagesSpoken) {
+        this.languagesSpoken = languagesSpoken;
+    }
+
     public void setLanguagesSpoken(@NotNull List<String> languagesSpoken) {
         this.languagesSpoken = String.join(",", languagesSpoken);
     }
