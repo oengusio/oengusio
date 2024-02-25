@@ -182,7 +182,6 @@ public class AuthApiController implements AuthApi {
                 .body(new BooleanStatusDto(false));
         }
 
-
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(null);
 
@@ -211,7 +210,6 @@ public class AuthApiController implements AuthApi {
         if (res == PasswordResetResponseDto.Status.PASSWORD_RESET_SUCCESS) {
             return ResponseEntity.ok(new PasswordResetResponseDto(res));
         }
-
 
         return ResponseEntity.badRequest().body(new PasswordResetResponseDto(res));
     }

@@ -156,8 +156,6 @@ public interface AuthApi {
     )
     ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
 
-    // TODO: password reset
-
     @DeleteMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
     @Operation(

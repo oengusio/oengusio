@@ -4,7 +4,6 @@ import app.oengus.entity.dto.LanguageDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -102,6 +101,8 @@ public class LanguageService {
     }
 
     public static boolean areLanguagesSupported(List<String> langs) {
-        return new HashSet<>(List.of(SUPPORTED_LANGUAGES)).containsAll(langs);
+        // Shut up intellij, your suggestion is just as bad
+        //noinspection SlowListContainsAll
+        return List.of(SUPPORTED_LANGUAGES).containsAll(langs);
     }
 }
