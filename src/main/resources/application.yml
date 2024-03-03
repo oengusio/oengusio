@@ -127,7 +127,28 @@ spring:
     mvc:
         throw-exception-if-no-handler-found: true
     web:
-        resources.add-mappings: false
+        resources:
+            add-mappings: false
+
+    mail:
+        host: ${MAIL_SERVER:smtp.eu.mailgun.org}
+        port: ${MAIL_PORT:465}
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        properties:
+            mail:
+                transport:
+                    protocol: smtp
+                smtp:
+                    starttls:
+                        enable: ${MAIL_STARTTLS:true}
+                        required: ${MAIL_STARTTLS:true}
+                auth: true
+                from:
+                    address: ${MAIL_FROM:no-reply@mg.oengus.io}
+                    name: Oengus
+        default-encoding: utf-8
+        test-connection: false
 
 springdoc:
     packages-to-scan: app.oengus.web

@@ -6,4 +6,7 @@ public interface Views {
 
 	public static class Internal extends Public {
 	}
+
+	public static class NeverFuckingShow extends Internal {
+	}
 }

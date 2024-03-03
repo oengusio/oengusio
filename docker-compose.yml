@@ -27,11 +27,16 @@ services:
       # sparkly new oauth2
       - TWITTER_OAUTH2_CLIENT_ID=
       - TWITTER_OAUTH2_CLIENT_SECRET=
+      - HIKARI_MAXIMUM_POOL_SIZE=1000
       - DB_URL=jdbc:postgresql://localhost:5432/oengus
       - DB_USERNAME=
       - DB_PASSWORD=
       - BASE_URL=http://localhost:4200
       - OAUTH_ORIGINS=http://localhost:4200,https://oengus.io
-      - SENTRY_DSN=;
-      - SENTRY_TRACES_SAMPLE_RATE=1.0;
-      - SENTRY_ENVIRONMENT=local;
+      - SENTRY_DSN=
+      - SENTRY_TRACES_SAMPLE_RATE=1.0
+      - SENTRY_ENVIRONMENT=local
+      - MAIL_SERVER=smtp.eu.mailgun.org # Oengus uses mailgun to send emails
+      - MAIL_USERNAME=
+      - MAIL_PASSWORD=
+      - MAIL_FROM=no-reply@mg.oengus.io

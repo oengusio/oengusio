@@ -30,12 +30,12 @@ public class LineDto {
     private String category;
     @Schema(
         description = "Approximate duration of the run. Formatted in the ISO-8601 duration format.",
-        example = "PT30M"
+        example = "PT5H30M20S"
     )
     private Duration estimate;
     @Schema(
         description = "Time allocated to get the run set-up. Formatted in the ISO-8601 duration format.",
-        example = "PT30M"
+        example = "PT5H30M20S"
     )
     private Duration setupTime;
 

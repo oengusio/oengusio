@@ -2,6 +2,7 @@ package app.oengus.web.v2;
 
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
+import app.oengus.helper.HeaderHelpers;
 import app.oengus.service.LanguageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -9,10 +10,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,25 +22,18 @@ import java.util.*;
 @Tag(name = "misc-v1")
 @RestController
 @RequestMapping({"/v1", "/v2"})
+@RequiredArgsConstructor
 public class MiscController {
-
     private final PronounsPageApi pronounsApi;
     private final LanguageService languageService;
 
-    @Autowired
-    public MiscController(final PronounsPageApi pronounsApi, final LanguageService languageService) {
-        this.pronounsApi = pronounsApi;
-        this.languageService = languageService;
-    }
-
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> bonk() throws InterruptedException {
-        return ResponseEntity.ok("(:");
+    public ResponseEntity<String> bonk() throws Exception {
+        return ResponseEntity.ok("bonk!");
     }
 
     @GetMapping("/pronouns")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(
         summary = "Search pronouns from the pronouns.page api",
         responses = {
@@ -59,6 +52,7 @@ public class MiscController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing search parameter");
         }
 
+        // TODO: can I put this in the client?
         final String lower = search.toLowerCase().trim();
         final Map<String, Pronoun> pronouns = this.pronounsApi.getPronouns();
         final List<String> response = pronouns.entrySet()
@@ -75,11 +69,14 @@ public class MiscController {
             .map(Pronoun::getEffectiveName)
             .toList();
 
-        return ResponseEntity.ok(response);
+        // Cache for five minutes to not spam the api.
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .headers(HeaderHelpers.cachingHeaders(5))
+            .body(response);
     }
 
     @GetMapping("/languages")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
     public ResponseEntity<?> searchLanguages(
         @RequestParam final String search,
         @RequestParam(value = "locale", required = false, defaultValue = "") final String locale
@@ -105,8 +102,11 @@ public class MiscController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Locale is not valid");
         }
 
-        return ResponseEntity.ok(
-            this.languageService.searchLanguages(search, searchLang)
-        );
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .headers(HeaderHelpers.cachingHeaders(5))
+            .body(
+                this.languageService.searchLanguages(search, searchLang)
+            );
     }
 }

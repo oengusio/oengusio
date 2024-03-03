@@ -14,7 +14,10 @@ import java.util.stream.Stream;
  * Helper class to copy properties while ignoring null properties
  */
 public class BeanHelper {
-
+    /**
+     * @deprecated use a mapper
+     */
+    @Deprecated
 	public static String[] getNullPropertyNames(final Object source) {
 		final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
 		return Stream.of(wrappedSource.getPropertyDescriptors())
@@ -35,13 +38,20 @@ public class BeanHelper {
     /**
      * Copy properties from {@code src} to {@code target} while ignoring {@code null} properties in {@code src}
      *
+     * @deprecated user a mapper
+     *
      * @param src The source bean
      * @param target The target bean, the properties from src will be copied to this
      */
+    @Deprecated
 	public static void copyProperties(final Object src, final Object target) {
 		BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
 	}
 
+    /**
+     * @deprecated use a mapper
+     */
+    @Deprecated
 	public static void copyProperties(final Object src, final Object target, final String... ignoreProperties) {
 		BeanUtils.copyProperties(src, target, ArrayUtils.addAll(getNullPropertyNames(src), ignoreProperties));
 	}

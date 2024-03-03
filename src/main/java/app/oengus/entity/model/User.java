@@ -6,6 +6,8 @@ import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,14 +24,17 @@ import java.util.Objects;
 import static app.oengus.entity.dto.UserDto.PRONOUN_REGEX;
 import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 
+// TODO: add created time so we can delete accounts 1 year days of not verifying the email.
+
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
 public class User implements UserDetails, IUsername {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private int id;
+    private Integer id;
 
     @Column
     @JsonView(Views.Public.class)
@@ -62,6 +67,10 @@ public class User implements UserDetails, IUsername {
     @Column
     @JsonView(Views.Internal.class)
     private String mail;
+
+    @JsonView(Views.NeverFuckingShow.class)
+    @Column(name = "hashed_password")
+    private String hashedPassword;
 
     @Column(name = "email_verified")
     @JsonView(Views.Public.class)
@@ -101,25 +110,39 @@ public class User implements UserDetails, IUsername {
     @JsonView(Views.Public.class)
     private String languagesSpoken;
 
+    @Column(name = "mfa_enabled")
+    @JsonView(Views.Internal.class)
+    private boolean mfaEnabled;
+
+    @Nullable
+    @Column(name = "mfa_secret")
+    @JsonView(Views.NeverFuckingShow.class)
+    private String mfaSecret;
+
     @Override
     public boolean isEnabled() {
         return this.enabled;
     }
 
+    // TODO: I hate v1, this should be a DTO
+    @JsonView(Views.Public.class)
+    public boolean hasPassword() {
+        return StringUtils.isNotEmpty(this.hashedPassword);
+    }
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        final List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (final Role r : this.roles) {
-            authorities.add(new SimpleGrantedAuthority(r.toString()));
-        }
-        return authorities;
+        return this.roles.stream()
+            .map(Enum::toString)
+            .map(SimpleGrantedAuthority::new)
+            .toList();
     }
 
     @Override
     @JsonIgnore
     public String getPassword() {
-        return null;
+        return hashedPassword;
     }
 
     @Override
@@ -136,7 +159,7 @@ public class User implements UserDetails, IUsername {
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return false;
+        return !roles.contains(Role.ROLE_BANNED);
     }
 
     @Override
@@ -149,7 +172,7 @@ public class User implements UserDetails, IUsername {
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
-        if (!this.enabled) {
+        if (!this.enabled || StringUtils.isNotEmpty(this.hashedPassword)) {
             return true;
         }
 
@@ -161,71 +184,21 @@ public class User implements UserDetails, IUsername {
     @JsonIgnore
     @AssertTrue
     public boolean isEmailPresentForExistingUser() {
-        if (this.id > 0 && this.enabled) {
+        if (this.id != null && this.enabled) {
             return StringUtils.isNotEmpty(this.mail);
         }
 
         return true;
     }
 
-    public void setUsername(final String username) {
-        this.username = username;
+    @JsonIgnore
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<Role> getRoles() {
-        return this.roles;
-    }
-
-    public void setRoles(final List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
-    public String getMail() {
-        return this.mail;
-    }
-
-    public void setMail(final String mail) {
-        this.mail = mail;
-    }
-
-    public String getDiscordId() {
-        return this.discordId;
-    }
-
-    public void setDiscordId(final String discordId) {
-        this.discordId = discordId;
-    }
-
-    public String getTwitchId() {
-        return this.twitchId;
-    }
-
-    public void setTwitchId(final String twitchId) {
-        this.twitchId = twitchId;
-    }
-
-    public String getPatreonId() {
-        return patreonId;
-    }
-
-    public void setPatreonId(String patreonId) {
-        this.patreonId = patreonId;
-    }
-
-    public List<SocialAccount> getConnections() {
-        return connections;
+    @JsonIgnore
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     public void setConnections(List<SocialAccount> connections) {
@@ -237,45 +210,7 @@ public class User implements UserDetails, IUsername {
         this.connections.addAll(connections);
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getTwitterId() {
-        return this.twitterId;
-    }
-
-    public void setTwitterId(final String twitterId) {
-        this.twitterId = twitterId;
-    }
-
-    public void setPronouns(@Nullable String pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    @Nullable
-    public String getPronouns() {
-        return pronouns;
-    }
-
-    @Nullable
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(@Nullable String country) {
-        this.country = country;
-    }
-
-    @Nullable
-    public String getLanguagesSpoken() {
-        return languagesSpoken;
-    }
-
+    // TODO: better mappers
     public void setLanguagesSpoken(@Nullable String languagesSpoken) {
         this.languagesSpoken = languagesSpoken;
     }
@@ -284,20 +219,13 @@ public class User implements UserDetails, IUsername {
         this.languagesSpoken = String.join(",", languagesSpoken);
     }
 
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
+    // TODO: better models, this should not be here
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && username.equals(user.username);
+        return (id != null && id.equals(user.id)) && username.equals(user.username);
     }
 
     @Override

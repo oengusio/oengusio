@@ -153,7 +153,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
     @Nullable
     public User getUser() {
-        if (!this.isAuthenticated()) {
+        if (this.isAnonymous()) {
             return null;
         }
 

@@ -38,6 +38,7 @@ public class LineRunnerDto {
         this.runnerName = runnerName;
     }
 
+    @Deprecated
     public static LineRunnerDto fromLineRunner(ScheduleLineRunner lineRunner) {
         final LineRunnerDto dto = new LineRunnerDto();
         final User user = lineRunner.getUser();

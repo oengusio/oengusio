@@ -15,23 +15,27 @@ import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
+import app.oengus.service.mapper.UserMapper;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+    private final UserMapper userMapper;
     private final DiscordService discordService;
     private final TwitchService twitchService;
     private final JWTUtil jwtUtil;
@@ -41,26 +45,6 @@ public class UserService {
     private final ApplicationRepository applicationRepository;
     private final SelectionService selectionService;
     private final ApplicationUserInformationRepository applicationUserInformationRepository;
-
-    @Autowired
-    public UserService(
-        final DiscordService discordService,
-        final TwitchService twitchService, final JWTUtil jwtUtil, final UserRepositoryService userRepositoryService,
-        final SubmissionRepositoryService submissionRepositoryService, final MarathonService marathonService,
-        final SelectionService selectionService,
-        final ApplicationUserInformationRepository applicationUserInformationRepository,
-        final ApplicationRepository applicationRepository
-    ) {
-        this.discordService = discordService;
-        this.twitchService = twitchService;
-        this.jwtUtil = jwtUtil;
-        this.userRepositoryService = userRepositoryService;
-        this.submissionRepositoryService = submissionRepositoryService;
-        this.marathonService = marathonService;
-        this.selectionService = selectionService;
-        this.applicationUserInformationRepository = applicationUserInformationRepository;
-        this.applicationRepository = applicationRepository;
-    }
 
     public Token login(final String host, final LoginRequest request) throws LoginException {
         final String service = request.getService();
@@ -174,6 +158,20 @@ public class UserService {
         this.userRepositoryService.update(user);
     }
 
+    /**
+     * Update an entity, don't use on direct user input please.
+     * @param user The user model to save in the database.
+     * @return the Updated user
+     */
+    public User update(User user) {
+        // Whoops, that is a bug.
+        if (user.getPronouns() != null && user.getPronouns().isBlank()) {
+            user.setPronouns(null);
+        }
+
+        return this.userRepositoryService.update(user);
+    }
+
     @Deprecated
     public void update(final int id, final User userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
@@ -195,11 +193,16 @@ public class UserService {
         user.setDiscordId(null);
         user.setTwitchId(null);
         user.setTwitterId(null);
-        user.setMail(null);
 //        user.setMail("deleted-user@oengus.io");
         user.setEnabled(false);
+        user.setMfaEnabled(false);
+        user.setMfaSecret(null);
+        user.setHashedPassword(null);
 
         final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
+
+        // We need an email or stuff breaks, this anonymizes it.
+        user.setMail(randomHash + "@example.com");
 
         // "Deleted" is 7 in length
         user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
@@ -230,10 +233,14 @@ public class UserService {
         }
     }
 
+    // We need to stop throwing the exceptions and start using optionals.
+    @Deprecated
     public User getUser(final int id) throws NotFoundException {
         return this.userRepositoryService.findById(id);
     }
 
+    @Nonnull
+    @Deprecated
     public User findByUsername(final String username) throws NotFoundException {
         final User user = this.userRepositoryService.findByUsername(username);
 
@@ -244,6 +251,10 @@ public class UserService {
         return user;
     }
 
+    public Optional<User> findOptionalByUsername(final String username) {
+        return this.userRepositoryService.findByUsernameRaw(username);
+    }
+
     public UserProfileDto getUserProfile(final String username) throws NotFoundException {
         final User user = this.userRepositoryService.findByUsername(username);
 
@@ -251,7 +262,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final UserProfileDto userProfileDto = UserProfileDto.fromUserNoHistory(user);
+        final UserProfileDto userProfileDto = this.userMapper.toV1Profile(user);
 
         this.addSubmissionsToProfile(
             userProfileDto,
@@ -377,13 +388,9 @@ public class UserService {
     /* ==================== V2 stuff ==================== */
     @Nullable
     public ProfileDto getUserProfileV2(final String username) {
-        final User user = this.userRepositoryService.findByUsername(username);
-
-        if (user == null) {
-            return null;
-        }
-
-        return ProfileDto.fromUser(user);
+        return this.userRepositoryService.findByUsernameRaw(username)
+            .map(this.userMapper::toProfile)
+            .orElse(null);
     }
 
     public List<ModeratedHistoryDto> getUserModeratedHistory(final int userId) {

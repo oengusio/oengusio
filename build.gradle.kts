@@ -6,6 +6,7 @@ plugins {
 
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.freefair.lombok") version "8.4"
 }
 
 dependencyManagement {
@@ -34,6 +35,7 @@ repositories {
 }
 
 val sentryVersion = "5.7.0"
+val mapstructVersion = "1.5.5.Final"
 
 dependencies {
     // SPRING
@@ -41,6 +43,8 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-actuator")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-security")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-mail")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-web") {
         // remove tomcat as we replace it with undertow
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
@@ -49,13 +53,19 @@ dependencies {
     implementation(group = "org.liquibase", name = "liquibase-core")
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
 
+    // Authentication + OTP
+    implementation(group = "com.google.zxing", name = "core", version = "3.5.1")
+    implementation(group = "de.taimos", name = "totp", version = "1.0")
+
     // POSTGRESQL
     implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
-    implementation(group = "io.jsonwebtoken", name = "jjwt", version = "0.9.1")
-    implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
+    implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.3")
+    runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.12.3")
+    runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.12.3")
+    // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
@@ -91,12 +101,19 @@ dependencies {
 
     // security and shit
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.18.0")
+    implementation("org.passay:passay:1.6.4")
 
     // idk
     implementation("org.javassist:javassist:3.29.1-GA")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.16.0")
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+
+    // development tools, will be removed in production builds
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 }
 
 val wrapper: Wrapper by tasks

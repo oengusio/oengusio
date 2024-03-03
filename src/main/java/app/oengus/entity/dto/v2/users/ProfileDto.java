@@ -3,12 +3,16 @@ package app.oengus.entity.dto.v2.users;
 import app.oengus.entity.model.User;
 import app.oengus.spring.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Schema
 public class ProfileDto {
 
@@ -40,79 +44,7 @@ public class ProfileDto {
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(@Nonnull String displayName) {
-        this.displayName = displayName;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<String> getPronouns() {
-        return pronouns;
-    }
-
-    public void setPronouns(@Nullable List<String> pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    public List<String> getLanguagesSpoken() {
-        return languagesSpoken;
-    }
-
-    public void setLanguagesSpoken(@Nullable List<String> languagesSpoken) {
-        this.languagesSpoken = languagesSpoken;
-    }
-
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
-    }
-
-    @Nullable
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(@Nullable String country) {
-        this.country = country;
-    }
-
-    public List<ConnectionDto> getConnections() {
-        return connections;
-    }
-
-    public void setConnections(List<ConnectionDto> connections) {
-        this.connections = connections;
-    }
-
+    @Deprecated
     public static ProfileDto fromUser(User user) {
         final ProfileDto profile = new ProfileDto();
         profile.setId(user.getId());
