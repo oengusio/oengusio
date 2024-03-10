@@ -2,10 +2,11 @@ package app.oengus.web.v2;
 
 import app.oengus.entity.dto.DataListDto;
 import app.oengus.entity.dto.v2.schedule.ScheduleDto;
-import app.oengus.service.ExportService;
+import app.oengus.entity.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.service.MarathonService;
 import app.oengus.service.ScheduleService;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,20 +14,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
+@RequiredArgsConstructor
 @RestController("v2ScheduleController")
 public class ScheduleApiController implements ScheduleApi {
     private final MarathonService marathonService;
     private final ScheduleService scheduleService;
-    private final ExportService exportService;
-
-    public ScheduleApiController(MarathonService marathonService, ScheduleService scheduleService, ExportService exportService) {
-        this.marathonService = marathonService;
-        this.scheduleService = scheduleService;
-        this.exportService = exportService;
-    }
 
     @Override
-    public ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(final String marathonId, boolean withCustomData) {
+    public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(final String marathonId) {
         if (!this.marathonService.exists(marathonId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
@@ -34,7 +29,7 @@ public class ScheduleApiController implements ScheduleApi {
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
             .body(new DataListDto<>(
-                this.scheduleService.findAllByMarathon(marathonId, withCustomData)
+                this.scheduleService.findAllInfoByMarathon(marathonId)
             ));
     }
 

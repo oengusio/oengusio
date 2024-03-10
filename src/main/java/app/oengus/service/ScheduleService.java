@@ -4,13 +4,16 @@ import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.v2.schedule.ScheduleDto;
+import app.oengus.entity.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.exception.schedule.EmptyScheduleException;
+import app.oengus.service.mapper.ScheduleMapper;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.ScheduleRepositoryService;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +23,21 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepositoryService scheduleRepository;
     private final MarathonRepositoryService marathonRepositoryService;
-
-    @Autowired
-    public ScheduleService(ScheduleRepositoryService scheduleRepository, MarathonRepositoryService marathonRepositoryService) {
-        this.scheduleRepository = scheduleRepository;
-        this.marathonRepositoryService = marathonRepositoryService;
-    }
+    private final ScheduleMapper scheduleMapper;
 
     ///////////
     // v2 stuff
+
+    public List<ScheduleInfoDto> findAllInfoByMarathon(final String marathonId) {
+        return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))
+            .stream()
+            .map(scheduleMapper::toScheduleInfo)
+            .toList();
+    }
 
     public List<ScheduleDto> findAllByMarathon(final String marathonId, boolean withCustomData) {
         return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))

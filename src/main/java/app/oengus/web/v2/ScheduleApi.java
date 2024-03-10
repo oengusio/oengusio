@@ -2,6 +2,7 @@ package app.oengus.web.v2;
 
 import app.oengus.entity.dto.DataListDto;
 import app.oengus.entity.dto.v2.schedule.ScheduleDto;
+import app.oengus.entity.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,10 +40,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<DataListDto<ScheduleDto>> findAllForMarathon(
-        @PathVariable("marathonId") final String marathonId,
-        @RequestParam(defaultValue = "false", required = false) boolean withCustomData
-    );
+    ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}")
     @JsonView(Views.Public.class)
