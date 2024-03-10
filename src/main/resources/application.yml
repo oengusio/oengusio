@@ -140,9 +140,11 @@ spring:
                 transport:
                     protocol: smtp
                 smtp:
+                    ssl:
+                        enable: ${MAIL_SSL:true}
                     starttls:
-                        enable: ${MAIL_STARTTLS:true}
-                        required: ${MAIL_STARTTLS:true}
+                        enable: ${MAIL_STARTTLS:false}
+                        required: ${MAIL_STARTTLS:false}
                 auth: true
                 from:
                     address: ${MAIL_FROM:no-reply@mg.oengus.io}
