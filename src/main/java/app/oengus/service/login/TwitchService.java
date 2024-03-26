@@ -30,7 +30,8 @@ public class TwitchService {
     private final UserRepositoryService userRepositoryService;
 
     public User login(final String code, final String host) {
-        final TwitchUser twitchUser = fetchTwitchUser(code, host);
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.twitchLoginParams, code, host);
+        final TwitchUser twitchUser = fetchTwitchUser(oauthParams);
 
         final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
 
@@ -43,7 +44,8 @@ public class TwitchService {
 
     @Transactional
     public SyncDto sync(final String code, final String host) throws LoginException {
-        final TwitchUser twitchUser = fetchTwitchUser(code, host);
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code, host);
+        final TwitchUser twitchUser = fetchTwitchUser(oauthParams);
 
         final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
 
@@ -54,8 +56,7 @@ public class TwitchService {
         return new SyncDto(twitchUser.getId(), twitchUser.getLogin());
     }
 
-    private TwitchUser fetchTwitchUser(final String code, final String host) {
-        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code, host);
+    private TwitchUser fetchTwitchUser(Map<String, String> oauthParams) {
         final AccessToken accessToken = this.twitchOauthApi.getAccessToken(oauthParams);
         final List<TwitchUser> foundUsers = this.twitchApi.getCurrentUser(
                 String.join(" ", StringUtils.capitalize(accessToken.getTokenType()), accessToken.getAccessToken()),
