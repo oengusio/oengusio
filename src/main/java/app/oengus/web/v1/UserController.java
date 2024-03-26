@@ -55,17 +55,6 @@ public class UserController {
         this.patreonStatusRepositoryService = patreonStatusRepositoryService;
     }
 
-    @PermitAll
-    @Operation(hidden = true)
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
-        if (!this.oauthOrigins.contains(host)) {
-            throw new OengusBusinessException("ORIGIN_DISALLOWED " + host);
-        }
-
-        return ResponseEntity.ok(this.userService.login(host, request));
-    }
-
     @Operation(hidden = true)
     @PostMapping("/sync")
     @RolesAllowed({"ROLE_USER"})

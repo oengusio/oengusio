@@ -46,28 +46,6 @@ public class UserService {
     private final SelectionService selectionService;
     private final ApplicationUserInformationRepository applicationUserInformationRepository;
 
-    public Token login(final String host, final LoginRequest request) throws LoginException {
-        final String service = request.getService();
-        final String code = request.getCode();
-
-        if (code == null || code.isBlank()) {
-            throw new LoginException("Missing code in request");
-        }
-
-        final User user = switch (service) {
-            case "discord" -> this.discordService.login(code, host);
-            case "twitch" -> this.twitchService.login(code, host);
-            // case "twitter" -> this.twitterLoginService.login(code, host);
-            default -> throw new LoginException("UNKNOWN_SERVICE");
-        };
-
-        if (!user.isEnabled()) {
-            throw new LoginException("DISABLED_ACCOUNT");
-        }
-
-        return new Token(this.jwtUtil.generateToken(user));
-    }
-
     public Object sync(final String host, final LoginRequest request) throws LoginException {
         final String service = request.getService();
         final String code = request.getCode();

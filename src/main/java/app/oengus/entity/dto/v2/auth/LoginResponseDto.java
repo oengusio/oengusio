@@ -36,7 +36,11 @@ public class LoginResponseDto {
         MFA_INVALID,
         @Schema(description = "Returned when the login attempt was successful, response will also include the authentication token.")
         LOGIN_SUCCESS,
+        @Schema(description = "Your account is disabled, please contact an administrator.")
+        ACCOUNT_DISABLED,
         @Schema(description = "Returned when either the username or the password are incorrect.")
         USERNAME_PASSWORD_INCORRECT,
+        @Schema(description = "Returned when logging in via a provider and the account does not exist.")
+        OAUTH_ACCOUNT_NOT_FOUND,
     }
 }

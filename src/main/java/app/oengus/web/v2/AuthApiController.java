@@ -9,6 +9,7 @@ import app.oengus.service.auth.AuthService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.spring.JWTUtil;
+import app.oengus.spring.model.LoginRequest;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Principal;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
@@ -40,6 +44,19 @@ public class AuthApiController implements AuthApi {
             .status(HttpStatus.OK)
             .body(
                 this.authService.login(body)
+            );
+    }
+
+    @Override
+    public ResponseEntity<LoginResponseDto> loginWithProvider(LoginRequest body, HttpServletRequest request) throws MalformedURLException {
+        final var url = new URL(request.getRequestURL().toString());
+        final var port = url.getPort() > 0 ? ":" + url.getPort() : "";
+        final var baseUrl = "%s://%s%s".formatted(url.getProtocol(), url.getHost(), port);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                this.authService.loginWithService(body.getService(), body.getCode(), baseUrl)
             );
     }
 

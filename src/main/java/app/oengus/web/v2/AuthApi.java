@@ -2,6 +2,7 @@ package app.oengus.web.v2;
 
 import app.oengus.entity.dto.BooleanStatusDto;
 import app.oengus.entity.dto.v2.auth.*;
+import app.oengus.spring.model.LoginRequest;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.Principal;
 
 @Tag(name = "auth")
@@ -53,6 +56,10 @@ public interface AuthApi {
         }
     )
     ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto body);
+
+    @PostMapping("/login/service")
+    @PreAuthorize("isAnonymous()")
+    ResponseEntity<LoginResponseDto> loginWithProvider(@RequestBody @Valid LoginRequest body, HttpServletRequest request) throws MalformedURLException;
 
     @PostMapping("/signup")
     @PreAuthorize("isAnonymous()")

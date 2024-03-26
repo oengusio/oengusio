@@ -1,26 +1,27 @@
 package app.oengus.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
+
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginRequest {
-
+    @NotBlank
 	private String service;
+
+    @NotBlank
 	private String code;
 
-	public String getService() {
-		return this.service;
-	}
-
-	public void setService(final String service) {
-		this.service = service;
-	}
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setCode(final String code) {
-		this.code = code;
-	}
+    @JsonIgnore
+    @AssertTrue
+    public boolean serviceSupported() {
+        return List.of("discord", "twitch").contains(this.service);
+    }
 }

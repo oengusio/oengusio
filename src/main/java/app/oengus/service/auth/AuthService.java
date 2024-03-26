@@ -6,8 +6,12 @@ import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.model.EmailVerification;
 import app.oengus.entity.model.PasswordReset;
 import app.oengus.entity.model.User;
+import app.oengus.application.exception.auth.UnknownServiceException;
+import app.oengus.application.exception.auth.UserDisabledException;
 import app.oengus.service.EmailService;
 import app.oengus.service.UserService;
+import app.oengus.service.login.DiscordService;
+import app.oengus.service.login.TwitchService;
 import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.service.repository.PasswordResetRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
@@ -34,6 +38,8 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final DiscordService discordService;
+    private final TwitchService twitchService;
     private final EmailVerificationRepositoryService emailVerificationRepositoryService;
 
     public LoginResponseDto login(LoginDto body) {
@@ -49,6 +55,10 @@ public class AuthService {
             // If the password fails, send them an error.
             if (!this.validatePassword(body.getPassword(), user.getPassword())) {
                 throw new InvalidPasswordException();
+            }
+
+            if (!user.isEnabled() || user.getRoles().contains(Role.ROLE_BANNED)) {
+                throw new UserDisabledException();
             }
 
             final String mfaCode = body.getTwoFactorCode();
@@ -76,6 +86,24 @@ public class AuthService {
         } catch (NotFoundException ignored) {
             throw new InvalidPasswordException();
         }
+    }
+
+    public LoginResponseDto loginWithService(final String service, final String code, final String host) {
+        final User user = switch (service) {
+            case "discord" -> this.discordService.login(code, host);
+            case "twitch" -> this.twitchService.login(code, host);
+            default -> throw new UnknownServiceException();
+        };
+
+        if (!user.isEnabled() || user.getRoles().contains(Role.ROLE_BANNED)) {
+            throw new UserDisabledException();
+        }
+
+        // TODO: to MFA or to not MFA?
+
+        return new LoginResponseDto()
+            .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
+            .setToken(this.jwtUtil.generateToken(user));
     }
 
     public SignupResponseDto.Status signUp(SignUpDto body) {
