@@ -50,7 +50,7 @@ public class SubmissionsController {
     ///////// GameController.java ////////
 
     @GetMapping("/export")
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    @PreAuthorize("isMarathonMod(#marathonId) && !isBanned()")
     @JsonView(Views.Public.class)
     @Operation(summary = "Export all submitted games by marathon to CSV")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,

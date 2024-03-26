@@ -89,6 +89,9 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return team.isApplicationsOpen();
     }
 
+    /**
+     * TODO: admin and mod are used interchangeably. Admins should have more power than mods
+     */
     public boolean isMarathonAdmin(final String marathonId) throws NotFoundException {
         final User user = this.getUser();
 
@@ -102,7 +105,23 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         final Marathon marathon = this.marathonService.getById(marathonId);
 
-        return marathon.getCreator().getId() == user.getId();
+        return Objects.equals(marathon.getCreator().getId(), user.getId());
+    }
+
+    public boolean isMarathonMod(final String marathonId) throws NotFoundException {
+        final User user = this.getUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        if (this.isAdmin()) {
+            return true;
+        }
+
+        final Marathon marathon = this.marathonService.getById(marathonId);
+
+        return this.isMarathonMod(marathon, user);
     }
 
     public boolean canUpdateMarathon(final String id) throws NotFoundException {
