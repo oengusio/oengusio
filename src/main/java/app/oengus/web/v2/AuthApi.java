@@ -14,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.Principal;
 
 @Tag(name = "auth")
@@ -59,7 +57,7 @@ public interface AuthApi {
 
     @PostMapping("/login/service")
     @PreAuthorize("isAnonymous()")
-    ResponseEntity<LoginResponseDto> loginWithProvider(@RequestBody @Valid LoginRequest body, HttpServletRequest request) throws MalformedURLException;
+    ResponseEntity<LoginResponseDto> loginWithProvider(@RequestBody @Valid LoginRequest body);
 
     @PostMapping("/signup")
     @PreAuthorize("isAnonymous()")

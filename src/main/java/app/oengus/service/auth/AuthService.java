@@ -88,10 +88,10 @@ public class AuthService {
         }
     }
 
-    public LoginResponseDto loginWithService(final String service, final String code, final String host) {
+    public LoginResponseDto loginWithService(final String service, final String code, final String baseUrl) {
         final User user = switch (service) {
-            case "discord" -> this.discordService.login(code, host);
-            case "twitch" -> this.twitchService.login(code, host);
+            case "discord" -> this.discordService.login(code, baseUrl);
+            case "twitch" -> this.twitchService.login(code, baseUrl);
             default -> throw new UnknownServiceException();
         };
 

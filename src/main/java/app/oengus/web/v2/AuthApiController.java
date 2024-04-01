@@ -14,15 +14,13 @@ import com.google.zxing.WriterException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.Principal;
 
 import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
@@ -37,6 +35,8 @@ public class AuthApiController implements AuthApi {
     // TODO: hexagonal architecture.
     private final EmailVerificationRepositoryService emailVerificationRepositoryService;
     private final JWTUtil jwtUtil;
+    @Value("${oengus.baseUrl}")
+    private String baseUrl;
 
     @Override
     public ResponseEntity<LoginResponseDto> login(@Valid LoginDto body) {
@@ -48,17 +48,11 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<LoginResponseDto> loginWithProvider(LoginRequest body, HttpServletRequest request) throws MalformedURLException {
-        final var url = new URL(request.getRequestURL().toString());
-        final var port = url.getPort() > 0 ? ":" + url.getPort() : "";
-        final var baseUrl = "%s://%s%s".formatted(url.getProtocol(), url.getHost(), port);
-
-        System.out.println(baseUrl);
-
+    public ResponseEntity<LoginResponseDto> loginWithProvider(LoginRequest body) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
-                this.authService.loginWithService(body.getService(), body.getCode(), baseUrl)
+                this.authService.loginWithService(body.getService(), body.getCode(), this.baseUrl)
             );
     }
 

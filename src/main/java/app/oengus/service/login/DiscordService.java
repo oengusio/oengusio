@@ -30,8 +30,8 @@ public class DiscordService {
     @Value("${discord.botToken}")
     private String botToken;
 
-    public User login(final String code, final String host) {
-        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, host);
+    public User login(final String code, final String baseUrl) {
+        final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, baseUrl);
         final AccessToken accessToken = this.discordOauthApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken()));
