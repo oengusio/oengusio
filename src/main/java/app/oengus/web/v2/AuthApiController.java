@@ -53,6 +53,8 @@ public class AuthApiController implements AuthApi {
         final var port = url.getPort() > 0 ? ":" + url.getPort() : "";
         final var baseUrl = "%s://%s%s".formatted(url.getProtocol(), url.getHost(), port);
 
+        System.out.println(baseUrl);
+
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
