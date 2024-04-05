@@ -1,4 +1,4 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
 import app.oengus.entity.model.User;
 import org.springframework.data.repository.CrudRepository;
@@ -8,17 +8,17 @@ import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
 
-    User findByDiscordId(String discordId);
+    Optional<User> findByDiscordId(String discordId);
 
-    User findByTwitchId(String twitchId);
+    Optional<User> findByTwitchId(String twitchId);
 
     User findByTwitterId(String twitterId);
 
-    User findByPatreonId(String patreonId);
+    Optional<User> findByPatreonId(String patreonId);
 
     Optional<User> findByMail(String email);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameIgnoreCase(String username);
 
     boolean existsByUsernameIgnoreCase(String username);
 

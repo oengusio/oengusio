@@ -1,6 +1,6 @@
 package app.oengus.service.repository;
 
-import app.oengus.dao.UserRepository;
+import app.oengus.adapter.jpa.repository.UserRepository;
 import app.oengus.entity.model.User;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Deprecated(forRemoval = true)
 @RequiredArgsConstructor
 public class UserRepositoryService {
 	private final UserRepository userRepository;
@@ -20,7 +21,7 @@ public class UserRepositoryService {
 	}
 
 	public User findByUsername(final String username) throws NotFoundException {
-		return this.userRepository.findByUsername(username)
+		return this.userRepository.findByUsernameIgnoreCase(username)
             .orElseThrow(() -> new NotFoundException("User not found"));
 	}
 
@@ -29,7 +30,7 @@ public class UserRepositoryService {
     }
 
 	public Optional<User> findByUsernameRaw(final String username) {
-		return this.userRepository.findByUsername(username);
+		return this.userRepository.findByUsernameIgnoreCase(username);
 	}
 
 	public User update(final User user) {
@@ -53,11 +54,11 @@ public class UserRepositoryService {
 	}
 
 	public User findByDiscordId(final String id) {
-		return this.userRepository.findByDiscordId(id);
+		return this.userRepository.findByDiscordId(id).orElse(null);
 	}
 
 	public User findByTwitchId(final String id) {
-		return this.userRepository.findByTwitchId(id);
+		return this.userRepository.findByTwitchId(id).orElse(null);
 	}
 
 	public User findByTwitterId(final String id) {
@@ -65,7 +66,7 @@ public class UserRepositoryService {
 	}
 
 	public User findByPatreonId(final String id) {
-		return this.userRepository.findByPatreonId(id);
+		return this.userRepository.findByPatreonId(id).orElse(null);
 	}
 
 	public User save(final User user) {

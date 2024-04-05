@@ -1,6 +1,6 @@
 package app.oengus.entity.dto.v2.users;
 
-import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.model.SocialAccount;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

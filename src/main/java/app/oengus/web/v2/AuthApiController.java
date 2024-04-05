@@ -5,7 +5,7 @@ import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.model.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.UserService;
-import app.oengus.service.auth.AuthService;
+import app.oengus.application.AuthService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.spring.JWTUtil;

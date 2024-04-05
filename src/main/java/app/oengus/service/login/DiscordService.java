@@ -2,6 +2,8 @@ package app.oengus.service.login;
 
 import app.oengus.api.DiscordApi;
 import app.oengus.api.DiscordOauthApi;
+import app.oengus.application.port.UserPersistencePort;
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.User;
 import app.oengus.entity.model.api.discord.DiscordUser;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.LoginException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,23 +29,24 @@ public class DiscordService {
     private final DiscordApi discordApi;
     private final DiscordOauthApi discordOauthApi;
     private final UserRepositoryService userRepositoryService;
+    private final UserPersistencePort userPersistencePort; // TODO: am I allowed to use this here?
 
     @Value("${discord.botToken}")
     private String botToken;
 
-    public User login(final String code, final String baseUrl) {
+    public OengusUser login(final String code, final String baseUrl) {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.discordParams, code, baseUrl);
         final AccessToken accessToken = this.discordOauthApi.getAccessToken(oauthParams);
         final DiscordUser discordUser = this.discordApi.getCurrentUser(
                 String.join(" ", accessToken.getTokenType(), accessToken.getAccessToken()));
 
-        final User user = this.userRepositoryService.findByDiscordId(discordUser.getId());
+        final Optional<OengusUser> user = this.userPersistencePort.findByDiscordId(discordUser.getId());
 
-        if (user == null) {
+        if (user.isEmpty()) {
             throw new UnknownUserException();
         }
 
-        return user;
+        return user.get();
     }
 
     public SyncDto sync(final String code, final String host) throws LoginException {

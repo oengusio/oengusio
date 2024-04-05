@@ -3,7 +3,7 @@ package app.oengus.service;
 import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;
-import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.entity.dto.v2.simple.SimpleCategoryDto;
 import app.oengus.entity.dto.v2.simple.SimpleGameDto;
@@ -32,8 +32,9 @@ import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+@Service("oldUserService")
 @RequiredArgsConstructor
+@Deprecated(forRemoval = true)
 public class UserService {
     private final UserMapper userMapper;
     private final DiscordService discordService;

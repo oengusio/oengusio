@@ -1,15 +1,15 @@
-package app.oengus.service.auth;
+package app.oengus.application;
 
 import app.oengus.application.exception.InvalidMFACodeException;
 import app.oengus.application.exception.InvalidPasswordException;
+import app.oengus.application.exception.auth.UnknownServiceException;
+import app.oengus.application.exception.auth.UserDisabledException;
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.model.EmailVerification;
 import app.oengus.entity.model.PasswordReset;
-import app.oengus.entity.model.User;
-import app.oengus.application.exception.auth.UnknownServiceException;
-import app.oengus.application.exception.auth.UserDisabledException;
 import app.oengus.service.EmailService;
-import app.oengus.service.UserService;
+import app.oengus.service.auth.TOTPService;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
 import app.oengus.service.repository.EmailVerificationRepositoryService;
@@ -17,14 +17,12 @@ import app.oengus.service.repository.PasswordResetRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,54 +40,57 @@ public class AuthService {
     private final TwitchService twitchService;
     private final EmailVerificationRepositoryService emailVerificationRepositoryService;
 
+    // TODO: make a custom model? According to clean architecture it is required.
     public LoginResponseDto login(LoginDto body) {
-        try {
-            final User user = this.userService.findByUsername(body.getUsername());
+        final var optionalUser = this.userService.findByUsername(body.getUsername());
 
-            // Fast return if the user does not have a password set
-            if (StringUtils.isEmpty(user.getPassword())) {
-                throw new InvalidPasswordException();
-            }
-
-            // Validate password before 2fa, that feels more secure
-            // If the password fails, send them an error.
-            if (!this.validatePassword(body.getPassword(), user.getPassword())) {
-                throw new InvalidPasswordException();
-            }
-
-            if (!user.isEnabled() || user.getRoles().contains(Role.ROLE_BANNED)) {
-                throw new UserDisabledException();
-            }
-
-            final String mfaCode = body.getTwoFactorCode();
-            final String user2FaSecret = user.getMfaSecret();
-            boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
-            boolean mfaCodeCorrect = mfaCode == null;
-
-            if (userHas2fa) {
-                if (mfaCode == null) {
-                    return new LoginResponseDto()
-                        .setStatus(LoginResponseDto.Status.MFA_REQUIRED);
-                } else {
-                    final String totpCode = this.totpService.getTOTPCode(user2FaSecret);
-
-                    if (!totpCode.equals(mfaCode)) {
-                        throw new InvalidMFACodeException();
-                    }
-                }
-            }
-
-            // login successful, return body
-            return new LoginResponseDto()
-                .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-                .setToken(this.jwtUtil.generateToken(user));
-        } catch (NotFoundException ignored) {
+        if (optionalUser.isEmpty()) {
             throw new InvalidPasswordException();
         }
+
+        final var user = optionalUser.get();
+
+        // Fast return if the user does not have a password set
+        if (StringUtils.isEmpty(user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        // Validate password before 2fa, that feels more secure
+        // If the password fails, send them an error.
+        if (!this.validatePassword(body.getPassword(), user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        if (!user.isEnabled() || user.getRoles().contains(Role.ROLE_BANNED)) {
+            throw new UserDisabledException();
+        }
+
+        final String mfaCode = body.getTwoFactorCode();
+        final String user2FaSecret = user.getMfaSecret();
+        boolean userHas2fa = user.isMfaEnabled() && user2FaSecret != null;
+        boolean mfaCodeCorrect = mfaCode == null;
+
+        if (userHas2fa) {
+            if (mfaCode == null) {
+                return new LoginResponseDto()
+                    .setStatus(LoginResponseDto.Status.MFA_REQUIRED);
+            } else {
+                final String totpCode = this.totpService.getTOTPCode(user2FaSecret);
+
+                if (!totpCode.equals(mfaCode)) {
+                    throw new InvalidMFACodeException();
+                }
+            }
+        }
+
+        // login successful, return body
+        return new LoginResponseDto()
+            .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
+            .setToken(this.jwtUtil.generateToken(user));
     }
 
     public LoginResponseDto loginWithService(final String service, final String code, final String baseUrl) {
-        final User user = switch (service) {
+        final OengusUser user = switch (service) {
             case "discord" -> this.discordService.login(code, baseUrl);
             case "twitch" -> this.twitchService.login(code, baseUrl);
             default -> throw new UnknownServiceException();
@@ -108,29 +109,24 @@ public class AuthService {
 
     public SignupResponseDto.Status signUp(SignUpDto body) {
         // Check if username is already taken
-        if (this.userService.exists(body.getUsername())) {
+        if (this.userService.existsByUsername(body.getUsername())) {
             return SignupResponseDto.Status.USERNAME_TAKEN;
         }
 
-        final User user = new User();
+        // TODO: make mapper to get this user.
+        final OengusUser user = new OengusUser(0);
 
-        user.setRoles(List.of(Role.ROLE_USER));
+        user.addRole(Role.ROLE_USER);
         user.setEnabled(true);
         user.setEmailVerified(false);
         user.setDisplayName(body.getDisplayName());
         user.setUsername(body.getUsername());
-        user.setMail(body.getEmail());
-        user.setHashedPassword(
+        user.setEmail(body.getEmail());
+        user.setPassword(
             this.encodePassword(body.getPassword())
         );
         user.setCountry(body.getCountry());
-
-        if (body.getPronouns().isEmpty()) {
-            user.setPronouns(null);
-        } else {
-            user.setPronouns(String.join(",", body.getPronouns()));
-        }
-
+        user.setPronouns(body.getPronouns());
         user.setLanguagesSpoken(body.getLanguagesSpoken());
         user.setConnections(
             body.getConnections()
@@ -138,21 +134,19 @@ public class AuthService {
                 .map((connection) -> {
                     final var conn = connection.toSocialAccount();
 
-                    conn.setUser(user);
-
                     return conn;
                 })
                 .toList()
         );
 
-        final var updatedUser = this.userService.update(user);
+        final var updatedUser = this.userService.save(user);
 
         this.sendNewVerificationEmail(user);
 
         return SignupResponseDto.Status.SIGNUP_SUCCESS;
     }
 
-    public void sendNewVerificationEmail(User user) {
+    public void sendNewVerificationEmail(OengusUser user) {
         final var verificationHash = UUID.randomUUID().toString();
         final var emailVerification = new EmailVerification();
 
@@ -168,7 +162,7 @@ public class AuthService {
     }
 
     public PasswordResetResponseDto.Status initPasswordReset(PasswordResetRequestDto body) {
-        final var searchUser = this.userRepositoryService.findByEmail(body.getEmail());
+        final var searchUser = this.userService.findByEmail(body.getEmail());
 
         // Always tell the user that a password reset has been sent
         // I guess this prevents people from datamining emails.
@@ -213,7 +207,7 @@ public class AuthService {
             this.encodePassword(reset.getPassword())
         );
 
-        this.userService.update(user);
+        this.userService.save(user);
         this.passwordResetRepositoryService.delete(passwordReset);
 
         return PasswordResetResponseDto.Status.PASSWORD_RESET_SUCCESS;

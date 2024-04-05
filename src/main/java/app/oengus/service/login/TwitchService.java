@@ -2,6 +2,8 @@ package app.oengus.service.login;
 
 import app.oengus.api.TwitchApi;
 import app.oengus.api.TwitchOauthApi;
+import app.oengus.application.port.UserPersistencePort;
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.User;
 import app.oengus.entity.model.api.TwitchUser;
@@ -20,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +31,19 @@ public class TwitchService {
     private final TwitchOauthApi twitchOauthApi;
     private final TwitchApi twitchApi;
     private final UserRepositoryService userRepositoryService;
+    private final UserPersistencePort userPersistencePort; // TODO: am I allowed to use this here?
 
-    public User login(final String code, final String host) {
+    public OengusUser login(final String code, final String host) {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.twitchLoginParams, code, host);
         final TwitchUser twitchUser = fetchTwitchUser(oauthParams);
 
-        final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
+        final Optional<OengusUser> user = this.userPersistencePort.findByTwitchId(twitchUser.getId());
 
-        if (user == null) {
+        if (user.isEmpty()) {
             throw new UnknownUserException();
         }
 
-        return user;
+        return user.get();
     }
 
     @Transactional

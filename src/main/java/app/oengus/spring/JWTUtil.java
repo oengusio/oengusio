@@ -1,5 +1,6 @@
 package app.oengus.spring;
 
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -44,11 +45,22 @@ public class JWTUtil {
         }
     }
 
+    @Deprecated(forRemoval = true)
     public String generateToken(final User user) {
         final Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRoles());
         claims.put("enabled", user.isEnabled());
         claims.put("id", user.getId());
+        return this.doGenerateToken(claims, user.getUsername(), user.getId());
+    }
+
+    public String generateToken(final OengusUser user) {
+        final var claims = Map.of(
+            "role", user.getRoles(),
+            "enabled", user.isEnabled(),
+            "id", user.getId()
+        );
+
         return this.doGenerateToken(claims, user.getUsername(), user.getId());
     }
 

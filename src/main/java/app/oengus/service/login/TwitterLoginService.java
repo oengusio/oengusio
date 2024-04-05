@@ -1,7 +1,7 @@
 package app.oengus.service.login;
 
 import app.oengus.api.TwitterOAuthApi;
-import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;

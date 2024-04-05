@@ -23,7 +23,7 @@ public class TemplateEngineConfig {
 
         resolver.setPrefix("templates/mail/");
         resolver.setSuffix(".html");
-        resolver.setTemplateMode("HTML5");
+        resolver.setTemplateMode("HTML");
         resolver.setOrder(1);
         resolver.setCacheable(true);
 

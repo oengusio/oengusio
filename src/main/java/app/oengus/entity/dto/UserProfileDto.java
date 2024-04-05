@@ -1,7 +1,7 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.IUsername;
-import app.oengus.entity.constants.SocialPlatform;
+import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.model.ScheduleLineRunner;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.entity.model.User;

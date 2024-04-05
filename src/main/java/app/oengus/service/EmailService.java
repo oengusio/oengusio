@@ -1,6 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.application.exception.WrappedException;
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -43,7 +44,7 @@ public class EmailService {
         return message;
     }
 
-    public void sendPasswordReset(User to, String resetToken) {
+    public void sendPasswordReset(OengusUser to, String resetToken) {
         try {
             final MimeMessage message = getDefaultEmailSettings();
 
@@ -55,7 +56,7 @@ public class EmailService {
 
             message.setText(htmlTemplate, "UTF-8", "html");
             message.setSubject("Reset your password.");
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getMail(), to.getDisplayName()));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getEmail(), to.getDisplayName()));
 
             this.mailSender.send(message);
         } catch (Exception e) {
@@ -63,7 +64,7 @@ public class EmailService {
         }
     }
 
-    public void sendEmailVerification(User to, String verifyHash) {
+    public void sendEmailVerification(OengusUser to, String verifyHash) {
         try {
             final MimeMessage message = getDefaultEmailSettings();
 
@@ -75,7 +76,7 @@ public class EmailService {
 
             message.setText(htmlTemplate, "UTF-8", "html");
             message.setSubject("Verify your email!");
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getMail(), to.getDisplayName()));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to.getEmail(), to.getDisplayName()));
 
             this.mailSender.send(message);
         } catch (Exception e) {
