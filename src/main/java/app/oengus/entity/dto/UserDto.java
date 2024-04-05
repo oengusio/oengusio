@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.IUsername;
+import app.oengus.domain.IUsername;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.service.LanguageService;
 import app.oengus.spring.model.Views;

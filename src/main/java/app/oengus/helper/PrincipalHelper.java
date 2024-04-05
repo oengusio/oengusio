@@ -8,6 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.annotation.Nullable;
 import java.security.Principal;
 
+// The principal is no longer a User object to avoid a lot of confusion.
+// This is gonna cause errors during testing for sure.
+@Deprecated(forRemoval = true)
 public class PrincipalHelper {
 
     @Nullable

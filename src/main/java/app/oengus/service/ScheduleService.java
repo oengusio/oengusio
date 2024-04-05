@@ -3,8 +3,8 @@ package app.oengus.service;
 import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.dto.V1ScheduleDto;
-import app.oengus.entity.dto.v2.schedule.ScheduleDto;
-import app.oengus.entity.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
@@ -14,7 +14,6 @@ import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.repository.ScheduleRepositoryService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;

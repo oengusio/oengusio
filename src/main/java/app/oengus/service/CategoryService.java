@@ -1,9 +1,7 @@
 package app.oengus.service;
 
-import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
-import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
-import app.oengus.entity.dto.v2.marathon.CategoryDto;
+import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.PrincipalHelper;

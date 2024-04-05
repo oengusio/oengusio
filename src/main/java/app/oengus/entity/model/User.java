@@ -1,6 +1,6 @@
 package app.oengus.entity.model;
 
-import app.oengus.entity.IUsername;
+import app.oengus.domain.IUsername;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,15 +9,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +26,7 @@ import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
 @Getter
 @Setter
 @Table(name = "users")
-public class User implements UserDetails, IUsername {
+public class User implements IUsername {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
@@ -119,11 +115,6 @@ public class User implements UserDetails, IUsername {
     @JsonView(Views.NeverFuckingShow.class)
     private String mfaSecret;
 
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
     // TODO: I hate v1, this should be a DTO
     @JsonView(Views.Public.class)
     public boolean hasPassword() {
@@ -131,41 +122,8 @@ public class User implements UserDetails, IUsername {
     }
 
     @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-            .map(Enum::toString)
-            .map(SimpleGrantedAuthority::new)
-            .toList();
-    }
-
-    @Override
-    @JsonIgnore
-    public String getPassword() {
-        return hashedPassword;
-    }
-
-    @Override
     public String getUsername() {
         return this.username;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonLocked() {
-        return !roles.contains(Role.ROLE_BANNED);
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isCredentialsNonExpired() {
-        return false;
     }
 
     @JsonIgnore

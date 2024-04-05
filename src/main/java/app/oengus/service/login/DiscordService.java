@@ -2,7 +2,7 @@ package app.oengus.service.login;
 
 import app.oengus.api.DiscordApi;
 import app.oengus.api.DiscordOauthApi;
-import app.oengus.application.port.UserPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.User;

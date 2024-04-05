@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.SubmissionRepository;
-import app.oengus.entity.dto.v2.marathon.SubmissionDto;
+import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;

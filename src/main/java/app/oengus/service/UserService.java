@@ -5,17 +5,17 @@ import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.dto.*;
-import app.oengus.entity.dto.v2.simple.SimpleCategoryDto;
-import app.oengus.entity.dto.v2.simple.SimpleGameDto;
-import app.oengus.entity.dto.v2.users.ModeratedHistoryDto;
-import app.oengus.entity.dto.v2.users.ProfileDto;
-import app.oengus.entity.dto.v2.users.ProfileHistoryDto;
+import app.oengus.adapter.rest.dto.v2.simple.SimpleCategoryDto;
+import app.oengus.adapter.rest.dto.v2.simple.SimpleGameDto;
+import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
+import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
+import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
-import app.oengus.service.mapper.UserMapper;
+import app.oengus.service.mapper.ProfileMapper;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Deprecated(forRemoval = true)
 public class UserService {
-    private final UserMapper userMapper;
+    private final ProfileMapper profileMapper;
     private final DiscordService discordService;
     private final TwitchService twitchService;
     private final JWTUtil jwtUtil;
@@ -241,7 +241,7 @@ public class UserService {
             throw new NotFoundException("Unknown user");
         }
 
-        final UserProfileDto userProfileDto = this.userMapper.toV1Profile(user);
+        final UserProfileDto userProfileDto = this.profileMapper.toV1Profile(user);
 
         this.addSubmissionsToProfile(
             userProfileDto,
@@ -368,7 +368,7 @@ public class UserService {
     @Nullable
     public ProfileDto getUserProfileV2(final String username) {
         return this.userRepositoryService.findByUsernameRaw(username)
-            .map(this.userMapper::toProfile)
+            .map(this.profileMapper::toProfile)
             .orElse(null);
     }
 

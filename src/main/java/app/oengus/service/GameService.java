@@ -1,6 +1,6 @@
 package app.oengus.service;
 
-import app.oengus.entity.dto.v2.marathon.GameDto;
+import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
 import app.oengus.entity.model.Game;
 import app.oengus.entity.model.Submission;
 import app.oengus.entity.model.User;

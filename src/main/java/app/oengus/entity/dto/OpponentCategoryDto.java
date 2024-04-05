@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.dto.v2.users.ProfileDto;
+import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.Availability;
 import app.oengus.entity.model.Opponent;
 import app.oengus.entity.model.Submission;

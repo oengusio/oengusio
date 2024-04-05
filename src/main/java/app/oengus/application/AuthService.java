@@ -1,11 +1,11 @@
 package app.oengus.application;
 
+import app.oengus.adapter.rest.dto.v2.auth.*;
 import app.oengus.application.exception.InvalidMFACodeException;
 import app.oengus.application.exception.InvalidPasswordException;
 import app.oengus.application.exception.auth.UnknownServiceException;
 import app.oengus.application.exception.auth.UserDisabledException;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.dto.v2.auth.*;
 import app.oengus.entity.model.EmailVerification;
 import app.oengus.entity.model.PasswordReset;
 import app.oengus.service.EmailService;
@@ -107,41 +107,15 @@ public class AuthService {
             .setToken(this.jwtUtil.generateToken(user));
     }
 
-    public SignupResponseDto.Status signUp(SignUpDto body) {
+    public SignupResponseDto.Status signUp(OengusUser newUser) {
         // Check if username is already taken
-        if (this.userService.existsByUsername(body.getUsername())) {
+        if (this.userService.existsByUsername(newUser.getUsername())) {
             return SignupResponseDto.Status.USERNAME_TAKEN;
         }
 
-        // TODO: make mapper to get this user.
-        final OengusUser user = new OengusUser(0);
+        final var updatedUser = this.userService.save(newUser);
 
-        user.addRole(Role.ROLE_USER);
-        user.setEnabled(true);
-        user.setEmailVerified(false);
-        user.setDisplayName(body.getDisplayName());
-        user.setUsername(body.getUsername());
-        user.setEmail(body.getEmail());
-        user.setPassword(
-            this.encodePassword(body.getPassword())
-        );
-        user.setCountry(body.getCountry());
-        user.setPronouns(body.getPronouns());
-        user.setLanguagesSpoken(body.getLanguagesSpoken());
-        user.setConnections(
-            body.getConnections()
-                .stream()
-                .map((connection) -> {
-                    final var conn = connection.toSocialAccount();
-
-                    return conn;
-                })
-                .toList()
-        );
-
-        final var updatedUser = this.userService.save(user);
-
-        this.sendNewVerificationEmail(user);
+        this.sendNewVerificationEmail(updatedUser);
 
         return SignupResponseDto.Status.SIGNUP_SUCCESS;
     }

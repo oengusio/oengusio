@@ -1,6 +1,6 @@
 package app.oengus.service.mapper;
 
-import app.oengus.entity.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.entity.model.Schedule;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

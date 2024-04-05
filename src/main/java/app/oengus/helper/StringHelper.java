@@ -1,6 +1,6 @@
 package app.oengus.helper;
 
-import app.oengus.entity.IUsername;
+import app.oengus.domain.IUsername;
 
 public class StringHelper {
     public static String escapeMarkdown(String input) {

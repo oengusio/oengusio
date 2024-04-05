@@ -3,7 +3,7 @@ package app.oengus.service;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
-import app.oengus.entity.dto.v2.MarathonHomeDto;
+import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.User;
@@ -30,7 +30,6 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -2,7 +2,7 @@ package app.oengus.service.login;
 
 import app.oengus.api.TwitchApi;
 import app.oengus.api.TwitchOauthApi;
-import app.oengus.application.port.UserPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
 import app.oengus.entity.model.User;

@@ -2,7 +2,7 @@ package app.oengus.adapter.jpa;
 
 import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.UserRepository;
-import app.oengus.application.port.UserPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
