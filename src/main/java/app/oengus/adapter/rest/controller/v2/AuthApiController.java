@@ -5,10 +5,10 @@ import app.oengus.adapter.rest.mapper.AuthMapper;
 import app.oengus.application.AuthService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
+import app.oengus.application.port.security.JWTPort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.BooleanStatusDto;
 import app.oengus.service.auth.TOTPService;
-import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.LoginRequest;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;
@@ -33,7 +33,7 @@ public class AuthApiController implements AuthApi {
     private final AuthService authService;
     private final UserService userService;
     private final EmailVerificationPersistencePort emailVerificationPersistencePort;
-    private final JWTUtil jwtUtil;
+    private final JWTPort jwtPort;
     @Value("${oengus.baseUrl}")
     private String baseUrl;
 
@@ -73,7 +73,7 @@ public class AuthApiController implements AuthApi {
     @Override
     public ResponseEntity<LoginResponseDto> refreshUserToken() {
         final var user = this.securityPort.getAuthenticatedUser();
-        final var newToken = this.jwtUtil.generateToken(user);
+        final var newToken = this.jwtPort.generateToken(user);
 
         return ResponseEntity
             .status(HttpStatus.OK)

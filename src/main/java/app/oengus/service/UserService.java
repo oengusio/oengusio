@@ -19,7 +19,7 @@ import app.oengus.service.login.TwitchService;
 import app.oengus.service.mapper.ProfileMapper;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
-import app.oengus.spring.JWTUtil;
+import app.oengus.adapter.security.JWTAdapter;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
@@ -40,7 +40,7 @@ public class UserService {
     private final ProfileMapper profileMapper;
     private final DiscordService discordService;
     private final TwitchService twitchService;
-    private final JWTUtil jwtUtil;
+    private final JWTAdapter jwtAdapter;
     private final UserRepositoryService userRepositoryService;
     private final SubmissionRepositoryService submissionRepositoryService;
     private final MarathonService marathonService;

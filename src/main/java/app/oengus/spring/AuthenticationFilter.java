@@ -1,6 +1,7 @@
 package app.oengus.spring;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
+import app.oengus.application.port.security.JWTPort;
 import app.oengus.spring.model.Role;
 import io.jsonwebtoken.Claims;
 import io.sentry.Sentry;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private JWTUtil jwtUtil; // TODO: See if autowire via constructor is a better option
+    private JWTPort jwtPort; // TODO: See if autowire via constructor is a better option
 
 	private static final String AUTH_HEADER = "Authorization";
 
@@ -46,9 +47,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         // TODO: there is probably a better way of going about this
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			final String token = authHeader.substring(7);
-			if (this.jwtUtil.isTokenValid(token)) {
+			if (this.jwtPort.isTokenValid(token)) {
 				try {
-					final Claims claims = this.jwtUtil.getAllClaimsFromToken(token);
+					final Claims claims = this.jwtPort.getAllClaimsFromToken(token);
 					@SuppressWarnings("unchecked")
                     final List<String> rolesString = claims.get("role", List.class);
 					final boolean enabled = claims.get("enabled", Boolean.class);

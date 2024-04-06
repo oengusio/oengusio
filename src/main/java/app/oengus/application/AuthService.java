@@ -7,6 +7,7 @@ import app.oengus.application.exception.auth.UnknownServiceException;
 import app.oengus.application.exception.auth.UserDisabledException;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
 import app.oengus.application.port.persistence.PasswordResetPersistencePort;
+import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PendingEmailVerification;
 import app.oengus.domain.PendingPasswordReset;
@@ -14,7 +15,6 @@ import app.oengus.service.EmailService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
-import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class AuthService {
     private final TOTPService totpService;
     private final UserService userService;
-    private final JWTUtil jwtUtil;
+    private final JWTPort jwtPort;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final DiscordService discordService;
@@ -83,7 +83,7 @@ public class AuthService {
         // login successful, return body
         return new LoginResponseDto()
             .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-            .setToken(this.jwtUtil.generateToken(user));
+            .setToken(this.jwtPort.generateToken(user));
     }
 
     public LoginResponseDto loginWithService(final String service, final String code, final String baseUrl) {
@@ -101,7 +101,7 @@ public class AuthService {
 
         return new LoginResponseDto()
             .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-            .setToken(this.jwtUtil.generateToken(user));
+            .setToken(this.jwtPort.generateToken(user));
     }
 
     public SignupResponseDto.Status signUp(OengusUser newUser) {

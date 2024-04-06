@@ -1,7 +1,7 @@
-package app.oengus.spring;
+package app.oengus.adapter.security;
 
+import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
-import app.oengus.adapter.jpa.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JWTUtil {
+public class JWTAdapter implements JWTPort {
     private static final String JWT_ISS = "OengusIO";
 
     @Value("${oengus.jwt.secret}")
@@ -25,6 +24,7 @@ public class JWTUtil {
     @Value("${oengus.jwt.expiration}") // 604800 seconds == 7 days
     private String expirationTime;
 
+    @Override
     public Claims getAllClaimsFromToken(final String token) {
         return Jwts.parser()
             .verifyWith(getKey())
@@ -34,6 +34,7 @@ public class JWTUtil {
             .getPayload();
     }
 
+    @Override
     public boolean isTokenValid(final String token) {
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
@@ -45,15 +46,7 @@ public class JWTUtil {
         }
     }
 
-    @Deprecated(forRemoval = true)
-    public String generateToken(final User user) {
-        final Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRoles());
-        claims.put("enabled", user.isEnabled());
-        claims.put("id", user.getId());
-        return this.doGenerateToken(claims, user.getUsername(), user.getId());
-    }
-
+    @Override
     public String generateToken(final OengusUser user) {
         final var claims = Map.of(
             "role", user.getRoles(),
