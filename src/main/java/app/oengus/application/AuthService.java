@@ -6,15 +6,14 @@ import app.oengus.application.exception.InvalidPasswordException;
 import app.oengus.application.exception.auth.UnknownServiceException;
 import app.oengus.application.exception.auth.UserDisabledException;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
+import app.oengus.application.port.persistence.PasswordResetPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PendingEmailVerification;
-import app.oengus.entity.model.PasswordReset;
+import app.oengus.domain.PendingPasswordReset;
 import app.oengus.service.EmailService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
-import app.oengus.service.repository.PasswordResetRepositoryService;
-import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;
@@ -23,23 +22,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final EmailVerificationPersistencePort emailVerificationPersistencePort;
-
     private final TOTPService totpService;
     private final UserService userService;
-    private final PasswordResetRepositoryService passwordResetRepositoryService;
-    private final UserRepositoryService userRepositoryService;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final DiscordService discordService;
     private final TwitchService twitchService;
+    private final PasswordResetPersistencePort passwordResetPersistencePort;
+    private final EmailVerificationPersistencePort emailVerificationPersistencePort;
 
     // TODO: make a custom model? According to clean architecture it is required.
     public LoginResponseDto login(LoginDto body) {
@@ -150,16 +146,15 @@ public class AuthService {
             return PasswordResetResponseDto.Status.EMAIL_VERIFICATION_REQUIRED;
         }
 
-        final var passwordReset = new PasswordReset();
+        final var passwordReset = new PendingPasswordReset(
+            user,
+            UUID.randomUUID().toString(),
+            LocalDate.now()
+        );
 
-        passwordReset.setUser(user);
-        passwordReset.setToken(UUID.randomUUID().toString());
-        // This should not be null by default, thanks JPA
-        passwordReset.setCreatedAt(LocalDate.now());
+        this.passwordResetPersistencePort.save(passwordReset);
 
-        final var updatedReset = this.passwordResetRepositoryService.save(passwordReset);
-
-        this.emailService.sendPasswordReset(user, updatedReset.getToken());
+        this.emailService.sendPasswordReset(user, passwordReset.token());
 
         return PasswordResetResponseDto.Status.PASSWORD_RESET_SENT;
     }
@@ -168,21 +163,21 @@ public class AuthService {
     //  In theory people can reset the password for random users. (not sure how guessable UUID 4 is)
     //  But since this is (probably) not a security issue because they don't know who's password they just reset.
     public PasswordResetResponseDto.Status resetUserPassword(PasswordResetDto reset) {
-        final Optional<PasswordReset> byToken = this.passwordResetRepositoryService.findByToken(reset.getToken());
+        final var byToken = this.passwordResetPersistencePort.findByToken(reset.getToken());
 
         if (byToken.isEmpty()) {
             return PasswordResetResponseDto.Status.PASSWORD_RESET_CODE_INVALID;
         }
 
         final var passwordReset = byToken.get();
-        final var user = passwordReset.getUser();
+        final var user = passwordReset.user();
 
-        user.setHashedPassword(
+        user.setPassword(
             this.encodePassword(reset.getPassword())
         );
 
         this.userService.save(user);
-        this.passwordResetRepositoryService.delete(passwordReset);
+        this.passwordResetPersistencePort.delete(passwordReset);
 
         return PasswordResetResponseDto.Status.PASSWORD_RESET_SUCCESS;
     }

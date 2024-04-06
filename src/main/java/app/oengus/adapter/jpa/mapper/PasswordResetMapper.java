@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
-import app.oengus.adapter.jpa.entity.EmailVerification;
-import app.oengus.domain.PendingEmailVerification;
+import app.oengus.domain.PendingPasswordReset;
+import app.oengus.adapter.jpa.entity.PasswordReset;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,9 +13,9 @@ import org.mapstruct.Mapping;
         UserMapper.class,
     }
 )
-public interface EmailVerificationMapper {
-    PendingEmailVerification toDomain(EmailVerification model);
+public interface PasswordResetMapper {
+    PendingPasswordReset toDomain(PasswordReset model);
 
     @Mapping(source = "user.id", target = "userId")
-    EmailVerification fromDomain(PendingEmailVerification domain);
+    PasswordReset fromDomain(PendingPasswordReset domain);
 }

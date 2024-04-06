@@ -4,7 +4,7 @@ import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.spring.model.Role;
 import io.jsonwebtoken.Claims;
 import io.sentry.Sentry;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,9 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
-    private final JWTUtil jwtUtil;
+    @Autowired
+    private JWTUtil jwtUtil; // TODO: See if autowire via constructor is a better option
 
 	private static final String AUTH_HEADER = "Authorization";
 

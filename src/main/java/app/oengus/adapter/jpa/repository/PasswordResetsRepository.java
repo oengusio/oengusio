@@ -1,6 +1,6 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.PasswordReset;
+import app.oengus.adapter.jpa.entity.PasswordReset;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
