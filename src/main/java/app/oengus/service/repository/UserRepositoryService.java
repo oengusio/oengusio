@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.adapter.jpa.repository.UserRepository;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

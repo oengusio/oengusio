@@ -5,7 +5,7 @@ import app.oengus.api.TwitchOauthApi;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.model.api.TwitchUser;
 import app.oengus.application.exception.auth.UnknownUserException;
 import app.oengus.helper.OauthHelper;

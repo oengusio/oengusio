@@ -2,7 +2,7 @@ package app.oengus.service.mapper;
 
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

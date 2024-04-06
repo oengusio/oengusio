@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
-import app.oengus.dao.EmailVerificationRepository;
-import app.oengus.entity.model.EmailVerification;
+import app.oengus.adapter.jpa.repository.EmailVerificationRepository;
+import app.oengus.adapter.jpa.entity.EmailVerification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Deprecated(forRemoval = true)
 public class EmailVerificationRepositoryService {
     private final EmailVerificationRepository emailVerificationRepository;
 

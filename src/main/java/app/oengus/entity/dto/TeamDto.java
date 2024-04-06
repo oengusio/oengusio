@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

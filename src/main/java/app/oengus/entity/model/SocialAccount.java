@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.domain.SocialPlatform;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;

@@ -1,7 +1,7 @@
 package app.oengus.entity.dto.v1.submissions;
 
 import app.oengus.entity.model.SocialAccount;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

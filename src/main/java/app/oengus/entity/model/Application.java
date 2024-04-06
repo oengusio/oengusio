@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;

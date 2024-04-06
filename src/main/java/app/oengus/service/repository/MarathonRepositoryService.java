@@ -3,13 +3,8 @@ package app.oengus.service.repository;
 import app.oengus.dao.MarathonRepository;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import javassist.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

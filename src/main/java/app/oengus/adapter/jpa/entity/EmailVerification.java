@@ -1,4 +1,4 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
 import lombok.Getter;
 import lombok.Setter;

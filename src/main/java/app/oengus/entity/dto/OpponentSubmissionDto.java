@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 

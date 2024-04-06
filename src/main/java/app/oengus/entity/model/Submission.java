@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.helper.TimeHelpers;

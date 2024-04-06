@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
 import app.oengus.entity.model.*;

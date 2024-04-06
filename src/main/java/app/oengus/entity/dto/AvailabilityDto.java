@@ -1,7 +1,7 @@
 package app.oengus.entity.dto;
 
 import app.oengus.entity.model.Availability;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 
 import static app.oengus.helper.StringHelper.getUserDisplay;
 

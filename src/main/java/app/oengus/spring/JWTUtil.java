@@ -1,7 +1,7 @@
 package app.oengus.spring;
 
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

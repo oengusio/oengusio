@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.entity.constants.ApplicationStatus;

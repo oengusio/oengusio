@@ -5,7 +5,7 @@ import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

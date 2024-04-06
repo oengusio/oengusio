@@ -2,7 +2,7 @@ package app.oengus.entity.model.api;
 
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.Application;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;

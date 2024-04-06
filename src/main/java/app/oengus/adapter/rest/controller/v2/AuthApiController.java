@@ -3,12 +3,11 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.v2.auth.*;
 import app.oengus.adapter.rest.mapper.AuthMapper;
 import app.oengus.application.AuthService;
+import app.oengus.application.UserService;
+import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
+import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.BooleanStatusDto;
-import app.oengus.entity.model.User;
-import app.oengus.helper.PrincipalHelper;
-import app.oengus.service.UserService;
 import app.oengus.service.auth.TOTPService;
-import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.spring.JWTUtil;
 import app.oengus.spring.model.LoginRequest;
 import com.google.zxing.WriterException;
@@ -22,21 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.security.Principal;
-
-import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
 
 // TODO: cleanup
 @RestController
 @RequiredArgsConstructor
 public class AuthApiController implements AuthApi {
     private final AuthMapper authMapper;
+    private final UserSecurityPort securityPort;
 
     private final TOTPService totpService;
     private final AuthService authService;
     private final UserService userService;
-    // TODO: hexagonal architecture.
-    private final EmailVerificationRepositoryService emailVerificationRepositoryService;
+    private final EmailVerificationPersistencePort emailVerificationPersistencePort;
     private final JWTUtil jwtUtil;
     @Value("${oengus.baseUrl}")
     private String baseUrl;
@@ -76,34 +72,36 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public ResponseEntity<LoginResponseDto> refreshUserToken() {
+        final var user = this.securityPort.getAuthenticatedUser();
+        final var newToken = this.jwtUtil.generateToken(user);
+
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
                 new LoginResponseDto()
                     .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
-                    .setToken(this.jwtUtil.generateToken(PrincipalHelper.getCurrentUser()))
+                    .setToken(newToken)
             );
     }
 
     @Override
     public ResponseEntity<?> verifyEmail(final String hash) throws NotFoundException {
-        final var verification = this.emailVerificationRepositoryService.findByHash(hash)
+        final var verification = this.emailVerificationPersistencePort.findByHash(hash)
             .orElseThrow(() -> new NotFoundException("Email verification not found."));
-       final User user = verification.getUser();
+       final var user = verification.user();
 
        user.setEmailVerified(true);
 
-       this.userService.update(user);
-       this.emailVerificationRepositoryService.delete(verification);
+       this.userService.save(user);
+       this.emailVerificationPersistencePort.delete(verification);
 
         return ResponseEntity.ok()
             .body("<h1>Thank you for verifying your email address.</h1><p>If you haven't already, you can <a href=\"https://oengus.io/\">log-in on Oengus</a></p>");
     }
 
     @Override
-    public ResponseEntity<BooleanStatusDto> requestNewEmailVerification(Principal principal) throws NotFoundException {
-        final User principaluser = getUserFromPrincipal(principal);
-        final User user = this.userService.getUser(principaluser.getId());
+    public ResponseEntity<BooleanStatusDto> requestNewEmailVerification() {
+        final var user = this.securityPort.getAuthenticatedUser();
 
         if (user.isEmailVerified()) {
             return ResponseEntity
@@ -119,17 +117,15 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException {
-        final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
-
+    public ResponseEntity<InitMFADto> initMFA() throws IOException, WriterException {
+        final var databaseUser = this.securityPort.getAuthenticatedUser();
         final String newSecret = this.totpService.generateSecretKey();
 
         // Reset mfa for the user.
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(newSecret);
 
-        this.userService.update(databaseUser);
+        this.userService.save(databaseUser);
 
         final String qrUrl = this.totpService.getGoogleAuthenticatorQRCode(newSecret, databaseUser.getUsername());
 
@@ -145,9 +141,8 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, final String code) throws NotFoundException {
-        final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
+    public ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final String code) {
+        final var databaseUser = this.securityPort.getAuthenticatedUser();
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -167,7 +162,7 @@ public class AuthApiController implements AuthApi {
 
         databaseUser.setMfaEnabled(true);
 
-        this.userService.update(databaseUser);
+        this.userService.save(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -175,9 +170,8 @@ public class AuthApiController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<BooleanStatusDto> removeMFA(Principal principal, String code) throws NotFoundException {
-        final User principaluser = getUserFromPrincipal(principal);
-        final User databaseUser = this.userService.getUser(principaluser.getId());
+    public ResponseEntity<BooleanStatusDto> removeMFA(String code) {
+        final var databaseUser = this.securityPort.getAuthenticatedUser();
         final String mfaSecret = databaseUser.getMfaSecret();
 
         if (!databaseUser.isMfaEnabled() || StringUtils.isBlank(mfaSecret)) {
@@ -197,7 +191,7 @@ public class AuthApiController implements AuthApi {
         databaseUser.setMfaEnabled(false);
         databaseUser.setMfaSecret(null);
 
-        this.userService.update(databaseUser);
+        this.userService.save(databaseUser);
 
         return ResponseEntity
             .status(HttpStatus.OK)

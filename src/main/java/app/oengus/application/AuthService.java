@@ -5,14 +5,14 @@ import app.oengus.application.exception.InvalidMFACodeException;
 import app.oengus.application.exception.InvalidPasswordException;
 import app.oengus.application.exception.auth.UnknownServiceException;
 import app.oengus.application.exception.auth.UserDisabledException;
+import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.model.EmailVerification;
+import app.oengus.domain.PendingEmailVerification;
 import app.oengus.entity.model.PasswordReset;
 import app.oengus.service.EmailService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
-import app.oengus.service.repository.EmailVerificationRepositoryService;
 import app.oengus.service.repository.PasswordResetRepositoryService;
 import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.JWTUtil;
@@ -29,6 +29,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final EmailVerificationPersistencePort emailVerificationPersistencePort;
+
     private final TOTPService totpService;
     private final UserService userService;
     private final PasswordResetRepositoryService passwordResetRepositoryService;
@@ -38,7 +40,6 @@ public class AuthService {
     private final EmailService emailService;
     private final DiscordService discordService;
     private final TwitchService twitchService;
-    private final EmailVerificationRepositoryService emailVerificationRepositoryService;
 
     // TODO: make a custom model? According to clean architecture it is required.
     public LoginResponseDto login(LoginDto body) {
@@ -122,12 +123,11 @@ public class AuthService {
 
     public void sendNewVerificationEmail(OengusUser user) {
         final var verificationHash = UUID.randomUUID().toString();
-        final var emailVerification = new EmailVerification();
+        final var emailVerification = new PendingEmailVerification(
+            user, verificationHash
+        );
 
-        emailVerification.setUser(user);
-        emailVerification.setVerificationHash(verificationHash);
-
-        this.emailVerificationRepositoryService.save(emailVerification);
+        this.emailVerificationPersistencePort.save(emailVerification);
 
         this.emailService.sendEmailVerification(
             user,

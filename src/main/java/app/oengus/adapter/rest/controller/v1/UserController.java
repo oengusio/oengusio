@@ -5,7 +5,7 @@ import app.oengus.entity.dto.PatreonStatusDto;
 import app.oengus.entity.dto.UserDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.entity.model.ApplicationUserInformation;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.UserService;
 import app.oengus.service.repository.PatreonStatusRepositoryService;

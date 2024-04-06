@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.dao.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;

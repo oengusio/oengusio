@@ -5,7 +5,7 @@ import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.entity.model.Application;
 import app.oengus.entity.model.Team;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.helper.BeanHelper;
 import javassist.NotFoundException;

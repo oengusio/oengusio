@@ -6,7 +6,7 @@ import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Schedule;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.helper.BeanHelper;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.repository.DonationExtraDataRepositoryService;

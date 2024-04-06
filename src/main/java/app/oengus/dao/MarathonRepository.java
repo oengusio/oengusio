@@ -1,7 +1,7 @@
 package app.oengus.dao;
 
 import app.oengus.entity.model.Marathon;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

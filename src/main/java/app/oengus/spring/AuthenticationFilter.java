@@ -49,7 +49,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 			if (this.jwtUtil.isTokenValid(token)) {
 				try {
 					final Claims claims = this.jwtUtil.getAllClaimsFromToken(token);
-					final List<String> rolesString = claims.get("role", List.class);
+					@SuppressWarnings("unchecked")
+                    final List<String> rolesString = claims.get("role", List.class);
 					final boolean enabled = claims.get("enabled", Boolean.class);
 
                     final var details = new UserDetailsDto(

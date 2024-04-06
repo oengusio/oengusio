@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.security.Principal;
 
 @Tag(name = "auth")
 @CrossOrigin(maxAge = 3600)
 @RequestMapping("/v2/auth")
 public interface AuthApi {
-
     @PostMapping("/login")
     @PreAuthorize("isAnonymous()")
     @Operation(
@@ -106,7 +104,7 @@ public interface AuthApi {
 
     @PostMapping("/verify-email")
     @PreAuthorize("!isBanned()")
-    ResponseEntity<BooleanStatusDto> requestNewEmailVerification(final Principal principal) throws NotFoundException;
+    ResponseEntity<BooleanStatusDto> requestNewEmailVerification();
 
     @PutMapping("/mfa/init")
     @PreAuthorize("isAuthenticated()")
@@ -127,7 +125,7 @@ public interface AuthApi {
             )
         }
     )
-    ResponseEntity<InitMFADto> initMFA(final Principal principal) throws NotFoundException, IOException, WriterException;
+    ResponseEntity<InitMFADto> initMFA() throws IOException, WriterException;
 
     @PostMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
@@ -159,7 +157,7 @@ public interface AuthApi {
             )
         }
     )
-    ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
+    ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(@RequestParam final String code);
 
     @DeleteMapping("/mfa")
     @PreAuthorize("isAuthenticated()")
@@ -191,7 +189,7 @@ public interface AuthApi {
             )
         }
     )
-    ResponseEntity<BooleanStatusDto> removeMFA(final Principal principal, @RequestParam final String code) throws NotFoundException;
+    ResponseEntity<BooleanStatusDto> removeMFA(@RequestParam final String code);
 
     @PostMapping("/password-reset/request")
     ResponseEntity<PasswordResetResponseDto> requestPasswordReset(@RequestBody @Valid PasswordResetRequestDto body);

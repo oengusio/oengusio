@@ -3,7 +3,7 @@ package app.oengus.dao;
 import app.oengus.entity.constants.ApplicationStatus;
 import app.oengus.entity.model.Application;
 import app.oengus.entity.model.Team;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

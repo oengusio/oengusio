@@ -4,7 +4,7 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.entity.model.Marathon;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;

@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

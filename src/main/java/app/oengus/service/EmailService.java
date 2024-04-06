@@ -2,7 +2,6 @@ package app.oengus.service;
 
 import app.oengus.application.exception.WrappedException;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,7 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.User;
+
 import javax.annotation.Nullable;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;

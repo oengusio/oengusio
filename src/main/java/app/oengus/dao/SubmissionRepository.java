@@ -3,7 +3,7 @@ package app.oengus.dao;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Status;
 import app.oengus.entity.model.Submission;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,7 @@
 package app.oengus.dao;
 
 import app.oengus.entity.model.ApplicationUserInformation;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

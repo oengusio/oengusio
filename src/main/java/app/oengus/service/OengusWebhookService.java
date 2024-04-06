@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.rest.dto.v2.SelectionDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.OengusBotUrl;

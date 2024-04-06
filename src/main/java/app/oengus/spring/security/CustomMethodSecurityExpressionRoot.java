@@ -2,7 +2,7 @@ package app.oengus.spring.security;
 
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Team;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.service.MarathonService;
 import app.oengus.service.UserService;
 import app.oengus.service.repository.TeamRepositoryService;

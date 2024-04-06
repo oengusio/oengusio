@@ -4,7 +4,7 @@ import app.oengus.domain.IUsername;
 import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.model.ScheduleLineRunner;
 import app.oengus.entity.model.SocialAccount;
-import app.oengus.entity.model.User;
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Role;
 import lombok.Getter;
 import lombok.Setter;
