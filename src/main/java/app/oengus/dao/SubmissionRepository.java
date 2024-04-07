@@ -24,7 +24,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Integer
         "s.user.id as userId, " +
         "s.user.username as username, " +
         "s.user.displayName as displayName, " +
-        "(SELECT COUNT(c.id) FROM Category c WHERE c.game = (SELECT g FROM Game g WHERE g.submission = s)) as total " +
+        "(SELECT COUNT(c.id) FROM CategoryEntity c WHERE c.game = (SELECT g FROM GameEntity g WHERE g.submission = s)) as total " +
         "FROM Submission s WHERE s.marathon = :marathon")
     List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") Marathon marathon);
 

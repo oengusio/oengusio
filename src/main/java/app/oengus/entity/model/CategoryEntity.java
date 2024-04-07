@@ -1,11 +1,14 @@
 package app.oengus.entity.model;
 
+import app.oengus.domain.RunType;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.time.DurationMin;
 import org.springframework.beans.BeanUtils;
@@ -18,10 +21,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Category {
+public class CategoryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +37,7 @@ public class Category {
 	@JoinColumn(name = "game_id")
 	@JsonBackReference
 	@JsonView(Views.Public.class)
-	private Game game;
+	private GameEntity game;
 
 	@Column(name = "name")
 	@JsonView(Views.Public.class)
@@ -82,107 +87,11 @@ public class Category {
 	@JsonView(Views.Public.class)
 	private Status status;
 
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(final int id) {
-		this.id = id;
-	}
-
-	public Game getGame() {
-		return this.game;
-	}
-
-	public void setGame(final Game game) {
-		this.game = game;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public Duration getEstimate() {
-		return this.estimate;
-	}
-
-	public void setEstimate(final Duration estimate) {
-		this.estimate = estimate;
-	}
-
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
-	}
-
-	public String getVideo() {
-		return this.video;
-	}
-
-	public void setVideo(final String video) {
-		this.video = video;
-	}
-
-	public Selection getSelection() {
-		return this.selection;
-	}
-
-	public void setSelection(final Selection selection) {
-		this.selection = selection;
-	}
-
-	public RunType getType() {
-		return this.type;
-	}
-
-	public void setType(final RunType type) {
-		this.type = type;
-	}
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setCode(final String code) {
-		this.code = code;
-	}
-
-	public List<Opponent> getOpponents() {
-		return this.opponents;
-	}
-
-	public void setOpponents(final List<Opponent> opponents) {
-		this.opponents = opponents;
-	}
-
-	public List<OpponentCategoryDto> getOpponentDtos() {
-		return this.opponentDtos;
-	}
-
-	public void setOpponentDtos(final List<OpponentCategoryDto> opponentDtos) {
-		this.opponentDtos = opponentDtos;
-	}
-
-	public Status getStatus() {
-		return this.status;
-	}
-
-	public void setStatus(final Status status) {
-		this.status = status;
-	}
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
+        CategoryEntity category = (CategoryEntity) o;
         return Objects.equals(id, category.id) && Objects.equals(name, category.name) &&
             Objects.equals(estimate, category.estimate) && Objects.equals(description, category.description) &&
             Objects.equals(video, category.video) && type == category.type;
@@ -193,8 +102,8 @@ public class Category {
         return Objects.hash(id, name, estimate, description, video, type);
     }
 
-    public Category fresh(Game parent) {
-        final Category category = new Category();
+    public CategoryEntity fresh(GameEntity parent) {
+        final CategoryEntity category = new CategoryEntity();
 
         Hibernate.initialize(this.getOpponents());
         BeanUtils.copyProperties(this, category, "game");

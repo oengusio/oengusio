@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
+
 @Service
 @RequiredArgsConstructor
 public class UserSecurityAdapter implements UserSecurityPort {
@@ -16,16 +18,36 @@ public class UserSecurityAdapter implements UserSecurityPort {
 
     @Override
     public int getAuthenticatedUserId() {
-        return this.getAuthenticatedUserDetails().id();
+        final var details = this.getAuthenticatedUserDetails();
+
+        if (details == null) {
+            return -1;
+        }
+
+        return details.id();
     }
 
+    @Nullable
     @Override
     public OengusUser getAuthenticatedUser() {
-        return this.userService.getById(this.getAuthenticatedUserId());
+        final var id = this.getAuthenticatedUserId();
+
+        if (id > -1) {
+            return this.userService.getById(id);
+        }
+
+        return null;
     }
 
+    @Nullable
     private UserDetailsDto getAuthenticatedUserDetails() {
-        return (UserDetailsDto) this.getAuthentication().getPrincipal();
+        final var auth = this.getAuthentication();
+
+        if (!auth.isAuthenticated()) {
+            return null;
+        }
+
+        return (UserDetailsDto) auth.getPrincipal();
     }
 
     private Authentication getAuthentication() {

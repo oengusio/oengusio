@@ -17,7 +17,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "game")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game {
+public class GameEntity {
 
 	@Id
 	@JsonView(Views.Public.class)
@@ -62,7 +62,7 @@ public class Game {
 	@JsonManagedReference
 	@OrderBy("id ASC")
 	@JsonView(Views.Public.class)
-	private List<Category> categories;
+	private List<CategoryEntity> categories;
 
 	public int getId() {
 		return this.id;
@@ -112,11 +112,11 @@ public class Game {
 		this.ratio = ratio;
 	}
 
-	public List<Category> getCategories() {
+	public List<CategoryEntity> getCategories() {
 		return this.categories;
 	}
 
-	public void setCategories(final List<Category> categories) {
+	public void setCategories(final List<CategoryEntity> categories) {
 		this.categories = categories;
 	}
 
@@ -132,7 +132,7 @@ public class Game {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
+        GameEntity game = (GameEntity) o;
         return emulated == game.emulated && Objects.equals(id, game.id) && Objects.equals(name, game.name) && Objects.equals(description, game.description) && Objects.equals(console, game.console) && Objects.equals(ratio, game.ratio);
     }
 
@@ -141,12 +141,12 @@ public class Game {
         return Objects.hash(id, name, description, console, ratio, emulated, categories);
     }
 
-    public Game fresh(boolean withSubmission) {
+    public GameEntity fresh(boolean withSubmission) {
         return this.fresh(withSubmission, true);
     }
 
-    public Game fresh(boolean withSubmission, boolean withCategories) {
-        final Game game = new Game();
+    public GameEntity fresh(boolean withSubmission, boolean withCategories) {
+        final GameEntity game = new GameEntity();
 
         // load all the items needed from the old game
         Hibernate.initialize(this.getCategories());
@@ -167,7 +167,7 @@ public class Game {
         return game;
     }
 
-    public static void initialize(Game game) {
+    public static void initialize(GameEntity game) {
         // load all the items needed from the old game
         Hibernate.initialize(game.getCategories());
         game.getCategories().forEach((category) -> {

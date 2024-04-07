@@ -1,4 +1,4 @@
-package app.oengus.entity.model;
+package app.oengus.domain;
 
 public enum RunType {
 

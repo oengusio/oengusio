@@ -21,7 +21,7 @@ public class Opponent {
 	@ManyToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
 	@JsonBackReference
-	private Category category;
+	private CategoryEntity category;
 
 	@ManyToOne
 	@JoinColumn(name = "opponent_submission_id")
@@ -42,11 +42,11 @@ public class Opponent {
 		this.id = id;
 	}
 
-	public Category getCategory() {
+	public CategoryEntity getCategory() {
 		return this.category;
 	}
 
-	public void setCategory(final Category category) {
+	public void setCategory(final CategoryEntity category) {
 		this.category = category;
 	}
 

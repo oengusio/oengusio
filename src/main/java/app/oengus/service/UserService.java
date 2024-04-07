@@ -329,10 +329,10 @@ public class UserService {
                         category.setStatus(Status.TODO);
                     }
                 });
-                game.getCategories().sort(Comparator.comparing(Category::getId));
+                game.getCategories().sort(Comparator.comparing(CategoryEntity::getId));
             });
 
-            userHistoryDto.getGames().sort(Comparator.comparing(Game::getId));
+            userHistoryDto.getGames().sort(Comparator.comparing(GameEntity::getId));
             userProfileDto.getHistory().add(userHistoryDto);
         });
     }
@@ -406,7 +406,7 @@ public class UserService {
                 Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
             ).toList();
 
-        final List<Category> categories = filteredSubmissions.stream()
+        final List<CategoryEntity> categories = filteredSubmissions.stream()
             .flatMap((submission) ->
                 submission.getGames()
                     .stream()

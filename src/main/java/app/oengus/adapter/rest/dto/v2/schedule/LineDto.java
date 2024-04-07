@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
-import app.oengus.entity.model.RunType;
+import app.oengus.domain.RunType;
 import app.oengus.entity.model.ScheduleLine;
 import io.swagger.v3.oas.annotations.media.Schema;
 

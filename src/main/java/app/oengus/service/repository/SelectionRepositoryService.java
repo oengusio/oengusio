@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.SelectionRepository;
-import app.oengus.entity.model.Category;
+import app.oengus.entity.model.CategoryEntity;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
@@ -29,7 +29,7 @@ public class SelectionRepositoryService {
 		return (List<Selection>) this.selectionRepository.saveAll(selections);
 	}
 
-	public Selection findByCategory(final Category category) {
+	public Selection findByCategory(final CategoryEntity category) {
 		return this.selectionRepository.findByCategory(category);
 	}
 
@@ -37,8 +37,8 @@ public class SelectionRepositoryService {
 		this.selectionRepository.rejectTodos(marathon);
 	}
 
-	public List<Selection> findAllByCategory(final List<Category> categories) {
+	public List<Selection> findAllByCategory(final List<CategoryEntity> categories) {
 		return this.selectionRepository.findAllByCategory(
-				categories.stream().map(Category::getId).collect(Collectors.toList()));
+				categories.stream().map(CategoryEntity::getId).collect(Collectors.toList()));
 	}
 }

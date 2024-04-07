@@ -1,6 +1,6 @@
 package app.oengus.dao;
 
-import app.oengus.entity.model.Category;
+import app.oengus.entity.model.CategoryEntity;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
@@ -17,7 +17,7 @@ public interface SelectionRepository extends CrudRepository<Selection, Integer> 
 
     List<Selection> findByMarathon(Marathon marathon);
 
-    Selection findByCategory(Category category);
+    Selection findByCategory(CategoryEntity category);
 
     List<Selection> findByMarathonAndStatusIn(Marathon marathon, List<Status> statuses);
 

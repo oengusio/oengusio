@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.Game;
+import app.oengus.entity.model.GameEntity;
 import app.oengus.entity.model.Opponent;
 
 import java.time.ZonedDateTime;
@@ -11,7 +11,7 @@ public class UserHistoryDto {
 	private String marathonId;
 	private String marathonName;
 	private ZonedDateTime marathonStartDate;
-	private List<Game> games;
+	private List<GameEntity> games;
 	private List<Opponent> opponents;
 
 	public String getMarathonId() {
@@ -38,11 +38,11 @@ public class UserHistoryDto {
 		this.marathonStartDate = marathonStartDate;
 	}
 
-	public List<Game> getGames() {
+	public List<GameEntity> getGames() {
 		return this.games;
 	}
 
-	public void setGames(final List<Game> games) {
+	public void setGames(final List<GameEntity> games) {
 		this.games = games;
 	}
 

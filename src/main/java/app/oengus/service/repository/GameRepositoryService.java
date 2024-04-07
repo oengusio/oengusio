@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.GameRepository;
-import app.oengus.entity.model.Game;
+import app.oengus.entity.model.GameEntity;
 import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,15 @@ public class GameRepositoryService {
         this.gameRepository = gameRepository;
     }
 
-    public List<Game> findBySubmissionId(final String marathonId, final int submissionId) {
+    public List<GameEntity> findBySubmissionId(final String marathonId, final int submissionId) {
         return this.gameRepository.findBySubmissionId(marathonId, submissionId);
     }
 
-    public List<Game> findByMarathon(final String marathonId) {
+    public List<GameEntity> findByMarathon(final String marathonId) {
         return this.gameRepository.findByMarathon(marathonId);
     }
 
-    public Game findById(final int id) throws NotFoundException {
+    public GameEntity findById(final int id) throws NotFoundException {
         return this.gameRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Game not found"));
     }
@@ -33,7 +33,7 @@ public class GameRepositoryService {
         this.gameRepository.deleteById(id);
     }
 
-    public void update(final Game game) {
+    public void update(final GameEntity game) {
         this.gameRepository.save(game);
     }
 

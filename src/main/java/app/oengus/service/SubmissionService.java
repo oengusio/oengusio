@@ -1,7 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.adapter.jpa.entity.User;
-import app.oengus.dao.CategoryRepository;
+import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.dto.OpponentSubmissionDto;
@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static app.oengus.service.CategoryService.MULTIPLAYER_RUN_TYPES;
+import static app.oengus.application.CategoryService.MULTIPLAYER_RUN_TYPES;
 
 @Service
 public class SubmissionService {
@@ -169,7 +169,7 @@ public class SubmissionService {
                 opponent.setId(opponentDto.getId());
                 opponent.setSubmission(submission);
                 opponent.setVideo(opponentDto.getVideo());
-                final Category category = new Category();
+                final CategoryEntity category = new CategoryEntity();
                 category.setId(opponentDto.getCategoryId());
                 opponent.setCategory(category);
                 submission.getOpponents().add(opponent);
@@ -241,7 +241,7 @@ public class SubmissionService {
         return availabilities;
     }
 
-    private void createSelection(final Category category, final Marathon marathon) {
+    private void createSelection(final CategoryEntity category, final Marathon marathon) {
         final Selection selection = new Selection();
         selection.setStatus(Status.TODO);
         selection.setMarathon(marathon);
@@ -290,13 +290,13 @@ public class SubmissionService {
 
     private OpponentSubmissionDto mapOpponent(final Opponent opponent, final User user) {
         final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
-        final Category opponentCategory = opponent.getCategory();
+        final CategoryEntity opponentCategory = opponent.getCategory();
 
         if (opponentCategory == null || opponentCategory.getGame() == null) {
             return null;
         }
 
-        final Game opponentGame = opponentCategory.getGame();
+        final GameEntity opponentGame = opponentCategory.getGame();
 
         opponentDto.setId(opponent.getId());
         opponentDto.setGameName(opponentGame.getName());
@@ -378,14 +378,14 @@ public class SubmissionService {
                         return true;
                     }
 
-                    final Set<Game> gameSet = submission.getGames()
+                    final Set<GameEntity> gameSet = submission.getGames()
                         .stream()
                         .filter((game) -> {
                             if (qNotEmpty && game.getName().toLowerCase().contains(queryLower)) {
                                 return true;
                             }
 
-                            final List<Category> categoryList = game.getCategories()
+                            final List<CategoryEntity> categoryList = game.getCategories()
                                 .stream()
                                 .filter(
                                     (category) -> {

@@ -1,7 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.dto.SelectionDto;
-import app.oengus.entity.model.Category;
+import app.oengus.entity.model.CategoryEntity;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
@@ -54,7 +54,7 @@ public class SelectionService {
         }
     }
 
-    public Map<Integer, SelectionDto> findAllByCategory(final List<Category> categories) {
+    public Map<Integer, SelectionDto> findAllByCategory(final List<CategoryEntity> categories) {
         final List<Selection> selections = this.selectionRepository.findAllByCategory(categories);
         return this.modelToDtos(selections);
     }
@@ -76,15 +76,15 @@ public class SelectionService {
     public void saveOrUpdate(final String marathonId, final List<SelectionDto> dtos) throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
         final List<Selection> newSelections = new ArrayList<>();
-        final Iterable<Category> categories = this.categoryRepositoryService.findAllById(
+        final Iterable<CategoryEntity> categories = this.categoryRepositoryService.findAllById(
             dtos.stream().map(SelectionDto::getCategoryId).collect(Collectors.toList())
         );
 
-        final Map<Integer, Category> categoryMap = new HashMap<>();
+        final Map<Integer, CategoryEntity> categoryMap = new HashMap<>();
         categories.forEach((category) -> categoryMap.put(category.getId(), category));
 
         dtos.forEach((dto) -> {
-            final Category category = categoryMap.get(dto.getCategoryId());
+            final CategoryEntity category = categoryMap.get(dto.getCategoryId());
 
             if (category != null) {
                 final Selection selection = new Selection();

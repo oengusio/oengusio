@@ -20,7 +20,7 @@ public class Selection {
 
 	@OneToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
-	private Category category;
+	private CategoryEntity category;
 
 	@Column(name = "status")
 	private Status status;
@@ -33,11 +33,11 @@ public class Selection {
 		this.id = id;
 	}
 
-	public Category getCategory() {
+	public CategoryEntity getCategory() {
 		return this.category;
 	}
 
-	public void setCategory(final Category category) {
+	public void setCategory(final CategoryEntity category) {
 		this.category = category;
 	}
 

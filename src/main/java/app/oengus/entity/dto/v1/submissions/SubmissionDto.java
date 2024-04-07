@@ -1,13 +1,13 @@
 package app.oengus.entity.dto.v1.submissions;
 
-import app.oengus.entity.model.Game;
+import app.oengus.entity.model.GameEntity;
 
 import java.util.Set;
 
 public class SubmissionDto {
     private int id;
     private SubmissionUserDto user;
-    private Set<Game> games;
+    private Set<GameEntity> games;
 
     public int getId() {
         return id;
@@ -25,11 +25,11 @@ public class SubmissionDto {
         this.user = user;
     }
 
-    public Set<Game> getGames() {
+    public Set<GameEntity> getGames() {
         return games;
     }
 
-    public void setGames(Set<Game> games) {
+    public void setGames(Set<GameEntity> games) {
         this.games = games;
     }
 }

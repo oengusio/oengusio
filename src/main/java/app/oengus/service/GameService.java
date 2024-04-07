@@ -1,7 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
-import app.oengus.entity.model.Game;
+import app.oengus.entity.model.GameEntity;
 import app.oengus.entity.model.Submission;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.service.repository.GameRepositoryService;
@@ -55,13 +55,13 @@ public class GameService {
     ///////////
     // v1 stuff
 
-    public void update(final Game game) {
+    public void update(final GameEntity game) {
         this.gameRepositoryService.update(game);
     }
 
     // IMPORTANT: the hook is sent here so that it only triggers once for submission delete
     public void delete(final int id, final User deletedBy) throws NotFoundException {
-        final Game game = this.gameRepositoryService.findById(id);
+        final GameEntity game = this.gameRepositoryService.findById(id);
         final Submission submission = game.getSubmission();
 
         // only one game, delete the submission

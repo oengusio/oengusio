@@ -1,17 +1,16 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.dto.OpponentSubmissionDto;
 import app.oengus.helper.PrincipalHelper;
-import app.oengus.service.CategoryService;
+import app.oengus.application.CategoryService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
 
 import java.security.Principal;
 

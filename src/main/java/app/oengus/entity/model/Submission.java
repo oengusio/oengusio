@@ -51,7 +51,7 @@ public class Submission {
     @OrderBy("id ASC")
     @JsonManagedReference
     @JsonView(Views.Public.class)
-    private Set<Game> games;
+    private Set<GameEntity> games;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "availability", joinColumns = @JoinColumn(name = "submission_id"))
@@ -110,11 +110,11 @@ public class Submission {
         this.availabilities = availabilities;
     }
 
-    public Set<Game> getGames() {
+    public Set<GameEntity> getGames() {
         return this.games;
     }
 
-    public void setGames(final Set<Game> games) {
+    public void setGames(final Set<GameEntity> games) {
         this.games = games;
     }
 
@@ -259,7 +259,7 @@ public class Submission {
         // only load the game if we say so
         // might cause issues if we load the submission from a game otherwise
         if (withGames) {
-            final Set<Game> freshGames = new HashSet<>();
+            final Set<GameEntity> freshGames = new HashSet<>();
 
             this.getGames().forEach(
                 (game) -> freshGames.add(game.fresh(false))
@@ -280,7 +280,7 @@ public class Submission {
         // only load the game if we say so
         // might cause issues if we load the submission from a game otherwise
         if (withGames) {
-            submission.getGames().forEach(Game::initialize);
+            submission.getGames().forEach(GameEntity::initialize);
         }
     }
 }

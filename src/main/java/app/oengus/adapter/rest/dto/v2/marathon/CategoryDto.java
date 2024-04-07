@@ -1,13 +1,17 @@
 package app.oengus.adapter.rest.dto.v2.marathon;
 
 import app.oengus.entity.dto.OpponentCategoryDto;
-import app.oengus.entity.model.Category;
+import app.oengus.entity.model.CategoryEntity;
 import app.oengus.entity.model.Opponent;
-import app.oengus.entity.model.RunType;
+import app.oengus.domain.RunType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.util.List;
 
+@Getter
+@Setter
 public class CategoryDto {
     private int id;
     private String name;
@@ -20,79 +24,8 @@ public class CategoryDto {
     private int userId;
     private List<OpponentCategoryDto> opponents;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Duration getEstimate() {
-        return estimate;
-    }
-
-    public void setEstimate(Duration estimate) {
-        this.estimate = estimate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVideo() {
-        return video;
-    }
-
-    public void setVideo(String video) {
-        this.video = video;
-    }
-
-    public RunType getType() {
-        return type;
-    }
-
-    public void setType(RunType type) {
-        this.type = type;
-    }
-
-    public int getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(int gameId) {
-        this.gameId = gameId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public List<OpponentCategoryDto> getOpponents() {
-        return opponents;
-    }
-
-    public void setOpponents(List<OpponentCategoryDto> opponents) {
-        this.opponents = opponents;
-    }
-
-    public static CategoryDto fromCategory(Category category) {
+    @Deprecated(forRemoval = true)
+    public static CategoryDto fromCategory(CategoryEntity category) {
         final CategoryDto dto = new CategoryDto();
 
         dto.setId(category.getId());

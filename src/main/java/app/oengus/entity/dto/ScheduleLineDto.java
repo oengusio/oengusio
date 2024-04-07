@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.RunType;
+import app.oengus.domain.RunType;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.helper.StringHelper;
 import app.oengus.helper.TimeHelpers;

@@ -111,7 +111,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendGameDeleteEvent(final String url, final Game game, final User deletedBy) throws IOException {
+    public void sendGameDeleteEvent(final String url, final GameEntity game, final User deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "GAME_DELETE");
         data.set("game", parseJson(game));
@@ -129,7 +129,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendCategoryDeleteEvent(final String url, final Category category, final User deletedBy) throws IOException {
+    public void sendCategoryDeleteEvent(final String url, final CategoryEntity category, final User deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "CATEGORY_DELETE");
         data.set("category", parseJson(category));
