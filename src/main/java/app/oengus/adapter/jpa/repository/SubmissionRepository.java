@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.repository;
 
 import app.oengus.entity.model.GameEntity;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Status;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
@@ -28,14 +28,14 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
         "s.user.displayName as displayName, " +
         "(SELECT COUNT(c.id) FROM CategoryEntity c WHERE c.game = (SELECT g FROM GameEntity g WHERE g.submission = s)) as total " +
         "FROM SubmissionEntity s WHERE s.marathon = :marathon")
-    List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") Marathon marathon);
+    List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") MarathonEntity marathon);
 
     SubmissionEntity findByGamesContaining(GameEntity game);
 
     ////////////
     // Old stuff
 
-    Optional<SubmissionEntity> findByUserAndMarathon(User user, Marathon marathon);
+    Optional<SubmissionEntity> findByUserAndMarathon(User user, MarathonEntity marathon);
 
     @Query(value =
         "SELECT s FROM SubmissionEntity s " +
@@ -43,7 +43,7 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
             "JOIN FETCH g.categories c " +
             "JOIN FETCH c.selection sel " +
             "where s.marathon = :marathon AND sel.status IN (2, 3)")
-    List<SubmissionEntity> findValidatedOrBonusSubmissionsForMarathon(@Param("marathon") Marathon marathon);
+    List<SubmissionEntity> findValidatedOrBonusSubmissionsForMarathon(@Param("marathon") MarathonEntity marathon);
 
     @Query(value =
         "SELECT s FROM SubmissionEntity s " +
@@ -53,13 +53,13 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(s.user.displayName) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "(" +
-                "SELECT COUNT(opp.id) FROM Opponent opp WHERE " +
+                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE " +
                     "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
                     "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%')" +
             ") > 0 OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) GROUP BY s")
-    Page<SubmissionEntity> searchForMarathon(@Param("marathon") Marathon marathon, @Param("searchQ") String searchQ, Pageable pageable);
+    Page<SubmissionEntity> searchForMarathon(@Param("marathon") MarathonEntity marathon, @Param("searchQ") String searchQ, Pageable pageable);
 
     @Query(value =
         "SELECT s FROM SubmissionEntity s " +
@@ -70,24 +70,24 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(s.user.displayName) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "(" +
-                "SELECT COUNT(opp.id) FROM Opponent opp WHERE " +
+                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE " +
                     "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%')" +
             ") > 0 OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) AND sel.status = :status GROUP BY s")
     Page<SubmissionEntity> searchForMarathonWithStatus(
-        @Param("marathon") Marathon marathon, @Param("searchQ") String searchQ,
+        @Param("marathon") MarathonEntity marathon, @Param("searchQ") String searchQ,
         @Param("status") Status status, Pageable pageable);
 
-    void deleteByMarathon(Marathon marathon);
+    void deleteByMarathon(MarathonEntity marathon);
 
     List<SubmissionEntity> findByUser(User user);
 
-    Page<SubmissionEntity> findByMarathonOrderByIdAsc(Marathon marathon, Pageable pageable);
+    Page<SubmissionEntity> findByMarathonOrderByIdAsc(MarathonEntity marathon, Pageable pageable);
 
-    List<SubmissionEntity> findByMarathonOrderByIdAsc(Marathon marathon);
+    List<SubmissionEntity> findByMarathonOrderByIdAsc(MarathonEntity marathon);
 
-    boolean existsByMarathonAndUser(Marathon marathon, User user);
+    boolean existsByMarathonAndUser(MarathonEntity marathon, User user);
 
 }

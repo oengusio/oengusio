@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.exception.OengusBusinessException;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -55,7 +54,7 @@ public class DiscordController {
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {
         try {
-            final Marathon marathon = this.marathonService.getById(marathonId);
+            final MarathonEntity marathon = this.marathonService.getById(marathonId);
             final String guildId = marathon.getDiscordGuildId();
 
             if (StringUtils.isEmpty(guildId)) {

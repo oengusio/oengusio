@@ -1,6 +1,6 @@
 package app.oengus.service;
 
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.service.repository.MarathonRepositoryService;
 import app.oengus.service.twitter.AbstractTwitterService;
 import org.springframework.scheduling.TaskScheduler;
@@ -28,7 +28,7 @@ public class EventSchedulerService {
         this.twitterService = twitterService;
     }
 
-    public void scheduleSubmissions(final Marathon marathon) {
+    public void scheduleSubmissions(final MarathonEntity marathon) {
 		this.unscheduleSubmissions(marathon);
 		if (marathon.getSubmissionsStartDate().isAfter(ZonedDateTime.now())) {
 			this.scheduledEvents.put(marathon.getId() + "-start",
@@ -44,7 +44,7 @@ public class EventSchedulerService {
 		}
 	}
 
-	public void unscheduleSubmissions(final Marathon marathon) {
+	public void unscheduleSubmissions(final MarathonEntity marathon) {
 		final ScheduledFuture<?> start = this.scheduledEvents.get(marathon.getId() + "-start");
 		final ScheduledFuture<?> end = this.scheduledEvents.get(marathon.getId() + "-end");
 		if (start != null) {
@@ -57,7 +57,7 @@ public class EventSchedulerService {
 		}
 	}
 
-	public void scheduleMarathonStartAlert(final Marathon marathon) {
+	public void scheduleMarathonStartAlert(final MarathonEntity marathon) {
 		final ScheduledFuture<?> start = this.scheduledEvents.get(marathon.getId());
 
 		if (start != null) {

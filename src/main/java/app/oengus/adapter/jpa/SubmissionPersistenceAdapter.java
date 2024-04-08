@@ -6,7 +6,7 @@ import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.domain.Submission;
 import app.oengus.entity.model.GameEntity;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,14 +40,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     public Optional<Submission> findForUserInMarathon(int userId, String marathonId) {
         return this.repository.findByUserAndMarathon(
             User.ofId(userId),
-            Marathon.ofId(marathonId)
+            MarathonEntity.ofId(marathonId)
         ).map(this.mapper::toDomain);
     }
 
     @Override
     public List<Submission> findAcceptedInMarathon(String marathonId) {
         return this.repository.findValidatedOrBonusSubmissionsForMarathon(
-            Marathon.ofId(marathonId)
+            MarathonEntity.ofId(marathonId)
         )
             .stream()
             .map(this.mapper::toDomain)
@@ -57,7 +57,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public Page<Submission> searchInMarathon(String marathonId, String query, Pageable pageable) {
         return this.repository.searchForMarathon(
-            Marathon.ofId(marathonId),
+            MarathonEntity.ofId(marathonId),
             query,
             pageable
         ).map(this.mapper::toDomain);
@@ -66,7 +66,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public Page<Submission> searchInMarathon(String marathonId, String query, Status status, Pageable pageable) {
         return this.repository.searchForMarathonWithStatus(
-            Marathon.ofId(marathonId),
+            MarathonEntity.ofId(marathonId),
             query,
             status,
             pageable
@@ -83,7 +83,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
 
     @Override
     public void deleteByMarathon(String marathonId) {
-        this.repository.deleteByMarathon(Marathon.ofId(marathonId));
+        this.repository.deleteByMarathon(MarathonEntity.ofId(marathonId));
     }
 
     @Override
@@ -97,7 +97,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public Page<Submission> findByMarathon(String marathonId, Pageable pageable) {
         return this.repository.findByMarathonOrderByIdAsc(
-            Marathon.ofId(marathonId),
+            MarathonEntity.ofId(marathonId),
             pageable
         ).map(this.mapper::toDomain);
     }
@@ -105,7 +105,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public List<Submission> findAllByMarathon(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(
-            Marathon.ofId(marathonId)
+            MarathonEntity.ofId(marathonId)
         )
             .stream()
             .map(this.mapper::toDomain)

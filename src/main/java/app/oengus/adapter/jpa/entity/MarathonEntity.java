@@ -1,6 +1,7 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.User;
+import app.oengus.entity.model.Question;
+import app.oengus.entity.model.Team;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,7 +23,7 @@ import static javax.persistence.CascadeType.*;
 @Entity
 @Table(name = "marathon")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Marathon {
+public class MarathonEntity {
 
     @Id
     @JsonView(Views.Public.class)
@@ -248,7 +249,7 @@ public class Marathon {
 
     @Column(name = "user_info_hidden")
     @JsonView(Views.Public.class)
-    private String userInfoHidden; // what was I thinking?
+    private String userInfoHidden; // Fields of user info to hide?
 
     @JsonManagedReference
     @JsonView(Views.Internal.class)
@@ -655,8 +656,8 @@ public class Marathon {
      * @param marathonId the id of the marathon
      * @return A fake marathon instance with this id
      */
-    public static Marathon ofId(String marathonId) {
-        final Marathon marathon = new Marathon();
+    public static MarathonEntity ofId(String marathonId) {
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
 
         return marathon;

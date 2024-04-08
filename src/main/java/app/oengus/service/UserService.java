@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.dao.ApplicationRepository;
@@ -269,7 +270,7 @@ public class UserService {
                         history.setTeamId(team.getId());
                         history.setTeamName(team.getName());
 
-                        final Marathon marathon = team.getMarathon();
+                        final MarathonEntity marathon = team.getMarathon();
 
                         history.setMarathonName(marathon.getName());
                         history.setMarathonId(marathon.getId());
@@ -309,7 +310,7 @@ public class UserService {
                 .collect(Collectors.toList()));
 
         filteredSubmissions.forEach((submission) -> {
-            final Marathon marathon = submission.getMarathon();
+            final MarathonEntity marathon = submission.getMarathon();
 
             if (marathon.getIsPrivate()) {
                 return;
@@ -421,7 +422,7 @@ public class UserService {
         final List<ProfileHistoryDto> history = new ArrayList<>();
 
         filteredSubmissions.forEach((submission) -> {
-            final Marathon marathon = submission.getMarathon();
+            final MarathonEntity marathon = submission.getMarathon();
 
             if (marathon.getIsPrivate()) {
                 return;

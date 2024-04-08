@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.entity.comparator.AnswerComparator;
-import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
@@ -49,7 +49,7 @@ public class SubmissionEntity {
     @JoinColumn(name = "marathon_id")
     @JsonBackReference(value = "marathonReference")
     @JsonView(Views.Public.class)
-    private Marathon marathon;
+    private MarathonEntity marathon;
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
@@ -76,7 +76,7 @@ public class SubmissionEntity {
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "opponentReference")
     @JsonView(Views.Public.class)
-    private Set<Opponent> opponents;
+    private Set<OpponentEntity> opponents;
 
     @Transient
     @JsonView(Views.Public.class)

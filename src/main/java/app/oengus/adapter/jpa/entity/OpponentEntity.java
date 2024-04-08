@@ -1,6 +1,6 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
+import app.oengus.entity.model.CategoryEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "opponent")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Opponent {
+public class OpponentEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

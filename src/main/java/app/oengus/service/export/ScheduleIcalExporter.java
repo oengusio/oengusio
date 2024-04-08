@@ -2,7 +2,7 @@ package app.oengus.service.export;
 
 import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.V1ScheduleDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.helper.StringHelper;
 import app.oengus.service.repository.MarathonRepositoryService;
 import javassist.NotFoundException;
@@ -44,7 +44,7 @@ public class ScheduleIcalExporter implements Exporter {
             throw new NotFoundException("Schedule not found");
         }
 
-        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
 		final ResourceBundle resourceBundle =
 				ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
 

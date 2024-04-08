@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v1;
 import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.MarathonService;
@@ -56,12 +56,12 @@ public class MarathonController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
-    public ResponseEntity<?> create(@RequestBody @Valid final Marathon marathon, final Principal principal,
+    public ResponseEntity<?> create(@RequestBody @Valid final MarathonEntity marathon, final Principal principal,
                                     final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        final Marathon created = this.marathonService.create(marathon,
+        final MarathonEntity created = this.marathonService.create(marathon,
             PrincipalHelper.getUserFromPrincipal(principal));
         if (created != null) {
             return ResponseEntity.created(URI.create(created.getId())).build();
@@ -178,7 +178,7 @@ public class MarathonController {
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@PathVariable("id") final String id,
-                                    @RequestBody @Valid final Marathon patch,
+                                    @RequestBody @Valid final MarathonEntity patch,
                                     final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
@@ -214,7 +214,7 @@ public class MarathonController {
     @Operation(hidden = true)
     public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
         // make a fake marathon so we don't update the real one
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
 
         BeanUtils.copyProperties(
             this.marathonService.getById(id),

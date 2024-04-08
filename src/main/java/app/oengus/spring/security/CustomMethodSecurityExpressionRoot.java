@@ -1,6 +1,6 @@
 package app.oengus.spring.security;
 
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Team;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.service.MarathonService;
@@ -58,7 +58,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     }
 
     public boolean isMarathonArchived(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(id);
+        final MarathonEntity marathon = this.marathonService.getById(id);
         return marathon.getEndDate().plusHours(1).isBefore(ZonedDateTime.now());
     }
 
@@ -103,7 +103,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return true;
         }
 
-        final Marathon marathon = this.marathonService.getById(marathonId);
+        final MarathonEntity marathon = this.marathonService.getById(marathonId);
 
         return Objects.equals(marathon.getCreator().getId(), user.getId());
     }
@@ -119,7 +119,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return true;
         }
 
-        final Marathon marathon = this.marathonService.getById(marathonId);
+        final MarathonEntity marathon = this.marathonService.getById(marathonId);
 
         return this.isMarathonMod(marathon, user);
     }
@@ -135,35 +135,35 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return true;
         }
 
-        final Marathon marathon = this.marathonService.getById(id);
+        final MarathonEntity marathon = this.marathonService.getById(id);
         return this.isMarathonMod(marathon, user) && ZonedDateTime.now().isBefore(marathon.getEndDate());
     }
 
     public boolean isSelectionDone(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(id);
+        final MarathonEntity marathon = this.marathonService.getById(id);
         return marathon.isSelectionDone();
     }
 
     public boolean isScheduleDone(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(id);
+        final MarathonEntity marathon = this.marathonService.getById(id);
         return marathon.isScheduleDone();
     }
 
     public boolean canEditSubmissions(final String marathonId) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(marathonId);
+        final MarathonEntity marathon = this.marathonService.getById(marathonId);
 
         return marathon.isCanEditSubmissions();
     }
 
     public boolean areSubmissionsOpen(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonService.getById(id);
+        final MarathonEntity marathon = this.marathonService.getById(id);
 
         return (marathon.isCanEditSubmissions() && marathon.isSubmitsOpen() &&
             ZonedDateTime.now().isBefore(marathon.getEndDate())) ||
             (marathon.getSubmissionsEndDate() != null && ZonedDateTime.now().isBefore(marathon.getSubmissionsEndDate()));
     }
 
-    private boolean isMarathonMod(Marathon marathon, User user) {
+    private boolean isMarathonMod(MarathonEntity marathon, User user) {
         final int uId = user.getId();
 
         return marathon.getCreator().getId() == uId ||

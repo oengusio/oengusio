@@ -6,7 +6,7 @@ import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.StringHelper;
 import app.oengus.service.repository.MarathonRepositoryService;
@@ -54,7 +54,7 @@ public class ScheduleJsonExporter implements Exporter {
             throw new NotFoundException("Schedule not found");
         }
 
-        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();

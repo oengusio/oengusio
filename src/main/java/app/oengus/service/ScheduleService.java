@@ -5,7 +5,7 @@ import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Schedule;
 import app.oengus.entity.model.ScheduleLine;
 import app.oengus.exception.schedule.EmptyScheduleException;
@@ -32,21 +32,21 @@ public class ScheduleService {
     // v2 stuff
 
     public List<ScheduleInfoDto> findAllInfoByMarathon(final String marathonId) {
-        return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))
+        return this.scheduleRepository.findAllByMarathon(MarathonEntity.ofId(marathonId))
             .stream()
             .map(scheduleMapper::toScheduleInfo)
             .toList();
     }
 
     public List<ScheduleDto> findAllByMarathon(final String marathonId, boolean withCustomData) {
-        return this.scheduleRepository.findAllByMarathon(Marathon.ofId(marathonId))
+        return this.scheduleRepository.findAllByMarathon(MarathonEntity.ofId(marathonId))
             .stream()
             .map((schedule) -> ScheduleDto.fromSchedule(schedule, withCustomData))
             .toList();
     }
 
     public ScheduleDto findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) throws NotFoundException {
-        final Schedule schedule = this.scheduleRepository.findById(Marathon.ofId(marathonId), scheduleId);
+        final Schedule schedule = this.scheduleRepository.findById(MarathonEntity.ofId(marathonId), scheduleId);
 
         return ScheduleDto.fromSchedule(schedule, withCustomData);
     }
@@ -56,7 +56,7 @@ public class ScheduleService {
 
     @Transactional
     public Schedule findByMarathon(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
 
         final Schedule schedule = this.scheduleRepository.findByMarathon(marathon);
@@ -108,7 +108,7 @@ public class ScheduleService {
 
     @Transactional
     public void deleteByMarathon(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         this.scheduleRepository.deleteByMarathon(marathon);
     }
@@ -120,7 +120,7 @@ public class ScheduleService {
             throw new NotFoundException("Schedule not found");
         }
 
-        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
         final ZonedDateTime endDate = marathon.getEndDate();
         final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
         final List<ScheduleLineDto> lines = schedule.getLines();
@@ -159,7 +159,7 @@ public class ScheduleService {
 
     @Transactional
     public void saveOrUpdate(final String marathonId, final Schedule schedule) throws NotFoundException {
-        final Marathon marathon =
+        final MarathonEntity marathon =
             this.marathonRepositoryService.findById(marathonId);
         schedule.setMarathon(marathon);
         schedule.getLines().forEach(scheduleLine -> {
@@ -178,7 +178,7 @@ public class ScheduleService {
         }
     }
 
-    public void computeEndDate(final Marathon marathon, final Schedule schedule) {
+    public void computeEndDate(final MarathonEntity marathon, final Schedule schedule) {
         marathon.setEndDate(marathon.getStartDate());
         schedule.getLines().forEach(scheduleLine -> {
             marathon.setEndDate(

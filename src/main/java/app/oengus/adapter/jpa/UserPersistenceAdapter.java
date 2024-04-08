@@ -1,5 +1,6 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.UserRepository;
 import app.oengus.application.port.persistence.UserPersistencePort;
@@ -23,6 +24,14 @@ public class UserPersistenceAdapter implements UserPersistencePort {
         return this.userRepository.findById(id)
             .map(this.mapper::toDomain)
             .orElse(null);
+    }
+
+    @Override
+    public List<OengusUser> findAllById(List<Integer> ids) {
+        return ((List<User>) this.userRepository.findAllById(ids))
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -26,7 +27,7 @@ public class Team {
     @JsonView(Views.Internal.class)
     @JoinColumn(name = "marathon_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Marathon marathon;
+    private MarathonEntity marathon;
 
     @NotNull
     @NotBlank
@@ -78,11 +79,11 @@ public class Team {
         this.id = id;
     }
 
-    public Marathon getMarathon() {
+    public MarathonEntity getMarathon() {
         return marathon;
     }
 
-    public void setMarathon(Marathon marathon) {
+    public void setMarathon(MarathonEntity marathon) {
         this.marathon = marathon;
     }
 

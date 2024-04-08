@@ -1,7 +1,7 @@
 package app.oengus.service;
 
 import app.oengus.entity.model.Incentive;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.service.repository.BidRepositoryService;
 import app.oengus.service.repository.DonationIncentiveLinkRepositoryService;
 import app.oengus.service.repository.IncentiveRepositoryService;
@@ -44,7 +44,7 @@ public class IncentiveService {
 
     public List<Incentive> findByMarathon(final String marathonId, final boolean withLocked,
                                           final boolean withUnapproved) throws NotFoundException {
-        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
         final List<Incentive> incentives;
         if (withLocked) {
             incentives = this.incentiveRepositoryService.findByMarathon(marathonId);
@@ -78,7 +78,7 @@ public class IncentiveService {
 
     @Transactional
     public List<Incentive> saveAll(final List<Incentive> incentives, final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         incentives.forEach((incentive) -> {
             if (incentive.getId() == 0) {

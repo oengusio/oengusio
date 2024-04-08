@@ -1,6 +1,6 @@
 package app.oengus.dao;
 
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
-    Optional<Schedule> findByMarathonAndId(Marathon marathon, int id);
+    Optional<Schedule> findByMarathonAndId(MarathonEntity marathon, int id);
 
-    List<Schedule> findByMarathon(Marathon marathon);
+    List<Schedule> findByMarathon(MarathonEntity marathon);
 
-    void deleteByMarathon(Marathon marathon);
+    void deleteByMarathon(MarathonEntity marathon);
 }

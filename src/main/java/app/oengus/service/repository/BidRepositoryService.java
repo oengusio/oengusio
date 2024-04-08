@@ -2,7 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.BidRepository;
 import app.oengus.entity.model.Bid;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.helper.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class BidRepositoryService {
 	private BidRepository bidRepository;
 
 	public Map<Integer, BigDecimal> findAmountsByMarathon(final String marathonId) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		final List<Object[]> results = this.bidRepository.findAmountsByMarathon(marathon);
 		final Map<Integer, BigDecimal> map = new HashMap<>();

@@ -4,7 +4,7 @@ import app.oengus.entity.dto.DonationStatsDto;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.DonationIncentiveLink;
 import app.oengus.entity.model.Incentive;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.BeanHelper;
 import app.oengus.service.repository.BidRepositoryService;
@@ -57,7 +57,7 @@ public class DonationService {
     @Transactional
     public Order initDonation(final String marathonId, final Donation donation) {
         try {
-            final Marathon marathon = this.marathonService.getById(marathonId);
+            final MarathonEntity marathon = this.marathonService.getById(marathonId);
 
             if (!marathon.isHasDonations()) {
                 throw new OengusBusinessException("NO_DONATIONS");
@@ -101,7 +101,7 @@ public class DonationService {
         }
     }
 
-    private Order createOrder(final Marathon marathon, final String amount) {
+    private Order createOrder(final MarathonEntity marathon, final String amount) {
         final OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");
 
@@ -150,7 +150,7 @@ public class DonationService {
 
         try {
             // should we fetch the marathon here?
-            final Marathon marathon = this.marathonService.getById(marathonId);
+            final MarathonEntity marathon = this.marathonService.getById(marathonId);
             // Call API with your client and get a response for your call
             final HttpResponse<Order> response = this.payPalHttpClient.execute(request);
 

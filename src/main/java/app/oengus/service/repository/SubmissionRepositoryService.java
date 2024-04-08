@@ -2,7 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Status;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
@@ -30,7 +30,7 @@ public class SubmissionRepositoryService {
     ///////////
     // V2 stuff
 
-    public List<SubmissionDto> getToplevelDataForMarathon(final Marathon marathon) {
+    public List<SubmissionDto> getToplevelDataForMarathon(final MarathonEntity marathon) {
         return this.submissionRepository.findByMarathonToplevel(marathon)
             .stream()
             .map((rwData) -> {
@@ -54,27 +54,27 @@ public class SubmissionRepositoryService {
 		return this.submissionRepository.save(submission);
 	}
 
-	public List<SubmissionEntity> findValidatedOrBonusSubmissionsForMarathon(final Marathon marathon) {
+	public List<SubmissionEntity> findValidatedOrBonusSubmissionsForMarathon(final MarathonEntity marathon) {
 		return this.submissionRepository.findValidatedOrBonusSubmissionsForMarathon(marathon);
 	}
 
-	public SubmissionEntity findByUserAndMarathon(final User user, final Marathon marathon) {
+	public SubmissionEntity findByUserAndMarathon(final User user, final MarathonEntity marathon) {
 		return this.submissionRepository.findByUserAndMarathon(user, marathon).orElse(null);
 	}
 
-    public List<SubmissionEntity> searchForMarathon(final Marathon marathon, String query) {
+    public List<SubmissionEntity> searchForMarathon(final MarathonEntity marathon, String query) {
         return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, this.pageSize)).getContent();
     }
 
-    public List<SubmissionEntity> searchForMarathonWithStatus(final Marathon marathon, String query, Status status) {
+    public List<SubmissionEntity> searchForMarathonWithStatus(final MarathonEntity marathon, String query, Status status) {
         return this.submissionRepository.searchForMarathonWithStatus(marathon, query, status, PageRequest.of(0, this.pageSize)).getContent();
     }
 
-	public Page<SubmissionEntity> findByMarathon(final Marathon marathon, int page) {
+	public Page<SubmissionEntity> findByMarathon(final MarathonEntity marathon, int page) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, this.pageSize));
 	}
 
-	public List<SubmissionEntity> findAllByMarathon(final Marathon marathon) {
+	public List<SubmissionEntity> findAllByMarathon(final MarathonEntity marathon) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 	}
 
@@ -82,7 +82,7 @@ public class SubmissionRepositoryService {
 		return this.submissionRepository.findByUser(user);
 	}
 
-	public List<SubmissionEntity> findCustomAnswersByMarathon(final Marathon marathon) {
+	public List<SubmissionEntity> findCustomAnswersByMarathon(final MarathonEntity marathon) {
 		final List<SubmissionEntity> submissions = this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 		final List<SubmissionEntity> clearedSubmissions = new ArrayList<>();
 		submissions.forEach(submission -> {
@@ -95,7 +95,7 @@ public class SubmissionRepositoryService {
 		return clearedSubmissions;
 	}
 
-	public void deleteByMarathon(final Marathon marathon) {
+	public void deleteByMarathon(final MarathonEntity marathon) {
 		this.submissionRepository.deleteByMarathon(marathon);
 	}
 
@@ -103,7 +103,7 @@ public class SubmissionRepositoryService {
 		this.submissionRepository.deleteById(id);
 	}
 
-	public boolean existsByMarathonAndUser(final Marathon marathon, final User user) {
+	public boolean existsByMarathonAndUser(final MarathonEntity marathon, final User user) {
 		return this.submissionRepository.existsByMarathonAndUser(marathon, user);
 	}
 

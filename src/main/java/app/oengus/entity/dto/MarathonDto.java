@@ -1,10 +1,10 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 
 import java.math.BigDecimal;
 
-public class MarathonDto extends Marathon {
+public class MarathonDto extends MarathonEntity {
 
 	private BigDecimal donationsTotal;
 

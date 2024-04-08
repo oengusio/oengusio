@@ -4,7 +4,7 @@ import app.oengus.entity.dto.MarathonBasicInfoDto;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Schedule;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.helper.BeanHelper;
@@ -71,20 +71,20 @@ public class MarathonService {
 
     @PostConstruct
     public void initScheduledEvents() {
-        final List<Marathon> marathonsWithScheduledSubmissions =
+        final List<MarathonEntity> marathonsWithScheduledSubmissions =
             this.marathonRepositoryService.findFutureMarathonsWithScheduledSubmissions();
-        final List<Marathon> marathonsWithScheduleDone =
+        final List<MarathonEntity> marathonsWithScheduleDone =
             this.marathonRepositoryService.findFutureMarathonsWithScheduleDone();
         marathonsWithScheduledSubmissions.forEach(this.eventSchedulerService::scheduleSubmissions);
         marathonsWithScheduleDone.forEach(this.eventSchedulerService::scheduleMarathonStartAlert);
     }
 
-    public Marathon getById(String id) throws NotFoundException {
+    public MarathonEntity getById(String id) throws NotFoundException {
         return this.marathonRepositoryService.findById(id);
     }
 
     public MarathonStatsDto getStats(String id) throws NotFoundException {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
 
         marathon.setId(id);
 
@@ -96,7 +96,7 @@ public class MarathonService {
     }
 
     @Transactional
-    public Marathon create(final Marathon marathon, final User creator) {
+    public MarathonEntity create(final MarathonEntity marathon, final User creator) {
         marathon.setCreator(creator);
         marathon.setDefaultSetupTime(Duration.ofMinutes(15));
         marathon.setStartDate(marathon.getStartDate().withSecond(0));
@@ -110,7 +110,7 @@ public class MarathonService {
 
     @Transactional
     public MarathonDto findOne(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonRepositoryService.findById(id);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(id);
         final MarathonDto marathonDto = new MarathonDto();
 
         BeanHelper.copyProperties(marathon, marathonDto);
@@ -129,8 +129,8 @@ public class MarathonService {
     }
 
     @Transactional
-    public void update(final String id, final Marathon patch) throws NotFoundException {
-        final Marathon marathon = this.marathonRepositoryService.findById(id);
+    public void update(final String id, final MarathonEntity patch) throws NotFoundException {
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(id);
         Hibernate.initialize(marathon.getQuestions());
         this.entityManager.detach(marathon);
 
@@ -190,7 +190,7 @@ public class MarathonService {
 
     @Transactional
     public void delete(final String id) throws NotFoundException {
-        final Marathon marathon = this.marathonRepositoryService.findById(id);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(id);
         this.eventSchedulerService.unscheduleSubmissions(marathon);
         this.incentiveService.deleteByMarathon(id);
         this.scheduleService.deleteByMarathon(id);
@@ -201,27 +201,27 @@ public class MarathonService {
     }
 
     private List<MarathonBasicInfoDto> findNext() {
-        final List<Marathon> marathons = this.marathonRepositoryService.findNext();
+        final List<MarathonEntity> marathons = this.marathonRepositoryService.findNext();
         return this.transform(marathons);
     }
 
     private List<MarathonBasicInfoDto> findSubmitsOpen() {
-        final List<Marathon> marathons = this.marathonRepositoryService.findBySubmitsOpenTrue();
+        final List<MarathonEntity> marathons = this.marathonRepositoryService.findBySubmitsOpenTrue();
         return this.transform(marathons);
     }
 
     private List<MarathonBasicInfoDto> findLive() {
-        final List<Marathon> marathons = this.marathonRepositoryService.findLive();
+        final List<MarathonEntity> marathons = this.marathonRepositoryService.findLive();
         return this.transform(marathons);
     }
 
     public List<MarathonBasicInfoDto> findActiveMarathonsIModerate(final User user) {
-        final List<Marathon> marathons = this.marathonRepositoryService.findActiveMarathonsByCreatorOrModerator(user);
+        final List<MarathonEntity> marathons = this.marathonRepositoryService.findActiveMarathonsByCreatorOrModerator(user);
         return this.transform(marathons);
     }
 
     public List<MarathonBasicInfoDto> findAllMarathonsIModerate(final User user) {
-        final List<Marathon> marathons = this.marathonRepositoryService.findAllMarathonsByCreatorOrModerator(user);
+        final List<MarathonEntity> marathons = this.marathonRepositoryService.findAllMarathonsByCreatorOrModerator(user);
         return this.transform(marathons);
     }
 
@@ -244,7 +244,7 @@ public class MarathonService {
     public List<MarathonBasicInfoDto> findMarathonsForDates(final ZonedDateTime start, final ZonedDateTime end,
                                                             final String zoneId) {
         final List<MarathonBasicInfoDto> dtos = new ArrayList<>();
-        final List<Marathon> marathons =
+        final List<MarathonEntity> marathons =
             this.marathonRepositoryService.findBetween(start.withZoneSameInstant(ZoneId.of(zoneId)),
                 end.withZoneSameInstant(ZoneId.of(zoneId)).plusDays(1L));
         marathons.forEach(m -> {
@@ -255,7 +255,7 @@ public class MarathonService {
         return dtos;
     }
 
-    private List<MarathonBasicInfoDto> transform(final List<Marathon> marathons) {
+    private List<MarathonBasicInfoDto> transform(final List<MarathonEntity> marathons) {
         final List<MarathonBasicInfoDto> dtos = new ArrayList<>();
         marathons.forEach(m -> {
             final MarathonBasicInfoDto dto = new MarathonBasicInfoDto();
@@ -269,7 +269,7 @@ public class MarathonService {
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void clearDonationExtraData() {
-        final List<Marathon> marathons =
+        final List<MarathonEntity> marathons =
             this.marathonRepositoryService.findByClearedFalseAndEndDateBefore(ZonedDateTime.now().minusMonths(1L));
         marathons.forEach(marathon -> {
             this.donationExtraDataRepositoryService.deleteByMarathon(marathon);

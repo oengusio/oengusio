@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.comparator.DonationExtraDataComparator;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
@@ -34,7 +35,7 @@ public class Donation {
     @JoinColumn(name = "marathon_id")
     @JsonBackReference
     @JsonView(Views.Public.class)
-    private Marathon marathon;
+    private MarathonEntity marathon;
 
     @Column(name = "functional_id")
     @JsonView(Views.Internal.class)
@@ -154,11 +155,11 @@ public class Donation {
         this.id = id;
     }
 
-    public Marathon getMarathon() {
+    public MarathonEntity getMarathon() {
         return this.marathon;
     }
 
-    public void setMarathon(final Marathon marathon) {
+    public void setMarathon(final MarathonEntity marathon) {
         this.marathon = marathon;
     }
 

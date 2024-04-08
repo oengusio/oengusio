@@ -2,7 +2,7 @@ package app.oengus.adapter.rest.dto.v2.marathon;
 
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.Opponent;
+import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.domain.RunType;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +37,7 @@ public class CategoryDto {
         dto.setGameId(category.getGame().getId());
         dto.setUserId(category.getGame().getSubmission().getUser().getId());
 
-        final List<Opponent> opponents = category.getOpponents();
+        final List<OpponentEntity> opponents = category.getOpponents();
 
         if (opponents == null) {
             dto.setOpponents(List.of());

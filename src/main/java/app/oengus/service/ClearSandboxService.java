@@ -2,7 +2,7 @@ package app.oengus.service;
 
 import app.oengus.dao.DonationIncentiveLinkRepository;
 import app.oengus.dao.DonationRepository;
-import app.oengus.dao.MarathonRepository;
+import app.oengus.adapter.jpa.repository.MarathonRepository;
 import app.oengus.adapter.jpa.repository.UserRepository;
 import javassist.NotFoundException;
 import org.slf4j.Logger;

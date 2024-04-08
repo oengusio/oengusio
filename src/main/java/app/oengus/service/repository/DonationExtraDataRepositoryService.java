@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.DonationExtraDataRepository;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ public class DonationExtraDataRepositoryService {
 	private DonationExtraDataRepository donationExtraDataRepository;
 
 	@Transactional
-	public void deleteByMarathon(final Marathon marathon) {
+	public void deleteByMarathon(final MarathonEntity marathon) {
 		this.donationExtraDataRepository.deleteByMarathon(marathon);
 	}
 

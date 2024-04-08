@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.helper.BeanHelper;
 import org.hibernate.Hibernate;
 
@@ -16,7 +17,7 @@ public class Selection {
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
-	private Marathon marathon;
+	private MarathonEntity marathon;
 
 	@OneToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id")
@@ -49,11 +50,11 @@ public class Selection {
 		this.status = status;
 	}
 
-	public Marathon getMarathon() {
+	public MarathonEntity getMarathon() {
 		return this.marathon;
 	}
 
-	public void setMarathon(final Marathon marathon) {
+	public void setMarathon(final MarathonEntity marathon) {
 		this.marathon = marathon;
 	}
 

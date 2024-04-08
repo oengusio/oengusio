@@ -2,7 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.TeamRepository;
 import app.oengus.entity.dto.TeamDto;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Team;
 import app.oengus.helper.BeanHelper;
 import javassist.NotFoundException;
@@ -23,14 +23,14 @@ public class TeamRepositoryService {
     }
 
     public List<Team> getAll(String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
 
         return this.teamRepository.findByMarathon(marathon);
     }
 
     public Team create(String marathonId, TeamDto teamDto) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         final Team team = new Team();
         team.setId(-1);

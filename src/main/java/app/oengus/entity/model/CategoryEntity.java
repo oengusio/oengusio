@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.domain.RunType;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.spring.model.Views;
@@ -77,7 +78,7 @@ public class CategoryEntity {
 	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView(Views.Public.class)
-	private List<Opponent> opponents;
+	private List<OpponentEntity> opponents;
 
 	@Transient
 	@JsonView(Views.Public.class)

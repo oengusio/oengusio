@@ -2,8 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.DonationRepository;
 import app.oengus.entity.model.Donation;
-import app.oengus.entity.model.Marathon;
-import javassist.NotFoundException;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,7 @@ public class DonationRepositoryService {
 	private DonationRepository donationRepository;
 
 	public Page<Donation> findByMarathon(final String marathonId, final Pageable pageable) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		return this.donationRepository.findByMarathonAndApprovedIsTrue(marathon, pageable);
 	}
@@ -37,7 +36,7 @@ public class DonationRepositoryService {
 	}
 
 	public BigDecimal findTotalAmountByMarathon(final String marathonId) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findTotalAmountByMarathon(marathon);
 
@@ -49,7 +48,7 @@ public class DonationRepositoryService {
 	}
 
 	public BigDecimal findAverageAmountByMarathon(final String marathonId) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findAverageAmountByMarathon(marathon);
 
@@ -61,7 +60,7 @@ public class DonationRepositoryService {
 	}
 
 	public BigDecimal findMaxAmountByMarathon(final String marathonId) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		BigDecimal result = this.donationRepository.findMaxAmountByMarathon(marathon);
 
@@ -73,7 +72,7 @@ public class DonationRepositoryService {
 	}
 
 	public int countByMarathon(final String marathonId) {
-		final Marathon marathon = new Marathon();
+		final MarathonEntity marathon = new MarathonEntity();
 		marathon.setId(marathonId);
 		return this.donationRepository.countByMarathonAndApprovedIsTrue(marathon);
 	}

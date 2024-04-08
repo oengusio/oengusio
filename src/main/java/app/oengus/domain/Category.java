@@ -22,6 +22,5 @@ public class Category {
     private RunType type;
     private String code;
 
-    // Runner and opponents
-    private List<OengusUser> runners = new ArrayList<>();
+    private List<Opponent> opponents = new ArrayList<>();
 }

@@ -1,5 +1,7 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
+
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 
@@ -13,7 +15,7 @@ public class TwitterAudit {
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")
-	private Marathon marathon;
+	private MarathonEntity marathon;
 
 	@Column(name = "action_date")
 	private ZonedDateTime actionDate;
@@ -24,7 +26,7 @@ public class TwitterAudit {
 	public TwitterAudit() {
 	}
 
-	public TwitterAudit(final Marathon marathon, final String action) {
+	public TwitterAudit(final MarathonEntity marathon, final String action) {
 		this.marathon = marathon;
 		this.action = action;
 		this.actionDate = ZonedDateTime.now();
@@ -38,11 +40,11 @@ public class TwitterAudit {
 		this.id = id;
 	}
 
-	public Marathon getMarathon() {
+	public MarathonEntity getMarathon() {
 		return this.marathon;
 	}
 
-	public void setMarathon(final Marathon marathon) {
+	public void setMarathon(final MarathonEntity marathon) {
 		this.marathon = marathon;
 	}
 

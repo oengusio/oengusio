@@ -2,7 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.IncentiveRepository;
 import app.oengus.entity.model.Incentive;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.helper.MathUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,19 +26,19 @@ public class IncentiveRepositoryService {
     }
 
     public List<Incentive> findByMarathon(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         return this.incentiveRepository.findByMarathon(marathon);
     }
 
     public List<Incentive> findByMarathonNotLocked(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         return this.incentiveRepository.findByMarathonNotLocked(marathon);
     }
 
     public Map<Integer, BigDecimal> findAmountsByMarathon(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         // TODO: this can just be a pair?
         final List<Object[]> results = this.incentiveRepository.findAmountsByMarathon(marathon);
@@ -58,7 +58,7 @@ public class IncentiveRepositoryService {
     }
 
     public void delete(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         this.incentiveRepository.deleteByMarathon(marathon);
     }

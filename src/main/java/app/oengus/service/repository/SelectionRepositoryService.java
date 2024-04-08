@@ -2,7 +2,7 @@ package app.oengus.service.repository;
 
 import app.oengus.dao.SelectionRepository;
 import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ public class SelectionRepositoryService {
 	@Autowired
 	private SelectionRepository selectionRepository;
 
-	public List<Selection> findByMarathon(final Marathon marathon) {
+	public List<Selection> findByMarathon(final MarathonEntity marathon) {
 		return this.selectionRepository.findByMarathon(marathon);
 	}
 
-	public List<Selection> findByMarathonAndStatusIn(final Marathon marathon, final List<Status> statuses) {
+	public List<Selection> findByMarathonAndStatusIn(final MarathonEntity marathon, final List<Status> statuses) {
 		return this.selectionRepository.findByMarathonAndStatusIn(marathon, statuses);
 	}
 
@@ -33,7 +33,7 @@ public class SelectionRepositoryService {
 		return this.selectionRepository.findByCategory(category);
 	}
 
-	public void rejectTodos(final Marathon marathon) {
+	public void rejectTodos(final MarathonEntity marathon) {
 		this.selectionRepository.rejectTodos(marathon);
 	}
 

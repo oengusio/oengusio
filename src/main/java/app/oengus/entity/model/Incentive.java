@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
 
@@ -24,7 +25,7 @@ public class Incentive {
     @JoinColumn(name = "marathon_id")
     @JsonBackReference
     @JsonView(Views.Public.class)
-    private Marathon marathon;
+    private MarathonEntity marathon;
 
     @ManyToOne
     @JoinColumn(name = "schedule_line_id")
@@ -86,11 +87,11 @@ public class Incentive {
         this.id = id;
     }
 
-    public Marathon getMarathon() {
+    public MarathonEntity getMarathon() {
         return this.marathon;
     }
 
-    public void setMarathon(final Marathon marathon) {
+    public void setMarathon(final MarathonEntity marathon) {
         this.marathon = marathon;
     }
 

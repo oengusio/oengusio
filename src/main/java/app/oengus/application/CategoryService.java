@@ -3,12 +3,12 @@ package app.oengus.application;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
+import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.Category;
-import app.oengus.domain.RunType;
-import app.oengus.domain.Submission;
-import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.domain.*;
+import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.GameService;
@@ -17,6 +17,7 @@ import app.oengus.service.repository.CategoryRepositoryService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class CategoryService {
     private final CategoryPersistencePort categoryPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
     private final CategoryRepositoryService categoryRepositoryService;
+    private final MarathonPersistencePort marathonPersistencePort;
     private final OengusWebhookService webhookService;
 
     public static final List<RunType> MULTIPLAYER_RUN_TYPES = List.of(RunType.COOP_RACE, RunType.COOP, RunType.RACE, RunType.RELAY, RunType.RELAY_RACE);
@@ -48,7 +50,7 @@ public class CategoryService {
     ///////////
     // v1 stuff
 
-    public OpponentSubmissionDto findCategoryByCode(final String marathonId, final String code) {
+    public Pair<Category, List<Integer>> findCategoryByCode(final String marathonId, final String code) {
         final var optionalCategory = this.categoryPersistencePort.findByCode(code);
 
         if (optionalCategory.isEmpty()) {
@@ -59,9 +61,8 @@ public class CategoryService {
 
         final var user = this.securityPort.getAuthenticatedUser();
         final Submission submission = this.submissionPersistencePort.getByGameId(category.getGameId());
-        final Marathon marathon = submission.getMarathonId();
 
-        if (!Objects.equals(marathon.getId(), marathonId)) {
+        if (!Objects.equals(submission.getMarathonId(), marathonId)) {
             throw new OengusBusinessException("DIFFERENT_MARATHON");
         }
 
@@ -70,33 +71,38 @@ public class CategoryService {
         }
 
         if (user != null) {
-            if (Objects.equals(submission.getUser().getId(), user.getId())) {
+            if (Objects.equals(submission.getUserId(), user.getId())) {
                 throw new OengusBusinessException("SAME_USER");
             }
+
             if (category.getOpponents()
                 .stream()
-                .map(opponent -> opponent.getSubmission().getUser())
-                .anyMatch(user1 -> user1.getId() == user.getId())) {
+                .map(opponent -> opponent.getSubmission().getUserId())
+                .anyMatch(userId -> userId == user.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
         }
-        final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
-        final List<User> users = new ArrayList<>();
-        users.add(submission.getUser());
-        users.addAll(category
+        final List<Integer> userIds = new ArrayList<>();
+
+        userIds.add(submission.getUserId());
+        userIds.addAll(category
             .getOpponents()
             .stream()
-            .map(opponent -> opponent.getSubmission().getUser())
-            .collect(
-                Collectors.toSet()));
-        if (marathon.getMaxNumberOfScreens() <= users.size()) {
+            .map(opponent -> opponent.getSubmission().getUserId())
+            .collect(Collectors.toSet()));
+
+        final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())
+            .orElseThrow(
+                () -> new OengusBusinessException("SUBMISSION_MARATHON_MISSING")
+            );
+
+        if (marathon.getMaxNumberOfScreens() <= userIds.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
         }
-        opponentDto.setUsers(users);
-        opponentDto.setGameName(category.getGame().getName());
-        opponentDto.setCategoryName(category.getName());
-        opponentDto.setCategoryId(category.getId());
-        return opponentDto;
+
+        return Pair.of(
+            category, userIds
+        );
     }
 
     public void delete(final int id, final User deletedBy) throws NotFoundException {

@@ -10,6 +10,8 @@ public interface UserPersistencePort {
     @Nullable
     OengusUser getById(final int id);
 
+    List<OengusUser> findAllById(List<Integer> ids);
+
     Optional<OengusUser> findByUsername(final String username);
 
     List<OengusUser> findEnabledByUsername(final String username);

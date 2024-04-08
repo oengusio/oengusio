@@ -1,9 +1,8 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.TwitterAuditRepository;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.TwitterAudit;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,16 +16,16 @@ public class TwitterAuditRepositoryService {
         this.twitterAuditRepository = twitterAuditRepository;
     }
 
-    public void save(final Marathon marathon, final String action) {
+    public void save(final MarathonEntity marathon, final String action) {
 		this.twitterAuditRepository.save(new TwitterAudit(marathon, action));
 	}
 
-	public boolean exists(final Marathon marathon, final String action) {
+	public boolean exists(final MarathonEntity marathon, final String action) {
 		return this.twitterAuditRepository.existsByMarathonAndAction(marathon, action);
 	}
 
 	@Transactional
-	public void deleteByMarathon(final Marathon marathon) {
+	public void deleteByMarathon(final MarathonEntity marathon) {
 		this.twitterAuditRepository.deleteByMarathon(marathon);
 	}
 

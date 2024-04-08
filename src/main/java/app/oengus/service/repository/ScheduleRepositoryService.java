@@ -1,7 +1,7 @@
 package app.oengus.service.repository;
 
 import app.oengus.dao.ScheduleRepository;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Schedule;
 import javassist.NotFoundException;
 import org.springframework.lang.Nullable;
@@ -18,17 +18,17 @@ public class ScheduleRepositoryService {
         this.scheduleRepository = scheduleRepository;
     }
 
-	public List<Schedule> findAllByMarathon(final Marathon marathon) {
+	public List<Schedule> findAllByMarathon(final MarathonEntity marathon) {
         return this.scheduleRepository.findByMarathon(marathon);
 	}
 
-	public Schedule findById(final Marathon marathon, final int scheduleId) throws NotFoundException {
+	public Schedule findById(final MarathonEntity marathon, final int scheduleId) throws NotFoundException {
         return this.scheduleRepository.findByMarathonAndId(marathon, scheduleId)
             .orElseThrow(() -> new NotFoundException("Schedule with id " + scheduleId + " not found."));
 	}
 
     @Nullable
-	public Schedule findByMarathon(final Marathon marathon) {
+	public Schedule findByMarathon(final MarathonEntity marathon) {
         final List<Schedule> schedules = this.scheduleRepository.findByMarathon(marathon);
 
         if (schedules.isEmpty()) {
@@ -42,7 +42,7 @@ public class ScheduleRepositoryService {
 		this.scheduleRepository.save(schedule);
 	}
 
-	public void deleteByMarathon(final Marathon marathon) {
+	public void deleteByMarathon(final MarathonEntity marathon) {
 		this.scheduleRepository.deleteByMarathon(marathon);
 	}
 }

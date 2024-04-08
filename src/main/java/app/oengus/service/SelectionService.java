@@ -2,7 +2,7 @@ package app.oengus.service;
 
 import app.oengus.entity.dto.SelectionDto;
 import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.Marathon;
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Selection;
 import app.oengus.entity.model.Status;
 import app.oengus.service.repository.CategoryRepositoryService;
@@ -32,7 +32,7 @@ public class SelectionService {
     private MarathonRepositoryService marathonRepositoryService;
 
     public Map<Integer, SelectionDto> findByMarathon(final String marathonId) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
 
         final List<Selection> selections = this.selectionRepository.findByMarathon(marathon);
@@ -40,12 +40,12 @@ public class SelectionService {
         return this.modelToDtos(selections);
     }
 
-    public List<Selection> findByMarathon(final Marathon marathon) {
+    public List<Selection> findByMarathon(final MarathonEntity marathon) {
         return this.selectionRepository.findByMarathon(marathon);
     }
 
     public Map<Integer, SelectionDto> findByMarathon(final String marathonId, final List<Status> statuses) {
-        final Marathon marathon = new Marathon();
+        final MarathonEntity marathon = new MarathonEntity();
         marathon.setId(marathonId);
         if (statuses == null || statuses.isEmpty()) {
             return this.findByMarathon(marathonId);
@@ -74,7 +74,7 @@ public class SelectionService {
 
     @Transactional
     public void saveOrUpdate(final String marathonId, final List<SelectionDto> dtos) throws NotFoundException {
-        final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
+        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
         final List<Selection> newSelections = new ArrayList<>();
         final Iterable<CategoryEntity> categories = this.categoryRepositoryService.findAllById(
             dtos.stream().map(SelectionDto::getCategoryId).collect(Collectors.toList())
@@ -101,7 +101,7 @@ public class SelectionService {
     }
 
     @Transactional
-    public void rejectTodos(final Marathon marathon) {
+    public void rejectTodos(final MarathonEntity marathon) {
         this.selectionRepository.rejectTodos(marathon);
     }
 

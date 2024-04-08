@@ -2,7 +2,7 @@ package app.oengus.entity.dto;
 
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.entity.model.Availability;
-import app.oengus.entity.model.Opponent;
+import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -55,7 +55,7 @@ public class OpponentCategoryDto {
 	}
 
     @Deprecated
-    public static OpponentCategoryDto fromOpponent(Opponent opponent) {
+    public static OpponentCategoryDto fromOpponent(OpponentEntity opponent) {
         final OpponentCategoryDto dto = new OpponentCategoryDto();
         final SubmissionEntity submission = opponent.getSubmission();
 
