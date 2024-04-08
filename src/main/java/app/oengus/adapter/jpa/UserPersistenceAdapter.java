@@ -6,13 +6,13 @@ import app.oengus.adapter.jpa.repository.UserRepository;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class UserPersistenceAdapter implements UserPersistencePort {
     private final UserRepository userRepository;

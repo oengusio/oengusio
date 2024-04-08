@@ -7,12 +7,12 @@ import app.oengus.domain.Category;
 import app.oengus.domain.Game;
 import app.oengus.entity.model.GameEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryRepository repository;

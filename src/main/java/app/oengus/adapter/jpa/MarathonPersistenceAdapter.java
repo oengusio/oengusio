@@ -5,11 +5,11 @@ import app.oengus.adapter.jpa.repository.MarathonRepository;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.domain.Marathon;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     private final MarathonRepository repository;

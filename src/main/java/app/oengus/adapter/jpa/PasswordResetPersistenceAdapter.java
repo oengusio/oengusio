@@ -5,11 +5,11 @@ import app.oengus.adapter.jpa.repository.PasswordResetsRepository;
 import app.oengus.application.port.persistence.PasswordResetPersistencePort;
 import app.oengus.domain.PendingPasswordReset;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class PasswordResetPersistenceAdapter implements PasswordResetPersistencePort {
     private final PasswordResetsRepository repository;

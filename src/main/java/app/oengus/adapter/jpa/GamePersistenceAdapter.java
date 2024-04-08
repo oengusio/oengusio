@@ -5,11 +5,11 @@ import app.oengus.adapter.jpa.repository.GameRepository;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.domain.Game;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class GamePersistenceAdapter implements GamePersistencePort {
     private final GameRepository repository;

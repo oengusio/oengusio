@@ -1,22 +1,22 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.SubmissionEntityMapper;
 import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.domain.Submission;
 import app.oengus.entity.model.GameEntity;
-import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final SubmissionRepository repository;
