@@ -1,10 +1,10 @@
 package app.oengus.service.repository;
 
-import app.oengus.dao.SubmissionRepository;
+import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
 import app.oengus.entity.model.Marathon;
 import app.oengus.entity.model.Status;
-import app.oengus.entity.model.Submission;
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Deprecated(forRemoval = true)
 public class SubmissionRepositoryService {
 
 	private final SubmissionRepository submissionRepository;
@@ -49,43 +50,43 @@ public class SubmissionRepositoryService {
     ////////////
     // Old stuff
 
-    public Submission save(final Submission submission) {
+    public SubmissionEntity save(final SubmissionEntity submission) {
 		return this.submissionRepository.save(submission);
 	}
 
-	public List<Submission> findValidatedOrBonusSubmissionsForMarathon(final Marathon marathon) {
+	public List<SubmissionEntity> findValidatedOrBonusSubmissionsForMarathon(final Marathon marathon) {
 		return this.submissionRepository.findValidatedOrBonusSubmissionsForMarathon(marathon);
 	}
 
-	public Submission findByUserAndMarathon(final User user, final Marathon marathon) {
-		return this.submissionRepository.findByUserAndMarathon(user, marathon);
+	public SubmissionEntity findByUserAndMarathon(final User user, final Marathon marathon) {
+		return this.submissionRepository.findByUserAndMarathon(user, marathon).orElse(null);
 	}
 
-    public List<Submission> searchForMarathon(final Marathon marathon, String query) {
+    public List<SubmissionEntity> searchForMarathon(final Marathon marathon, String query) {
         return this.submissionRepository.searchForMarathon(marathon, query, PageRequest.of(0, this.pageSize)).getContent();
     }
 
-    public List<Submission> searchForMarathonWithStatus(final Marathon marathon, String query, Status status) {
+    public List<SubmissionEntity> searchForMarathonWithStatus(final Marathon marathon, String query, Status status) {
         return this.submissionRepository.searchForMarathonWithStatus(marathon, query, status, PageRequest.of(0, this.pageSize)).getContent();
     }
 
-	public Page<Submission> findByMarathon(final Marathon marathon, int page) {
+	public Page<SubmissionEntity> findByMarathon(final Marathon marathon, int page) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon, PageRequest.of(page, this.pageSize));
 	}
 
-	public List<Submission> findAllByMarathon(final Marathon marathon) {
+	public List<SubmissionEntity> findAllByMarathon(final Marathon marathon) {
 		return this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
 	}
 
-	public List<Submission> findByUser(final User user) {
+	public List<SubmissionEntity> findByUser(final User user) {
 		return this.submissionRepository.findByUser(user);
 	}
 
-	public List<Submission> findCustomAnswersByMarathon(final Marathon marathon) {
-		final List<Submission> submissions = this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
-		final List<Submission> clearedSubmissions = new ArrayList<>();
+	public List<SubmissionEntity> findCustomAnswersByMarathon(final Marathon marathon) {
+		final List<SubmissionEntity> submissions = this.submissionRepository.findByMarathonOrderByIdAsc(marathon);
+		final List<SubmissionEntity> clearedSubmissions = new ArrayList<>();
 		submissions.forEach(submission -> {
-			final Submission copy = new Submission();
+			final SubmissionEntity copy = new SubmissionEntity();
 			copy.setUser(submission.getUser());
 			copy.setId(submission.getId());
 			copy.setAnswers(submission.getAnswers());
@@ -106,7 +107,7 @@ public class SubmissionRepositoryService {
 		return this.submissionRepository.existsByMarathonAndUser(marathon, user);
 	}
 
-	public Submission findById(final int id) throws NotFoundException {
+	public SubmissionEntity findById(final int id) throws NotFoundException {
 		return this.submissionRepository.findById(id).orElseThrow(() -> new NotFoundException("Submission not found"));
 	}
 }

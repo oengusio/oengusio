@@ -1,6 +1,6 @@
 package app.oengus.service;
 
-import app.oengus.entity.model.Submission;
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.service.export.DonationsCsvExporter;
 import app.oengus.service.export.ScheduleCsvExporter;
 import app.oengus.service.export.ScheduleIcalExporter;
@@ -38,7 +38,7 @@ public class ExportService {
 
 	public Writer exportSubmissionsToCsv(final String marathonId, final String zoneId, final String language)
 			throws IOException {
-		final List<Submission> submissions = this.submissionService.findAllByMarathon(marathonId);
+		final List<SubmissionEntity> submissions = this.submissionService.findAllByMarathon(marathonId);
 
 		final StringWriter out = new StringWriter();
 		if (!submissions.isEmpty()) {
@@ -49,7 +49,7 @@ public class ExportService {
                         .build()
             )) {
 				final Locale locale = Locale.forLanguageTag(language);
-				for (final Submission submission : submissions) {
+				for (final SubmissionEntity submission : submissions) {
 					printer.printRecords(submission.getCsvRecords(locale, zoneId));
 				}
 			}

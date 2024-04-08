@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,7 +28,7 @@ public class Opponent {
 	@JoinColumn(name = "opponent_submission_id")
 	@JsonView(Views.Public.class)
 	@JsonBackReference(value = "opponentReference")
-	private Submission submission;
+	private SubmissionEntity submission;
 
 	@Column(name = "video")
 	@JsonView(Views.Public.class)
@@ -58,11 +59,11 @@ public class Opponent {
 		this.video = video;
 	}
 
-	public Submission getSubmission() {
+	public SubmissionEntity getSubmission() {
 		return this.submission;
 	}
 
-	public void setSubmission(final Submission submission) {
+	public void setSubmission(final SubmissionEntity submission) {
 		this.submission = submission;
 	}
 }

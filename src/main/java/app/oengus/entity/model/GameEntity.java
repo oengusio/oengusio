@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +29,7 @@ public class GameEntity {
 	@JoinColumn(name = "submission_id")
 	@JsonBackReference
 	@JsonView(Views.Public.class)
-	private Submission submission;
+	private SubmissionEntity submission;
 
 	@Column(name = "name")
 	@JsonView(Views.Public.class)
@@ -72,11 +73,11 @@ public class GameEntity {
 		this.id = id;
 	}
 
-	public Submission getSubmission() {
+	public SubmissionEntity getSubmission() {
 		return this.submission;
 	}
 
-	public void setSubmission(final Submission submission) {
+	public void setSubmission(final SubmissionEntity submission) {
 		this.submission = submission;
 	}
 
@@ -173,5 +174,13 @@ public class GameEntity {
         game.getCategories().forEach((category) -> {
             Hibernate.initialize(category.getOpponents());
         });
+    }
+
+    public static GameEntity ofId(int id) {
+        final var game = new GameEntity();
+
+        game.setId(id);
+
+        return game;
     }
 }

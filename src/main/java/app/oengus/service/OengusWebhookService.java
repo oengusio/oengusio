@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.rest.dto.v2.SelectionDto;
 import app.oengus.entity.model.*;
@@ -62,7 +63,7 @@ public class OengusWebhookService {
     }
 
     // TODO: no notification for joining multiplayer run
-    public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
+    public void sendNewSubmissionEvent(final String url, final SubmissionEntity submission) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_ADD")
             .set("submission", parseJson(submission));
@@ -78,7 +79,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
+    public void sendSubmissionUpdateEvent(final String url, final SubmissionEntity newSubmission, final SubmissionEntity oldSubmission) throws IOException {
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
         data.set("submission", parseJson(newSubmission));
         data.set("original_submission", parseJson(oldSubmission));
@@ -94,7 +95,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionDeleteEvent(final String url, final Submission submission, final User deletedBy) throws IOException {
+    public void sendSubmissionDeleteEvent(final String url, final SubmissionEntity submission, final User deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_DELETE");
         data.set("submission", parseJson(submission));

@@ -17,7 +17,7 @@ public class BeanHelper {
     /**
      * @deprecated use a mapper
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
 	public static String[] getNullPropertyNames(final Object source) {
 		final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
 		return Stream.of(wrappedSource.getPropertyDescriptors())
@@ -43,7 +43,7 @@ public class BeanHelper {
      * @param src The source bean
      * @param target The target bean, the properties from src will be copied to this
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
 	public static void copyProperties(final Object src, final Object target) {
 		BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
 	}
@@ -51,7 +51,7 @@ public class BeanHelper {
     /**
      * @deprecated use a mapper
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
 	public static void copyProperties(final Object src, final Object target, final String... ignoreProperties) {
 		BeanUtils.copyProperties(src, target, ArrayUtils.addAll(getNullPropertyNames(src), ignoreProperties));
 	}

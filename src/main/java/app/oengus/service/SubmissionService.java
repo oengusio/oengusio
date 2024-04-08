@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.entity.dto.AvailabilityDto;
@@ -77,7 +78,7 @@ public class SubmissionService {
     ///////////
     // V1 stuff
 
-    public Submission save(final Submission submission, final User submitter, final String marathonId)
+    public SubmissionEntity save(final SubmissionEntity submission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 
@@ -85,7 +86,7 @@ public class SubmissionService {
             throw new SubmissionsClosedException();
         }
 
-        final Submission saved = this.saveInternal(submission, submitter, marathon);
+        final SubmissionEntity saved = this.saveInternal(submission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
@@ -99,15 +100,15 @@ public class SubmissionService {
         return saved;
     }
 
-    public Submission update(final Submission newSubmission, final User submitter, final String marathonId)
+    public SubmissionEntity update(final SubmissionEntity newSubmission, final User submitter, final String marathonId)
         throws NotFoundException {
         final Marathon marathon = this.marathonRepositoryService.findById(marathonId);
 
         // submission id is never null here
-        final Submission oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
+        final SubmissionEntity oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
 
         // save before sending so we catch the error if saving fails
-        final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
+        final SubmissionEntity saved = this.saveInternal(newSubmission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
@@ -122,7 +123,7 @@ public class SubmissionService {
     }
 
     @Transactional
-    public Submission saveInternal(final Submission submission, final User submitter, final Marathon marathon) {
+    public SubmissionEntity saveInternal(final SubmissionEntity submission, final User submitter, final Marathon marathon) {
         submission.setUser(submitter);
         submission.setMarathon(marathon);
         submission.getAvailabilities().forEach(availability -> {
@@ -182,7 +183,7 @@ public class SubmissionService {
     public Map<String, List<AvailabilityDto>> getRunnersAvailabilitiesForMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> submissions =
+        final List<SubmissionEntity> submissions =
                 this.submissionRepositoryService.findValidatedOrBonusSubmissionsForMarathon(marathon);
         final Map<String, List<AvailabilityDto>> availabilities = new HashMap<>();
         submissions.forEach(submission -> {
@@ -225,7 +226,7 @@ public class SubmissionService {
         marathon.setId(marathonId);
         final User user =
                 this.userRepositoryService.findById(runnerId);
-        final Submission submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+        final SubmissionEntity submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
         final Map<String, List<AvailabilityDto>> availabilities = new HashMap<>();
         final List<AvailabilityDto> availabilityDtoList = new ArrayList<>();
         if (submission != null) {
@@ -250,10 +251,10 @@ public class SubmissionService {
     }
 
     @Transactional
-    public Submission findByUserAndMarathon(final User user, final String marathonId) {
+    public SubmissionEntity findByUserAndMarathon(final User user, final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final Submission submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+        final SubmissionEntity submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
 
         if (submission != null) {
             if (submission.getOpponents() != null) {
@@ -320,7 +321,7 @@ public class SubmissionService {
     public List<AnswerDto> findAnswersByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
+        final List<SubmissionEntity> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
         final List<AnswerDto> answers = new ArrayList<>();
 
         byMarathon.forEach((submission) -> {
@@ -341,7 +342,7 @@ public class SubmissionService {
         marathon.setId(marathonId);
         final String queryLower = query.toLowerCase();
 
-        final List<Submission> bySearch;
+        final List<SubmissionEntity> bySearch;
         final Status cStat;
 
         if (status == null) {
@@ -396,7 +397,7 @@ public class SubmissionService {
                                                 base = category.getOpponents()
                                                     .stream()
                                                     .map(Opponent::getSubmission)
-                                                    .map(Submission::getUser)
+                                                    .map(SubmissionEntity::getUser)
                                                     .anyMatch(matchesUsername);
                                             }
 
@@ -446,10 +447,10 @@ public class SubmissionService {
     }
 
     @Transactional
-    public List<Submission> findAllByMarathon(final String marathonId) {
+    public List<SubmissionEntity> findAllByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
-        final List<Submission> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
+        final List<SubmissionEntity> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
 
         // load opponents
         byMarathon.forEach((submission) -> {
@@ -474,7 +475,7 @@ public class SubmissionService {
     }
 
     @Transactional
-    public List<Submission> findCustomAnswersByMarathon(final String marathonId) {
+    public List<SubmissionEntity> findCustomAnswersByMarathon(final String marathonId) {
         final Marathon marathon = new Marathon();
         marathon.setId(marathonId);
         return this.submissionRepositoryService.findCustomAnswersByMarathon(marathon);
@@ -491,7 +492,7 @@ public class SubmissionService {
 
     // User is the person deleting the submission
     public void delete(final int id, final User user) throws NotFoundException {
-        final Submission submission = this.submissionRepositoryService.findById(id);
+        final SubmissionEntity submission = this.submissionRepositoryService.findById(id);
         final Marathon marathon = submission.getMarathon();
         if (submission.getUser().getId() == user.getId() || user.getRoles().contains(Role.ROLE_ADMIN) ||
                 marathon.getCreator().getId() == user.getId() ||
@@ -522,7 +523,7 @@ public class SubmissionService {
         }
     }
 
-    private app.oengus.entity.dto.v1.submissions.SubmissionDto mapSubmissionDto(Submission submission, boolean selectionDone) {
+    private app.oengus.entity.dto.v1.submissions.SubmissionDto mapSubmissionDto(SubmissionEntity submission, boolean selectionDone) {
         final app.oengus.entity.dto.v1.submissions.SubmissionDto dto = new app.oengus.entity.dto.v1.submissions.SubmissionDto();
 
         dto.setId(submission.getId());

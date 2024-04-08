@@ -1,5 +1,6 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -28,7 +29,7 @@ public class Answer implements Comparable<Answer> {
 	@JoinColumn(name = "submission_id")
 	@JsonBackReference(value = "answersReference")
 	@JsonView(Views.Public.class)
-	private Submission submission;
+	private SubmissionEntity submission;
 
 	@Column(name = "answer")
 	@JsonView(Views.Public.class)
@@ -64,11 +65,11 @@ public class Answer implements Comparable<Answer> {
 		this.question = question;
 	}
 
-	public Submission getSubmission() {
+	public SubmissionEntity getSubmission() {
 		return this.submission;
 	}
 
-	public void setSubmission(final Submission submission) {
+	public void setSubmission(final SubmissionEntity submission) {
 		this.submission = submission;
 	}
 

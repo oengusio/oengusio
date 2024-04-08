@@ -1,15 +1,16 @@
 package app.oengus.application;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.Category;
 import app.oengus.domain.RunType;
+import app.oengus.domain.Submission;
 import app.oengus.entity.dto.OpponentSubmissionDto;
-import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
 import app.oengus.entity.model.*;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.GameService;
 import app.oengus.service.OengusWebhookService;
 import app.oengus.service.repository.CategoryRepositoryService;
@@ -30,6 +31,7 @@ public class CategoryService {
     private final UserSecurityPort securityPort;
     private final GameService gameService;
     private final CategoryPersistencePort categoryPersistencePort;
+    private final SubmissionPersistencePort submissionPersistencePort;
     private final CategoryRepositoryService categoryRepositoryService;
     private final OengusWebhookService webhookService;
 
@@ -56,9 +58,8 @@ public class CategoryService {
         final var category = optionalCategory.get();
 
         final var user = this.securityPort.getAuthenticatedUser();
-        // TODO: get submission by game id;
-        final Submission submission = category.getGame().getSubmission();
-        final Marathon marathon = submission.getMarathon();
+        final Submission submission = this.submissionPersistencePort.getByGameId(category.getGameId());
+        final Marathon marathon = submission.getMarathonId();
 
         if (!Objects.equals(marathon.getId(), marathonId)) {
             throw new OengusBusinessException("DIFFERENT_MARATHON");
@@ -108,7 +109,7 @@ public class CategoryService {
             return;
         }
 
-        final Submission submission = game.getSubmission();
+        final SubmissionEntity submission = game.getSubmission();
         final String webhook = submission.getMarathon().getWebhook();
 
         if (StringUtils.isNotEmpty(webhook)) {

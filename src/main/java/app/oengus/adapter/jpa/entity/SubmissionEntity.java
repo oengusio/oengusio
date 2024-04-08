@@ -1,14 +1,16 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.entity.dto.OpponentSubmissionDto;
+import app.oengus.entity.model.*;
 import app.oengus.helper.TimeHelpers;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.SortComparator;
@@ -24,9 +26,11 @@ import java.util.stream.Collectors;
 import static app.oengus.helper.StringHelper.getUserDisplay;
 import static javax.persistence.CascadeType.ALL;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "submission")
-public class Submission {
+public class SubmissionEntity {
     private static final List<String> DEFAULT_HEADERS =
         Arrays.asList("runner", "game_name", "game_description", "game_console", "game_ratio", "category_name",
             "category_description", "category_type", "category_estimate", "category_video", "status");
@@ -34,7 +38,7 @@ public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(Views.Public.class)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -77,70 +81,6 @@ public class Submission {
     @Transient
     @JsonView(Views.Public.class)
     private Set<OpponentSubmissionDto> opponentDtos;
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public void setUser(final User user) {
-        this.user = user;
-    }
-
-    public Marathon getMarathon() {
-        return this.marathon;
-    }
-
-    public void setMarathon(final Marathon marathon) {
-        this.marathon = marathon;
-    }
-
-    public List<Availability> getAvailabilities() {
-        return this.availabilities;
-    }
-
-    public void setAvailabilities(final List<Availability> availabilities) {
-        this.availabilities = availabilities;
-    }
-
-    public Set<GameEntity> getGames() {
-        return this.games;
-    }
-
-    public void setGames(final Set<GameEntity> games) {
-        this.games = games;
-    }
-
-    public SortedSet<Answer> getAnswers() {
-        return this.answers;
-    }
-
-    public void setAnswers(final SortedSet<Answer> answers) {
-        this.answers = answers;
-    }
-
-    public Set<Opponent> getOpponents() {
-        return this.opponents;
-    }
-
-    public void setOpponents(final Set<Opponent> opponents) {
-        this.opponents = opponents;
-    }
-
-    public Set<OpponentSubmissionDto> getOpponentDtos() {
-        return this.opponentDtos;
-    }
-
-    public void setOpponentDtos(final Set<OpponentSubmissionDto> opponentDtos) {
-        this.opponentDtos = opponentDtos;
-    }
 
     @JsonIgnore
     public String[] getCsvHeaders() {
@@ -236,7 +176,7 @@ public class Submission {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Submission that = (Submission) o;
+        SubmissionEntity that = (SubmissionEntity) o;
         return id == that.id && user.equals(that.user) && marathon.equals(that.marathon) && games.equals(that.games);
     }
 
@@ -245,8 +185,9 @@ public class Submission {
         return Objects.hash(id, user, marathon, games, opponents);
     }
 
-    public Submission fresh(boolean withGames) {
-        final Submission submission = new Submission();
+    @Deprecated(forRemoval = true)
+    public SubmissionEntity fresh(boolean withGames) {
+        final SubmissionEntity submission = new SubmissionEntity();
 
         // load all the items needed from the old submission
         Hibernate.initialize(this.getAvailabilities());
@@ -271,7 +212,8 @@ public class Submission {
         return submission;
     }
 
-    public static void initialize(Submission submission, boolean withGames) {
+    @Deprecated(forRemoval = true)
+    public static void initialize(SubmissionEntity submission, boolean withGames) {
         // load all the items needed from the old submission
         Hibernate.initialize(submission.getAvailabilities());
         Hibernate.initialize(submission.getOpponents());

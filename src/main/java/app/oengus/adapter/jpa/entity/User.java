@@ -191,4 +191,12 @@ public class User implements IUsername {
     public int hashCode() {
         return Objects.hash(id, username);
     }
+
+    public static User ofId(int id) {
+        final var user = new User();
+
+        user.setId(id);
+
+        return user;
+    }
 }

@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v1;
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
-import app.oengus.entity.model.Submission;
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.ExportService;
 import app.oengus.service.GameService;
@@ -118,7 +118,7 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
     @Operation(hidden = true)
-    public ResponseEntity<?> create(@RequestBody @Valid final Submission submission,
+    public ResponseEntity<?> create(@RequestBody @Valid final SubmissionEntity submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
                                     final BindingResult bindingResult) throws NotFoundException {
@@ -143,7 +143,7 @@ public class SubmissionsController {
         "&& #submission.id != null " +
         "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
-    public ResponseEntity<?> update(@RequestBody @Valid final Submission submission,
+    public ResponseEntity<?> update(@RequestBody @Valid final SubmissionEntity submission,
                                     @PathVariable("marathonId") final String marathonId,
                                     final Principal principal,
                                     final BindingResult bindingResult) throws NotFoundException {
@@ -179,8 +179,8 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
-    public ResponseEntity<Submission> getMySubmission(@PathVariable("marathonId") final String marathonId, final Principal principal) {
-        final Submission submission = this.submissionService.findByUserAndMarathon(
+    public ResponseEntity<SubmissionEntity> getMySubmission(@PathVariable("marathonId") final String marathonId, final Principal principal) {
+        final SubmissionEntity submission = this.submissionService.findByUserAndMarathon(
             PrincipalHelper.getUserFromPrincipal(principal),
             marathonId
         );

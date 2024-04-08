@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.dao.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
@@ -284,17 +285,17 @@ public class UserService {
         return userProfileDto;
     }
 
-    private void addSubmissionsToProfile(UserProfileDto userProfileDto, List<Submission> submissions) {
+    private void addSubmissionsToProfile(UserProfileDto userProfileDto, List<SubmissionEntity> submissions) {
         if (submissions == null || submissions.isEmpty()) {
             return;
         }
 
-        final List<Submission> filteredSubmissions = submissions.stream()
+        final List<SubmissionEntity> filteredSubmissions = submissions.stream()
             .filter(
                 (submission) -> submission.getMarathon() != null
             )
             .sorted(
-                Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
+                Comparator.comparing((o) -> ((SubmissionEntity) o).getMarathon().getStartDate()).reversed()
             ).toList();
 
         final Map<Integer, SelectionDto> selections = this.selectionService.findAllByCategory(filteredSubmissions.stream()
@@ -396,14 +397,14 @@ public class UserService {
         final User user = new User();
         user.setId(userId);
 
-        final List<Submission> submissions = this.submissionRepositoryService.findByUser(user);
+        final List<SubmissionEntity> submissions = this.submissionRepositoryService.findByUser(user);
 
-        final List<Submission> filteredSubmissions = submissions.stream()
+        final List<SubmissionEntity> filteredSubmissions = submissions.stream()
             .filter(
                 (submission) -> submission.getMarathon() != null
             )
             .sorted(
-                Comparator.comparing((o) -> ((Submission) o).getMarathon().getStartDate()).reversed()
+                Comparator.comparing((o) -> ((SubmissionEntity) o).getMarathon().getStartDate()).reversed()
             ).toList();
 
         final List<CategoryEntity> categories = filteredSubmissions.stream()
