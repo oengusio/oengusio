@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -39,7 +40,7 @@ public class AuthService {
 
     // TODO: make a custom model? According to clean architecture it is required.
     public LoginResponseDto login(LoginDto body) {
-        final var optionalUser = this.userService.findByUsername(body.getUsername());
+        final var optionalUser = this.userService.findByUsername(body.getUsername().toLowerCase(Locale.ROOT));
 
         if (optionalUser.isEmpty()) {
             throw new InvalidPasswordException();
@@ -109,6 +110,10 @@ public class AuthService {
         if (this.userService.existsByUsername(newUser.getUsername())) {
             return SignupResponseDto.Status.USERNAME_TAKEN;
         }
+
+        newUser.setUsername(
+            newUser.getUsername().toLowerCase(Locale.ROOT)
+        );
 
         final var updatedUser = this.userService.save(newUser);
 
