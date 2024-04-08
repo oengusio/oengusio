@@ -5,6 +5,7 @@ import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.domain.Category;
 import app.oengus.domain.Game;
+import app.oengus.entity.model.GameEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,11 @@ import java.util.Optional;
 public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryRepository repository;
     private final CategoryMapper mapper;
+
+    @Override
+    public Optional<Category> findById(int id) {
+        return this.repository.findById(id).map(this.mapper::toDomain);
+    }
 
     @Override
     public List<Category> findByMarathonSubmissionAndGameId(String marathonId, int submissionId, int gameId) {
@@ -30,8 +36,16 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    public List<Category> findByGameId(int gameId) {
+        return this.repository.findByGameContaining(GameEntity.ofId(gameId))
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
+    }
+
+    @Override
     public List<Category> findByGame(Game game) {
-        throw new UnsupportedOperationException("CategoryPersistenceAdapter#findByGame(Game) has not been implemented yet");
+        return this.findByGameId(game.getId());
     }
 
     @Override

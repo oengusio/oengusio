@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Deprecated(forRemoval = true)
 public class SelectionRepositoryService {
 
 	@Autowired

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Deprecated(forRemoval = true)
 public class BidRepositoryService {
 
 	@Autowired

@@ -1,6 +1,6 @@
 package app.oengus.service.repository;
 
-import app.oengus.dao.GameRepository;
+import app.oengus.adapter.jpa.repository.GameRepository;
 import app.oengus.entity.model.GameEntity;
 import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Deprecated(forRemoval = true)
 public class GameRepositoryService {
 
     private final GameRepository gameRepository;

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Deprecated(forRemoval = true)
 public class IncentiveRepositoryService {
 
     private final IncentiveRepository incentiveRepository;

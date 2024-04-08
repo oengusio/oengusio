@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
+@Deprecated(forRemoval = true)
 public class MarathonRepositoryService {
 
 	private final MarathonRepository marathonRepository;

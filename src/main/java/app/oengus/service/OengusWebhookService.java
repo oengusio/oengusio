@@ -1,15 +1,21 @@
 package app.oengus.service;
 
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.rest.dto.v2.SelectionDto;
-import app.oengus.entity.model.*;
+import app.oengus.application.port.persistence.GamePersistencePort;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.domain.Category;
+import app.oengus.domain.OengusUser;
+import app.oengus.entity.model.Donation;
+import app.oengus.entity.model.GameEntity;
+import app.oengus.entity.model.Selection;
 import app.oengus.helper.OengusBotUrl;
 import app.oengus.service.rabbitmq.IRabbitMQService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Service
+@RequiredArgsConstructor
 public class OengusWebhookService {
     private static final Logger LOG = LoggerFactory.getLogger(OengusWebhookService.class);
 
@@ -29,6 +36,8 @@ public class OengusWebhookService {
 
     private final ObjectMapper mapper;
     private final IRabbitMQService rabbitMq;
+    private final GamePersistencePort gamePersistencePort;
+    private final SubmissionPersistencePort submissionPersistencePort;
 
     // NOTE: this can only do two at the same time
     private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
@@ -36,13 +45,6 @@ public class OengusWebhookService {
         t.setDaemon(true);
         return t;
     });
-
-    public OengusWebhookService(
-        ObjectMapper mapper, IRabbitMQService rabbitMq
-    ) {
-        this.mapper = mapper;
-        this.rabbitMq = rabbitMq;
-    }
 
     // TODO: replace bot webhook with settings.
     /// <editor-fold desc="event functions">
@@ -95,7 +97,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionDeleteEvent(final String url, final SubmissionEntity submission, final User deletedBy) throws IOException {
+    public void sendSubmissionDeleteEvent(final String url, final SubmissionEntity submission, final OengusUser deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_DELETE");
         data.set("submission", parseJson(submission));
@@ -112,7 +114,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendGameDeleteEvent(final String url, final GameEntity game, final User deletedBy) throws IOException {
+    public void sendGameDeleteEvent(final String url, final GameEntity game, final OengusUser deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "GAME_DELETE");
         data.set("game", parseJson(game));
@@ -130,12 +132,16 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendCategoryDeleteEvent(final String url, final CategoryEntity category, final User deletedBy) throws IOException {
+    public void sendCategoryDeleteEvent(final String url, final Category category, final OengusUser deletedBy) throws IOException {
+        final var game = this.gamePersistencePort.findById(category.getGameId()).get();
+        final var submission = this.submissionPersistencePort.findById(game.getSubmissionId()).get();
+
+        // TODO: map these to DTOs
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "CATEGORY_DELETE");
         data.set("category", parseJson(category));
-        data.set("submission", parseJson(category.getGame().getSubmission().fresh(false)));
-        data.set("game", parseJson(category.getGame().fresh(false, false)));
+        data.set("submission", parseJson(submission));
+        data.set("game", parseJson(game));
         data.set("deleted_by", parseJson(deletedBy));
 
         if (handleOnBot(url)) {

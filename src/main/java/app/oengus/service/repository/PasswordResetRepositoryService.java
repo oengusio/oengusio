@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Deprecated(forRemoval = true)
 public class PasswordResetRepositoryService {
     private final PasswordResetsRepository passwordResetRepository;
 

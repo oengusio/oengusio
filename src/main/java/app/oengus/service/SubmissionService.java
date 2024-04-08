@@ -6,6 +6,7 @@ import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
@@ -501,12 +502,12 @@ public class SubmissionService {
     }
 
     // User is the person deleting the submission
-    public void delete(final int id, final User user) throws NotFoundException {
+    public void delete(final int id, final OengusUser deletedBy) throws NotFoundException {
         final SubmissionEntity submission = this.submissionRepositoryService.findById(id);
         final MarathonEntity marathon = submission.getMarathon();
-        if (submission.getUser().getId() == user.getId() || user.getRoles().contains(Role.ROLE_ADMIN) ||
-                marathon.getCreator().getId() == user.getId() ||
-                marathon.getModerators().stream().anyMatch(u -> u.getId() == user.getId())) {
+        if (submission.getUser().getId() == deletedBy.getId() || deletedBy.getRoles().contains(Role.ROLE_ADMIN) ||
+                marathon.getCreator().getId() == deletedBy.getId() ||
+                marathon.getModerators().stream().anyMatch(u -> u.getId() == deletedBy.getId())) {
 
             // send webhook
             if (StringUtils.isNotEmpty(marathon.getWebhook())) {
@@ -517,7 +518,7 @@ public class SubmissionService {
                     // Detach it from the manager
                     this.entityManager.detach(submission);*/
 
-                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission.fresh(true), user);
+                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission.fresh(true), deletedBy);
                 } catch (IOException e) {
                     LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
                 }

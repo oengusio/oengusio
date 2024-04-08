@@ -7,6 +7,7 @@ import app.oengus.helper.BeanHelper;
 import org.springframework.stereotype.Service;
 
 @Service
+@Deprecated(forRemoval = true)
 public class PatreonStatusRepositoryService {
     private final PatreonStatusRepository repository;
 

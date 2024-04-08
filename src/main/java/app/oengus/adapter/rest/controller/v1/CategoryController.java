@@ -7,7 +7,6 @@ import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.Game;
 import app.oengus.domain.OengusUser;
-import app.oengus.helper.PrincipalHelper;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -60,8 +58,8 @@ public class CategoryController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
-        this.categoryService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+                                    @PathVariable("id") final int id) throws NotFoundException {
+        this.categoryService.delete(marathonId, id);
 
         return ResponseEntity.ok().build();
     }

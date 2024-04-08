@@ -1,19 +1,16 @@
 package app.oengus.application;
 
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.*;
-import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
-import app.oengus.entity.model.*;
+import app.oengus.domain.Category;
+import app.oengus.domain.Marathon;
+import app.oengus.domain.RunType;
+import app.oengus.domain.Submission;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.GameService;
 import app.oengus.service.OengusWebhookService;
-import app.oengus.service.repository.CategoryRepositoryService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +30,6 @@ public class CategoryService {
     private final GameService gameService;
     private final CategoryPersistencePort categoryPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
-    private final CategoryRepositoryService categoryRepositoryService;
     private final MarathonPersistencePort marathonPersistencePort;
     private final OengusWebhookService webhookService;
 
@@ -105,18 +101,26 @@ public class CategoryService {
         );
     }
 
-    public void delete(final int id, final User deletedBy) throws NotFoundException {
-        final CategoryEntity category = this.categoryRepositoryService.findById(id);
-        final GameEntity game = category.getGame();
+    public void delete(String marathonId, final int id) throws NotFoundException {
+        final var optionalCategory = this.categoryPersistencePort.findById(id);
+
+        if (optionalCategory.isEmpty()) {
+            throw new NotFoundException("CATEGORY_NOT_FOUND");
+        }
+
+        final var category = optionalCategory.get();
+        final var gameCategories = this.categoryPersistencePort.findByGameId(category.getGameId());
+        final var deletedBy = this.securityPort.getAuthenticatedUser();
 
         // only have one category, delete the game
-        if (game.getCategories().size() == 1) {
-            this.gameService.delete(game.getId(), deletedBy);
+        if (gameCategories.size() == 1) {
+            this.gameService.delete(category.getGameId(), deletedBy);
             return;
         }
 
-        final SubmissionEntity submission = game.getSubmission();
-        final String webhook = submission.getMarathon().getWebhook();
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(() -> new NotFoundException("MARATHON_NOT_FOUND"));
+        final String webhook = marathon.getWebhook();
 
         if (StringUtils.isNotEmpty(webhook)) {
             try {
@@ -126,10 +130,7 @@ public class CategoryService {
             }
         }
 
-        category.setGame(null);
-        game.getCategories().remove(category);
-        this.categoryRepositoryService.delete(id);
-        this.gameService.update(game);
+        this.categoryPersistencePort.delete(category);
     }
 
 }

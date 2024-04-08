@@ -1,6 +1,7 @@
 package app.oengus.adapter.jpa.repository;
 
 import app.oengus.entity.model.CategoryEntity;
+import app.oengus.entity.model.GameEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,8 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Integ
         @Param("submissionId") int submissionId,
         @Param("gameId") int gameId
     );
+
+    List<CategoryEntity> findByGameContaining(GameEntity game);
 
     boolean existsByCode(String code);
 

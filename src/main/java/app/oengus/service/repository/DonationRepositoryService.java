@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
+@Deprecated(forRemoval = true)
 public class DonationRepositoryService {
 
 

@@ -1,22 +1,20 @@
 package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.GameEntity;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.entity.model.Status;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
+import app.oengus.entity.model.GameEntity;
+import app.oengus.entity.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Repository
 public interface SubmissionRepository extends CrudRepository<SubmissionEntity, Integer> {
     ///////////
     // V2 stuff

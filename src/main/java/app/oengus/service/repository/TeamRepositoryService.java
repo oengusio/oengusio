@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Deprecated(forRemoval = true)
 public class TeamRepositoryService {
     private final TeamRepository teamRepository;
 
