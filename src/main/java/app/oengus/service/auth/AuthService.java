@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class AuthService {
 
     public LoginResponseDto login(LoginDto body) {
         try {
-            final User user = this.userService.findByUsername(body.getUsername());
+            final User user = this.userService.findByUsername(body.getUsername().toLowerCase(Locale.ROOT));
 
             // Fast return if the user does not have a password set
             if (StringUtils.isEmpty(user.getPassword())) {
@@ -118,7 +119,7 @@ public class AuthService {
         user.setEnabled(true);
         user.setEmailVerified(false);
         user.setDisplayName(body.getDisplayName());
-        user.setUsername(body.getUsername());
+        user.setUsername(body.getUsername().toLowerCase(Locale.ROOT));
         user.setMail(body.getEmail());
         user.setHashedPassword(
             this.encodePassword(body.getPassword())
