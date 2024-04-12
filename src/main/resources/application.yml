@@ -61,6 +61,8 @@ server:
     error:
         whitelabel:
             enabled: true
+        include-binding-errors: always
+        include-message: always
 
 sentry:
     dsn: ${SENTRY_DSN}
