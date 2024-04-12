@@ -1,7 +1,8 @@
 package app.oengus.entity.model;
 
+import app.oengus.adapter.jpa.entity.ApplicationEntry;
 import app.oengus.adapter.jpa.entity.User;
-import app.oengus.entity.constants.TShirtSize;
+import app.oengus.domain.volunteering.TShirtSize;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -94,7 +95,7 @@ public class ApplicationUserInformation {
     @JoinColumn(name = "user_id")
     @JsonView(Views.Internal.class)
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Application> applications;
+    private List<ApplicationEntry> applications;
 
     public int getId() {
         return id;
@@ -211,7 +212,7 @@ public class ApplicationUserInformation {
         this.diet = diet;
     }
 
-    public List<Application> getApplications() {
+    public List<ApplicationEntry> getApplications() {
         return applications;
     }
 }

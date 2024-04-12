@@ -1,11 +1,12 @@
 package app.oengus.service;
 
+import app.oengus.adapter.jpa.entity.ApplicationEntry;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
-import app.oengus.dao.ApplicationRepository;
+import app.oengus.adapter.jpa.repository.ApplicationRepository;
 import app.oengus.dao.ApplicationUserInformationRepository;
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.dto.*;
 import app.oengus.adapter.rest.dto.v2.simple.SimpleCategoryDto;
@@ -257,7 +258,7 @@ public class UserService {
             marathons.stream().filter(m -> !m.getPrivate()).collect(Collectors.toList())
         );
 
-        final List<Application> apps = this.applicationRepository.findByUserAndStatus(user, ApplicationStatus.APPROVED);
+        final List<ApplicationEntry> apps = this.applicationRepository.findByUserAndStatus(user, ApplicationStatus.APPROVED);
 
         if (!apps.isEmpty()) {
             userProfileDto.setVolunteeringHistory(

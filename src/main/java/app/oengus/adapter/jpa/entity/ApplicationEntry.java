@@ -1,27 +1,31 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.domain.volunteering.ApplicationStatus;
+import app.oengus.entity.model.Availability;
+import app.oengus.entity.model.Team;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "applications")
-public class Application {
+public class ApplicationEntry {
 
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @JoinColumn(name = "user_id")
     @JsonView(Views.Public.class)
@@ -76,94 +80,4 @@ public class Application {
     @JsonView(Views.Public.class)
     // we can reuse this model as it has no submission related information
     private List<Availability> availabilities;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
-    public ApplicationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ApplicationStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getReferences() {
-        return references;
-    }
-
-    public void setReferences(String references) {
-        this.references = references;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public List<ApplicationAuditlog> getAuditLogs() {
-        return auditLogs;
-    }
-
-    public void setAuditLogs(List<ApplicationAuditlog> auditLogs) {
-        if (this.auditLogs == null) {
-            this.auditLogs = new ArrayList<>();
-        }
-
-        this.auditLogs.clear();
-        this.auditLogs.addAll(auditLogs);
-    }
-
-    public List<Availability> getAvailabilities() {
-        return availabilities;
-    }
-
-    public void setAvailabilities(List<Availability> availabilities) {
-        if (this.availabilities == null) {
-            this.availabilities = new ArrayList<>();
-        }
-
-        this.availabilities.clear();
-        this.availabilities.addAll(availabilities);
-    }
 }

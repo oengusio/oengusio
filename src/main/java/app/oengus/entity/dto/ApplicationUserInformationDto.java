@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.constants.TShirtSize;
+import app.oengus.domain.volunteering.TShirtSize;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.*;

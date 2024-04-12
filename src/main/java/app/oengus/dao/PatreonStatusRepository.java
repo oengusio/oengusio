@@ -1,6 +1,6 @@
 package app.oengus.dao;
 
-import app.oengus.entity.constants.PatreonPledgeStatus;
+import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.entity.model.PatreonStatus;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

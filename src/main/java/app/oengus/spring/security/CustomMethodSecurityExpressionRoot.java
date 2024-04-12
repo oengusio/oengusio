@@ -177,6 +177,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         }
 
         final Object principal = this.getPrincipal();
+        // TODO: this is not a user model anymore
+        //  Meaning this check will always fail
         if (principal instanceof final User tmp) {
             try {
                 // fetch an up-to-date user to make sure we have the correct roles

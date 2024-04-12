@@ -1,11 +1,9 @@
 package app.oengus.entity.model;
 
-import app.oengus.entity.constants.PatreonPledgeStatus;
+import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cache;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;

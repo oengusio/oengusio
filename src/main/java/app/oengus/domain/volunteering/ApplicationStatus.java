@@ -1,4 +1,4 @@
-package app.oengus.entity.constants;
+package app.oengus.domain.volunteering;
 
 public enum ApplicationStatus {
     PENDING,

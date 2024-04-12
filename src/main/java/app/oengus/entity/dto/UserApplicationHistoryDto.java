@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.domain.volunteering.ApplicationStatus;
 
 public class UserApplicationHistoryDto {
     private String marathonName;

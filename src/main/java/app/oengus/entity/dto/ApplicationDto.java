@@ -1,9 +1,7 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.entity.model.Availability;
-import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;

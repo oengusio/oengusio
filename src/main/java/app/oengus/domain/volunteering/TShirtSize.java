@@ -1,4 +1,4 @@
-package app.oengus.entity.constants;
+package app.oengus.domain.volunteering;
 
 import javax.validation.constraints.NotNull;
 

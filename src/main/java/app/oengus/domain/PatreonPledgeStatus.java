@@ -1,4 +1,4 @@
-package app.oengus.entity.constants;
+package app.oengus.domain;
 
 public enum PatreonPledgeStatus {
     ACTIVE_PATRON,

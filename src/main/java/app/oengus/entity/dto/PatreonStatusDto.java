@@ -1,6 +1,6 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.constants.PatreonPledgeStatus;
+import app.oengus.domain.PatreonPledgeStatus;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

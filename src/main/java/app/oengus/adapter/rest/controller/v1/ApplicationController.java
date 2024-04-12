@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Hidden;

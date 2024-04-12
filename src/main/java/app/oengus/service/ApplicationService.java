@@ -1,14 +1,17 @@
 package app.oengus.service;
 
-import app.oengus.dao.ApplicationRepository;
-import app.oengus.entity.constants.ApplicationStatus;
+import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.adapter.jpa.repository.ApplicationRepository;
+import app.oengus.domain.OengusUser;
+import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.entity.dto.ApplicationDto;
-import app.oengus.entity.model.Application;
+import app.oengus.adapter.jpa.entity.ApplicationEntry;
 import app.oengus.entity.model.Team;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.helper.BeanHelper;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,21 +20,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
+    private final UserSecurityPort securityPort;
 
-    public ApplicationService(ApplicationRepository applicationRepository) {
-        this.applicationRepository = applicationRepository;
-    }
-
-    public List<Application> getByTeam(int teamId) {
+    public List<ApplicationEntry> getByTeam(int teamId) {
         final Team team = new Team();
         team.setId(teamId);
 
         return this.applicationRepository.findByTeam(team);
     }
 
-    public Application getByTeamAndUser(int teamId, int userId) throws NotFoundException {
+    public ApplicationEntry getByTeamAndUser(int teamId, int userId) throws NotFoundException {
         final Team team = new Team();
         team.setId(teamId);
 
@@ -44,14 +45,14 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Application createApplication(int teamId, int userId, ApplicationDto data) {
+    public ApplicationEntry createApplication(int teamId, int userId, ApplicationDto data) {
         final Team team = new Team();
         team.setId(teamId);
 
         final User user = new User();
         user.setId(userId);
 
-        final Application application = new Application();
+        final ApplicationEntry application = new ApplicationEntry();
 
         BeanHelper.copyProperties(data, application, "status");
 
@@ -69,7 +70,9 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Application update(int teamId, int userId, User updatedBy, ApplicationDto applicationPatch) throws NotFoundException {
+    public ApplicationEntry update(int teamId, int userId, ApplicationDto applicationPatch) throws NotFoundException {
+        final var updatedBy = this.securityPort.getAuthenticatedUser();
+
         return this.update(
             this.getByTeamAndUser(teamId, userId),
             updatedBy,
@@ -78,7 +81,7 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Application update(Application application, User updatedBy, ApplicationDto applicationPatch) {
+    public ApplicationEntry update(ApplicationEntry application, OengusUser updatedBy, ApplicationDto applicationPatch) {
         if (applicationPatch.getStatus() != null && application.getStatus() != applicationPatch.getStatus()) {
             this.updateStatus(
                 application,
@@ -105,7 +108,7 @@ public class ApplicationService {
         return this.applicationRepository.save(application);
     }
 
-    public void updateStatus(Application application, User updatedBy, ApplicationStatus newStatus) {
+    public void updateStatus(ApplicationEntry application, OengusUser updatedBy, ApplicationStatus newStatus) {
         application.setStatus(newStatus);
 
         final ApplicationAuditlog log = new ApplicationAuditlog();
