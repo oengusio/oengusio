@@ -1,8 +1,6 @@
-package app.oengus.entity.model.api;
+package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.adapter.jpa.entity.ApplicationEntry;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;

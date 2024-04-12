@@ -3,7 +3,6 @@ package app.oengus.adapter.jpa.entity;
 import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.entity.model.Availability;
 import app.oengus.entity.model.Team;
-import app.oengus.entity.model.api.ApplicationAuditlog;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

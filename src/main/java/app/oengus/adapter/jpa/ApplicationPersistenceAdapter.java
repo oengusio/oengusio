@@ -8,7 +8,7 @@ import app.oengus.application.port.persistence.ApplicationPersistencePort;
 import app.oengus.domain.volunteering.Application;
 import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.entity.model.Team;
-import app.oengus.entity.model.api.ApplicationAuditlog;
+import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
