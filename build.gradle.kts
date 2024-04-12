@@ -5,15 +5,15 @@ plugins {
     application
 
     id("org.springframework.boot") version "2.7.0"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.spring.dependency-management") version "1.1.3"
     id("io.freefair.lombok") version "8.4"
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.2")
-    }
-}
+//dependencyManagement {
+//    imports {
+//        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.2")
+//    }
+//}
 
 project.group = "app.oengus"
 project.version = "2024.04.01-2"
@@ -21,6 +21,12 @@ project.version = "2024.04.01-2"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }
 
 application {
@@ -113,6 +119,7 @@ dependencies {
     // development tools, will be removed in production builds
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+//    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 }
 

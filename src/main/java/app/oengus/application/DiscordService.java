@@ -1,21 +1,20 @@
-package app.oengus.service;
+package app.oengus.application;
 
 import app.oengus.api.DiscordApi;
 import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
-public class DiscordApiService {
+@Service("discordApiService")
+@RequiredArgsConstructor
+public class DiscordService {
     private final DiscordApi discordApi;
-    private final String botToken;
 
-    public DiscordApiService(DiscordApi discordApi, @Value("${discord.botToken}") String botToken) {
-        this.discordApi = discordApi;
-        this.botToken = botToken;
-    }
+    @Value("${discord.botToken}")
+    private String botToken;
 
     public DiscordInvite fetchInvite(final String inviteCode) {
         return this.discordApi.getInvite(this.botToken, inviteCode);

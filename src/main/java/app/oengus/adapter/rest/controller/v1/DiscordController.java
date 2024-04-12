@@ -4,14 +4,14 @@ import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.service.DiscordApiService;
+import app.oengus.application.DiscordService;
 import app.oengus.service.MarathonService;
 import feign.FeignException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,24 +19,22 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 
-@CrossOrigin(maxAge = 3600)
-@RestController
-@RequestMapping("/v1/marathons/{marathonId}/discord")
-@Tag(name = "discord-v1")
 @Hidden
+@Tag(name = "discord-v1")
+@RestController
+@RequiredArgsConstructor
+@CrossOrigin(maxAge = 3600)
+@RequestMapping("/v1/marathons/{marathonId}/discord")
 public class DiscordController {
-    @Autowired
-    private DiscordApiService discordApiService;
-
-    @Autowired
-    private MarathonService marathonService;
+    private final DiscordService discordService;
+    private final MarathonService marathonService;
 
     @GetMapping("/lookup-invite")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupInvite(@PathVariable("marathonId") final String marathonId,
                                           @RequestParam("invite_code") final String inviteCode) {
         try {
-            final DiscordInvite invite = this.discordApiService.fetchInvite(inviteCode);
+            final DiscordInvite invite = this.discordService.fetchInvite(inviteCode);
 
             return ResponseEntity.ok().body(invite.getGuild());
         } catch (FeignException e) {
@@ -50,7 +48,7 @@ public class DiscordController {
 
     @GetMapping("/in-guild/{userId}")
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("isAuthenticated() && !isBanned()")
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {
         try {
@@ -61,7 +59,7 @@ public class DiscordController {
                 throw new OengusBusinessException("NO_GUILD_ID_SET");
             }
 
-            final DiscordMember memberById = this.discordApiService.getMemberById(guildId, userId);
+            final DiscordMember memberById = this.discordService.getMemberById(guildId, userId);
 
             // pending members have not yet accepted the rules
             // and are not in the guild technically
