@@ -5,6 +5,8 @@ import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -14,6 +16,8 @@ import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "teams")
 public class Team {
@@ -21,7 +25,7 @@ public class Team {
     @Id
     @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @JsonBackReference
     @JsonView(Views.Internal.class)
@@ -71,77 +75,11 @@ public class Team {
     @JsonView(Views.Public.class)
     private List<User> leaders;
 
-    public int getId() {
-        return id;
-    }
+    public static Team ofId(int id) {
+        final var team = new Team();
 
-    public void setId(int id) {
-        this.id = id;
-    }
+        team.setId(id);
 
-    public MarathonEntity getMarathon() {
-        return marathon;
-    }
-
-    public void setMarathon(MarathonEntity marathon) {
-        this.marathon = marathon;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getTeamSize() {
-        return teamSize;
-    }
-
-    public void setTeamSize(int teamSize) {
-        this.teamSize = teamSize;
-    }
-
-    public boolean isApplicationsOpen() {
-        return applicationsOpen;
-    }
-
-    public void setApplicationsOpen(boolean applicationsOpen) {
-        this.applicationsOpen = applicationsOpen;
-    }
-
-    @Nullable
-    public ZonedDateTime getApplicationOpenDate() {
-        return applicationOpenDate;
-    }
-
-    public void setApplicationOpenDate(@Nullable ZonedDateTime applicationOpenDate) {
-        this.applicationOpenDate = applicationOpenDate;
-    }
-
-    @Nullable
-    public ZonedDateTime getApplicationCloseDate() {
-        return applicationCloseDate;
-    }
-
-    public void setApplicationCloseDate(@Nullable ZonedDateTime applicationCloseDate) {
-        this.applicationCloseDate = applicationCloseDate;
-    }
-
-    public List<User> getLeaders() {
-        return leaders;
-    }
-
-    public void setLeaders(List<User> leaders) {
-        this.leaders = leaders;
+        return team;
     }
 }

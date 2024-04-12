@@ -1,9 +1,10 @@
 package app.oengus.adapter.rest.controller.v1;
 
+import app.oengus.adapter.jpa.entity.SubmissionEntity;
+import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.entity.dto.v1.answers.AnswerDto;
 import app.oengus.entity.dto.v1.submissions.SubmissionDto;
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.helper.PrincipalHelper;
 import app.oengus.service.ExportService;
 import app.oengus.service.GameService;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,17 +37,13 @@ import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 @RestController
 @RequestMapping("/v1/marathons/{marathonId}/submissions")
 @Tag(name = "submissions-v1")
+@RequiredArgsConstructor
 public class SubmissionsController {
 
+    private final UserSecurityPort securityPort;
     private final GameService gameService;
     private final ExportService exportService;
     private final SubmissionService submissionService;
-
-    public SubmissionsController(GameService gameService, ExportService exportService, SubmissionService submissionService) {
-        this.gameService = gameService;
-        this.exportService = exportService;
-        this.submissionService = submissionService;
-    }
 
     ///////// GameController.java ////////
 
@@ -69,8 +67,8 @@ public class SubmissionsController {
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
-                                    @PathVariable("id") final int id, final Principal principal) throws NotFoundException {
-        this.gameService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+                                    @PathVariable("id") final int id) throws NotFoundException {
+        this.gameService.delete(id, this.securityPort.getAuthenticatedUser());
 
         return ResponseEntity.ok().build();
     }
@@ -116,7 +114,7 @@ public class SubmissionsController {
 
     @PostMapping
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize("!isBanned() && areSubmissionsOpen(#marathonId)")
+    @PreAuthorize("isAuthenticated() && !isBanned() && areSubmissionsOpen(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> create(@RequestBody @Valid final SubmissionEntity submission,
                                     @PathVariable("marathonId") final String marathonId,
@@ -194,8 +192,8 @@ public class SubmissionsController {
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned()")
     @Operation(hidden = true)
-    public ResponseEntity<?> delete(@PathVariable("id") final int id, final Principal principal) throws NotFoundException {
-        this.submissionService.delete(id, PrincipalHelper.getUserFromPrincipal(principal));
+    public ResponseEntity<?> delete(@PathVariable("id") final int id) throws NotFoundException {
+        this.submissionService.delete(id, this.securityPort.getAuthenticatedUser());
 
         return ResponseEntity.ok().build();
     }

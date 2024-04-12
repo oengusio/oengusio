@@ -8,6 +8,7 @@ import app.oengus.adapter.jpa.entity.User;
 import app.oengus.service.repository.GameRepositoryService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,22 +16,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GameService {
 
     private final SubmissionService submissionService;
-
     private final SubmissionRepositoryService submissionRepositoryService;
-
     private final GameRepositoryService gameRepositoryService;
-
     private final OengusWebhookService webhookService;
-
-    public GameService(SubmissionService submissionService, SubmissionRepositoryService submissionRepositoryService, GameRepositoryService gameRepositoryService, OengusWebhookService webhookService) {
-        this.submissionService = submissionService;
-        this.submissionRepositoryService = submissionRepositoryService;
-        this.gameRepositoryService = gameRepositoryService;
-        this.webhookService = webhookService;
-    }
 
     ///////////
     // v2 stuff

@@ -1,38 +1,41 @@
 package app.oengus.adapter.rest.controller.v1;
 
+import app.oengus.adapter.rest.dto.v1.V1ApplicationDto;
+import app.oengus.adapter.rest.dto.v1.request.ApplicationCreateRequestDto;
+import app.oengus.adapter.rest.mapper.ApplicationDtoMapper;
+import app.oengus.domain.volunteering.Application;
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.dto.ApplicationDto;
 import app.oengus.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
-
-import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
+import java.util.List;
 
 @Hidden
 @Tag(name = "applications-v1")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/marathons/{marathonId}/teams/{teamId}/applications")
 public class ApplicationController {
     private final ApplicationService applicationService;
-
-    public ApplicationController(ApplicationService applicationService) {
-        this.applicationService = applicationService;
-    }
+    private final ApplicationDtoMapper mapper;
 
     // admin
     @GetMapping
     @PreAuthorize("isAuthenticated() && canUpdateTeam(#teamId) && !isBanned()")
-    public ResponseEntity<?> fetchAllApplications(@PathVariable("teamId") int teamId) {
+    public ResponseEntity<List<V1ApplicationDto>> fetchAllApplications(@PathVariable("teamId") int teamId) {
+        final var applications = this.applicationService.getByTeam(teamId);
+
         return ResponseEntity.ok(
-            this.applicationService.getByTeam(teamId)
+            applications.stream()
+                .map(this.mapper::fromDomainV1)
+                .toList()
         );
     }
 
@@ -41,53 +44,48 @@ public class ApplicationController {
     // user
     @GetMapping("/{userId}")
     @PreAuthorize("isAuthenticated() && (isSelf(#userId) || canUpdateTeam(#teamId)) && !isBanned()")
-    public ResponseEntity<?> viewApplication(
+    public ResponseEntity<V1ApplicationDto> viewApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId
     ) throws NotFoundException {
+        final var application = this.applicationService.getByTeamAndUser(teamId, userId);
+
         return ResponseEntity.ok(
-            this.applicationService.getByTeamAndUser(teamId, userId)
+            this.mapper.fromDomainV1(application)
         );
     }
 
     @PostMapping("/{userId}")
     @PreAuthorize("isAuthenticated() && isSelf(#userId) && applicationsOpen(#teamId) && !isBanned()")
-    public ResponseEntity<?> createApplication(
+    public ResponseEntity<V1ApplicationDto> createApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId,
-        final Principal principal,
-        @RequestBody @Valid ApplicationDto applicationDto,
-        final BindingResult bindingResult
+        @RequestBody @Valid ApplicationCreateRequestDto applicationDto
     ) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+        final var newApplication = new Application(-1, userId, teamId);
+        final var createdApplication = this.applicationService.createApplication(teamId, userId, newApplication);
 
         return ResponseEntity.accepted()
-            .body(this.applicationService.createApplication(teamId, userId, applicationDto));
+            .body(
+                this.mapper.fromDomainV1(createdApplication)
+            );
     }
 
     @PatchMapping("/{userId}")
     @PreAuthorize("isAuthenticated() && isSelf(#userId) && applicationsOpen(#teamId) && !isBanned()")
-    public ResponseEntity<?> updateApplication(
+    public ResponseEntity<V1ApplicationDto> updateApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId,
-        final Principal principal,
-        @RequestBody @Valid ApplicationDto applicationDto,
-        final BindingResult bindingResult
+        @RequestBody @Valid ApplicationCreateRequestDto applicationDto
     ) throws NotFoundException {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
+        final var oldApplication = this.applicationService.getByTeamAndUser(teamId, userId);
 
-        applicationDto.setStatus(null);
+        this.mapper.applyPatch(oldApplication, applicationDto);
+
+        final var updatedApplication = this.applicationService.save(oldApplication);
 
         return ResponseEntity.ok(
-            this.applicationService.update(
-                teamId, userId,
-                getUserFromPrincipal(principal),
-                applicationDto
-            )
+            this.mapper.fromDomainV1(updatedApplication)
         );
     }
 
@@ -95,16 +93,11 @@ public class ApplicationController {
     @PreAuthorize("isAuthenticated() && isSelf(#userId) && !isBanned()")
     public ResponseEntity<?> withdrawApplication(
         @PathVariable("teamId") int teamId,
-        @PathVariable("userId") int userId,
-        final Principal principal
+        @PathVariable("userId") int userId
     ) throws NotFoundException {
-        final ApplicationDto applicationDto = new ApplicationDto();
-        applicationDto.setStatus(ApplicationStatus.WITHDRAWN);
-
-        this.applicationService.update(
+        this.applicationService.changeApplicationStatus(
             teamId, userId,
-            getUserFromPrincipal(principal),
-            applicationDto
+            ApplicationStatus.WITHDRAWN
         );
 
         return ResponseEntity.accepted().build();
