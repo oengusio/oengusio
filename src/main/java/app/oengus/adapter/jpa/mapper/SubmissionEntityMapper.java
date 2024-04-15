@@ -2,14 +2,13 @@ package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.Submission;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+    unmappedSourcePolicy = ReportingPolicy.ERROR,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
         // TODO: availability mapper
     }

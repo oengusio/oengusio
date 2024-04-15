@@ -1,6 +1,6 @@
 package app.oengus.spring.handler;
 
-import app.oengus.service.MarathonService;
+import app.oengus.application.MarathonService;
 import app.oengus.service.UserService;
 import app.oengus.service.repository.TeamRepositoryService;
 import app.oengus.spring.security.CustomMethodSecurityExpressionRoot;

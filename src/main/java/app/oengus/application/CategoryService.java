@@ -5,7 +5,7 @@ import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.Category;
-import app.oengus.domain.Marathon;
+import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.RunType;
 import app.oengus.domain.Submission;
 import app.oengus.exception.OengusBusinessException;

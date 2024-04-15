@@ -82,12 +82,6 @@ public class MarathonRepositoryService {
 		return this.marathonRepository.findFutureMarathonsWithScheduleDone();
 	}
 
-    public MarathonStatsDto findStats(final MarathonEntity marathon) throws NotFoundException {
-        return this.marathonRepository.findStats(marathon)
-            .map(MarathonStatsDto::new)
-            .orElseThrow(() -> new NotFoundException("Marathon not found"));
-    }
-
     @Transactional
 	public void clearMarathon(final MarathonEntity marathon) {
 		this.marathonRepository.clearMarathon(marathon);

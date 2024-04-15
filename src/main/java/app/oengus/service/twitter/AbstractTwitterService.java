@@ -1,6 +1,7 @@
 package app.oengus.service.twitter;
 
 import app.oengus.adapter.jpa.entity.MarathonEntity;
+import app.oengus.domain.marathon.Marathon;
 import app.oengus.service.repository.TwitterAuditRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,39 +23,18 @@ public abstract class AbstractTwitterService {
 
 	abstract void send(String message);
 
-	public void sendSubmissionsOpenTweet(final MarathonEntity marathon) {
-		if (!marathon.getIsPrivate() && !this.twitterAuditRepositoryService.exists(marathon, SUBMISSIONS_OPEN)) {
-			this.send(this.buildSubmissionsOpenTweet(marathon));
-			this.twitterAuditRepositoryService.save(marathon, SUBMISSIONS_OPEN);
-		}
-	}
-
-	public void sendSelectionDoneTweet(final MarathonEntity marathon) {
-		if (!marathon.getIsPrivate() && !this.twitterAuditRepositoryService.exists(marathon, SELECTION_DONE)) {
-			this.send(this.buildSelectionDoneTweet(marathon));
-			this.twitterAuditRepositoryService.save(marathon, SELECTION_DONE);
-		}
-	}
-
-	public void sendScheduleDoneTweet(final MarathonEntity marathon) {
-		if (!marathon.getIsPrivate() && !this.twitterAuditRepositoryService.exists(marathon, SCHEDULE_DONE)) {
-			this.send(this.buildScheduleDoneTweet(marathon));
-			this.twitterAuditRepositoryService.save(marathon, SCHEDULE_DONE);
-		}
-	}
-
-	public void sendMarathonLiveTweet(final MarathonEntity marathon) {
-		if (!marathon.getIsPrivate() && !this.twitterAuditRepositoryService.exists(marathon, MARATHON_LIVE)) {
+	public void sendMarathonLiveTweet(final Marathon marathon) {
+		if (!marathon.isPrivate() && !this.twitterAuditRepositoryService.exists(marathon.getId(), MARATHON_LIVE)) {
 			this.send(this.buildMarathonLiveTweet(marathon));
-			this.twitterAuditRepositoryService.save(marathon, MARATHON_LIVE);
+			this.twitterAuditRepositoryService.save(marathon.getId(), MARATHON_LIVE);
 		}
 	}
 
-	public void deleteAudit(final MarathonEntity marathon) {
-		this.twitterAuditRepositoryService.deleteByMarathon(marathon);
+	public void deleteAudit(final String marathonId) {
+		this.twitterAuditRepositoryService.deleteByMarathon(MarathonEntity.ofId(marathonId));
 	}
 
-	protected String buildSubmissionsOpenTweet(final MarathonEntity marathon) {
+	protected String buildSubmissionsOpenTweet(final Marathon marathon) {
 		final StringBuilder sb = new StringBuilder("Submissions open for marathon ");
 		this.appendMarathonName(sb, marathon);
 		sb.append(": ");
@@ -66,7 +46,7 @@ public abstract class AbstractTwitterService {
 		return sb.toString();
 	}
 
-	protected String buildSelectionDoneTweet(final MarathonEntity marathon) {
+	protected String buildSelectionDoneTweet(final Marathon marathon) {
 		final StringBuilder sb = new StringBuilder("Runs selection is available for marathon ");
 		this.appendMarathonName(sb, marathon);
 		sb.append(": ");
@@ -74,7 +54,7 @@ public abstract class AbstractTwitterService {
 		return sb.toString();
 	}
 
-	protected String buildScheduleDoneTweet(final MarathonEntity marathon) {
+	protected String buildScheduleDoneTweet(final Marathon marathon) {
 		final StringBuilder sb = new StringBuilder("Schedule is available for marathon ");
 		this.appendMarathonName(sb, marathon);
 		sb.append(": ");
@@ -82,7 +62,7 @@ public abstract class AbstractTwitterService {
 		return sb.toString();
 	}
 
-	protected String buildMarathonLiveTweet(final MarathonEntity marathon) {
+	protected String buildMarathonLiveTweet(final Marathon marathon) {
 		final StringBuilder sb = new StringBuilder("\uD83D\uDD34 LIVE: ");
 		this.appendMarathonName(sb, marathon);
 		sb.append(": ");
@@ -92,14 +72,14 @@ public abstract class AbstractTwitterService {
 		return sb.toString();
 	}
 
-	private void appendMarathonName(final StringBuilder sb, final MarathonEntity marathon) {
+	private void appendMarathonName(final StringBuilder sb, final Marathon marathon) {
 		sb.append(marathon.getName());
 		if (marathon.getTwitter() != null) {
 			sb.append(" @").append(marathon.getTwitter());
 		}
 	}
 
-	private void appendMarathonLink(final StringBuilder sb, final MarathonEntity marathon, final String subPage) {
+	private void appendMarathonLink(final StringBuilder sb, final Marathon marathon, final String subPage) {
 		sb.append(this.shortUrl)
 		  .append('/')
 		  .append(marathon.getId());
@@ -108,7 +88,7 @@ public abstract class AbstractTwitterService {
 		}
 	}
 
-	private void appendLocation(final StringBuilder sb, final MarathonEntity marathon) {
+	private void appendLocation(final StringBuilder sb, final Marathon marathon) {
 		sb.append("\uD83C\uDF10 Location: ");
 		if (marathon.getCountry() == null) {
 			sb.append("Online");
@@ -118,13 +98,13 @@ public abstract class AbstractTwitterService {
 		}
 	}
 
-	private void appendLanguage(final StringBuilder sb, final MarathonEntity marathon) {
+	private void appendLanguage(final StringBuilder sb, final Marathon marathon) {
 		sb.append("\uD83D\uDDE3 Language: ");
 		final Locale l = new Locale(marathon.getLanguage());
 		sb.append(l.getDisplayLanguage(Locale.ENGLISH));
 	}
 
-	private void appendTwitch(final StringBuilder sb, final MarathonEntity marathon) {
+	private void appendTwitch(final StringBuilder sb, final Marathon marathon) {
 		if (marathon.getTwitch() != null) {
 			sb.append("\uD83D\uDCFA Twitch: https://twitch.tv/").append(marathon.getTwitch());
 		}

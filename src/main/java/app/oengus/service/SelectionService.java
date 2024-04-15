@@ -40,6 +40,10 @@ public class SelectionService {
         return this.modelToDtos(selections);
     }
 
+    public List<Selection> findAllByMarathonId(final String marathonId) {
+        return this.findByMarathon(MarathonEntity.ofId(marathonId));
+    }
+
     public List<Selection> findByMarathon(final MarathonEntity marathon) {
         return this.selectionRepository.findByMarathon(marathon);
     }
@@ -100,9 +104,8 @@ public class SelectionService {
 
     }
 
-    @Transactional
-    public void rejectTodos(final MarathonEntity marathon) {
-        this.selectionRepository.rejectTodos(marathon);
+    public void rejectTodos(final String marathonId) {
+        this.selectionRepository.rejectTodos(MarathonEntity.ofId(marathonId));
     }
 
 }

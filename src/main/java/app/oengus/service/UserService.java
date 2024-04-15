@@ -5,6 +5,8 @@ import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.repository.ApplicationRepository;
+import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
+import app.oengus.application.MarathonService;
 import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.domain.SocialPlatform;
@@ -252,10 +254,10 @@ public class UserService {
             this.submissionRepositoryService.findByUser(user)
         );
 
-        final List<MarathonBasicInfoDto> marathons = this.marathonService.findAllMarathonsIModerate(user);
+        final var marathons = this.marathonService.findAllMarathonsIModerate(user.getId());
 
         userProfileDto.setModeratedMarathons(
-            marathons.stream().filter(m -> !m.getPrivate()).collect(Collectors.toList())
+            marathons.stream().filter(m -> !m.isPrivate()).collect(Collectors.toList())
         );
 
         final List<ApplicationEntry> apps = this.applicationRepository.findByUserAndStatus(user, ApplicationStatus.APPROVED);
@@ -377,12 +379,9 @@ public class UserService {
     }
 
     public List<ModeratedHistoryDto> getUserModeratedHistory(final int userId) {
-        final User user = new User();
-        user.setId(userId);
-
-        return this.marathonService.findAllMarathonsIModerate(user)
+        return this.marathonService.findAllMarathonsIModerate(userId)
             .stream()
-            .filter((m) -> !m.getPrivate())
+            .filter((m) -> !m.isPrivate())
             .map((m) -> {
                 final ModeratedHistoryDto hist = new ModeratedHistoryDto();
 

@@ -5,12 +5,15 @@ import app.oengus.adapter.jpa.entity.User;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import javax.annotation.Nonnull;
 
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR, // injection strategy only needed when "uses" is filled
+    unmappedSourcePolicy = ReportingPolicy.ERROR,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
         // TODO: connection mapper
     }

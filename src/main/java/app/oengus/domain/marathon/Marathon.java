@@ -1,4 +1,4 @@
-package app.oengus.domain;
+package app.oengus.domain.marathon;
 
 import app.oengus.entity.model.Question;
 import lombok.Getter;
@@ -26,6 +26,7 @@ public class Marathon {
     private String description;
     private boolean onsite = false;
     private String location;
+    private String country;
     private String language = "en";
     private int maxGamesPerRunner = 5;
     private int maxCategoriesPerGame = 3;
@@ -52,7 +53,11 @@ public class Marathon {
     private String youtube;
     private boolean announceAcceptedSubmissions = false;
 
+    // Submissions settings
+    private boolean videoRequired = true;
+
     // Donation settings
+    private boolean hasDonations = false;
     private boolean donationsOpen = true;
     private boolean hasIncentives = false;
     private String payee;

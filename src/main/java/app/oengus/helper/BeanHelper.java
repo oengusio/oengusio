@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 /**
  * Helper class to copy properties while ignoring null properties
  */
+@Deprecated(forRemoval = true)
 public class BeanHelper {
     /**
      * @deprecated use a mapper

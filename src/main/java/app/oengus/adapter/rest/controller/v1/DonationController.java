@@ -4,7 +4,7 @@ import app.oengus.entity.dto.OrderDto;
 import app.oengus.entity.model.Donation;
 import app.oengus.service.DonationService;
 import app.oengus.service.ExportService;
-import app.oengus.service.MarathonService;
+import app.oengus.application.MarathonService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.tags.Tag;

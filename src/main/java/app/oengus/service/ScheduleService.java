@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.domain.marathon.Marathon;
 import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.dto.V1ScheduleDto;
@@ -178,7 +179,7 @@ public class ScheduleService {
         }
     }
 
-    public void computeEndDate(final MarathonEntity marathon, final Schedule schedule) {
+    public void computeEndDate(final Marathon marathon, final Schedule schedule) {
         marathon.setEndDate(marathon.getStartDate());
         schedule.getLines().forEach(scheduleLine -> {
             marathon.setEndDate(

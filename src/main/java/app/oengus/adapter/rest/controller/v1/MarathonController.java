@@ -1,73 +1,79 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.dto.MarathonBasicInfoDto;
+import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
+import app.oengus.adapter.rest.dto.v1.request.MarathonCreateRequestDto;
+import app.oengus.adapter.rest.dto.v1.request.MarathonUpdateRequestDto;
+import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
+import app.oengus.application.MarathonService;
+import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.marathon.Marathon;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
-import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.helper.PrincipalHelper;
-import app.oengus.service.MarathonService;
 import app.oengus.service.OengusWebhookService;
+import app.oengus.service.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.net.URI;
-import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
-import static app.oengus.helper.PrincipalHelper.getNullableUserFromPrincipal;
 
 @Tag(name = "marathons-v1")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/marathons")
 public class MarathonController {
-
+    private final MarathonDtoMapper mapper;
+    private final UserSecurityPort securityPort;
     private final MarathonService marathonService;
     private final OengusWebhookService webhookService;
-
-    @Autowired
-    public MarathonController(
-        final MarathonService marathonService, final OengusWebhookService webhookService
-    ) {
-        this.marathonService = marathonService;
-        this.webhookService = webhookService;
-    }
+    private final SubmissionService submissionService;
 
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
-    public ResponseEntity<?> create(@RequestBody @Valid final MarathonEntity marathon, final Principal principal,
-                                    final BindingResult bindingResult) {
+    public ResponseEntity<?> create(
+        @RequestBody @Valid final MarathonCreateRequestDto createRequest, final BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
-        final MarathonEntity created = this.marathonService.create(marathon,
-            PrincipalHelper.getUserFromPrincipal(principal));
-        if (created != null) {
-            return ResponseEntity.created(URI.create(created.getId())).build();
-        } else {
+
+        final Marathon marathon = new Marathon(
+            createRequest.getId(),
+            this.securityPort.getAuthenticatedUserId()
+        );
+
+        this.mapper.applyCreateRequest(marathon, createRequest);
+
+        final Marathon created = this.marathonService.create(marathon);
+
+        if (created == null) {
             return ResponseEntity.noContent().build();
         }
+
+        return ResponseEntity.created(URI.create(created.getId())).build();
     }
 
     @GetMapping("/{name}/exists")
@@ -89,12 +95,33 @@ public class MarathonController {
         summary = "Get information about a marathon"/*,
         response = MarathonDto.class*/
     )
-    public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) throws NotFoundException {
-        final MarathonDto marathon = this.marathonService.findOne(id);
+    public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) {
+        final Optional<Marathon> optionalMarathon = this.marathonService.findById(id);
+
+        if (optionalMarathon.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        final var marathon = optionalMarathon.get();
+
+        final var dto = this.mapper.toDto(marathon);
+
+        if (marathon.isHasDonations()) {
+            // TODO: implement donations
+            dto.setDonationsTotal(BigDecimal.ZERO);
+        }
+
+        final var currUserId = this.securityPort.getAuthenticatedUserId();
+
+        if (currUserId > -1) {
+            dto.setHasSubmitted(
+                this.submissionService.userHasSubmitted(id, currUserId)
+            );
+        }
 
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(marathon);
+            .headers(cachingHeaders(5, true))
+            .body(dto);
 
     }
 
@@ -110,11 +137,17 @@ public class MarathonController {
             throw new NotFoundException("Marathon not found");
         }
 
-        final MarathonStatsDto marathon = this.marathonService.getStats(id);
+        final var marathonStats = this.marathonService.getStats(id);
+
+        if (marathonStats.isEmpty()) {
+            throw new NotFoundException("Marathon not found");
+        }
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(marathon);
+            .body(
+                this.mapper.statsFromDomain(marathonStats.get())
+            );
 
     }
 
@@ -126,29 +159,35 @@ public class MarathonController {
         "- live: all currently live marathons\n" +
         "Has a 5 minute cache")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathons() {
-        final Map<String, List<MarathonBasicInfoDto>> marathons = this.marathonService.findMarathons();
+        final var next = this.marathonService.findNext();
+        final var open = this.marathonService.findSubmitsOpen();
+        final var live = this.marathonService.findLive();
+
+        final Function<List<Marathon>, List<MarathonBasicInfoDto>> transform =
+            (items) -> items.stream().map(this.mapper::toBasicInfo).toList();
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(marathons);
+            .body(
+                Map.of(
+                    "next", transform.apply(next),
+                    "open", transform.apply(open),
+                    "live", transform.apply(live)
+                )
+            );
     }
 
     @GetMapping("/moderated-by/me")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
-    @Operation(summary = "Returns marathons that are moderated by the cueren logged in user")
-    public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate(final Principal principal) {
-        final User user = getNullableUserFromPrincipal(principal);
-
-        if (user == null) {
-            throw new AccessDeniedException("No user");
-        }
-
-        final List<MarathonBasicInfoDto> marathons = this.marathonService.findActiveMarathonsIModerate(user);
+    @Operation(summary = "Returns marathons that are moderated by the currently logged-in user")
+    public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate() {
+        final var marathons = this.marathonService.findActiveMarathonsIModerate();
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(Map.of(
-                "marathons", marathons
+                "marathons", marathons.stream().map(this.mapper::toBasicInfo).toList()
             ));
     }
 
@@ -159,10 +198,13 @@ public class MarathonController {
         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime start,
         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime end,
         @RequestParam("zoneId") final String zoneId) {
-        final List<MarathonBasicInfoDto> marathons = this.marathonService.findMarathonsForDates(start, end, zoneId);
+        final var marathons = this.marathonService.findMarathonsForDates(start, end, zoneId);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(marathons);
+            .body(
+                marathons.stream().map(this.mapper::toBasicInfo).toList()
+            );
     }
 
     @DeleteMapping("/{id}")
@@ -178,11 +220,17 @@ public class MarathonController {
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@PathVariable("id") final String id,
-                                    @RequestBody @Valid final MarathonEntity patch,
+                                    @RequestBody @Valid final MarathonUpdateRequestDto patch,
                                     final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
+
+        final var marathon = this.marathonService.findById(id).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
+
+        this.mapper.applyUpdateRequest(marathon, patch);
 
         final String newMstdn = patch.getMastodon();
 
@@ -190,7 +238,7 @@ public class MarathonController {
             patch.setMastodon(null);
         }
 
-        this.marathonService.update(id, patch);
+        this.marathonService.update(id, marathon);
 
         return ResponseEntity.noContent().build();
     }
@@ -212,17 +260,13 @@ public class MarathonController {
     @PostMapping("/{id}/selections/publish")
     @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
     @Operation(hidden = true)
-    public ResponseEntity<?> publishSchedule(@PathVariable("id") final String id) throws NotFoundException {
-        // make a fake marathon so we don't update the real one
-        final MarathonEntity marathon = new MarathonEntity();
-
-        BeanUtils.copyProperties(
-            this.marathonService.getById(id),
-            marathon
+    public ResponseEntity<?> publishSelection(@PathVariable("id") final String id) throws NotFoundException {
+        final var marathon = this.marathonService.findById(id).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
         );
 
         marathon.setSelectionDone(true);
-        marathon.setSubmitsOpen(false);
+        marathon.setSubmissionsOpen(false);
 
         this.marathonService.update(id, marathon);
 

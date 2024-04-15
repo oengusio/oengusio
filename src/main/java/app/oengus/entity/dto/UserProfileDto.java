@@ -1,5 +1,6 @@
 package app.oengus.entity.dto;
 
+import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.domain.IUsername;
 import app.oengus.domain.SocialPlatform;
 import app.oengus.entity.model.ScheduleLineRunner;

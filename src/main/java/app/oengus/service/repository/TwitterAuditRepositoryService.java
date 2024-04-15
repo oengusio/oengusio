@@ -21,8 +21,12 @@ public class TwitterAuditRepositoryService {
 		this.twitterAuditRepository.save(new TwitterAudit(marathon, action));
 	}
 
-	public boolean exists(final MarathonEntity marathon, final String action) {
-		return this.twitterAuditRepository.existsByMarathonAndAction(marathon, action);
+    public void save(final String marathon, final String action) {
+		this.twitterAuditRepository.save(new TwitterAudit(MarathonEntity.ofId(marathon), action));
+	}
+
+	public boolean exists(final String marathon, final String action) {
+		return this.twitterAuditRepository.existsByMarathonAndAction(MarathonEntity.ofId(marathon), action);
 	}
 
 	@Transactional

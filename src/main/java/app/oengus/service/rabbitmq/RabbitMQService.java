@@ -5,14 +5,14 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.sentry.Sentry;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-@Service
+@Component
 @Profile("!sandbox")
 public class RabbitMQService implements IRabbitMQService {
     private static final String QUEUE_NAME_BASE = "oengus.bot";

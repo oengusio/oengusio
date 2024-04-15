@@ -12,15 +12,6 @@ public class MarathonStatsDto {
     private final Duration totalLength;
     private final Duration averageEstimate;
 
-    public MarathonStatsDto(Map<String, Object> items) {
-        this(
-            Long.parseLong(items.get("submissionCount").toString()),
-            Long.parseLong(items.get("runnerCount").toString()),
-            Long.parseLong(items.get("totalLength").toString()),
-            Double.parseDouble(items.get("averageEstimate").toString())
-        );
-    }
-
     public MarathonStatsDto(long submissionCount, long runnerCount, long totalLength, double averageEstimate) {
         this.submissionCount = submissionCount;
         this.runnerCount = runnerCount;

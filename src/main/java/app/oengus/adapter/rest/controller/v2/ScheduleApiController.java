@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.entity.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
-import app.oengus.service.MarathonService;
+import app.oengus.application.MarathonService;
 import app.oengus.service.ScheduleService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;

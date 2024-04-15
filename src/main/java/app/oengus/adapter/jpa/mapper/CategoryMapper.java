@@ -2,14 +2,13 @@ package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.Category;
 import app.oengus.entity.model.CategoryEntity;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+    unmappedSourcePolicy = ReportingPolicy.ERROR,
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
         UserMapper.class,
         OpponentMapper.class,

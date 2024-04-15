@@ -5,7 +5,7 @@ import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.application.DiscordService;
-import app.oengus.service.MarathonService;
+import app.oengus.application.MarathonService;
 import feign.FeignException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,7 +52,7 @@ public class DiscordController {
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {
         try {
-            final MarathonEntity marathon = this.marathonService.getById(marathonId);
+            final MarathonEntity marathon = this.marathonService.findById(marathonId);
             final String guildId = marathon.getDiscordGuildId();
 
             if (StringUtils.isEmpty(guildId)) {

@@ -1,5 +1,6 @@
 package app.oengus.service;
 
+import app.oengus.application.MarathonService;
 import app.oengus.dao.DonationIncentiveLinkRepository;
 import app.oengus.dao.DonationRepository;
 import app.oengus.adapter.jpa.repository.MarathonRepository;

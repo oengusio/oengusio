@@ -492,13 +492,19 @@ public class SubmissionService {
         return this.submissionRepositoryService.findCustomAnswersByMarathon(marathon);
     }
 
-    @Transactional
-    public void deleteByMarathon(final MarathonEntity marathon) {
-        this.submissionRepositoryService.deleteByMarathon(marathon);
+    public void deleteByMarathon(final String marathonId) {
+        this.submissionRepositoryService.deleteByMarathon(MarathonEntity.ofId(marathonId));
     }
 
     public boolean userHasSubmitted(final MarathonEntity marathon, final User user) {
         return this.submissionRepositoryService.existsByMarathonAndUser(marathon, user);
+    }
+
+    public boolean userHasSubmitted(final String marathonId, final int userId) {
+        return this.submissionRepositoryService.existsByMarathonAndUser(
+            MarathonEntity.ofId(marathonId),
+            User.ofId(userId)
+        );
     }
 
     // User is the person deleting the submission
