@@ -15,6 +15,8 @@ public interface CategoryPersistencePort {
 
     List<Category> findByGame(Game game);
 
+    List<Category> findAllById(List<Integer> ids);
+
     Optional<Category> findByCode(String code);
 
     boolean existsByCode(String code);

@@ -10,7 +10,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class Selection {
     private final int id;
-    private final String marathonId;
+    private String marathonId;
     private final int categoryId;
 
     private Status status;
