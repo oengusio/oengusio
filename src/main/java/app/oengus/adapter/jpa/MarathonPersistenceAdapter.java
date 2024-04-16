@@ -112,12 +112,22 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
 
     @Override
     public Optional<MarathonStats> findStatsById(String marathonId) {
-        return Optional.empty();
+        return this.repository.findStats(
+            MarathonEntity.ofId(marathonId)
+        ).map((rawStats) -> new MarathonStats(
+            (Long) rawStats.get("submissionCount"),
+            (Long) rawStats.get("runnerCount"),
+            (Long) rawStats.get("totalLength"),
+            (Double) rawStats.get("averageEstimate")
+        ));
     }
 
     @Override
     public List<Marathon> findNotClearedBefore(ZonedDateTime date) {
-        return List.of();
+        return this.repository.findByClearedFalseAndEndDateBefore(date)
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
     }
 
     @Override
@@ -129,6 +139,9 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
 
     @Override
     public List<Marathon> findFutureWithScheduledSubmissions() {
-        return List.of();
+        return this.repository.findFutureMarathonsWithScheduledSubmissions()
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
     }
 }
