@@ -1,37 +1,31 @@
-package app.oengus.service;
+package app.oengus.application;
 
-import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.adapter.jpa.entity.OpponentEntity;
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.adapter.jpa.repository.CategoryRepository;
-import app.oengus.adapter.rest.mapper.UserDtoMapper;
-import app.oengus.domain.OengusUser;
-import app.oengus.entity.dto.AvailabilityDto;
-import app.oengus.entity.dto.OpponentCategoryDto;
-import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
-import app.oengus.entity.dto.misc.PageDto;
-import app.oengus.entity.dto.v1.answers.AnswerDto;
-import app.oengus.entity.dto.v1.submissions.SubmissionUserDto;
 import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.entity.model.*;
+import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.port.persistence.*;
+import app.oengus.domain.OengusUser;
+import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.submission.*;
+import app.oengus.entity.dto.AvailabilityDto;
+import app.oengus.entity.model.FieldType;
+import app.oengus.entity.model.Status;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.OengusConstants;
-import app.oengus.service.repository.*;
+import app.oengus.service.OengusWebhookService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -41,41 +35,25 @@ import java.util.stream.Collectors;
 import static app.oengus.application.CategoryService.MULTIPLAYER_RUN_TYPES;
 
 @Service
+@RequiredArgsConstructor
 public class SubmissionService {
+    private final SubmissionPersistencePort submissionPersistencePort;
+    private final MarathonPersistencePort marathonPersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
+    private final GamePersistencePort gamePersistencePort;
+    private final UserPersistencePort userPersistencePort;
 
-    private final SubmissionRepositoryService submissionRepositoryService;
-    private final MarathonRepositoryService marathonRepositoryService;
-    private final SelectionRepositoryService selectionRepositoryService;
-    private final UserRepositoryService userRepositoryService;
-    private final CategoryRepository categoryRepository;
-    private final GameRepositoryService gameRepositoryService;
     private final OengusWebhookService webhookService;
     private final UserDtoMapper userMapper;
 
-    public SubmissionService(
-        SubmissionRepositoryService submissionRepositoryService, MarathonRepositoryService marathonRepositoryService,
-        SelectionRepositoryService selectionRepositoryService, UserRepositoryService userRepositoryService,
-        CategoryRepository categoryRepository, GameRepositoryService gameRepositoryService,
-        @Lazy OengusWebhookService webhookService, UserDtoMapper userMapper
-    ) {
-        this.submissionRepositoryService = submissionRepositoryService;
-        this.marathonRepositoryService = marathonRepositoryService;
-        this.selectionRepositoryService = selectionRepositoryService;
-        this.userRepositoryService = userRepositoryService;
-        this.categoryRepository = categoryRepository;
-        this.gameRepositoryService = gameRepositoryService;
-        this.webhookService = webhookService;
-        this.userMapper = userMapper;
-    }
+    @Value("${oengus.pageSize}")
+    private int pageSize;
 
     ///////////
     // v2 stuff
 
     public List<SubmissionDto> getToplevelSubmissionsForMarathon(final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-
-        return this.submissionRepositoryService.getToplevelDataForMarathon(marathon);
+        return List.of();
     }
 
     public List<GameDto> getGamesForSubmission(String marathonId, int submissionId) {
@@ -85,15 +63,17 @@ public class SubmissionService {
     ///////////
     // V1 stuff
 
-    public SubmissionEntity save(final SubmissionEntity submission, final User submitter, final String marathonId)
+    public Submission save(final Submission submission, final OengusUser submitter, final String marathonId)
         throws NotFoundException {
-        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
+        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
 
-        if (!marathon.isSubmitsOpen()) {
+        if (!marathon.isSubmissionsOpen()) {
             throw new SubmissionsClosedException();
         }
 
-        final SubmissionEntity saved = this.saveInternal(submission, submitter, marathon);
+        final Submission saved = this.saveInternal(submission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
@@ -107,15 +87,19 @@ public class SubmissionService {
         return saved;
     }
 
-    public SubmissionEntity update(final SubmissionEntity newSubmission, final User submitter, final String marathonId)
+    public Submission update(final Submission newSubmission, final OengusUser submitter, final String marathonId)
         throws NotFoundException {
-        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
+        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
 
         // submission id is never null here
-        final SubmissionEntity oldSubmission = this.submissionRepositoryService.findById(newSubmission.getId()).fresh(true);
+        final Submission oldSubmission = this.submissionPersistencePort.findById(newSubmission.getId()).orElseThrow(
+            () -> new NotFoundException("Submission not found (wat?)")
+        );
 
         // save before sending so we catch the error if saving fails
-        final SubmissionEntity saved = this.saveInternal(newSubmission, submitter, marathon);
+        final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
 
         // send webhook
         if (StringUtils.isNotEmpty(marathon.getWebhook())) {
@@ -129,10 +113,7 @@ public class SubmissionService {
         return saved;
     }
 
-    @Transactional
-    public SubmissionEntity saveInternal(final SubmissionEntity submission, final User submitter, final MarathonEntity marathon) {
-        submission.setUser(submitter);
-        submission.setMarathon(marathon);
+    public Submission saveInternal(final Submission submission, final OengusUser submitter, final Marathon marathon) {
         submission.getAvailabilities().forEach(availability -> {
             availability.setFrom(availability.getFrom().withSecond(0));
             availability.setTo(availability.getTo().withSecond(0));
@@ -141,10 +122,9 @@ public class SubmissionService {
         // TODO: make sure no new games can be added when submissions are closed
         // Only allow to update availabilities when submissions are closed.
         submission.getGames().forEach(game -> {
-            game.setSubmission(submission);
             game.getCategories().forEach(category -> {
-                category.setGame(game);
-                if (category.getId() <= 0) {
+                // TODO: fix this in the front-end
+                /*if (category.getId() <= 0) {
                     this.createSelection(category, marathon);
                 } else {
                     final Selection selection = this.selectionRepositoryService.findByCategory(category);
@@ -152,16 +132,23 @@ public class SubmissionService {
                         this.createSelection(category, marathon);
                     }
                     category.setSelection(selection);
-                }
+                }*/
+
+                // Truncate the estimate to minutes?
                 if (category.getEstimate().toSecondsPart() > 0) {
-                    category.setEstimate(category.getEstimate().plusMinutes(1).truncatedTo(ChronoUnit.MINUTES));
+                    category.setEstimate(
+                        category.getEstimate()
+                            .plusMinutes(1)
+                            .truncatedTo(ChronoUnit.MINUTES)
+                    );
                 }
+
                 if (MULTIPLAYER_RUN_TYPES.contains(category.getType())) {
                     if (StringUtils.isEmpty(category.getCode())) {
                         String code;
                         do {
                             code = RandomStringUtils.random(6, true, true).toUpperCase();
-                        } while (this.categoryRepository.existsByCode(code));
+                        } while (this.categoryPersistencePort.existsByCode(code));
                         category.setCode(code);
                     }
                 } else {
@@ -169,8 +156,27 @@ public class SubmissionService {
                 }
             });
         });
-        submission.getAnswers().forEach(answer -> answer.setSubmission(submission));
-        submission.setOpponents(new HashSet<>());
+
+        // TODO: is this even needed?
+        //  Maybe a check to see if the question id is valid for the marathon
+        submission.setAnswers(
+            submission.getAnswers().stream()
+                .map((oldAnswer) -> {
+                    final var answer = new Answer(
+                        oldAnswer.getId(),
+                        oldAnswer.getQuestionId(),
+                        submission.getId()
+                    );
+
+                    answer.setAnswer(oldAnswer.getAnswer());
+
+                    return answer;
+                }).collect(Collectors.toSet())
+        );
+
+        // TODO: fix opponents
+        /*submission.setOpponents(new HashSet<>());
+
         if (submission.getOpponentDtos() != null) {
             submission.getOpponentDtos().forEach(opponentDto -> {
                 final OpponentEntity opponent = new OpponentEntity();
@@ -182,16 +188,13 @@ public class SubmissionService {
                 opponent.setCategory(category);
                 submission.getOpponents().add(opponent);
             });
-        }
+        }*/
 
-        return this.submissionRepositoryService.save(submission);
+        return this.submissionPersistencePort.save(submission);
     }
 
     public Map<String, List<AvailabilityDto>> getRunnersAvailabilitiesForMarathon(final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final List<SubmissionEntity> submissions =
-                this.submissionRepositoryService.findValidatedOrBonusSubmissionsForMarathon(marathon);
+        final var submissions = this.submissionPersistencePort.findAcceptedInMarathon(marathonId);
         final Map<String, List<AvailabilityDto>> availabilities = new HashMap<>();
         submissions.forEach(submission -> {
             final List<AvailabilityDto> availabilityDtoList = new ArrayList<>();
@@ -225,78 +228,45 @@ public class SubmissionService {
         return availabilities;
     }
 
-    @Transactional
-    public Map<String, List<AvailabilityDto>> getRunnerAvailabilitiesForMarathon(final String marathonId,
-                                                                                 final int runnerId)
-            throws NotFoundException {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final User user =
-                this.userRepositoryService.findById(runnerId);
-        final SubmissionEntity submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+    // TODO: do not map models here
+    public Map<String, List<AvailabilityDto>> getRunnerAvailabilitiesForMarathon(
+        final String marathonId, final int runnerId
+    ) {
+        final var user = this.userPersistencePort.getById(runnerId);
+        final var optionalSubmission = this.submissionPersistencePort.findForUserInMarathon(runnerId, marathonId);
         final Map<String, List<AvailabilityDto>> availabilities = new HashMap<>();
         final List<AvailabilityDto> availabilityDtoList = new ArrayList<>();
-        if (submission != null) {
+
+        this.submissionPersistencePort.findForUserInMarathon(runnerId, marathonId).ifPresent((submission) -> {
             submission.getAvailabilities().forEach(availability -> {
-                final AvailabilityDto availabilityDto =
-                        new AvailabilityDto(user);
+                final var availabilityDto = new AvailabilityDto(user);
+
                 availabilityDto.setFrom(availability.getFrom());
                 availabilityDto.setTo(availability.getTo());
+
                 availabilityDtoList.add(availabilityDto);
             });
-        }
+        });
+
         availabilities.put(user.getUsername(), availabilityDtoList);
         return availabilities;
     }
 
-    private void createSelection(final CategoryEntity category, final MarathonEntity marathon) {
-        final Selection selection = new Selection();
+    // TODO: this can fixed insie of the font-end
+    private void createSelection(final Category category, final Marathon marathon) {
+        /*final Selection selection = new Selection();
         selection.setStatus(Status.TODO);
         selection.setMarathon(marathon);
         selection.setCategory(category);
-        category.setSelection(selection);
+        category.setSelection(selection);*/
     }
 
-    @Transactional
-    public SubmissionEntity findByUserAndMarathon(final User user, final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final SubmissionEntity submission = this.submissionRepositoryService.findByUserAndMarathon(user, marathon);
+    public Submission findByUserAndMarathon(final int userId, final String marathonId) {
+        return this.submissionPersistencePort.findForUserInMarathon(userId, marathonId).orElse(null);
 
-        if (submission != null) {
-            if (submission.getOpponents() != null) {
-                submission.setOpponentDtos(new HashSet<>());
-                submission.getOpponents().forEach(opponent -> {
-                    OpponentSubmissionDto opponentSubmissionDto = this.mapOpponent(opponent, user);
-
-                    if (opponentSubmissionDto != null) {
-                        submission.getOpponentDtos().add(opponentSubmissionDto);
-                    }
-                });
-            }
-
-            if (submission.getGames() != null) {
-                submission.getGames().forEach(game -> {
-                    game.getCategories().forEach(category -> {
-                        if (category.getOpponents() != null) {
-                            category.setOpponentDtos(new ArrayList<>());
-                            category.getOpponents().forEach(opponent -> {
-                                final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
-                                opponentCategoryDto.setId(opponent.getId());
-                                opponentCategoryDto.setVideo(opponent.getVideo());
-                                opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
-                                category.getOpponentDtos().add(opponentCategoryDto);
-                            });
-                        }
-                    });
-                });
-            }
-        }
-
-        return submission;
     }
 
-    private OpponentSubmissionDto mapOpponent(final OpponentEntity opponent, final User user) {
+    /*private OpponentSubmissionDto mapOpponent(final OpponentEntity opponent, final User user) {
         final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
         final CategoryEntity opponentCategory = opponent.getCategory();
 
@@ -327,13 +297,11 @@ public class SubmissionService {
         );
 
         return opponentDto;
-    }
+    }*/
 
-    public List<AnswerDto> findAnswersByMarathon(final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final List<SubmissionEntity> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
-        final List<AnswerDto> answers = new ArrayList<>();
+    public List<Answer> findAnswersByMarathon(final String marathonId) {
+        final var byMarathon = this.submissionPersistencePort.findAllByMarathon(marathonId);
+        final List<Answer> answers = new ArrayList<>();
 
         byMarathon.forEach((submission) -> {
             submission.getAnswers().forEach((answer) -> {
@@ -341,63 +309,63 @@ public class SubmissionService {
                     return;
                 }
 
-                answers.add(AnswerDto.fromAnswer(answer));
+                answers.add(answer);
             });
         });
 
         return answers;
     }
 
-    public List<app.oengus.entity.dto.v1.submissions.SubmissionDto> searchForMarathon(final String marathonId, final String query, String status) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final String queryLower = query.toLowerCase();
+    public Page<Submission> searchForMarathon(final String marathonId, final String query, String status, int page) {
+        final String queryLower = query.toLowerCase(Locale.ROOT);
 
-        final List<SubmissionEntity> bySearch;
+        final var pageable = PageRequest.of(page, this.pageSize);
+        final Page<Submission> bySearch;
         final Status cStat;
 
         if (status == null) {
             // Fast return if we have nothing to search for
             if (queryLower.isBlank()) {
-                return List.of();
+                return Page.empty();
             }
 
             cStat = null;
-            bySearch = this.submissionRepositoryService.searchForMarathon(marathon, query);
+            bySearch = this.submissionPersistencePort.searchInMarathon(
+                marathonId, query, pageable
+            );
         } else {
             try {
                 cStat = Status.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException ignored) {
                 throw new OengusBusinessException("Invalid status supplied");
             }
-            bySearch = this.submissionRepositoryService.searchForMarathonWithStatus(
-                marathon, query, cStat
+            bySearch = this.submissionPersistencePort.searchInMarathon(
+                marathonId, query, cStat, pageable
             );
         }
 
-        final List<app.oengus.entity.dto.v1.submissions.SubmissionDto> submissions = new ArrayList<>();
         final boolean qNotEmpty = !queryLower.isBlank();
-        final Predicate<User> matchesUsername = (user) ->
+        final Predicate<OengusUser> matchesUsername = (user) ->
             user.getUsername().toLowerCase().contains(queryLower) ||
                 user.getDisplayName().toLowerCase().contains(queryLower);
 
-        bySearch.stream()
+        final var foundItems = bySearch.stream()
             .filter(
                 (submission) -> {
-                    final User user = submission.getUser();
+                    final var user = submission.getUser();
 
                     if (qNotEmpty && matchesUsername.test(user)) {
                         return true;
                     }
 
-                    final Set<GameEntity> gameSet = submission.getGames()
+                    final Set<Game> gameSet = submission.getGames()
                         .stream()
                         .filter((game) -> {
                             if (qNotEmpty && game.getName().toLowerCase().contains(queryLower)) {
                                 return true;
                             }
 
-                            final List<CategoryEntity> categoryList = game.getCategories()
+                            final List<Category> categoryList = game.getCategories()
                                 .stream()
                                 .filter(
                                     (category) -> {
@@ -407,8 +375,8 @@ public class SubmissionService {
                                             if (category.getOpponents() != null) {
                                                 base = category.getOpponents()
                                                     .stream()
-                                                    .map(OpponentEntity::getSubmission)
-                                                    .map(SubmissionEntity::getUser)
+                                                    .map(Opponent::getSubmission)
+                                                    .map(Submission::getUser)
                                                     .anyMatch(matchesUsername);
                                             }
 
@@ -438,110 +406,64 @@ public class SubmissionService {
                     return !submission.getGames().isEmpty();
                 }
             )
-            .forEach(
-                (submission) -> submissions.add(this.mapSubmissionDto(submission, false))
-            );
+            .toList();
 
-        return submissions;
+        return new PageImpl<>(foundItems);
     }
 
-    public PageDto<app.oengus.entity.dto.v1.submissions.SubmissionDto> findByMarathonNew(final String marathonId, int page) throws NotFoundException {
-        // Get the marathon so that we can see if the selections are done
-        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
-        final boolean selectionDone = marathon.isSelectionDone();
-
-        final Page<app.oengus.entity.dto.v1.submissions.SubmissionDto> byMarathon = this.submissionRepositoryService
-            .findByMarathon(marathon, page)
-            .map((s) -> this.mapSubmissionDto(s, selectionDone));
-
-        return new PageDto<>(byMarathon);
+    public Page<Submission> findByMarathonNew(final String marathonId, int page) {
+        return this.submissionPersistencePort.findByMarathon(marathonId, PageRequest.of(page, this.pageSize));
     }
 
-    @Transactional
-    public List<SubmissionEntity> findAllByMarathon(final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        final List<SubmissionEntity> byMarathon = this.submissionRepositoryService.findAllByMarathon(marathon);
-
-        // load opponents
-        byMarathon.forEach((submission) -> {
-            submission.getGames().forEach((game) -> {
-                game.getCategories().forEach((category) -> {
-                    if (category.getOpponents() != null) {
-                        category.setOpponentDtos(new ArrayList<>());
-                        category.getOpponents().forEach(opponent -> {
-                            final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
-                            opponentCategoryDto.setId(opponent.getId());
-                            opponentCategoryDto.setVideo(opponent.getVideo());
-                            opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
-                            opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
-                            category.getOpponentDtos().add(opponentCategoryDto);
-                        });
-                    }
-                });
-            });
-        });
-
-        return byMarathon;
-    }
-
-    @Transactional
-    public List<SubmissionEntity> findCustomAnswersByMarathon(final String marathonId) {
-        final MarathonEntity marathon = new MarathonEntity();
-        marathon.setId(marathonId);
-        return this.submissionRepositoryService.findCustomAnswersByMarathon(marathon);
+    public List<Submission> findAllByMarathon(final String marathonId) {
+        return this.submissionPersistencePort.findAllByMarathon(marathonId);
     }
 
     public void deleteByMarathon(final String marathonId) {
-        this.submissionRepositoryService.deleteByMarathon(MarathonEntity.ofId(marathonId));
-    }
-
-    public boolean userHasSubmitted(final MarathonEntity marathon, final User user) {
-        return this.submissionRepositoryService.existsByMarathonAndUser(marathon, user);
+        this.submissionPersistencePort.deleteByMarathon(marathonId);
     }
 
     public boolean userHasSubmitted(final String marathonId, final int userId) {
-        return this.submissionRepositoryService.existsByMarathonAndUser(
-            MarathonEntity.ofId(marathonId),
-            User.ofId(userId)
-        );
+        return this.submissionPersistencePort.existsForUserInMarathon(userId, marathonId);
     }
 
     // User is the person deleting the submission
     public void delete(final int id, final OengusUser deletedBy) throws NotFoundException {
-        final SubmissionEntity submission = this.submissionRepositoryService.findById(id);
-        final MarathonEntity marathon = submission.getMarathon();
+        final Submission submission = this.submissionPersistencePort.findById(id).orElseThrow(
+            () -> new NotFoundException("Submission not found")
+        );
+
+        final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId()).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
+
         if (submission.getUser().getId() == deletedBy.getId() || deletedBy.getRoles().contains(Role.ROLE_ADMIN) ||
-                marathon.getCreator().getId() == deletedBy.getId() ||
+                marathon.getCreatorId() == deletedBy.getId() ||
                 marathon.getModerators().stream().anyMatch(u -> u.getId() == deletedBy.getId())) {
 
             // send webhook
             if (StringUtils.isNotEmpty(marathon.getWebhook())) {
                 try {
-                    /*// load the submission so we can send it
-                    Submission.initialize(submission, true);
-
-                    // Detach it from the manager
-                    this.entityManager.detach(submission);*/
-
-                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission.fresh(true), deletedBy);
+                    this.webhookService.sendSubmissionDeleteEvent(marathon.getWebhook(), submission, deletedBy);
                 } catch (IOException e) {
                     LoggerFactory.getLogger(SubmissionService.class).error(e.getMessage());
                 }
             }
 
             submission.getGames().forEach((game) -> {
-                this.categoryRepository.deleteAll(game.getCategories());
-                this.gameRepositoryService.delete(game.getId());
+                this.categoryPersistencePort.deleteAllById(
+                    game.getCategories().stream().map(Category::getId).toList()
+                );
+                this.gamePersistencePort.deleteById(game.getId());
             });
-            this.submissionRepositoryService.delete(id);
+            this.submissionPersistencePort.delete(submission);
         } else {
             throw new OengusBusinessException("NOT_AUTHORIZED");
         }
     }
 
-    private app.oengus.entity.dto.v1.submissions.SubmissionDto mapSubmissionDto(SubmissionEntity submission, boolean selectionDone) {
-        final app.oengus.entity.dto.v1.submissions.SubmissionDto dto = new app.oengus.entity.dto.v1.submissions.SubmissionDto();
+    /*private app.oengus.adapter.rest.dto.v1.SubmissionDto mapSubmissionDto(SubmissionEntity submission, boolean selectionDone) {
+        final app.oengus.adapter.rest.dto.v1.SubmissionDto dto = new app.oengus.adapter.rest.dto.v1.SubmissionDto();
 
         dto.setId(submission.getId());
         dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
@@ -569,5 +491,5 @@ public class SubmissionService {
         dto.setGames(submission.getGames());
 
         return dto;
-    }
+    }*/
 }

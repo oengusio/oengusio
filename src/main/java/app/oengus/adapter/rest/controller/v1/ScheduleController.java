@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v1;
 import app.oengus.entity.dto.ScheduleTickerDto;
 import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.model.Schedule;
-import app.oengus.service.ExportService;
+import app.oengus.application.ExportService;
 import app.oengus.service.ScheduleService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;

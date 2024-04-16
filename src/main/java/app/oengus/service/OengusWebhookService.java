@@ -4,11 +4,12 @@ import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.rest.dto.v2.SelectionDto;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.domain.Category;
+import app.oengus.domain.submission.Category;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.submission.Submission;
 import app.oengus.entity.model.Donation;
 import app.oengus.entity.model.GameEntity;
-import app.oengus.entity.model.Selection;
+import app.oengus.entity.model.SelectionEntity;
 import app.oengus.helper.OengusBotUrl;
 import app.oengus.service.rabbitmq.IRabbitMQService;
 import app.oengus.spring.model.Views;
@@ -65,7 +66,7 @@ public class OengusWebhookService {
     }
 
     // TODO: no notification for joining multiplayer run
-    public void sendNewSubmissionEvent(final String url, final SubmissionEntity submission) throws IOException {
+    public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_ADD")
             .set("submission", parseJson(submission));
@@ -81,7 +82,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionUpdateEvent(final String url, final SubmissionEntity newSubmission, final SubmissionEntity oldSubmission) throws IOException {
+    public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
         data.set("submission", parseJson(newSubmission));
         data.set("original_submission", parseJson(oldSubmission));
@@ -97,7 +98,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionDeleteEvent(final String url, final SubmissionEntity submission, final OengusUser deletedBy) throws IOException {
+    public void sendSubmissionDeleteEvent(final String url, final Submission submission, final OengusUser deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_DELETE");
         data.set("submission", parseJson(submission));
@@ -155,7 +156,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSelectionDoneEvent(final String url, final List<Selection> selections) throws IOException {
+    public void sendSelectionDoneEvent(final String url, final List<SelectionEntity> selections) throws IOException {
         final var dtos = selections.stream().map(SelectionDto::fromSelection).toList();
 
         final ObjectNode data = mapper.createObjectNode()
@@ -194,6 +195,7 @@ public class OengusWebhookService {
     }
     /// </editor-fold>
 
+    // TODO: use mappers for this.
     private JsonNode parseJson(final Object model) throws IOException {
         // hacky work around so we can use views
         final byte[] json = mapper.writerWithView(Views.Public.class).writeValueAsBytes(model);

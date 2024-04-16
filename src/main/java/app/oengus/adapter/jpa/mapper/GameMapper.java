@@ -1,6 +1,6 @@
 package app.oengus.adapter.jpa.mapper;
 
-import app.oengus.domain.Game;
+import app.oengus.domain.submission.Game;
 import app.oengus.entity.model.GameEntity;
 import org.mapstruct.*;
 

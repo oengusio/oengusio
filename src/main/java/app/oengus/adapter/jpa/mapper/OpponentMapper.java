@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.adapter.jpa.entity.OpponentEntity;
-import app.oengus.domain.Opponent;
+import app.oengus.domain.submission.Opponent;
 import org.mapstruct.*;
 
 @Mapper(

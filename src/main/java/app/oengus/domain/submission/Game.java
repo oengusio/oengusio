@@ -1,4 +1,4 @@
-package app.oengus.domain;
+package app.oengus.domain.submission;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

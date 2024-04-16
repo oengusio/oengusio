@@ -11,6 +11,8 @@ public interface UserPersistencePort {
     @Nullable
     OengusUser getById(final int id);
 
+    Optional<OengusUser> findById(int id);
+
     List<OengusUser> findAllById(List<Integer> ids);
 
     Optional<OengusUser> findByUsername(final String username);

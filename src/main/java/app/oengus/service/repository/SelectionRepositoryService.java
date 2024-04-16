@@ -3,7 +3,7 @@ package app.oengus.service.repository;
 import app.oengus.dao.SelectionRepository;
 import app.oengus.entity.model.CategoryEntity;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.entity.model.Selection;
+import app.oengus.entity.model.SelectionEntity;
 import app.oengus.entity.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +18,19 @@ public class SelectionRepositoryService {
 	@Autowired
 	private SelectionRepository selectionRepository;
 
-	public List<Selection> findByMarathon(final MarathonEntity marathon) {
+	public List<SelectionEntity> findByMarathon(final MarathonEntity marathon) {
 		return this.selectionRepository.findByMarathon(marathon);
 	}
 
-	public List<Selection> findByMarathonAndStatusIn(final MarathonEntity marathon, final List<Status> statuses) {
+	public List<SelectionEntity> findByMarathonAndStatusIn(final MarathonEntity marathon, final List<Status> statuses) {
 		return this.selectionRepository.findByMarathonAndStatusIn(marathon, statuses);
 	}
 
-	public List<Selection> saveAll(final List<Selection> selections) {
-		return (List<Selection>) this.selectionRepository.saveAll(selections);
+	public List<SelectionEntity> saveAll(final List<SelectionEntity> selections) {
+		return (List<SelectionEntity>) this.selectionRepository.saveAll(selections);
 	}
 
-	public Selection findByCategory(final CategoryEntity category) {
+	public SelectionEntity findByCategory(final CategoryEntity category) {
 		return this.selectionRepository.findByCategory(category);
 	}
 
@@ -38,7 +38,7 @@ public class SelectionRepositoryService {
 		this.selectionRepository.rejectTodos(marathon);
 	}
 
-	public List<Selection> findAllByCategory(final List<CategoryEntity> categories) {
+	public List<SelectionEntity> findAllByCategory(final List<CategoryEntity> categories) {
 		return this.selectionRepository.findAllByCategory(
 				categories.stream().map(CategoryEntity::getId).collect(Collectors.toList()));
 	}

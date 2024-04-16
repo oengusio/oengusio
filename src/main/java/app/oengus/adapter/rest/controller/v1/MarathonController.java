@@ -10,7 +10,7 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
 import app.oengus.service.OengusWebhookService;
-import app.oengus.service.SubmissionService;
+import app.oengus.application.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;

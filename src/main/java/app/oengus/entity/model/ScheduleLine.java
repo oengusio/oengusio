@@ -1,6 +1,6 @@
 package app.oengus.entity.model;
 
-import app.oengus.domain.RunType;
+import app.oengus.domain.submission.RunType;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

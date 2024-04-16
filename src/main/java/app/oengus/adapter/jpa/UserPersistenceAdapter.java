@@ -5,6 +5,7 @@ import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.UserRepository;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
+import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,23 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     @Nullable
     @Override
     public OengusUser getById(int id) {
+        return this.findById(id).orElse(null);
+    }
+
+    @Override
+    public Optional<OengusUser> findById(int id) {
         return this.userRepository.findById(id)
-            .map(this.mapper::toDomain)
-            .orElse(null);
+            .map(this.mapper::toDomain);
+    }
+
+    @Override
+    public void addRole(int userId, Role role) {
+
+    }
+
+    @Override
+    public void removeRole(int userId, Role role) {
+
     }
 
     @Override

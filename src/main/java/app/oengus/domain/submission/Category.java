@@ -1,9 +1,10 @@
-package app.oengus.domain;
+package app.oengus.domain.submission;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,8 @@ public class Category {
     private RunType type;
     private String code;
 
-    // TODO: selection
+    @Nullable
+    private Selection selection;
 
     private List<Opponent> opponents = new ArrayList<>();
 }

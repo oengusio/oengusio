@@ -4,10 +4,10 @@ import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.Category;
+import app.oengus.domain.submission.Category;
 import app.oengus.domain.marathon.Marathon;
-import app.oengus.domain.RunType;
-import app.oengus.domain.Submission;
+import app.oengus.domain.submission.RunType;
+import app.oengus.domain.submission.Submission;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.service.GameService;
 import app.oengus.service.OengusWebhookService;
@@ -67,24 +67,24 @@ public class CategoryService {
         }
 
         if (user != null) {
-            if (Objects.equals(submission.getUserId(), user.getId())) {
+            if (Objects.equals(submission.getUser().getId(), user.getId())) {
                 throw new OengusBusinessException("SAME_USER");
             }
 
             if (category.getOpponents()
                 .stream()
-                .map(opponent -> opponent.getSubmission().getUserId())
+                .map(opponent -> opponent.getSubmission().getUser().getId())
                 .anyMatch(userId -> userId == user.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
         }
         final List<Integer> userIds = new ArrayList<>();
 
-        userIds.add(submission.getUserId());
+        userIds.add(submission.getUser().getId());
         userIds.addAll(category
             .getOpponents()
             .stream()
-            .map(opponent -> opponent.getSubmission().getUserId())
+            .map(opponent -> opponent.getSubmission().getUser().getId())
             .collect(Collectors.toSet()));
 
         final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())

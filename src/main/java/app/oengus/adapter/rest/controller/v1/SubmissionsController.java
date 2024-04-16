@@ -1,14 +1,16 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
+import app.oengus.adapter.rest.dto.v1.SubmissionDto;
+import app.oengus.adapter.rest.mapper.AnswerDtoMapper;
+import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
+import app.oengus.application.SubmissionService;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.submission.Submission;
+import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.misc.PageDto;
-import app.oengus.entity.dto.v1.answers.AnswerDto;
-import app.oengus.entity.dto.v1.submissions.SubmissionDto;
-import app.oengus.helper.PrincipalHelper;
-import app.oengus.service.ExportService;
+import app.oengus.adapter.rest.dto.v1.AnswerDto;
+import app.oengus.application.ExportService;
 import app.oengus.service.GameService;
-import app.oengus.service.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,8 +30,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
@@ -39,7 +41,8 @@ import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 @Tag(name = "submissions-v1")
 @RequiredArgsConstructor
 public class SubmissionsController {
-
+    private final SubmissionDtoMapper mapper;
+    private final AnswerDtoMapper answerMapper;
     private final UserSecurityPort securityPort;
     private final GameService gameService;
     private final ExportService exportService;
@@ -60,7 +63,10 @@ public class SubmissionsController {
         cachingHeaders(30).toSingleValueMap().forEach(response::setHeader);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-submissions.csv\"");
-        response.getWriter().write(this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale).toString());
+
+        try (final var writer = this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale)) {
+            response.getWriter().write(writer.toString());
+        }
     }
 
     @DeleteMapping("/games/{id}")
@@ -81,25 +87,35 @@ public class SubmissionsController {
     public ResponseEntity<PageDto<SubmissionDto>> findAllSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
-    ) throws NotFoundException {
+    ) {
+        final var foundSubmissions = this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1));
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1)));
+            .body(new PageDto<>(
+                foundSubmissions.map(this.mapper::toV1Dto)
+            ));
     }
 
     @GetMapping("/search")
     @JsonView(Views.Public.class)
     @Operation(summary = "Search in submissions, has a 30 minute cache on the result")
-    public ResponseEntity<List<SubmissionDto>> serachForSubmissions(
+    public ResponseEntity<PageDto<SubmissionDto>> serachForSubmissions(
         @PathVariable("marathonId") final String marathonId,
         @RequestParam(value = "q") final String q,
-        @RequestParam(value = "status", required = false) String status
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "page", required = false, defaultValue = "1") final int page
     ) {
         final String nullableStatus = ValueConstants.DEFAULT_NONE.equals(status) ? null : status;
+        final var foundSubmissions = this.submissionService.searchForMarathon(
+            marathonId, q, nullableStatus, Math.max(0, page - 1)
+        );
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(this.submissionService.searchForMarathon(marathonId, q, nullableStatus));
+            .body(new PageDto<>(
+                foundSubmissions.map(this.mapper::toV1Dto)
+            ));
     }
 
     @GetMapping("/answers")
@@ -107,30 +123,34 @@ public class SubmissionsController {
     @Operation(summary = "Get the answers for this marathon")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     public ResponseEntity<List<AnswerDto>> findAllAnswers(@PathVariable("marathonId") final String marathonId) {
+        final var answers = this.submissionService.findAnswersByMarathon(marathonId);
+
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(this.submissionService.findAnswersByMarathon(marathonId));
+            .body(
+                answers.stream().map(this.answerMapper::fromDomain).toList()
+            );
     }
 
     @PostMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned() && areSubmissionsOpen(#marathonId)")
     @Operation(hidden = true)
-    public ResponseEntity<?> create(@RequestBody @Valid final SubmissionEntity submission,
+    public ResponseEntity<?> create(@RequestBody @Valid final SubmissionDto submission,
                                     @PathVariable("marathonId") final String marathonId,
-                                    final Principal principal,
                                     final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        if (principal == null) {
+        final var user = this.securityPort.getAuthenticatedUser();
+
+        if (user == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        this.submissionService.save(submission,
-            PrincipalHelper.getUserFromPrincipal(principal),
-            marathonId);
+        // TODO: submission update dto
+        this.submissionService.save(this.mapper.fromV1Dto(submission), user, marathonId);
 
         return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
     }
@@ -141,17 +161,16 @@ public class SubmissionsController {
         "&& #submission.id != null " +
         "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
-    public ResponseEntity<?> update(@RequestBody @Valid final SubmissionEntity submission,
+    public ResponseEntity<?> update(@RequestBody @Valid final SubmissionDto submission,
                                     @PathVariable("marathonId") final String marathonId,
-                                    final Principal principal,
                                     final BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        this.submissionService.update(submission,
-            PrincipalHelper.getUserFromPrincipal(principal),
-            marathonId);
+        final var user = this.securityPort.getAuthenticatedUser();
+
+        this.submissionService.update(this.mapper.fromV1Dto(submission), user, marathonId);
 
         return ResponseEntity.noContent().build();
     }
@@ -168,29 +187,38 @@ public class SubmissionsController {
     @GetMapping("/availabilities/{userId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
-    public ResponseEntity<?> getAvailabilitiesForUser(@PathVariable("marathonId") final String marathonId,
-                                                      @PathVariable("userId") final int userId) throws NotFoundException {
+    public ResponseEntity<Map<String, List<AvailabilityDto>>> getAvailabilitiesForUser(
+        @PathVariable("marathonId") final String marathonId,
+        @PathVariable("userId") final int userId
+    ) {
         return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
     }
 
     @GetMapping("/me")
     @RolesAllowed({"ROLE_USER"})
+    @PreAuthorize("isAuthenticated() && !isBanned()")
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
-    public ResponseEntity<SubmissionEntity> getMySubmission(@PathVariable("marathonId") final String marathonId, final Principal principal) {
-        final SubmissionEntity submission = this.submissionService.findByUserAndMarathon(
-            PrincipalHelper.getUserFromPrincipal(principal),
-            marathonId
-        );
+    public ResponseEntity<SubmissionDto> getMySubmission(@PathVariable("marathonId") final String marathonId) {
+        final var userId = this.securityPort.getAuthenticatedUserId();
+        final Submission submission = this.submissionService.findByUserAndMarathon(userId, marathonId);
+
+        if (submission == null) {
+            return ResponseEntity.notFound()
+                .cacheControl(CacheControl.noCache())
+                .build();
+        }
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(submission);
+            .body(
+                this.mapper.toV1Dto(submission)
+            );
     }
 
     @DeleteMapping("/{id}")
     @RolesAllowed({"ROLE_USER"})
-    @PreAuthorize(value = "!isBanned()")
+    @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final int id) throws NotFoundException {
         this.submissionService.delete(id, this.securityPort.getAuthenticatedUser());

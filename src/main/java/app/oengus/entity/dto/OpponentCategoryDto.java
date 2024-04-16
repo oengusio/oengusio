@@ -54,7 +54,7 @@ public class OpponentCategoryDto {
 		this.availabilities = availabilities;
 	}
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static OpponentCategoryDto fromOpponent(OpponentEntity opponent) {
         final OpponentCategoryDto dto = new OpponentCategoryDto();
         final SubmissionEntity submission = opponent.getSubmission();

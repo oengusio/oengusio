@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v2;
 
 import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
-import app.oengus.entity.model.Selection;
+import app.oengus.entity.model.SelectionEntity;
 import app.oengus.entity.model.Status;
 
 public class SelectionDto {
@@ -42,7 +42,7 @@ public class SelectionDto {
         this.status = status;
     }
 
-    public static SelectionDto fromSelection(Selection model) {
+    public static SelectionDto fromSelection(SelectionEntity model) {
         final SelectionDto dto = new SelectionDto();
 
         dto.setId(model.getId());

@@ -1,6 +1,6 @@
 package app.oengus.adapter.jpa.mapper;
 
-import app.oengus.domain.Category;
+import app.oengus.domain.submission.Category;
 import app.oengus.entity.model.CategoryEntity;
 import org.mapstruct.*;
 
@@ -14,15 +14,16 @@ import org.mapstruct.*;
         OpponentMapper.class,
         GameMapper.class,
         SubmissionEntityMapper.class,
+        SelectionMapper.class,
     }
 )
 public interface CategoryMapper {
     // TODO: implement these when needed
-    @BeanMapping(ignoreUnmappedSourceProperties = { "selection", "status", "opponentDtos" })
+    @BeanMapping(ignoreUnmappedSourceProperties = { "status", "opponentDtos" })
     @Mapping(target = "gameId", source = "game.id")
+    @Mapping(target = "id", source = "id")
     Category toDomain(CategoryEntity entity);
 
-    @Mapping(target = "selection", ignore = true)
     @Mapping(target = "opponentDtos", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "fresh", ignore = true)

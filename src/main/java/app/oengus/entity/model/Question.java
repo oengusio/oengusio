@@ -18,7 +18,7 @@ public class Question {
 	@Id
 	@JsonView(Views.Public.class)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@ManyToOne
 	@JoinColumn(name = "marathon_id")

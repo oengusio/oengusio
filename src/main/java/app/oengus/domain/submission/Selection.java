@@ -1,5 +1,6 @@
-package app.oengus.domain;
+package app.oengus.domain.submission;
 
+import app.oengus.entity.model.Status;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -7,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Opponent {
+public class Selection {
     private final int id;
+    private final String marathonId;
     private final int categoryId;
 
-    private Submission submission;
-    private String video;
+    private Status status;
 }

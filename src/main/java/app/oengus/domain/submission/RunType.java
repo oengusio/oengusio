@@ -1,4 +1,4 @@
-package app.oengus.domain;
+package app.oengus.domain.submission;
 
 public enum RunType {
 

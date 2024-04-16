@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class OengusUser {
+public class OengusUser implements IUsername {
     private final int id;
     private String username;
     private String displayName;

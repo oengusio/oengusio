@@ -1,10 +1,10 @@
 package app.oengus.service;
 
 import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
+import app.oengus.application.SubmissionService;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.model.GameEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.service.repository.GameRepositoryService;
 import app.oengus.service.repository.SubmissionRepositoryService;
 import javassist.NotFoundException;

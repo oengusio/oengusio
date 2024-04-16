@@ -5,7 +5,7 @@ import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.SubmissionEntityMapper;
 import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.domain.Submission;
+import app.oengus.domain.submission.Submission;
 import app.oengus.entity.model.GameEntity;
 import app.oengus.entity.model.Status;
 import lombok.RequiredArgsConstructor;

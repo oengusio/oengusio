@@ -1,7 +1,7 @@
 package app.oengus.entity.model;
 
 import app.oengus.adapter.jpa.entity.OpponentEntity;
-import app.oengus.domain.RunType;
+import app.oengus.domain.submission.RunType;
 import app.oengus.entity.dto.OpponentCategoryDto;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -73,7 +73,7 @@ public class CategoryEntity {
 
 	@OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView(Views.Internal.class)
-	private Selection selection;
+	private SelectionEntity selection;
 
 	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	@JsonManagedReference

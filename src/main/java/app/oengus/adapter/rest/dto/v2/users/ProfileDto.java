@@ -43,7 +43,7 @@ public class ProfileDto {
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections;
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static ProfileDto fromUser(User user) {
         final ProfileDto profile = new ProfileDto();
         profile.setId(user.getId());

@@ -14,6 +14,7 @@ import javax.validation.constraints.*;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: this needs to be renamed
 public class UserDto implements IUsername {
     @JsonIgnore
     public static final String DISCORD_USERNAME_REGEX = "^\\S.{0,30}\\S\\s*(?:#\\d{4})?$";

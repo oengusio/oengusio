@@ -1,23 +1,21 @@
 package app.oengus.entity.dto;
 
-import app.oengus.entity.model.Availability;
-import app.oengus.adapter.jpa.entity.User;
+import app.oengus.domain.OengusUser;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.ZonedDateTime;
 
 import static app.oengus.helper.StringHelper.getUserDisplay;
 
-public class AvailabilityDto extends Availability {
-
+@Getter
+@Setter
+public class AvailabilityDto {
 	private String username;
+    private ZonedDateTime from;
+    private ZonedDateTime to;
 
-    public AvailabilityDto(User user) {
+    public AvailabilityDto(OengusUser user) {
         this.username = getUserDisplay(user);
     }
-
-	public String getUsername() {
-		return this.username;
-	}
-
-	public void setUsername(final String username) {
-		this.username = username;
-	}
 }

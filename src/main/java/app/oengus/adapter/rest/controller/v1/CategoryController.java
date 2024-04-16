@@ -5,7 +5,7 @@ import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.CategoryService;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
-import app.oengus.domain.Game;
+import app.oengus.domain.submission.Game;
 import app.oengus.domain.OengusUser;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;

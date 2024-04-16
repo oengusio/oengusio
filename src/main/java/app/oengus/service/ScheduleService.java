@@ -174,7 +174,8 @@ public class ScheduleService {
         });
         this.scheduleRepository.save(schedule);
         if (marathon.isScheduleDone()) {
-            this.computeEndDate(marathon, schedule);
+            // TODO: fix
+//            this.computeEndDate(marathon, schedule);
             this.marathonRepositoryService.update(marathon);
         }
     }

@@ -19,4 +19,7 @@ public record V1UserDto(
     String country,
     List<String> languagesSpoken
 ) {
+    public String getUsernameJapanese() {
+        return this.displayName;
+    }
 }
