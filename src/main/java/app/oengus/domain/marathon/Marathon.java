@@ -1,5 +1,6 @@
 package app.oengus.domain.marathon;
 
+import app.oengus.domain.OengusUser;
 import app.oengus.entity.model.Question;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class Marathon {
     private boolean unlimitedGames = false;
     private boolean unlimitedCategories = false;
     private boolean emulatorAuthorized = true;
-    private List<Integer> moderatorIds = new ArrayList<>();
+    private List<OengusUser> moderators = new ArrayList<>();
     private boolean canEditSubmissions = false;
     // TODO: better model? Separate route?
     private List<Question> questions = new ArrayList<>();

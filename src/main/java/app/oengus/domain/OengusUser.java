@@ -22,13 +22,18 @@ public class OengusUser {
     private String password; // hashed password
     private boolean enabled;
     private Set<Role> roles = new HashSet<>(); // Can't have duplicate roles.
-    private List<Connection> connections = new ArrayList<>(); // TODO: make model
+    private List<Connection> connections = new ArrayList<>();
     private boolean emailVerified;
     private List<String> pronouns = new ArrayList<>();
     private String country;
     private List<String> languagesSpoken = new ArrayList<>();
     private boolean mfaEnabled;
     private String mfaSecret;
+
+    private String patreonId;
+    private String discordId;
+    private String twitchId;
+    private String twitterId;
 
     // TODO: does lombok have a way of doing this?
 

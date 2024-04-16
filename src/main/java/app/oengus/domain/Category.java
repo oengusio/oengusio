@@ -22,5 +22,7 @@ public class Category {
     private RunType type;
     private String code;
 
+    // TODO: selection
+
     private List<Opponent> opponents = new ArrayList<>();
 }

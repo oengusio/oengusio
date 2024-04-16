@@ -2,10 +2,7 @@ package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.domain.Opponent;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
@@ -13,10 +10,14 @@ import org.mapstruct.ReportingPolicy;
     unmappedSourcePolicy = ReportingPolicy.ERROR,
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
+        CategoryMapper.class,
         SubmissionEntityMapper.class
     }
 )
 public interface OpponentMapper {
     @Mapping(target = "categoryId", source = "category.id")
     Opponent toDomain(OpponentEntity entity);
+
+    @InheritInverseConfiguration(name = "toDomain")
+    OpponentEntity fromDomain(Opponent opponent);
 }

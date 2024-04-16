@@ -5,7 +5,7 @@ import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.repository.ApplicationRepository;
-import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
+import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.application.MarathonService;
 import app.oengus.dao.ApplicationUserInformationRepository;
 import app.oengus.domain.volunteering.ApplicationStatus;
@@ -43,42 +43,12 @@ import java.util.stream.Collectors;
 @Deprecated(forRemoval = true)
 public class UserService {
     private final ProfileMapper profileMapper;
-    private final DiscordService discordService;
-    private final TwitchService twitchService;
-    private final JWTAdapter jwtAdapter;
     private final UserRepositoryService userRepositoryService;
     private final SubmissionRepositoryService submissionRepositoryService;
     private final MarathonService marathonService;
     private final ApplicationRepository applicationRepository;
     private final SelectionService selectionService;
     private final ApplicationUserInformationRepository applicationUserInformationRepository;
-
-    public Object sync(final String host, final LoginRequest request) throws LoginException {
-        final String service = request.getService();
-        final String code = request.getCode();
-
-        if (code == null || code.isBlank()) {
-            throw new LoginException("Missing code in request");
-        }
-
-        return switch (service) {
-            case "discord" -> this.discordService.sync(code, host);
-            case "twitch" -> this.twitchService.sync(code, host);
-            // case "twitter" -> this.twitterLoginService.sync(code, host);
-            case "patreon" -> this.checkPatreonSync(code);
-            default -> throw new LoginException("UNKNOWN_SERVICE");
-        };
-    }
-
-    private SyncDto checkPatreonSync(String id) throws LoginException {
-        final User user = this.userRepositoryService.findByPatreonId(id);
-
-        if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
-            throw new LoginException("ACCOUNT_ALREADY_SYNCED");
-        }
-
-        return new SyncDto(id, null);
-    }
 
     public void updateRequest(final int id, final UserDto userPatch) throws NotFoundException {
         final User user = this.userRepositoryService.findById(id);
@@ -143,81 +113,6 @@ public class UserService {
         this.userRepositoryService.update(user);
     }
 
-    /**
-     * Update an entity, don't use on direct user input please.
-     * @param user The user model to save in the database.
-     * @return the Updated user
-     */
-    public User update(User user) {
-        // Whoops, that is a bug.
-        if (user.getPronouns() != null && user.getPronouns().isBlank()) {
-            user.setPronouns(null);
-        }
-
-        return this.userRepositoryService.update(user);
-    }
-
-    @Deprecated
-    public void update(final int id, final User userPatch) throws NotFoundException {
-        final User user = this.userRepositoryService.findById(id);
-
-        // overwrite the user's roles to make sure they can't set them themselves
-        final List<Role> currentRoles = user.getRoles();
-        userPatch.setRoles(currentRoles);
-
-        BeanUtils.copyProperties(userPatch, user);
-        this.userRepositoryService.update(user);
-    }
-
-    public void markDeleted(final int id) throws NotFoundException {
-        final User user = this.userRepositoryService.findById(id);
-
-        // TODO: delete all connections
-
-        user.getConnections().clear();
-        user.setDiscordId(null);
-        user.setTwitchId(null);
-        user.setTwitterId(null);
-//        user.setMail("deleted-user@oengus.io");
-        user.setEnabled(false);
-        user.setMfaEnabled(false);
-        user.setMfaSecret(null);
-        user.setHashedPassword(null);
-
-        final String randomHash = String.valueOf(Objects.hash(user.getUsername(), user.getId()));
-
-        // We need an email or stuff breaks, this anonymizes it.
-        user.setMail(randomHash + "@example.com");
-
-        // "Deleted" is 7 in length
-        user.setUsername("Deleted" + randomHash.substring(0, Math.min(25, randomHash.length())));
-        user.setDisplayName("Deleted user");
-
-        this.userRepositoryService.save(user);
-    }
-
-    public void addRole(final int id, final Role role) throws NotFoundException {
-        final User user = this.userRepositoryService.findById(id);
-
-        // only update if the user does not have the role yet
-        if (!user.getRoles().contains(role)) {
-            user.getRoles().add(role);
-
-            this.userRepositoryService.update(user);
-        }
-    }
-
-    public void removeRole(final int id, final Role role) throws NotFoundException {
-        final User user = this.userRepositoryService.findById(id);
-
-        // only update if the user does have the role
-        if (user.getRoles().contains(role)) {
-            user.getRoles().remove(role);
-
-            this.userRepositoryService.update(user);
-        }
-    }
-
     // We need to stop throwing the exceptions and start using optionals.
     @Deprecated
     public User getUser(final int id) throws NotFoundException {
@@ -234,10 +129,6 @@ public class UserService {
         }
 
         return user;
-    }
-
-    public Optional<User> findOptionalByUsername(final String username) {
-        return this.userRepositoryService.findByUsernameRaw(username);
     }
 
     public UserProfileDto getUserProfile(final String username) throws NotFoundException {
@@ -315,7 +206,7 @@ public class UserService {
         filteredSubmissions.forEach((submission) -> {
             final MarathonEntity marathon = submission.getMarathon();
 
-            if (marathon.getIsPrivate()) {
+            if (marathon.isPrivate()) {
                 return;
             }
 
@@ -340,34 +231,6 @@ public class UserService {
             userHistoryDto.getGames().sort(Comparator.comparing(GameEntity::getId));
             userProfileDto.getHistory().add(userHistoryDto);
         });
-    }
-
-    public List<User> findUsersWithUsername(final String username) {
-        return this.userRepositoryService.findByUsernameContainingIgnoreCase(username);
-    }
-
-    public boolean exists(final String name) {
-        return this.userRepositoryService.existsByUsername(name) || "new".equalsIgnoreCase(name) ||
-            "settings".equalsIgnoreCase(name);
-    }
-
-    public ApplicationUserInformation getApplicationInfo(User user) throws NotFoundException {
-        return this.applicationUserInformationRepository.findByUser(user)
-            .orElseThrow(() -> new NotFoundException("Application not found"));
-    }
-
-    public ApplicationUserInformation updateApplicationInfo(User user, ApplicationUserInformationDto dto) {
-        ApplicationUserInformation infoForUser = this.applicationUserInformationRepository.findByUser(user).orElse(null);
-
-        if (infoForUser == null) {
-            infoForUser = new ApplicationUserInformation();
-            infoForUser.setId(-1);
-            infoForUser.setUser(user);
-        }
-
-        BeanHelper.copyProperties(dto, infoForUser);
-
-        return this.applicationUserInformationRepository.save(infoForUser);
     }
 
     /* ==================== V2 stuff ==================== */

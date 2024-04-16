@@ -14,9 +14,10 @@ import org.mapstruct.*;
     }
 )
 public interface EmailVerificationMapper {
-    @Mapping(source = "userId", target = "user.id")
+    @BeanMapping(ignoreUnmappedSourceProperties = { "userId" })
     PendingEmailVerification toDomain(EmailVerification model);
 
+    @Mapping(target = "userId", source = "user.id")
     @InheritInverseConfiguration(name = "toDomain")
     EmailVerification fromDomain(PendingEmailVerification domain);
 }

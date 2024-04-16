@@ -16,5 +16,6 @@ public class Submission {
     private final String marathonId;
     private final int userId;
 
+    private List<Game> games = new ArrayList<>();
     private List<Availability> availabilities = new ArrayList<>();
 }

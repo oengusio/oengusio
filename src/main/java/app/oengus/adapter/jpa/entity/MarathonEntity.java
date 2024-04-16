@@ -19,7 +19,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static app.oengus.entity.dto.UserDto.*;
+import static app.oengus.adapter.rest.dto.v1.UserDto.*;
 import static javax.persistence.CascadeType.*;
 
 @Getter

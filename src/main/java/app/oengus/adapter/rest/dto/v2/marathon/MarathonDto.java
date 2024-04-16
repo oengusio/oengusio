@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-import static app.oengus.entity.dto.UserDto.MASTODON_REGEX;
+import static app.oengus.adapter.rest.dto.v1.UserDto.MASTODON_REGEX;
 
 @Schema
 public class MarathonDto {

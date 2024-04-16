@@ -1,6 +1,5 @@
 package app.oengus.adapter.rest.dto.v1.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.time.DurationMin;
@@ -10,7 +9,7 @@ import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-import static app.oengus.entity.dto.UserDto.MASTODON_REGEX;
+import static app.oengus.adapter.rest.dto.v1.UserDto.MASTODON_REGEX;
 
 @Getter
 @Setter

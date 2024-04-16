@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
-import static app.oengus.entity.dto.UserDto.*;
+import static app.oengus.adapter.rest.dto.v1.UserDto.*;
 
 @Entity
 @Table(name = "social_accounts")

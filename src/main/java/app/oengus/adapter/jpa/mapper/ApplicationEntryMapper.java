@@ -1,10 +1,9 @@
 package app.oengus.adapter.jpa.mapper;
 
+import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import app.oengus.adapter.jpa.entity.ApplicationEntry;
 import app.oengus.domain.volunteering.Application;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
@@ -16,7 +15,18 @@ import org.mapstruct.ReportingPolicy;
     }
 )
 public interface ApplicationEntryMapper {
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "teamId", source = "team.id")
+    Application toDomain(ApplicationEntry applicationEntry);
+
+    @InheritInverseConfiguration(name = "toDomain")
     ApplicationEntry fromDomain(Application application);
 
-    Application toDomain(ApplicationEntry applicationEntry);
+    @BeanMapping(ignoreUnmappedSourceProperties = { "application" })
+    @Mapping(target = "userId", source = "user.id")
+    Application.AuditLog toDomain(ApplicationAuditlog appLog);
+
+    @Mapping(target = "application", ignore = true)
+    @InheritInverseConfiguration(name = "toDomain")
+    ApplicationAuditlog fromDomain(Application.AuditLog domainLog);
 }

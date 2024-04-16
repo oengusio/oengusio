@@ -1,6 +1,7 @@
 package app.oengus.application.port.persistence;
 
 import app.oengus.domain.OengusUser;
+import app.oengus.spring.model.Role;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,4 +28,8 @@ public interface UserPersistencePort {
     Optional<OengusUser> findByTwitchId(final String twitchId);
 
     Optional<OengusUser> findByPatreonId(final String patreonId);
+
+    void addRole(int userId, Role role);
+
+    void removeRole(int userId, Role role);
 }

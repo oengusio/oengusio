@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.entity.dto.UserDto.PRONOUN_REGEX;
-import static app.oengus.entity.dto.UserDto.USERNAME_REGEX;
+import static app.oengus.adapter.rest.dto.v1.UserDto.PRONOUN_REGEX;
+import static app.oengus.adapter.rest.dto.v1.UserDto.USERNAME_REGEX;
 
 // TODO: add created time so we can delete accounts 1 year days of not verifying the email.
 

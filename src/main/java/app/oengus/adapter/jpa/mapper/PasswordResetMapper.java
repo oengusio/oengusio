@@ -2,10 +2,7 @@ package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.PendingPasswordReset;
 import app.oengus.adapter.jpa.entity.PasswordReset;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
@@ -17,6 +14,7 @@ import org.mapstruct.ReportingPolicy;
     }
 )
 public interface PasswordResetMapper {
+    @BeanMapping(ignoreUnmappedSourceProperties = { "userId" })
     PendingPasswordReset toDomain(PasswordReset model);
 
     @Mapping(source = "user.id", target = "userId")

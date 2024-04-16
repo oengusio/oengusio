@@ -1,12 +1,12 @@
 package app.oengus.adapter.rest.controller.v2;
 
-import app.oengus.entity.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.service.UserService;
-import javassist.NotFoundException;
+import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.UserService;
+import app.oengus.entity.dto.DataListDto;
+import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -21,37 +21,30 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController("v2UserController")
 public class UserApiController implements UserApi {
     private final UserService userService;
+    private final UserDtoMapper mapper;
     // TODO: automatically inject this
     private final OkHttpClient client = new OkHttpClient();
 
-    public UserApiController(UserService userService) {
-        this.userService = userService;
-    }
-
     @Override
     public ResponseEntity<ProfileDto> profileByName(final String name) {
-        final ProfileDto profile = this.userService.getUserProfileV2(name);
-
-        if (profile == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
+        final var user = this.userService.findByUsername(name).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        );
+        final var profile = this.mapper.v2ProfileFromDomain(user);
 
         return ResponseEntity.ok(profile);
     }
 
     @Override
     public ResponseEntity<byte[]> getUserAvatar(final String name) throws NoSuchAlgorithmException, IOException {
-        final User user;
-        try {
-            user = this.userService.findByUsername(name);
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-
-        final String mail = user.getMail();
+        final var user = this.userService.findByUsername(name).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        );
+        final String mail = user.getEmail();
 
         if (!user.isEnabled() || mail == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -85,19 +78,19 @@ public class UserApiController implements UserApi {
 
     @Override
     public ResponseEntity<DataListDto<ProfileHistoryDto>> userSubmissionHistory(final int id) {
-        final List<ProfileHistoryDto> history = this.userService.getUserProfileHistory(id);
+        // TODO: re-implement
 
         return ResponseEntity.ok(
-            new DataListDto<>(history)
+            new DataListDto<>(List.of())
         );
     }
 
     @Override
     public ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(final int id) {
-        final List<ModeratedHistoryDto> history = this.userService.getUserModeratedHistory(id);
+        // TODO: re-implement
 
         return ResponseEntity.ok(
-            new DataListDto<>(history)
+            new DataListDto<>(List.of())
         );
     }
 }

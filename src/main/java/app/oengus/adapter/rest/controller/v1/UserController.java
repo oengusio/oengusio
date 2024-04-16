@@ -1,13 +1,13 @@
 package app.oengus.adapter.rest.controller.v1;
 
+import app.oengus.adapter.rest.dto.v1.UserDto;
+import app.oengus.adapter.rest.dto.v1.V1UserDto;
+import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.PatreonStatusDto;
-import app.oengus.entity.dto.UserDto;
 import app.oengus.entity.dto.UserProfileDto;
-import app.oengus.entity.model.ApplicationUserInformation;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.service.UserService;
 import app.oengus.service.repository.PatreonStatusRepositoryService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,32 +29,23 @@ import javax.annotation.security.RolesAllowed;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static app.oengus.helper.PrincipalHelper.getNullableUserFromPrincipal;
-import static app.oengus.helper.PrincipalHelper.getUserFromPrincipal;
-
 @Tag(name = "users-v1")
 @RestController
+@RequiredArgsConstructor
 @CrossOrigin(maxAge = 3600)
 @RequestMapping("/v1/users")
 public class UserController {
-    private final UserService userService;
-    private final List<String> oauthOrigins;
+    private final UserSecurityPort securityPort;
+    private final UserDtoMapper mapper;
+    private final app.oengus.application.UserService userService;
     private final PatreonStatusRepositoryService patreonStatusRepositoryService;
 
-    public UserController(
-        final UserService userService,
-        @Value("${oengus.oauthOrigins}") final List<String> oauthOrigins,
-        final PatreonStatusRepositoryService patreonStatusRepositoryService
-    ) {
-        this.userService = userService;
-        this.oauthOrigins = oauthOrigins;
-        this.patreonStatusRepositoryService = patreonStatusRepositoryService;
-    }
+    @Value("${oengus.oauthOrigins}")
+    private List<String> oauthOrigins;
 
     @Operation(hidden = true)
     @PostMapping("/sync")
@@ -70,24 +62,24 @@ public class UserController {
     @GetMapping("/{name}/exists")
     @PermitAll
     @Operation(summary = "Check if username exists")
-    public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name, final Principal principal) {
-        final User user = getNullableUserFromPrincipal(principal);
+    public ResponseEntity<Map<String, Boolean>> exists(@PathVariable("name") final String name) {
+        final var user = this.securityPort.getAuthenticatedUser();
         final Map<String, Boolean> response = new HashMap<>();
 
-        if (user != null) {
-            final String username = user.getUsername();
+        if (user == null) {
+            response.put("exists", this.userService.existsByUsername(name));
+        } else {
+            final String currentUsername = user.getUsername();
 
             // Bugfix, can't change capitalisation on own username
             // if the new username does not equal the old username, but it does equal it regarding of case.
             // Then the user changed the capitalisation of their username
-            if (!name.equals(username) && name.equalsIgnoreCase(username)) {
+            if (!name.equals(currentUsername) && name.equalsIgnoreCase(currentUsername)) {
                 response.put("exists", false);
                 response.put("super-hacky-code", true);
             } else {
-                response.put("exists", this.userService.exists(name));
+                response.put("exists", this.userService.existsByUsername(name));
             }
-        } else {
-            response.put("exists", this.userService.exists(name));
         }
 
         return ResponseEntity.ok(response);
@@ -99,8 +91,13 @@ public class UserController {
     @Operation(summary = "Get a list of users that include searched string in their username"/*,
         response = User.class,
         responseContainer = "List"*/)
-    public ResponseEntity<List<User>> search(@PathVariable("name") final String name) {
-        return ResponseEntity.ok(this.userService.findUsersWithUsername(name));
+    public ResponseEntity<List<V1UserDto>> search(@PathVariable("name") final String name) {
+        return ResponseEntity.ok(
+            this.userService.searchByUsername(name)
+                .stream()
+                .map(this.mapper::fromDomain)
+                .toList()
+        );
     }
 
     @GetMapping("/{name}")
@@ -109,7 +106,12 @@ public class UserController {
     @Operation(summary = "Get a user profile"/*,
         response = UserProfileDto.class*/)
     public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) throws NotFoundException {
-        final UserProfileDto userProfile = this.userService.getUserProfile(name);
+        final var user = this.userService.findByUsername(name).orElseThrow(
+            () -> new NotFoundException("User not found")
+        );
+        final var userProfile = this.mapper.profileFromDomain(user);
+
+        // TODO: apply moderated marathons and submissions
 
         return ResponseEntity.ok(userProfile);
     }
@@ -132,15 +134,13 @@ public class UserController {
     public ResponseEntity<?> updateUserPatreonStatus(
         @PathVariable("id") final int id,
         @RequestBody @Valid final PatreonStatusDto patch,
-        final BindingResult bindingResult,
-        final Principal principal
-    ) throws NotFoundException {
+        final BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        // fetch a fresh user
-        final User user = this.userService.getUser(getUserFromPrincipal(principal).getId());
+        final var user = this.securityPort.getAuthenticatedUser();
 
         if (!patch.getPatreonId().equals(user.getPatreonId())) {
             throw new OengusBusinessException("ACCOUNT_NOT_OWNED_BY_USER");
@@ -156,12 +156,17 @@ public class UserController {
     @Operation(hidden = true)
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final UserDto userPatch,
-                                        final BindingResult bindingResult) throws NotFoundException {
+                                        final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        this.userService.updateRequest(id, userPatch);
+        final var currentUser = this.securityPort.getAuthenticatedUser();
+
+        // TODO: properly compare functionality with old service
+        this.mapper.applyV1Patch(currentUser, userPatch);
+
+        this.userService.save(currentUser);
 
         return ResponseEntity.noContent().build();
     }
@@ -179,16 +184,18 @@ public class UserController {
     @RolesAllowed({"ROLE_USER"})
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
-    public ResponseEntity<User> me(final Principal principal) throws NotFoundException {
-        final int id = getUserFromPrincipal(principal).getId();
+    public ResponseEntity<V1UserDto> me() {
+        final var user = this.securityPort.getAuthenticatedUser();
 
-        return ResponseEntity.ok(this.userService.getUser(id));
+        return ResponseEntity.ok(
+            this.mapper.fromDomain(user)
+        );
     }
 
     @PostMapping("/{id}/ban")
     @PreAuthorize("isAuthenticated() && isAdmin()")
     @Operation(hidden = true)
-    public ResponseEntity<?> ban(@PathVariable int id) throws NotFoundException {
+    public ResponseEntity<?> ban(@PathVariable int id) {
         this.userService.addRole(id, Role.ROLE_BANNED);
 
         return ResponseEntity.noContent().build();
@@ -197,7 +204,7 @@ public class UserController {
     @DeleteMapping("/{id}/ban")
     @PreAuthorize("isAuthenticated() && isAdmin()")
     @Operation(hidden = true)
-    public ResponseEntity<?> unban(@PathVariable int id) throws NotFoundException {
+    public ResponseEntity<?> unban(@PathVariable int id) {
         this.userService.removeRole(id, Role.ROLE_BANNED);
 
         return ResponseEntity.noContent().build();
@@ -207,11 +214,15 @@ public class UserController {
     @PreAuthorize("isAuthenticated() && isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
-        final User patch = this.userService.getUser(id);
+        final var user = this.userService.getById(id);
 
-        patch.setEnabled(status);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
 
-        this.userService.update(id, patch);
+        user.setEnabled(status);
+
+        this.userService.save(user);
 
         return ResponseEntity.noContent().build();
     }
@@ -220,11 +231,9 @@ public class UserController {
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @GetMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> getApplicationInfo(final Principal principal) throws NotFoundException {
-        final User user = getUserFromPrincipal(principal);
-        final ApplicationUserInformation infoForUser = this.userService.getApplicationInfo(user);
-
-        return ResponseEntity.ok(infoForUser);
+    public ResponseEntity<?> getApplicationInfo() {
+        // TODO: re-implement when we are actually doing applications
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(hidden = true)
@@ -232,7 +241,6 @@ public class UserController {
     @PostMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> updateApplicationInfo(
-        final Principal principal,
         @RequestBody @Valid final ApplicationUserInformationDto infoPatch,
         final BindingResult bindingResult
     ) {
@@ -240,11 +248,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
         }
 
-        this.userService.updateApplicationInfo(
-            getUserFromPrincipal(principal),
-            infoPatch
-        );
+        // TODO: re-implement when we are actually doing applications
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.notFound().build();
     }
 }

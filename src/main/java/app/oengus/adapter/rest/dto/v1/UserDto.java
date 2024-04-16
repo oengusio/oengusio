@@ -1,4 +1,4 @@
-package app.oengus.entity.dto;
+package app.oengus.adapter.rest.dto.v1;
 
 import app.oengus.domain.IUsername;
 import app.oengus.entity.model.SocialAccount;

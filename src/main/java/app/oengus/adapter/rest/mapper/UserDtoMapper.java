@@ -1,11 +1,15 @@
 package app.oengus.adapter.rest.mapper;
 
 import app.oengus.adapter.jpa.entity.User;
+import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
+import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.domain.OengusUser;
+import app.oengus.entity.dto.UserProfileDto;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(
     componentModel = "spring",
@@ -21,4 +25,17 @@ public interface UserDtoMapper {
     @Mapping(target = "pronouns", expression = "java(user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(\",\")))")
     @Mapping(target = "languagesSpoken", expression = "java(user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(\",\")))")
     V1UserDto fromDbModel(User user);
+
+    @Mapping(target = "history", ignore = true)
+    @Mapping(target = "moderatedMarathons", ignore = true)
+    @Mapping(target = "volunteeringHistory", ignore = true)
+    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.spring.model.Role.ROLE_BANNED))")
+    UserProfileDto profileFromDomain(OengusUser user);
+
+    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.spring.model.Role.ROLE_BANNED))")
+    ProfileDto v2ProfileFromDomain(OengusUser user);
+
+    @Mapping(target = "pronouns", expression = "java(user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(\",\")))")
+    @Mapping(target = "languagesSpoken", expression = "java(user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(\",\")))")
+    void applyV1Patch(@MappingTarget OengusUser user, UserDto userPatch);
 }

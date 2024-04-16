@@ -125,7 +125,7 @@ public class AuthService {
     public void sendNewVerificationEmail(OengusUser user) {
         final var verificationHash = UUID.randomUUID().toString();
         final var emailVerification = new PendingEmailVerification(
-            user, verificationHash
+            user, verificationHash, LocalDate.now()
         );
 
         this.emailVerificationPersistencePort.save(emailVerification);

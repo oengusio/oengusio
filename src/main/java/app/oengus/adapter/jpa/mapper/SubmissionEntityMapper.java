@@ -10,14 +10,21 @@ import org.mapstruct.*;
     unmappedSourcePolicy = ReportingPolicy.ERROR,
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
-        // TODO: availability mapper
+        GameMapper.class,
     }
 )
 public interface SubmissionEntityMapper {
+    // TODO: implement these when needed
+    @BeanMapping(ignoreUnmappedSourceProperties = { "csvHeaders", "opponentDtos", "opponents", "answers" })
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "marathon.id", target = "marathonId")
     Submission toDomain(SubmissionEntity submissionEntity);
 
+    // TODO: fix
+    @Mapping(target = "fresh", ignore = true)
+    @Mapping(target = "answers", ignore = true)
+    @Mapping(target = "opponents", ignore = true)
+    @Mapping(target = "opponentDtos", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")
     SubmissionEntity fromDomain(Submission submission);
 }
