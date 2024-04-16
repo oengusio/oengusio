@@ -35,7 +35,7 @@ public interface UserDtoMapper {
     @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.spring.model.Role.ROLE_BANNED))")
     ProfileDto v2ProfileFromDomain(OengusUser user);
 
-    @Mapping(target = "pronouns", expression = "java(user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(\",\")))")
-    @Mapping(target = "languagesSpoken", expression = "java(user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(\",\")))")
+    @Mapping(target = "pronouns", expression = "java(userPatch.getPronouns() == null || userPatch.getPronouns().isBlank() ? List.of() : List.of(userPatch.getPronouns().split(\",\")))")
+    @Mapping(target = "languagesSpoken", expression = "java(userPatch.getLanguagesSpoken() == null ? List.of() : List.of(userPatch.getLanguagesSpoken().split(\",\")))")
     void applyV1Patch(@MappingTarget OengusUser user, UserDto userPatch);
 }

@@ -45,6 +45,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    public boolean existsForUserInMarathon(int userId, String marathonId) {
+        return this.repository.existsByMarathonAndUser(
+            MarathonEntity.ofId(marathonId),
+            User.ofId(userId)
+        );
+    }
+
+    @Override
     public List<Submission> findAcceptedInMarathon(String marathonId) {
         return this.repository.findValidatedOrBonusSubmissionsForMarathon(
             MarathonEntity.ofId(marathonId)
@@ -84,6 +92,11 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public void deleteByMarathon(String marathonId) {
         this.repository.deleteByMarathon(MarathonEntity.ofId(marathonId));
+    }
+
+    @Override
+    public void delete(Submission submission) {
+        this.repository.deleteById(submission.getId());
     }
 
     @Override

@@ -54,10 +54,20 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    public boolean existsByCode(String code) {
+        return this.repository.existsByCode(code);
+    }
+
+    @Override
     public void delete(Category category) {
         final var entity = this.mapper.fromDomain(category);
 
         this.repository.delete(entity);
+    }
+
+    @Override
+    public void deleteAllById(List<Integer> ids) {
+        this.repository.deleteAllById(ids);
     }
 
     @Override

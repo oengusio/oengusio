@@ -1,4 +1,4 @@
-package app.oengus.service;
+package app.oengus.application;
 
 import app.oengus.application.exception.WrappedException;
 import app.oengus.domain.OengusUser;

@@ -19,4 +19,9 @@ public class GamePersistenceAdapter implements GamePersistencePort {
     public Optional<Game> findById(int id) {
         return this.repository.findById(id).map(this.mapper::toDomain);
     }
+
+    @Override
+    public void deleteById(int id) {
+        this.repository.deleteById(id);
+    }
 }

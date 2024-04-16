@@ -11,7 +11,6 @@ import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PendingEmailVerification;
 import app.oengus.domain.PendingPasswordReset;
-import app.oengus.service.EmailService;
 import app.oengus.service.auth.TOTPService;
 import app.oengus.service.login.DiscordService;
 import app.oengus.service.login.TwitchService;
