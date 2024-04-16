@@ -1,7 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.model.Availability;
 import app.oengus.entity.model.Team;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -78,5 +77,5 @@ public class ApplicationEntry {
     @OrderBy("date_from ASC")
     @JsonView(Views.Public.class)
     // we can reuse this model as it has no submission related information
-    private List<Availability> availabilities;
+    private List<AvailabilityEntity> availabilities;
 }

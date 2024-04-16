@@ -3,7 +3,6 @@ package app.oengus.adapter.jpa.entity;
 import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
 import app.oengus.entity.comparator.AnswerComparator;
 import app.oengus.entity.model.AnswerEntity;
-import app.oengus.entity.model.Availability;
 import app.oengus.entity.model.GameEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -55,7 +54,7 @@ public class SubmissionEntity {
     })
     @OrderBy(value = "date_from ASC")
     @JsonView(Views.Public.class)
-    private List<Availability> availabilities;
+    private List<AvailabilityEntity> availabilities;
 
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
     @JsonManagedReference(value = "answersReference")

@@ -1,12 +1,14 @@
 package app.oengus.domain.submission;
 
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.model.Availability;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter

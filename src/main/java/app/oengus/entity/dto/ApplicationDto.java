@@ -1,7 +1,7 @@
 package app.oengus.entity.dto;
 
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.model.Availability;
+import app.oengus.adapter.jpa.entity.AvailabilityEntity;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
@@ -27,7 +27,7 @@ public class ApplicationDto {
     @Valid
     @NotNull
     @NotEmpty
-    private List<Availability> availabilities;
+    private List<AvailabilityEntity> availabilities;
 
     @Nullable
     public ApplicationStatus getStatus() {
@@ -54,11 +54,11 @@ public class ApplicationDto {
         this.application = application;
     }
 
-    public List<Availability> getAvailabilities() {
+    public List<AvailabilityEntity> getAvailabilities() {
         return availabilities;
     }
 
-    public void setAvailabilities(List<Availability> availabilities) {
+    public void setAvailabilities(List<AvailabilityEntity> availabilities) {
         this.availabilities = availabilities;
     }
 }

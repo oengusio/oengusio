@@ -14,6 +14,7 @@ import org.mapstruct.*;
         GameMapper.class,
         OpponentMapper.class,
         AnswerEntityMapper.class,
+        AvailabilityMapper.class,
     }
 )
 public interface SubmissionEntityMapper {

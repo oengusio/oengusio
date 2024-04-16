@@ -1,8 +1,5 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.spring.model.Views;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,16 +11,12 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Embeddable
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Availability {
-
+public class AvailabilityEntity {
     @NotNull
     @Column(name = "date_from")
-    @JsonView(Views.Public.class)
     private ZonedDateTime from;
 
     @NotNull
     @Column(name = "date_to")
-    @JsonView(Views.Public.class)
     private ZonedDateTime to;
 }

@@ -1,6 +1,6 @@
 package app.oengus.domain.volunteering;
 
-import app.oengus.entity.model.Availability;
+import app.oengus.adapter.jpa.entity.AvailabilityEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,7 +26,7 @@ public class Application {
 
     private List<AuditLog> auditLogs;
 
-    private List<Availability> availabilities;
+    private List<AvailabilityEntity> availabilities;
 
     @Getter
     @Setter

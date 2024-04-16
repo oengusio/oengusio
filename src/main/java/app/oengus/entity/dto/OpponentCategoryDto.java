@@ -1,14 +1,19 @@
 package app.oengus.entity.dto;
 
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.entity.model.Availability;
+import app.oengus.adapter.jpa.entity.AvailabilityEntity;
 import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
+import app.oengus.domain.submission.Availability;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class OpponentCategoryDto {
 	@JsonView(Views.Public.class)
 	private int id;
@@ -21,38 +26,6 @@ public class OpponentCategoryDto {
 
 	@JsonView(Views.Public.class)
 	private List<Availability> availabilities;
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(final int id) {
-		this.id = id;
-	}
-
-	public String getVideo() {
-		return this.video;
-	}
-
-	public void setVideo(final String video) {
-		this.video = video;
-	}
-
-	public ProfileDto getUser() {
-		return this.user;
-	}
-
-	public void setUser(final ProfileDto user) {
-		this.user = user;
-	}
-
-	public List<Availability> getAvailabilities() {
-		return this.availabilities;
-	}
-
-	public void setAvailabilities(final List<Availability> availabilities) {
-		this.availabilities = availabilities;
-	}
 
     @Deprecated(forRemoval = true)
     public static OpponentCategoryDto fromOpponent(OpponentEntity opponent) {

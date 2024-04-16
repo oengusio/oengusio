@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v1.request;
 
+import app.oengus.domain.submission.Availability;
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.model.Availability;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
