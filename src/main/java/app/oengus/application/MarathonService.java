@@ -6,7 +6,6 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import app.oengus.entity.model.Schedule;
 import app.oengus.service.*;
-import app.oengus.service.twitter.AbstractTwitterService;
 import io.sentry.Sentry;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ public class MarathonService {
     private final ScheduleService scheduleService;
     private final IncentiveService incentiveService;
     private final EventSchedulerService eventSchedulerService;
-    private final AbstractTwitterService twitterService;
     private final SelectionService selectionService;
     private final OengusWebhookService webhookService;
     private final UserSecurityPort securityPort;
@@ -124,7 +122,6 @@ public class MarathonService {
             this.incentiveService.deleteByMarathon(marathonId);
             this.scheduleService.deleteByMarathon(marathonId);
             this.submissionService.deleteByMarathon(marathon.getId());
-            this.twitterService.deleteAudit(marathon.getId());
 
             this.marathonPersistencePort.delete(marathon);
         });

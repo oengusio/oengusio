@@ -92,9 +92,6 @@ dependencies {
     // Paypal
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
 
-    // Twitter
-    implementation(group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7")
-
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
