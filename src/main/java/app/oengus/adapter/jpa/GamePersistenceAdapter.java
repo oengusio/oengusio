@@ -7,6 +7,7 @@ import app.oengus.domain.submission.Game;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -21,7 +22,20 @@ public class GamePersistenceAdapter implements GamePersistencePort {
     }
 
     @Override
+    public List<Game> findAllByMarathonAndSubmission(String marathonId, int submissionId) {
+        return List.of();
+    }
+
+    @Override
     public void deleteById(int id) {
         this.repository.deleteById(id);
+    }
+
+    @Override
+    public Game save(Game game) {
+        final var entity = this.mapper.fromDomain(game);
+        final var savedEntity = this.repository.save(entity);
+
+        return this.mapper.toDomain(savedEntity);
     }
 }

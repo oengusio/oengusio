@@ -162,7 +162,7 @@ public class ExportService {
                 // Selection might be null, ensure that the status defaults to "TO-DO"
                 final var selection = Optional.ofNullable(category.getSelection()).orElseGet(() -> {
                     // ids are not used so no need setting them.
-                    final var newSel = new Selection(-1, null, -1);
+                    final var newSel = new Selection(-1, -1);
 
                     newSel.setStatus(Status.TODO);
 

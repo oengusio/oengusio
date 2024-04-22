@@ -9,7 +9,7 @@ import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.entity.dto.MarathonDto;
 import app.oengus.entity.dto.marathon.MarathonStatsDto;
-import app.oengus.service.OengusWebhookService;
+import app.oengus.application.OengusWebhookService;
 import app.oengus.application.SubmissionService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;

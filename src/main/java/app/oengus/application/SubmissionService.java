@@ -13,7 +13,6 @@ import app.oengus.entity.model.Status;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.exception.SubmissionsClosedException;
 import app.oengus.helper.OengusConstants;
-import app.oengus.service.OengusWebhookService;
 import app.oengus.spring.model.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;

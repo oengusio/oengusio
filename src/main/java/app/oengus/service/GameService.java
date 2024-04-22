@@ -1,12 +1,12 @@
 package app.oengus.service;
 
-import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
+import app.oengus.application.OengusWebhookService;
 import app.oengus.application.SubmissionService;
+import app.oengus.application.port.persistence.GamePersistencePort;
+import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.model.GameEntity;
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.service.repository.GameRepositoryService;
-import app.oengus.service.repository.SubmissionRepositoryService;
+import app.oengus.domain.submission.Game;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -20,42 +20,32 @@ import java.util.List;
 public class GameService {
 
     private final SubmissionService submissionService;
-    private final SubmissionRepositoryService submissionRepositoryService;
-    private final GameRepositoryService gameRepositoryService;
+    private final GamePersistencePort gamePersistencePort;
+    private final SubmissionPersistencePort submissionPersistencePort;
+    private final MarathonPersistencePort marathonPersistencePort;
     private final OengusWebhookService webhookService;
 
     ///////////
     // v2 stuff
 
-    public List<GameDto> findBySubmissionId(final String marathonId, final int submissionId) {
-        return this.gameRepositoryService.findBySubmissionId(marathonId, submissionId)
-            .stream()
-            .map((game) -> {
-                GameDto gameDto = new GameDto();
-
-                gameDto.setId(game.getId());
-                gameDto.setName(game.getName());
-                gameDto.setDescription(game.getDescription());
-                gameDto.setConsole(game.getConsole());
-                gameDto.setRatio(game.getRatio());
-                gameDto.setEmulated(game.isEmulated());
-
-                return gameDto;
-            })
-            .toList();
+    // TODO: use mapper in controller
+    public List<Game> findBySubmissionId(final String marathonId, final int submissionId) {
+        return this.gamePersistencePort.findAllByMarathonAndSubmission(marathonId, submissionId);
     }
 
     ///////////
     // v1 stuff
 
-    public void update(final GameEntity game) {
-        this.gameRepositoryService.update(game);
+    public void update(final Game game) {
+        this.gamePersistencePort.save(game);
     }
 
     // IMPORTANT: the hook is sent here so that it only triggers once for submission delete
     public void delete(final int id, final OengusUser deletedBy) throws NotFoundException {
-        final GameEntity game = this.gameRepositoryService.findById(id);
-        final SubmissionEntity submission = game.getSubmission();
+        final var game = this.gamePersistencePort.findById(id).orElseThrow(
+            () -> new NotFoundException("Game not found")
+        );
+        final var submission = this.submissionPersistencePort.getByGameId(game.getId());
 
         // only one game, delete the submission
         if (submission.getGames().size() == 1) {
@@ -63,21 +53,25 @@ public class GameService {
             return;
         }
 
-        final String webhook = submission.getMarathon().getWebhook();
+        final var marathon = this.marathonPersistencePort.findById(submission.getMarathonId()).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
+
+        final String webhook = marathon.getWebhook();
 
         if (StringUtils.isNotEmpty(webhook)) {
             try {
-                this.webhookService.sendGameDeleteEvent(webhook, game.fresh(true), deletedBy);
+                this.webhookService.sendGameDeleteEvent(webhook, game, deletedBy);
             } catch (Exception e) {
                 LoggerFactory.getLogger(GameService.class).error("Error when handling webhook", e);
             }
         }
 
-        game.setSubmission(null);
-        submission.getGames().remove(game);
+//        submission.getGames().remove(game);
 
-        this.gameRepositoryService.delete(id);
-        this.submissionRepositoryService.save(submission);
+        this.gamePersistencePort.deleteById(id);
+        // TODO: do I still need to do this?
+//        this.submissionPersistencePort.save(submission);
     }
 
 }

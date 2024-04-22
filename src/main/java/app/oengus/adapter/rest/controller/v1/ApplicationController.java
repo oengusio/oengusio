@@ -5,7 +5,7 @@ import app.oengus.adapter.rest.dto.v1.request.ApplicationCreateRequestDto;
 import app.oengus.adapter.rest.mapper.ApplicationDtoMapper;
 import app.oengus.domain.volunteering.Application;
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.service.ApplicationService;
+import app.oengus.application.ApplicationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;

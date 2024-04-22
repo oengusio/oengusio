@@ -1,4 +1,4 @@
-package app.oengus.service;
+package app.oengus.application;
 
 import app.oengus.application.port.persistence.ApplicationPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;

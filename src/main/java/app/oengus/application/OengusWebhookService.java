@@ -1,15 +1,12 @@
-package app.oengus.service;
+package app.oengus.application;
 
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.rest.dto.v2.SelectionDto;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.domain.submission.Category;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.submission.Category;
+import app.oengus.domain.submission.Game;
+import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Submission;
-import app.oengus.entity.model.Donation;
-import app.oengus.entity.model.GameEntity;
-import app.oengus.entity.model.SelectionEntity;
 import app.oengus.helper.OengusBotUrl;
 import app.oengus.service.rabbitmq.IRabbitMQService;
 import app.oengus.spring.model.Views;
@@ -28,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+// TODO: needs a lot of cleanup
 @Service
 @RequiredArgsConstructor
 public class OengusWebhookService {
@@ -49,7 +47,8 @@ public class OengusWebhookService {
 
     // TODO: replace bot webhook with settings.
     /// <editor-fold desc="event functions">
-    public void sendDonationEvent(final String url, final Donation donation) throws IOException {
+    // TODO: fix this when donations are fixed
+    public void sendDonationEvent(final String url, final Object donation) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "DONATION")
             .set("donation", parseJson(donation));
@@ -115,12 +114,14 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendGameDeleteEvent(final String url, final GameEntity game, final OengusUser deletedBy) throws IOException {
+    public void sendGameDeleteEvent(final String url, final Game game, final OengusUser deletedBy) throws IOException {
+        final var submission = this.submissionPersistencePort.getByGameId(game.getId());
+
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "GAME_DELETE");
         data.set("game", parseJson(game));
         data.set("deleted_by", parseJson(deletedBy));
-        data.set("submission", parseJson(game.getSubmission().fresh(false)));
+        data.set("submission", parseJson(submission));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -156,12 +157,10 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSelectionDoneEvent(final String url, final List<SelectionEntity> selections) throws IOException {
-        final var dtos = selections.stream().map(SelectionDto::fromSelection).toList();
-
+    public void sendSelectionDoneEvent(final String url, final List<Selection> selections) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SELECTION_DONE");
-        data.set("selections", parseJson(dtos));
+        data.set("selections", parseJson(selections));
 
         if (handleOnBot(url)) {
             data.put("url", url);

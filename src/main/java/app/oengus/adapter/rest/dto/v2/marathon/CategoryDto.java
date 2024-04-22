@@ -1,13 +1,12 @@
 package app.oengus.adapter.rest.dto.v2.marathon;
 
-import app.oengus.entity.dto.OpponentCategoryDto;
-import app.oengus.entity.model.CategoryEntity;
-import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.domain.submission.RunType;
+import app.oengus.entity.dto.OpponentCategoryDto;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,32 +21,5 @@ public class CategoryDto {
     private RunType type;
     private int gameId;
     private int userId;
-    private List<OpponentCategoryDto> opponents;
-
-    @Deprecated(forRemoval = true)
-    public static CategoryDto fromCategory(CategoryEntity category) {
-        final CategoryDto dto = new CategoryDto();
-
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        dto.setEstimate(category.getEstimate());
-        dto.setDescription(category.getDescription());
-        dto.setVideo(category.getVideo());
-        dto.setType(category.getType());
-        dto.setGameId(category.getGame().getId());
-        dto.setUserId(category.getGame().getSubmission().getUser().getId());
-
-        final List<OpponentEntity> opponents = category.getOpponents();
-
-        if (opponents == null) {
-            dto.setOpponents(List.of());
-        } else {
-            dto.setOpponents(
-                opponents.stream().map(OpponentCategoryDto::fromOpponent).toList()
-            );
-        }
-
-
-        return dto;
-    }
+    private List<OpponentCategoryDto> opponents = new ArrayList<>();
 }
