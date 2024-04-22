@@ -1,4 +1,4 @@
-package app.oengus.service.export;
+package app.oengus.application.export;
 
 import app.oengus.entity.model.Donation;
 import app.oengus.service.DonationService;
@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 

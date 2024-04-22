@@ -71,6 +71,10 @@ public class UserProfileDto implements IUsername {
             .orElse("");
     }
 
+    public String getUsernameJapanese() {
+        return this.displayName;
+    }
+
     @Deprecated(forRemoval = true)
     private static UserProfileDto fromUserNoHistory(User user) {
         final var dto = new UserProfileDto();

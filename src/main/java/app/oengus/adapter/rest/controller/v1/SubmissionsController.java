@@ -57,7 +57,7 @@ public class SubmissionsController {
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("locale") final String locale,
                                      @RequestParam("zoneId") final String zoneId,
-                                     final HttpServletResponse response) throws IOException {
+                                     final HttpServletResponse response) throws IOException, NotFoundException {
         response.setContentType("text/csv");
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         cachingHeaders(30).toSingleValueMap().forEach(response::setHeader);

@@ -88,6 +88,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
 
         for (int i = 1; i < lines.size(); i++) {
             final Line previous = lines.get(i - 1);
+
             lines.get(i).setDate(
                 previous.getDate()
                     .plus(previous.getEstimate())

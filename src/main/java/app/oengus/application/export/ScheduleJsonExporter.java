@@ -1,14 +1,16 @@
-package app.oengus.service.export;
+package app.oengus.application.export;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
-import app.oengus.entity.dto.ScheduleLineDto;
-import app.oengus.entity.dto.V1ScheduleDto;
+import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.domain.schedule.Line;
+import app.oengus.domain.schedule.Runner;
+import app.oengus.domain.schedule.Schedule;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.helper.StringHelper;
+import app.oengus.helper.ScheduleHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
@@ -35,28 +37,28 @@ public class ScheduleJsonExporter implements Exporter {
     private static final List<String> COLUMNS =
         List.of("runners", "game", "category", "type", "console", "custom_data", "[[options]]");
 
-    private final ScheduleHelper scheduleHelper;
     private final ObjectMapper objectMapper;
     private final MarathonPersistencePort marathonPersistencePort;
+    private final SchedulePersistencePort schedulePersistencePort;
 
     @Override
     public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final V1ScheduleDto scheduleDto = this.scheduleHelper.getSchedule(marathonId, zoneId);
-
-        if (scheduleDto == null) {
-            throw new NotFoundException("Schedule not found");
-        }
-
+        final Schedule schedule = this.schedulePersistencePort.findFirstForMarathon(marathonId).orElseThrow(
+            () -> new NotFoundException("Schedule not found")
+        );
         final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
             () -> new NotFoundException("Marathon not found")
         );
+
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();
         final HoraroSchedule horaroSchedule = new HoraroSchedule();
         final HoraroEvent horaroEvent = new HoraroEvent();
+
         horaroEvent.setName(marathon.getName());
         horaroEvent.setSlug(marathon.getId());
+
         horaroSchedule.setEvent(horaroEvent);
         horaroSchedule.setName(marathon.getName());
         horaroSchedule.setSlug(marathon.getId());
@@ -70,18 +72,28 @@ public class ScheduleJsonExporter implements Exporter {
         );
         horaroSchedule.setTwitch(marathon.getTwitch());
         horaroSchedule.setTwitter(marathon.getTwitter());
-        horaroSchedule.setColumns(COLUMNS.stream()
-            .map(column -> column.contains("[[") ? column : resourceBundle.getString(
-                "schedule.export.json.column." + column))
-            .collect(Collectors.toList()));
+        horaroSchedule.setColumns(
+            COLUMNS.stream()
+                .map(
+                    (column) -> column.contains("[[")
+                        ? column
+                        : resourceBundle.getString("schedule.export.json.column." + column)
+                )
+                .toList()
+        );
+
+        final var rawLines = schedule.getLines();
+        final var zonedLines = ScheduleHelper.mapTimeToZone(rawLines, zoneId);
+
         horaroSchedule.setItems(
-            scheduleDto.getLinesWithTime()
+            zonedLines
                 .stream()
                 .map(
                     (scheduleLineDto) -> this.mapLineToItem(scheduleLineDto, resourceBundle)
                 )
-                .collect(Collectors.toList())
+                .toList()
         );
+
         horaro.setSchedule(horaroSchedule);
 
         final StringWriter out = new StringWriter();
@@ -89,7 +101,7 @@ public class ScheduleJsonExporter implements Exporter {
         return out;
     }
 
-    private HoraroItem mapLineToItem(final ScheduleLineDto scheduleLineDto, final ResourceBundle resourceBundle) {
+    private HoraroItem mapLineToItem(final Line scheduleLineDto, final ResourceBundle resourceBundle) {
         final HoraroItem horaroItem = new HoraroItem();
         final boolean setupBlock = scheduleLineDto.isSetupBlock();
 
@@ -107,16 +119,20 @@ public class ScheduleJsonExporter implements Exporter {
                 StringUtils.defaultString(
                     scheduleLineDto.getRunners()
                         .stream()
-                        .map(StringHelper::getUserDisplay)
+                        .map(Runner::getEffectiveDisplay)
                         .collect(Collectors.joining(", "))
                 ),
                 StringUtils.defaultString(gameName),
                 StringUtils.defaultString(scheduleLineDto.getCategoryName()),
                 resourceBundle.getString("run.type." + scheduleLineDto.getType().name()),
                 StringUtils.defaultString(scheduleLineDto.getConsole()),
-                StringUtils.defaultString(scheduleLineDto.getCustomDataDTO()),
+                StringUtils.defaultString(scheduleLineDto.getCustomData()),
                 this.objectMapper.writeValueAsString(
-                    Map.of("setup", this.formatCustomSetupTime(scheduleLineDto.getEffectiveSetupTime()))
+                    Map.of(
+                        "setup", this.formatCustomSetupTime(
+                            getEffectiveSetupTime(scheduleLineDto)
+                        )
+                    )
                 )
             ));
         } catch (final JsonProcessingException e) {
@@ -124,6 +140,14 @@ public class ScheduleJsonExporter implements Exporter {
             throw new OengusBusinessException("EXPORT_FAIL");
         }
         return horaroItem;
+    }
+
+    private Duration getEffectiveSetupTime(Line line) {
+        if (line.isSetupBlock()) {
+            return Duration.ZERO;
+        }
+
+        return line.getSetupTime();
     }
 
     private String formatCustomSetupTime(final Duration setupTime) {

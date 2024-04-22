@@ -1,6 +1,7 @@
 package app.oengus.domain.schedule;
 
 import app.oengus.domain.OengusUser;
+import app.oengus.helper.StringHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,4 +11,12 @@ public class Runner {
     private String runnerName;
 
     private OengusUser user;
+
+    public String getEffectiveDisplay() {
+        if (this.user == null) {
+            return this.runnerName;
+        }
+
+        return StringHelper.getUserDisplay(this.user);
+    }
 }

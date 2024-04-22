@@ -22,8 +22,11 @@ public interface ScheduleLineMapper {
 
     @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "customDataDTO", ignore = true)
-    @InheritInverseConfiguration(name = "toDomain")
+    @Mapping(target = "schedule.id", source = "scheduleId")
     ScheduleLine fromDomain(Line line);
 
     Runner runnerEntityToDomain(ScheduleLineRunner runnerEntity);
+
+    @BeanMapping(ignoreUnmappedSourceProperties = { "effectiveDisplay" })
+    ScheduleLineRunner runnerEntityFromDomain(Runner runner);
 }
