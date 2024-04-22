@@ -40,7 +40,7 @@ repositories {
     maven { url = uri("https://jitpack.io") }
 }
 
-val sentryVersion = "5.7.0" // 7.8.0
+val sentryVersion = "7.8.0"
 val mapstructVersion = "1.5.5.Final"
 
 dependencies {
