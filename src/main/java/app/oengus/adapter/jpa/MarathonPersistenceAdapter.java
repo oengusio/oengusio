@@ -144,4 +144,12 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .map(this.mapper::toDomain)
             .toList();
     }
+
+    @Override
+    public List<Marathon> findAll() {
+        return this.repository.findAll()
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
+    }
 }

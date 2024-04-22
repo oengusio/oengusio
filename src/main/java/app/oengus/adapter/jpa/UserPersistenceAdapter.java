@@ -99,4 +99,9 @@ public class UserPersistenceAdapter implements UserPersistencePort {
         return this.userRepository.findByPatreonId(patreonId)
             .map(this.mapper::toDomain);
     }
+
+    @Override
+    public void deleteAll() {
+        this.userRepository.deleteAll();
+    }
 }

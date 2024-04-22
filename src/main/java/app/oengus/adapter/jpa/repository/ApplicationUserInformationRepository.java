@@ -1,13 +1,11 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
 import app.oengus.entity.model.ApplicationUserInformation;
 import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface ApplicationUserInformationRepository extends CrudRepository<ApplicationUserInformation, Integer> {
     Optional<ApplicationUserInformation> findByUser(User user);
 }

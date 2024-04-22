@@ -44,4 +44,6 @@ public interface MarathonPersistencePort {
     void clear(Marathon marathon);
 
     List<Marathon> findFutureWithScheduledSubmissions();
+
+    List<Marathon> findAll();
 }
