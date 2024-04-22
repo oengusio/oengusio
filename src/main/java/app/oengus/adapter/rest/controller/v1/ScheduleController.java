@@ -1,15 +1,18 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.dto.ScheduleTickerDto;
+import app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleTickerDto;
+import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
 import app.oengus.entity.dto.V1ScheduleDto;
-import app.oengus.entity.model.Schedule;
+import app.oengus.adapter.jpa.entity.ScheduleEntity;
 import app.oengus.application.ExportService;
-import app.oengus.service.ScheduleService;
+import app.oengus.application.ScheduleService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -26,16 +30,13 @@ import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
+@RequiredArgsConstructor
 @Tag(name = "schedules-v1")
 @RequestMapping("/v1/marathons/{marathonId}/schedule")
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ExportService exportService;
-
-    public ScheduleController(ScheduleService scheduleService, ExportService exportService) {
-        this.scheduleService = scheduleService;
-        this.exportService = exportService;
-    }
+    private final ScheduleDtoMapper mapper;
 
     @GetMapping
     @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
@@ -43,9 +44,13 @@ public class ScheduleController {
     @Operation(summary = "Get schedule for a marathon, has a 5 minute cache"/*, response = Schedule.class*/)
     public ResponseEntity<V1ScheduleDto> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                                             @RequestParam(defaultValue = "false", required = false) boolean withCustomData) {
+        final var schedule = this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, withCustomData));
+            .body(
+                this.mapper.toV1Dto(schedule)
+            );
     }
 
     @GetMapping("/ticker")
@@ -55,9 +60,13 @@ public class ScheduleController {
         response = ScheduleTickerDto.class*/)
     public ResponseEntity<ScheduleTickerDto> getTicker(@PathVariable("marathonId") final String marathonId,
                                                 @RequestParam(defaultValue = "false", required = false) boolean withCustomData) throws NotFoundException {
+        final var ticker = this.scheduleService.getForTicker(marathonId, withCustomData);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(1, false))
-            .body(this.scheduleService.getForTicker(marathonId, withCustomData));
+            .body(
+                this.mapper.tickerToDto(ticker)
+            );
     }
 
     ///////////////
@@ -69,16 +78,24 @@ public class ScheduleController {
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
     public ResponseEntity<V1ScheduleDto> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId) {
+        final var schedule = this.scheduleService.findByMarathonCustomDataControl(marathonId, true);
+
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache()) // Always fetch custom data for the admin page
-            .body(this.scheduleService.findByMarathonCustomDataControl(marathonId, true));
+            .body(
+                this.mapper.toV1Dto(schedule)
+            );
     }
 
     @PutMapping
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
-    public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
-                                          @RequestBody final Schedule schedule) throws NotFoundException {
+    public ResponseEntity<?> saveOrUpdate(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestBody @Valid final ScheduleUpdateRequestDto scheduleDto
+    ) throws NotFoundException {
+        final var schedule = this.mapper.fromV1UpdateRequest(scheduleDto);
+
         this.scheduleService.saveOrUpdate(marathonId, schedule);
 
         return ResponseEntity.noContent().build();

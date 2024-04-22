@@ -1,11 +1,11 @@
 package app.oengus.service.export;
 
+import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.entity.dto.ScheduleLineDto;
 import app.oengus.entity.dto.V1ScheduleDto;
-import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.helper.StringHelper;
-import app.oengus.service.repository.MarathonRepositoryService;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
@@ -23,18 +23,14 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleIcalExporter implements Exporter {
 
 	private final ScheduleHelper scheduleHelper;
-    private final MarathonRepositoryService marathonRepositoryService;
+    private final MarathonPersistencePort marathonPersistencePort;
 
 	private final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
 	private final UidGenerator ug = new RandomUidGenerator();
-
-    public ScheduleIcalExporter(ScheduleHelper scheduleHelper, MarathonRepositoryService marathonRepositoryService) {
-        this.scheduleHelper = scheduleHelper;
-        this.marathonRepositoryService = marathonRepositoryService;
-    }
 
     @Override
 	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
@@ -44,7 +40,9 @@ public class ScheduleIcalExporter implements Exporter {
             throw new NotFoundException("Schedule not found");
         }
 
-        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
+        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
 		final ResourceBundle resourceBundle =
 				ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
 

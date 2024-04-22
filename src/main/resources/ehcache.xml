@@ -27,6 +27,6 @@
     <!-- Cache configuration -->
     <cache alias="scheduleCache" uses-template="default">
         <key-type>java.lang.String</key-type>
-        <value-type>app.oengus.entity.model.Schedule</value-type>
+        <value-type>app.oengus.adapter.jpa.entity.ScheduleEntity</value-type>
     </cache>
 </config>

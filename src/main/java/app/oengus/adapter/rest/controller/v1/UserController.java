@@ -3,6 +3,7 @@ package app.oengus.adapter.rest.controller.v1;
 import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.UserService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.PatreonStatusDto;
@@ -41,7 +42,7 @@ import java.util.Map;
 public class UserController {
     private final UserSecurityPort securityPort;
     private final UserDtoMapper mapper;
-    private final app.oengus.application.UserService userService;
+    private final UserService userService;
     private final PatreonStatusRepositoryService patreonStatusRepositoryService;
 
     @Value("${oengus.oauthOrigins}")

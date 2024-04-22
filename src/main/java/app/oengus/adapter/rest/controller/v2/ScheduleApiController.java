@@ -1,10 +1,12 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
+import app.oengus.domain.schedule.Schedule;
 import app.oengus.entity.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.application.MarathonService;
-import app.oengus.service.ScheduleService;
+import app.oengus.application.ScheduleService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import static app.oengus.helper.HeaderHelpers.cachingHeaders;
 public class ScheduleApiController implements ScheduleApi {
     private final MarathonService marathonService;
     private final ScheduleService scheduleService;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(final String marathonId) {
@@ -26,10 +29,14 @@ public class ScheduleApiController implements ScheduleApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
 
+        final var schedules = this.scheduleService.findAllInfoByMarathon(marathonId);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
             .body(new DataListDto<>(
-                this.scheduleService.findAllInfoByMarathon(marathonId)
+                schedules.stream()
+                    .map(this.mapper::infoFromSchedule)
+                    .toList()
             ));
     }
 
@@ -41,15 +48,14 @@ public class ScheduleApiController implements ScheduleApi {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
 
-        final ScheduleDto byScheduleId;
-        try {
-            byScheduleId = this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData);
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found")
+        );
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
-            .body(byScheduleId);
+            .body(
+                this.mapper.fromDomain(schedule)
+            );
     }
 }

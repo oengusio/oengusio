@@ -1,21 +1,20 @@
 package app.oengus.service.export;
 
-import app.oengus.entity.dto.V1ScheduleDto;
+import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.entity.dto.ScheduleLineDto;
+import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.horaro.Horaro;
 import app.oengus.entity.dto.horaro.HoraroEvent;
 import app.oengus.entity.dto.horaro.HoraroItem;
 import app.oengus.entity.dto.horaro.HoraroSchedule;
-import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.exception.OengusBusinessException;
 import app.oengus.helper.StringHelper;
-import app.oengus.service.repository.MarathonRepositoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleJsonExporter implements Exporter {
 
     private static final List<String> COLUMNS =
@@ -37,14 +37,7 @@ public class ScheduleJsonExporter implements Exporter {
 
     private final ScheduleHelper scheduleHelper;
     private final ObjectMapper objectMapper;
-    private final MarathonRepositoryService marathonRepositoryService;
-
-    @Autowired
-    public ScheduleJsonExporter(ScheduleHelper scheduleHelper, ObjectMapper objectMapper, MarathonRepositoryService marathonRepositoryService) {
-        this.scheduleHelper = scheduleHelper;
-        this.objectMapper = objectMapper;
-        this.marathonRepositoryService = marathonRepositoryService;
-    }
+    private final MarathonPersistencePort marathonPersistencePort;
 
     @Override
     public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
@@ -54,7 +47,9 @@ public class ScheduleJsonExporter implements Exporter {
             throw new NotFoundException("Schedule not found");
         }
 
-        final MarathonEntity marathon = this.marathonRepositoryService.findById(marathonId);
+        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
+            () -> new NotFoundException("Marathon not found")
+        );
         final Locale locale = Locale.forLanguageTag(language);
         final ResourceBundle resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
         final Horaro horaro = new Horaro();

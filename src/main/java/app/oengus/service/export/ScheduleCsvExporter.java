@@ -3,6 +3,7 @@ package app.oengus.service.export;
 import app.oengus.entity.dto.V1ScheduleDto;
 import app.oengus.entity.dto.ScheduleLineDto;
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -16,10 +17,9 @@ import java.util.List;
 import java.util.Locale;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleCsvExporter implements Exporter {
-
-	@Autowired
-	private ScheduleHelper scheduleHelper;
+	private final ScheduleHelper scheduleHelper;
 
 	@Override
 	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {

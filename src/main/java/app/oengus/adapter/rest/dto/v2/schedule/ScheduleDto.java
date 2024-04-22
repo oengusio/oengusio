@@ -1,10 +1,14 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
-import app.oengus.entity.model.Schedule;
+import app.oengus.adapter.jpa.entity.ScheduleEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Schema
 public class ScheduleDto {
     @Schema(description = "The unique id of the schedule")
@@ -14,31 +18,8 @@ public class ScheduleDto {
     @Schema(description = "The lines of this schedule, in order")
     private List<LineDto> lines;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getMarathonId() {
-        return marathonId;
-    }
-
-    public void setMarathonId(String marathonId) {
-        this.marathonId = marathonId;
-    }
-
-    public List<LineDto> getLines() {
-        return lines;
-    }
-
-    public void setLines(List<LineDto> lines) {
-        this.lines = lines;
-    }
-
-    public static ScheduleDto fromSchedule(Schedule schedule, boolean withCustomData) {
+    @Deprecated(forRemoval = true)
+    public static ScheduleDto fromSchedule(ScheduleEntity schedule, boolean withCustomData) {
         final ScheduleDto dto = new ScheduleDto();
 
         dto.setId(schedule.getId());

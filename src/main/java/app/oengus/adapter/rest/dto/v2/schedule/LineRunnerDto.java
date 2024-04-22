@@ -1,12 +1,16 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.entity.model.ScheduleLineRunner;
+import app.oengus.adapter.jpa.entity.ScheduleLineRunner;
 import app.oengus.adapter.jpa.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 
+@Getter
+@Setter
 @Schema
 public class LineRunnerDto {
     @Nullable
@@ -17,15 +21,6 @@ public class LineRunnerDto {
     @Schema(description = "The name of runner that displays in the schedule. Reflects the display name from the profile if present.")
     private String runnerName;
 
-    @Nullable
-    public ProfileDto getProfile() {
-        return profile;
-    }
-
-    public void setProfile(@Nullable ProfileDto profile) {
-        this.profile = profile;
-    }
-
     public String getRunnerName() {
         if (this.profile == null) {
             return this.runnerName;
@@ -34,11 +29,7 @@ public class LineRunnerDto {
         return this.profile.getDisplayName();
     }
 
-    public void setRunnerName(@Nullable String runnerName) {
-        this.runnerName = runnerName;
-    }
-
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static LineRunnerDto fromLineRunner(ScheduleLineRunner lineRunner) {
         final LineRunnerDto dto = new LineRunnerDto();
         final User user = lineRunner.getUser();

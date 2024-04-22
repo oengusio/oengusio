@@ -1,8 +1,10 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.domain.submission.RunType;
-import app.oengus.entity.model.ScheduleLine;
+import app.oengus.adapter.jpa.entity.ScheduleLine;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Schema
+@Getter
+@Setter
 public class LineDto {
     @Schema(description = "Unique id for this schedule line")
     private int id;
@@ -52,134 +56,7 @@ public class LineDto {
     @Schema(description = "The date and time of when this run is planned to start")
     private ZonedDateTime date;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getGame() {
-        return game;
-    }
-
-    public void setGame(String game) {
-        this.game = game;
-    }
-
-    public String getConsole() {
-        return console;
-    }
-
-    public void setConsole(String console) {
-        this.console = console;
-    }
-
-    public boolean isEmulated() {
-        return emulated;
-    }
-
-    public void setEmulated(boolean emulated) {
-        this.emulated = emulated;
-    }
-
-    public String getRatio() {
-        return ratio;
-    }
-
-    public void setRatio(String ratio) {
-        this.ratio = ratio;
-    }
-
-    public RunType getType() {
-        return type;
-    }
-
-    public void setType(RunType type) {
-        this.type = type;
-    }
-
-    public List<LineRunnerDto> getRunners() {
-        return runners;
-    }
-
-    public void setRunners(List<LineRunnerDto> runners) {
-        this.runners = runners;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Duration getEstimate() {
-        return estimate;
-    }
-
-    public void setEstimate(Duration estimate) {
-        this.estimate = estimate;
-    }
-
-    public Duration getSetupTime() {
-        return setupTime;
-    }
-
-    public void setSetupTime(Duration setupTime) {
-        this.setupTime = setupTime;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public boolean isCustomRun() {
-        return customRun;
-    }
-
-    public void setCustomRun(boolean customRun) {
-        this.customRun = customRun;
-    }
-
-    public boolean isSetupBlock() {
-        return setupBlock;
-    }
-
-    public void setSetupBlock(boolean setupBlock) {
-        this.setupBlock = setupBlock;
-    }
-
-    public String getSetupBlockText() {
-        return setupBlockText;
-    }
-
-    public void setSetupBlockText(String setupBlockText) {
-        this.setupBlockText = setupBlockText;
-    }
-
-    public String getCustomData() {
-        return customData;
-    }
-
-    public void setCustomData(String customData) {
-        this.customData = customData;
-    }
-
-    public ZonedDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(ZonedDateTime date) {
-        this.date = date;
-    }
-
+    @Deprecated(forRemoval = true)
     public static LineDto fromLine(ScheduleLine line, boolean withCustomData) {
         final LineDto dto = new LineDto();
 

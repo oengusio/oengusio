@@ -2,6 +2,7 @@ package app.oengus.service.export;
 
 import app.oengus.entity.model.Donation;
 import app.oengus.service.DonationService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -14,10 +15,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 @Component
+@RequiredArgsConstructor
 public class DonationsCsvExporter implements Exporter {
-
-	@Autowired
-	private DonationService donationService;
+    private final DonationService donationService;
 
 	@Override
 	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {

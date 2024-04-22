@@ -3,7 +3,7 @@ package app.oengus.entity.dto;
 import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.domain.IUsername;
 import app.oengus.domain.SocialPlatform;
-import app.oengus.entity.model.ScheduleLineRunner;
+import app.oengus.adapter.jpa.entity.ScheduleLineRunner;
 import app.oengus.entity.model.SocialAccount;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.spring.model.Role;
@@ -71,7 +71,7 @@ public class UserProfileDto implements IUsername {
             .orElse("");
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     private static UserProfileDto fromUserNoHistory(User user) {
         final var dto = new UserProfileDto();
 
@@ -94,7 +94,7 @@ public class UserProfileDto implements IUsername {
         return dto;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static UserProfileDto fromScheduleLine(ScheduleLineRunner runner) {
         final var dto = new UserProfileDto();
 
