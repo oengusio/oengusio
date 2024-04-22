@@ -11,6 +11,7 @@ public class Opponent {
     private final int id;
     private final int categoryId;
 
-    private Submission submission;
+    private int userId;
+    private int submissionId;
     private String video;
 }

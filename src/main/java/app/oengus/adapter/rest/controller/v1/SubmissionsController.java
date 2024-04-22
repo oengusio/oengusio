@@ -1,6 +1,7 @@
 package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.dto.v1.SubmissionDto;
+import app.oengus.adapter.rest.OpponentRestService;
 import app.oengus.adapter.rest.mapper.AnswerDtoMapper;
 import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
 import app.oengus.application.SubmissionService;
@@ -47,6 +48,7 @@ public class SubmissionsController {
     private final GameService gameService;
     private final ExportService exportService;
     private final SubmissionService submissionService;
+    private final OpponentRestService opponentRestService;
 
     ///////// GameController.java ////////
 
@@ -90,11 +92,22 @@ public class SubmissionsController {
     ) {
         final var foundSubmissions = this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1));
 
+        // Strip code from response here
+        foundSubmissions.forEach((submission) -> {
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    category.setCode(null);
+                });
+            });
+        });
+
+        final var res = foundSubmissions.map(this.mapper::toV1Dto);
+
+        this.opponentRestService.setCategoryAndGameNameOnOpponents(res, marathonId);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new PageDto<>(
-                foundSubmissions.map(this.mapper::toV1Dto)
-            ));
+            .body(new PageDto<>(res));
     }
 
     @GetMapping("/search")
@@ -111,11 +124,22 @@ public class SubmissionsController {
             marathonId, q, nullableStatus, Math.max(0, page - 1)
         );
 
+        // Strip code from response here
+        foundSubmissions.forEach((submission) -> {
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    category.setCode(null);
+                });
+            });
+        });
+
+        final var res = foundSubmissions.map(this.mapper::toV1Dto);
+
+        this.opponentRestService.setCategoryAndGameNameOnOpponents(res, marathonId);
+
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new PageDto<>(
-                foundSubmissions.map(this.mapper::toV1Dto)
-            ));
+            .body(new PageDto<>(res));
     }
 
     @GetMapping("/answers")
@@ -209,11 +233,13 @@ public class SubmissionsController {
                 .build();
         }
 
+        final var res = this.mapper.toV1Dto(submission);
+
+        this.opponentRestService.setCategoryAndGameNameOnOpponents(res, marathonId);
+
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(
-                this.mapper.toV1Dto(submission)
-            );
+            .body(res);
     }
 
     @DeleteMapping("/{id}")

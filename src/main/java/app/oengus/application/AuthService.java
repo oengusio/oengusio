@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -107,8 +108,17 @@ public class AuthService {
             return SignupResponseDto.Status.USERNAME_TAKEN;
         }
 
+        // Fix some default settings
         newUser.setUsername(
             newUser.getUsername().toLowerCase(Locale.ROOT)
+        );
+        newUser.setRoles(
+            Set.of(Role.ROLE_USER)
+        );
+        newUser.setEnabled(true);
+        // Because this is plain text coming from the front-end
+        newUser.setPassword(
+            this.passwordEncoder.encode(newUser.getPassword())
         );
 
         final var updatedUser = this.userService.save(newUser);

@@ -1,13 +1,14 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.GameEntity;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
+import app.oengus.adapter.jpa.entity.OpponentEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.SubmissionEntityMapper;
 import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.domain.submission.Submission;
-import app.oengus.adapter.jpa.entity.GameEntity;
 import app.oengus.domain.submission.Status;
+import app.oengus.domain.submission.Submission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
             rawEntity.setId(null);
         }
 
+        rawEntity.getOpponents().forEach((opponent) -> {
+            opponent.setSubmission(rawEntity);
+
+            if (opponent.getId() < 1) {
+                opponent.setId(null);
+            }
+        });
+
         rawEntity.getGames().forEach((game) -> {
             game.setSubmission(rawEntity);
 
@@ -144,5 +153,11 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
             .stream()
             .map(this.mapper::toDomain)
             .toList();
+    }
+
+    @Override
+    public Optional<Integer> getUserIdFromOpponentId(int opponentId) {
+        return this.repository.findFirstByOpponentsContaining(OpponentEntity.ofId(opponentId))
+            .map((it) -> it.getUser().getId());
     }
 }

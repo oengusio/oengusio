@@ -1,8 +1,8 @@
 package app.oengus.adapter.jpa.entity;
 
+import app.oengus.adapter.rest.Views;
 import app.oengus.domain.IUsername;
 import app.oengus.domain.Role;
-import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.adapter.rest.dto.v1.UserDto.PRONOUN_REGEX;
 import static app.oengus.adapter.rest.dto.v1.UserDto.USERNAME_REGEX;
 
 // TODO: add created time so we can delete accounts 1 year days of not verifying the email.
@@ -92,7 +91,6 @@ public class User implements IUsername {
     @Column(name = "pronouns")
     @JsonView(Views.Public.class)
     @Size(max = 255)
-    @Pattern(regexp = PRONOUN_REGEX)
     private String pronouns;
 
     @Nullable

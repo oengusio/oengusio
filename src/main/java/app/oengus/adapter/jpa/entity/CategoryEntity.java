@@ -14,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,7 +60,7 @@ public class CategoryEntity {
 	private SelectionEntity selection;
 
 	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
-	private List<OpponentEntity> opponents;
+	private List<OpponentEntity> opponents = new ArrayList<>();
 
 	@Transient
 	private List<OpponentCategoryDto> opponentDtos;
@@ -82,6 +83,7 @@ public class CategoryEntity {
         return Objects.hash(id, name, estimate, description, video, type);
     }
 
+    @Deprecated(forRemoval = true)
     public CategoryEntity fresh(GameEntity parent) {
         final CategoryEntity category = new CategoryEntity();
 
@@ -89,6 +91,14 @@ public class CategoryEntity {
         BeanUtils.copyProperties(this, category, "game");
 
         category.setGame(parent);
+
+        return category;
+    }
+
+    public static CategoryEntity ofId(int id) {
+        final var category = new CategoryEntity();
+
+        category.setId(id);
 
         return category;
     }

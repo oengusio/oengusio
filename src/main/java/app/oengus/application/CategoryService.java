@@ -6,6 +6,7 @@ import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.submission.Opponent;
 import app.oengus.domain.submission.RunType;
 import app.oengus.domain.submission.Submission;
 import app.oengus.domain.exception.OengusBusinessException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,18 @@ public class CategoryService {
             throw new OengusBusinessException("NOT_MULTIPLAYER");
         }
 
+        // re-use the same data to prevent loads of db lookups
+
+        final var opponentUsers = category
+            .getOpponents()
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    Opponent::getId,
+                    opponent -> this.submissionPersistencePort.getUserIdFromOpponentId(opponent.getId()).get()
+                )
+            );
+
         if (user != null) {
             if (Objects.equals(submission.getUser().getId(), user.getId())) {
                 throw new OengusBusinessException("SAME_USER");
@@ -71,19 +85,18 @@ public class CategoryService {
 
             if (category.getOpponents()
                 .stream()
-                .map(opponent -> opponent.getSubmission().getUser().getId())
+                .map(
+                    opponent -> opponentUsers.get(opponent.getId())
+                )
                 .anyMatch(userId -> userId == user.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
         }
+
         final List<Integer> userIds = new ArrayList<>();
 
         userIds.add(submission.getUser().getId());
-        userIds.addAll(category
-            .getOpponents()
-            .stream()
-            .map(opponent -> opponent.getSubmission().getUser().getId())
-            .collect(Collectors.toSet()));
+        userIds.addAll(opponentUsers.values());
 
         final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())
             .orElseThrow(

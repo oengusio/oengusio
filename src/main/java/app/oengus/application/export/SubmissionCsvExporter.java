@@ -2,12 +2,10 @@ package app.oengus.application.export;
 
 import app.oengus.application.SubmissionService;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
-import app.oengus.domain.submission.Category;
-import app.oengus.domain.submission.Game;
-import app.oengus.domain.submission.Selection;
-import app.oengus.domain.submission.Submission;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.domain.OengusUser;
+import app.oengus.domain.submission.*;
 import app.oengus.adapter.jpa.entity.FieldType;
-import app.oengus.domain.submission.Status;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -35,6 +33,7 @@ public class SubmissionCsvExporter implements Exporter {
 
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionService submissionService;
+    private final SubmissionPersistencePort submissionPersistencePort;
 
     @Override
     public Writer export(String marathonId, String zoneId, String language) throws IOException, NotFoundException {
@@ -86,15 +85,25 @@ public class SubmissionCsvExporter implements Exporter {
         final Submission submission, final ResourceBundle lang, final String zoneId
     ) {
         final List<List<String>> records = new ArrayList<>();
+        final Map<Integer, String> opponentNameCache = new HashMap<>();
 
         for (final Game game : submission.getGames()) {
             for (final Category category : game.getCategories()) {
                 final List<String> record = new ArrayList<>();
                 final var opponents = category.getOpponents();
+
+                // Caching is king!
+                opponents.forEach((opponent) -> {
+                    final var oppUser = this.opponentToUser(opponent);
+                    final var display = getUserDisplay(oppUser);
+
+                    opponentNameCache.put(opponent.getId(), display);
+                });
+
                 final var opponentNames = opponents
                     .stream()
                     .map(
-                        (opponent) -> getUserDisplay(opponent.getSubmission().getUser())
+                        (opponent) -> opponentNameCache.get(opponent.getId())
                     )
                     .collect(Collectors.joining(", "));
 
@@ -120,7 +129,7 @@ public class SubmissionCsvExporter implements Exporter {
                         submitterDisplay + ": " + category.getVideo() + " - "
                     );
                     opponents.forEach(opponent -> {
-                        videos.append(getUserDisplay(opponent.getSubmission().getUser()))
+                        videos.append(opponentNameCache.get(opponent.getId()))
                             .append(":  ")
                             .append(opponent.getVideo());
 
@@ -171,5 +180,11 @@ public class SubmissionCsvExporter implements Exporter {
         }
 
         return records;
+    }
+
+    private OengusUser opponentToUser(Opponent opponent) {
+        return this.submissionPersistencePort.findById(opponent.getSubmissionId())
+            .get()
+            .getUser();
     }
 }

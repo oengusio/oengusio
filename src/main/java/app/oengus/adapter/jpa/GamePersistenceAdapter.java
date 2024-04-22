@@ -1,5 +1,6 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.CategoryEntity;
 import app.oengus.adapter.jpa.mapper.GameMapper;
 import app.oengus.adapter.jpa.repository.GameRepository;
 import app.oengus.application.port.persistence.GamePersistencePort;
@@ -19,6 +20,13 @@ public class GamePersistenceAdapter implements GamePersistencePort {
     @Override
     public Optional<Game> findById(int id) {
         return this.repository.findById(id).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Game> findByCategoryId(int categoryId) {
+        return this.repository.findByCategoriesContaining(
+            CategoryEntity.ofId(categoryId)
+        ).map(this.mapper::toDomain);
     }
 
     @Override

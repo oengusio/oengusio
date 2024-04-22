@@ -201,31 +201,34 @@ public class SubmissionService {
             final List<AvailabilityDto> availabilityDtoList = new ArrayList<>();
             submission.getAvailabilities().forEach(availability -> {
                 final AvailabilityDto availabilityDto =
-                        new AvailabilityDto(submission.getUser());
+                    new AvailabilityDto(submission.getUser());
                 availabilityDto.setFrom(availability.getFrom());
                 availabilityDto.setTo(availability.getTo());
                 availabilityDtoList.add(availabilityDto);
             });
             availabilities.put(submission.getUser().getUsername(), availabilityDtoList);
+
             submission.getGames().forEach(game -> {
                 game.getCategories().forEach(category -> {
                     if (OengusConstants.ACCEPTED_STATUSES.contains(category.getSelection().getStatus())) {
                         category.getOpponents().forEach(opponent -> {
                             final List<AvailabilityDto> opponentAvailabilityDtoList = new ArrayList<>();
-                            opponent.getSubmission().getAvailabilities().forEach(availability -> {
-                                final AvailabilityDto availabilityDto =
-                                        new AvailabilityDto(opponent.getSubmission().getUser());
+                            final var opponentSubmission = this.submissionPersistencePort.findById(opponent.getSubmissionId()).get();
+
+                            opponentSubmission.getAvailabilities().forEach(availability -> {
+                                final var availabilityDto = new AvailabilityDto(opponentSubmission.getUser());
                                 availabilityDto.setFrom(availability.getFrom());
                                 availabilityDto.setTo(availability.getTo());
                                 opponentAvailabilityDtoList.add(availabilityDto);
                             });
-                            availabilities.put(opponent.getSubmission().getUser().getUsername(),
-                                    opponentAvailabilityDtoList);
+
+                            availabilities.put(opponentSubmission.getUser().getUsername(), opponentAvailabilityDtoList);
                         });
                     }
                 });
             });
         });
+
         return availabilities;
     }
 
@@ -251,15 +254,6 @@ public class SubmissionService {
 
         availabilities.put(user.getUsername(), availabilityDtoList);
         return availabilities;
-    }
-
-    // TODO: this can fixed insie of the font-end
-    private void createSelection(final Category category, final Marathon marathon) {
-        /*final Selection selection = new Selection();
-        selection.setStatus(Status.TODO);
-        selection.setMarathon(marathon);
-        selection.setCategory(category);
-        category.setSelection(selection);*/
     }
 
     public Submission findByUserAndMarathon(final int userId, final String marathonId) {
@@ -374,9 +368,13 @@ public class SubmissionService {
 
                                         if (qNotEmpty) {
                                             if (category.getOpponents() != null) {
+                                                // TODO: this fucking sucks!
+                                                //  Is there a better way of getting the usernames?
                                                 base = category.getOpponents()
                                                     .stream()
-                                                    .map(Opponent::getSubmission)
+                                                    .map(Opponent::getSubmissionId)
+                                                    .map(this.submissionPersistencePort::findById)
+                                                    .map(Optional::get)
                                                     .map(Submission::getUser)
                                                     .anyMatch(matchesUsername);
                                             }
@@ -439,8 +437,8 @@ public class SubmissionService {
         );
 
         if (submission.getUser().getId() == deletedBy.getId() || deletedBy.getRoles().contains(Role.ROLE_ADMIN) ||
-                marathon.getCreator().getId() == deletedBy.getId() ||
-                marathon.getModerators().stream().anyMatch(u -> u.getId() == deletedBy.getId())) {
+            marathon.getCreator().getId() == deletedBy.getId() ||
+            marathon.getModerators().stream().anyMatch(u -> u.getId() == deletedBy.getId())) {
 
             // send webhook
             if (StringUtils.isNotEmpty(marathon.getWebhook())) {

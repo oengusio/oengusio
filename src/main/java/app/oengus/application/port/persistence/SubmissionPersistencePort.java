@@ -35,4 +35,6 @@ public interface SubmissionPersistencePort {
     Page<Submission> findByMarathon(String marathonId, Pageable pageable);
 
     List<Submission> findAllByMarathon(String marathonId);
+
+    Optional<Integer> getUserIdFromOpponentId(int opponentId);
 }

@@ -1,9 +1,7 @@
 package app.oengus.adapter.rest.dto;
 
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
+import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.domain.submission.Availability;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,15 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class OpponentCategoryDto {
-	@JsonView(Views.Public.class)
 	private int id;
-
-	@JsonView(Views.Public.class)
-	private ProfileDto user;
-
-	@JsonView(Views.Public.class)
+	private V1UserDto user;
 	private String video;
-
-	@JsonView(Views.Public.class)
 	private List<Availability> availabilities;
 }

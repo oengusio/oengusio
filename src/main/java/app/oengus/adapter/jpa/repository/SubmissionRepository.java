@@ -1,9 +1,6 @@
 package app.oengus.adapter.jpa.repository;
 
-import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.adapter.jpa.entity.SubmissionEntity;
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.adapter.jpa.entity.GameEntity;
+import app.oengus.adapter.jpa.entity.*;
 import app.oengus.domain.submission.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -88,4 +85,5 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
 
     boolean existsByMarathonAndUser(MarathonEntity marathon, User user);
 
+    Optional<SubmissionEntity> findFirstByOpponentsContaining(OpponentEntity opponent);
 }

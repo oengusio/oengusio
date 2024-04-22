@@ -38,7 +38,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
 
     @Override
     public List<Category> findByGameId(int gameId) {
-        return this.repository.findByGameContaining(GameEntity.ofId(gameId))
+        return this.repository.findByGame(GameEntity.ofId(gameId))
             .stream()
             .map(this.mapper::toDomain)
             .toList();

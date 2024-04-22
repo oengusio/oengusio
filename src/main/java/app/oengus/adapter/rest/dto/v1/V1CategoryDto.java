@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.dto.v1;
 
+import app.oengus.adapter.rest.dto.OpponentCategoryDto;
 import app.oengus.domain.submission.RunType;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,5 +19,5 @@ public class V1CategoryDto {
     private String video;
     private RunType type;
     private String code;
-    private List<V1OpponentDto> opponents;
+    private List<OpponentCategoryDto> opponents;
 }

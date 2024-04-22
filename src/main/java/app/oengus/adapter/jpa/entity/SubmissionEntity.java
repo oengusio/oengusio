@@ -47,7 +47,7 @@ public class SubmissionEntity {
     private SortedSet<AnswerEntity> answers;
 
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
-    private Set<OpponentEntity> opponents;
+    private Set<OpponentEntity> opponents = new LinkedHashSet<>();
 
     @Override
     public boolean equals(Object o) {

@@ -65,11 +65,7 @@ public class GameService {
             }
         }
 
-//        submission.getGames().remove(game);
-
         this.gamePersistencePort.deleteById(id);
-        // TODO: do I still need to do this?
-//        this.submissionPersistencePort.save(submission);
     }
 
 }

@@ -20,7 +20,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Integ
         @Param("gameId") int gameId
     );
 
-    List<CategoryEntity> findByGameContaining(GameEntity game);
+    List<CategoryEntity> findByGame(GameEntity game);
 
     boolean existsByCode(String code);
 
