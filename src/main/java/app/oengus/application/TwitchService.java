@@ -1,16 +1,14 @@
-package app.oengus.service.login;
+package app.oengus.application;
 
 import app.oengus.api.TwitchApi;
 import app.oengus.api.TwitchOauthApi;
+import app.oengus.application.exception.auth.UnknownUserException;
 import app.oengus.application.port.persistence.UserPersistencePort;
+import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
-import app.oengus.adapter.jpa.entity.User;
 import app.oengus.entity.model.api.TwitchUser;
-import app.oengus.application.exception.auth.UnknownUserException;
 import app.oengus.helper.OauthHelper;
-import app.oengus.helper.PrincipalHelper;
-import app.oengus.service.repository.UserRepositoryService;
 import app.oengus.spring.model.AccessToken;
 import app.oengus.spring.model.params.TwitchLoginParams;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +28,8 @@ public class TwitchService {
     private final TwitchLoginParams twitchLoginParams;
     private final TwitchOauthApi twitchOauthApi;
     private final TwitchApi twitchApi;
-    private final UserRepositoryService userRepositoryService;
-    private final UserPersistencePort userPersistencePort; // TODO: am I allowed to use this here?
+    private final UserPersistencePort userPersistencePort;
+    private final UserSecurityPort securityPort;
 
     public OengusUser login(final String code, final String host) {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForLogin(this.twitchLoginParams, code, host);
@@ -51,9 +49,10 @@ public class TwitchService {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code, host);
         final TwitchUser twitchUser = fetchTwitchUser(oauthParams);
 
-        final User user = this.userRepositoryService.findByTwitchId(twitchUser.getId());
+        final var optionalUser = this.userPersistencePort.findByTwitchId(twitchUser.getId());
+        final var authUserId = this.securityPort.getAuthenticatedUserId();
 
-        if (user != null && !Objects.equals(user.getId(), PrincipalHelper.getCurrentUser().getId())) {
+        if (optionalUser.isPresent() && !Objects.equals(optionalUser.get().getId(), authUserId)) {
             throw new LoginException("ACCOUNT_ALREADY_SYNCED");
         }
 

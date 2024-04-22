@@ -8,7 +8,7 @@ import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
 import app.oengus.application.CategoryService;
 import app.oengus.application.ExportService;
-import app.oengus.service.GameService;
+import app.oengus.application.GameService;
 import app.oengus.application.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

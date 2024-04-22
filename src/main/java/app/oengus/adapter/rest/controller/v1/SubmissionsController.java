@@ -10,7 +10,7 @@ import app.oengus.entity.dto.AvailabilityDto;
 import app.oengus.entity.dto.misc.PageDto;
 import app.oengus.adapter.rest.dto.v1.AnswerDto;
 import app.oengus.application.ExportService;
-import app.oengus.service.GameService;
+import app.oengus.application.GameService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;

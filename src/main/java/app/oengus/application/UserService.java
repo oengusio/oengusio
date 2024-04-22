@@ -4,7 +4,6 @@ import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.entity.dto.SyncDto;
-import app.oengus.service.login.TwitchService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;

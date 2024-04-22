@@ -11,8 +11,6 @@ import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PendingEmailVerification;
 import app.oengus.domain.PendingPasswordReset;
-import app.oengus.service.auth.TOTPService;
-import app.oengus.service.login.TwitchService;
 import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

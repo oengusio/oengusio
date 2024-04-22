@@ -7,7 +7,6 @@ import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import app.oengus.domain.schedule.Ticker;
 import app.oengus.exception.schedule.EmptyScheduleException;
-import app.oengus.service.mapper.ScheduleMapper;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import java.util.Optional;
 public class ScheduleService {
     private final SchedulePersistencePort schedulePersistencePort;
     private final MarathonPersistencePort marathonPersistencePort;
-    private final ScheduleMapper scheduleMapper;
 
     ///////////
     // v2 stuff

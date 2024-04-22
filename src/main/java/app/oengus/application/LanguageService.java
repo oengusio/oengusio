@@ -1,4 +1,4 @@
-package app.oengus.service;
+package app.oengus.application;
 
 import app.oengus.entity.dto.LanguageDto;
 import org.springframework.stereotype.Service;

@@ -8,7 +8,7 @@ import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
 import app.oengus.application.port.security.JWTPort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.BooleanStatusDto;
-import app.oengus.service.auth.TOTPService;
+import app.oengus.application.TOTPService;
 import app.oengus.spring.model.LoginRequest;
 import com.google.zxing.WriterException;
 import javassist.NotFoundException;

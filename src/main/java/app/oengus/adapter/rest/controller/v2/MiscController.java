@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.api.PronounsPageApi;
 import app.oengus.entity.model.api.Pronoun;
 import app.oengus.helper.HeaderHelpers;
-import app.oengus.service.LanguageService;
+import app.oengus.application.LanguageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

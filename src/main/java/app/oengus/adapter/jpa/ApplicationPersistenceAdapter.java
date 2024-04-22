@@ -7,7 +7,7 @@ import app.oengus.adapter.jpa.repository.ApplicationRepository;
 import app.oengus.application.port.persistence.ApplicationPersistencePort;
 import app.oengus.domain.volunteering.Application;
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.model.Team;
+import app.oengus.entity.model.TeamEntity;
 import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class ApplicationPersistenceAdapter implements ApplicationPersistencePort
 
     @Override
     public List<Application> findByTeam(int teamId) {
-        return this.repository.findByTeam(Team.ofId(teamId))
+        return this.repository.findByTeam(TeamEntity.ofId(teamId))
             .stream()
             .map(this.mapper::toDomain)
             .toList();
@@ -32,7 +32,7 @@ public class ApplicationPersistenceAdapter implements ApplicationPersistencePort
 
     @Override
     public Optional<Application> findByTeamAndUser(int teamId, int userId) {
-        return this.repository.findByTeamAndUser(Team.ofId(teamId), User.ofId(userId))
+        return this.repository.findByTeamAndUser(TeamEntity.ofId(teamId), User.ofId(userId))
             .map(this.mapper::toDomain);
     }
 

@@ -2,7 +2,7 @@ package app.oengus.entity.dto;
 
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.entity.model.Question;
-import app.oengus.entity.model.Team;
+import app.oengus.entity.model.TeamEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,7 +61,7 @@ public class MarathonDto {
     private boolean announceAcceptedSubmissions;
     private String userInfoHidden;
     // TODO: team model
-    private List<Team> teams;
+    private List<TeamEntity> teams;
 
 
     private BigDecimal donationsTotal;

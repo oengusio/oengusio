@@ -1,4 +1,4 @@
-package app.oengus.service.auth;
+package app.oengus.application;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;

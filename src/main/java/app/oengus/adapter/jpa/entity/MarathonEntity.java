@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.entity.model.Question;
-import app.oengus.entity.model.Team;
+import app.oengus.entity.model.TeamEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -258,7 +258,7 @@ public class MarathonEntity {
     @JsonManagedReference
     @JsonView(Views.Internal.class)
     @OneToMany(mappedBy = "marathon", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Team> teams;
+    private List<TeamEntity> teams;
 
     public boolean hasWebhook() {
         return StringUtils.isNotEmpty(this.getWebhook());

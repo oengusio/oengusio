@@ -1,7 +1,5 @@
-package app.oengus.service;
+package app.oengus.application;
 
-import app.oengus.application.OengusWebhookService;
-import app.oengus.application.SubmissionService;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;

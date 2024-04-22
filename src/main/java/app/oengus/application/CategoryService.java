@@ -9,7 +9,6 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.RunType;
 import app.oengus.domain.submission.Submission;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.service.GameService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

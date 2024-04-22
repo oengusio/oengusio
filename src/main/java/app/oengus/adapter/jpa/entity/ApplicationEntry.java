@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.entity.model.Team;
+import app.oengus.entity.model.TeamEntity;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -34,7 +34,7 @@ public class ApplicationEntry {
     @JsonView(Views.Public.class)
     @JoinColumn(name = "team_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Team team;
+    private TeamEntity team;
 
     @NotNull
     @Column(name = "status")

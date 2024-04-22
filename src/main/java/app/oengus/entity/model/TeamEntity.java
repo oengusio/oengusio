@@ -20,7 +20,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "teams")
-public class Team {
+public class TeamEntity {
 
     @Id
     @JsonView(Views.Public.class)
@@ -75,8 +75,8 @@ public class Team {
     @JsonView(Views.Public.class)
     private List<User> leaders;
 
-    public static Team ofId(int id) {
-        final var team = new Team();
+    public static TeamEntity ofId(int id) {
+        final var team = new TeamEntity();
 
         team.setId(id);
 

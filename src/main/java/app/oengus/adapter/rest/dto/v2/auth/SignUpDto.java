@@ -2,7 +2,7 @@ package app.oengus.adapter.rest.dto.v2.auth;
 
 import app.oengus.adapter.rest.dto.v2.users.ConnectionDto;
 import app.oengus.adapter.rest.dto.v1.UserDto;
-import app.oengus.service.LanguageService;
+import app.oengus.application.LanguageService;
 import app.oengus.validation.ValidPassword;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neovisionaries.i18n.CountryCode;
