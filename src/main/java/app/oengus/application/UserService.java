@@ -9,7 +9,6 @@ import app.oengus.spring.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.List;
 import java.util.Objects;
@@ -23,11 +22,6 @@ public class UserService {
     private final UserPersistencePort userPersistencePort;
     private final DiscordService discordService;
     private final TwitchService twitchService;
-
-    @Nullable
-    public OengusUser getById(int id) {
-        return this.userPersistencePort.getById(id);
-    }
 
     public Optional<OengusUser> findByUsername(final String username) {
         return this.userPersistencePort.findByUsername(username);
@@ -61,7 +55,7 @@ public class UserService {
     }
 
     public void markDeleted(int userId) {
-        final var user = this.getById(userId);
+        final var user = this.userPersistencePort.getById(userId);
 
         if (user == null) {
             return; // TODO: return error

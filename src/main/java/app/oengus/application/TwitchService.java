@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +43,6 @@ public class TwitchService {
         return user.get();
     }
 
-    @Transactional
     public SyncDto sync(final String code, final String host) throws LoginException {
         final Map<String, String> oauthParams = OauthHelper.buildOauthMapForSync(this.twitchLoginParams, code, host);
         final TwitchUser twitchUser = fetchTwitchUser(oauthParams);

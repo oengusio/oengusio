@@ -1,7 +1,7 @@
 package app.oengus.api;
 
 import app.oengus.entity.model.api.Pronoun;
-import app.oengus.spring.CoreFeignConfiguration;
+import app.oengus.configuration.CoreFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

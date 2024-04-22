@@ -1,6 +1,6 @@
 package app.oengus.api;
 
-import app.oengus.spring.CoreFeignConfiguration;
+import app.oengus.configuration.CoreFeignConfiguration;
 import app.oengus.spring.model.AccessToken;
 import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;

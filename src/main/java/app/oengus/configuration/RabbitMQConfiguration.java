@@ -1,4 +1,4 @@
-package app.oengus.spring;
+package app.oengus.configuration;
 
 import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 @Configuration
-//@Profile("prod")
 public class RabbitMQConfiguration {
 
     private final String uri;

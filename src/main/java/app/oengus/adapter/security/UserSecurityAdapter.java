@@ -1,6 +1,7 @@
 package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
+import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
@@ -14,7 +15,7 @@ import javax.annotation.Nullable;
 @Service
 @RequiredArgsConstructor
 public class UserSecurityAdapter implements UserSecurityPort {
-    private final UserService userService;
+    private final UserLookupService userService;
 
     @Override
     public int getAuthenticatedUserId() {

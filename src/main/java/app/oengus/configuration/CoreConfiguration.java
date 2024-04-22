@@ -1,4 +1,4 @@
-package app.oengus.spring;
+package app.oengus.configuration;
 
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -16,6 +16,7 @@ import java.util.List;
 @Configuration
 @EnableScheduling
 public class CoreConfiguration implements WebMvcConfigurer {
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

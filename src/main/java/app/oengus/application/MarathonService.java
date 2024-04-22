@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -49,7 +48,6 @@ public class MarathonService {
         return this.marathonPersistencePort.findStatsById(id);
     }
 
-    @Transactional
     public Marathon create(final Marathon marathon) {
         marathon.setDefaultSetupTime(Duration.ofMinutes(15));
         marathon.setStartDate(marathon.getStartDate().withSecond(0));

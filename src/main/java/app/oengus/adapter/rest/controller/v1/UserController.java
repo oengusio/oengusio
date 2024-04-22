@@ -4,6 +4,7 @@ import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.adapter.rest.mapper.PatreonStatusDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
@@ -44,6 +45,7 @@ public class UserController {
     private final UserSecurityPort securityPort;
     private final UserDtoMapper mapper;
     private final UserService userService;
+    private final UserLookupService userLookupService;
     private final PatreonStatusPersistencePort patreonStatusPersistencePort;
     private final PatreonStatusDtoMapper patreonStatusDtoMapper;
 
@@ -219,7 +221,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated() && isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
-        final var user = this.userService.getById(id);
+        final var user = this.userLookupService.getById(id);
 
         if (user == null) {
             throw new NotFoundException("User not found");

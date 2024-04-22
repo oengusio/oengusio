@@ -1,4 +1,4 @@
-package app.oengus.spring;
+package app.oengus.configuration;
 
 import feign.RequestInterceptor;
 import feign.form.FormEncoder;

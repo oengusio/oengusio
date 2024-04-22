@@ -1,8 +1,8 @@
-package app.oengus.spring;
+package app.oengus.configuration;
 
-import app.oengus.spring.handler.ForbiddenHandler;
-import app.oengus.spring.handler.UnauthorizedHandler;
-import lombok.RequiredArgsConstructor;
+import app.oengus.adapter.security.AuthenticationFilter;
+import app.oengus.configuration.spring.handler.ForbiddenHandler;
+import app.oengus.configuration.spring.handler.UnauthorizedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

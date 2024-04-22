@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
-import app.oengus.domain.submission.Submission;
 import app.oengus.adapter.jpa.entity.SubmissionEntity;
+import app.oengus.domain.submission.Submission;
 import org.mapstruct.*;
 
 @Mapper(
@@ -12,21 +12,23 @@ import org.mapstruct.*;
     uses = {
         UserMapper.class,
         GameMapper.class,
-        OpponentMapper.class,
         AnswerEntityMapper.class,
         AvailabilityMapper.class,
     }
 )
 public interface SubmissionEntityMapper {
     // TODO: implement these when needed
-    @BeanMapping(ignoreUnmappedSourceProperties = { "opponentDtos" })
+    @BeanMapping(ignoreUnmappedSourceProperties = { "opponentDtos", "opponents" })
 //    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "marathon.id", target = "marathonId")
+    @Mapping(target = "marathonId", source = "marathon.id")
+    @Mapping(target = "opponents", ignore = true)
     Submission toDomain(SubmissionEntity submissionEntity);
 
     // TODO: fix
+    @BeanMapping(ignoreUnmappedSourceProperties = { "opponents" })
     @Mapping(target = "fresh", ignore = true)
     @Mapping(target = "opponentDtos", ignore = true)
+    @Mapping(target = "opponents", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")
     SubmissionEntity fromDomain(Submission submission);
 }

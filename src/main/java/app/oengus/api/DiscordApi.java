@@ -4,7 +4,7 @@ import app.oengus.entity.model.api.discord.DiscordGuild;
 import app.oengus.entity.model.api.discord.DiscordInvite;
 import app.oengus.entity.model.api.discord.DiscordMember;
 import app.oengus.entity.model.api.discord.DiscordUser;
-import app.oengus.spring.CoreFeignConfiguration;
+import app.oengus.configuration.CoreFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

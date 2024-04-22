@@ -13,7 +13,6 @@ import org.mapstruct.*;
         UserMapper.class,
         OpponentMapper.class,
         GameMapper.class,
-        SubmissionEntityMapper.class,
         SelectionMapper.class,
     }
 )

@@ -2,7 +2,7 @@ package app.oengus.api;
 
 import app.oengus.entity.model.api.DataList;
 import app.oengus.entity.model.api.TwitchUser;
-import app.oengus.spring.CoreFeignConfiguration;
+import app.oengus.configuration.CoreFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;

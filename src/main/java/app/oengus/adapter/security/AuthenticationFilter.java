@@ -1,7 +1,6 @@
-package app.oengus.spring;
+package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
-import app.oengus.application.port.security.JWTPort;
 import app.oengus.spring.model.Role;
 import io.jsonwebtoken.Claims;
 import io.sentry.Sentry;
@@ -20,7 +19,7 @@ import java.util.List;
 
 public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private JWTPort jwtPort; // TODO: See if autowire via constructor is a better option
+    private JWTAdapter jwtPort; // TODO: See if autowire via constructor is a better option
 
 	private static final String AUTH_HEADER = "Authorization";
 

@@ -1,4 +1,4 @@
-package app.oengus.spring;
+package app.oengus.configuration.paypal;
 
 import com.paypal.core.PayPalEnvironment;
 import com.paypal.core.PayPalHttpClient;
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("prod")
-public class PaypalConfiguration {
+@Profile("!prod")
+public class PaypalSandboxConfiguration {
 
 	@Value("${paypal.clientId}")
 	private String clientId;
@@ -19,7 +19,7 @@ public class PaypalConfiguration {
 
 	@Bean
 	public PayPalHttpClient payPalHttpClient() {
-		final PayPalEnvironment payPalEnvironment = new PayPalEnvironment.Live(this.clientId, this.clientSecret);
+		final PayPalEnvironment payPalEnvironment = new PayPalEnvironment.Sandbox(this.clientId, this.clientSecret);
 		return new PayPalHttpClient(payPalEnvironment);
 	}
 

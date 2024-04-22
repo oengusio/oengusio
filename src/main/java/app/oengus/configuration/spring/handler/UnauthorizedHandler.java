@@ -1,4 +1,4 @@
-package app.oengus.spring.handler;
+package app.oengus.configuration.spring.handler;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

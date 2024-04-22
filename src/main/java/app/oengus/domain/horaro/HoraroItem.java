@@ -1,4 +1,4 @@
-package app.oengus.entity.dto.horaro;
+package app.oengus.domain.horaro;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

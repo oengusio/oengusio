@@ -1,4 +1,4 @@
-package app.oengus.spring.security;
+package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.application.MarathonService;
