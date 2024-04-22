@@ -150,7 +150,7 @@ public class SubmissionsController {
         }
 
         // TODO: submission update dto
-        this.submissionService.save(this.mapper.fromV1Dto(submission), user, marathonId);
+        this.submissionService.save(this.mapper.fromV1Dto(submission, marathonId), user, marathonId);
 
         return ResponseEntity.created(URI.create("/marathon/" + marathonId + "/submissions/me")).build();
     }
@@ -170,7 +170,7 @@ public class SubmissionsController {
 
         final var user = this.securityPort.getAuthenticatedUser();
 
-        this.submissionService.update(this.mapper.fromV1Dto(submission), user, marathonId);
+        this.submissionService.update(this.mapper.fromV1Dto(submission, marathonId), user, marathonId);
 
         return ResponseEntity.noContent().build();
     }

@@ -16,7 +16,7 @@ import org.mapstruct.*;
 public interface MarathonMapper {
     // TODO: implement these when needed
     @BeanMapping(ignoreUnmappedSourceProperties = { "mastodonValid", "teams", "userInfoHidden", "cleared" })
-    @Mapping(target = "creatorId", source = "creator.id")
+//    @Mapping(target = "creatorId", source = "creator.id")
     @Mapping(target = "submissionsOpen", source = "submitsOpen")
     @Mapping(target = "discordPrivate", source = "discordPrivacy")
     Marathon toDomain(MarathonEntity entity);

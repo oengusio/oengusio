@@ -1,7 +1,9 @@
 package app.oengus.adapter.rest.dto.v1;
 
 import app.oengus.adapter.jpa.entity.SocialAccount;
+import app.oengus.adapter.rest.Views;
 import app.oengus.domain.Role;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.List;
 
@@ -17,7 +19,17 @@ public record V1UserDto(
     boolean emailVerified,
     List<String> pronouns,
     String country,
-    List<String> languagesSpoken
+    List<String> languagesSpoken,
+
+    // annoying stuff below
+    @JsonView(Views.Internal.class)
+    String email,
+    @JsonView(Views.Internal.class)
+    String discordId,
+    @JsonView(Views.Internal.class)
+    String twitchId,
+    @JsonView(Views.Internal.class)
+    String patreonId
 ) {
     public String getUsernameJapanese() {
         return this.displayName;

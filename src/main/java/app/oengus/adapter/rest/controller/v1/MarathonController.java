@@ -61,9 +61,10 @@ public class MarathonController {
         }
 
         final Marathon marathon = new Marathon(
-            createRequest.getId(),
-            this.securityPort.getAuthenticatedUserId()
+            createRequest.getId()
         );
+
+        marathon.setCreator(this.securityPort.getAuthenticatedUser());
 
         this.mapper.applyCreateRequest(marathon, createRequest);
 

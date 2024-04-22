@@ -23,6 +23,7 @@ public interface MarathonDtoMapper {
     MarathonBasicInfoDto toBasicInfo(Marathon marathon);
 
     // TODO: fix dto
+    @Mapping(target = "submitsOpen", source = "submissionsOpen")
     MarathonDto toDto(Marathon marathon);
 
     MarathonStatsDto statsFromDomain(MarathonStats stats);
@@ -30,5 +31,6 @@ public interface MarathonDtoMapper {
     void applyCreateRequest(@MappingTarget Marathon marathon, MarathonCreateRequestDto createRequest);
 
     @Mapping(target = "discordPrivate", source = "discordPrivacy")
+    @Mapping(target = "submissionsOpen", source = "submitsOpen")
     void applyUpdateRequest(@MappingTarget Marathon marathon, MarathonUpdateRequestDto createRequest);
 }

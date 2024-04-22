@@ -29,6 +29,10 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     @Override
     public Marathon save(Marathon marathon) {
         final var entity = this.mapper.fromDomain(marathon);
+
+        // HACK: teams are not stored in the current domain model so we need to do it this way.
+        entity.setTeams(List.of());
+
         final var savedEntity = this.repository.save(entity);
 
         return this.mapper.toDomain(savedEntity);

@@ -17,8 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Marathon {
     private final String id;
-    private final int creatorId;
 
+    private OengusUser creator;
     private String name;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;

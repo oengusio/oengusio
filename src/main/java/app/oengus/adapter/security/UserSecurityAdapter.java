@@ -48,6 +48,12 @@ public class UserSecurityAdapter implements UserSecurityPort {
             return null;
         }
 
+        final var principal = auth.getPrincipal();
+
+        if (principal instanceof String str && "anonymousUser".equals(str)) {
+            return null;
+        }
+
         return (UserDetailsDto) auth.getPrincipal();
     }
 

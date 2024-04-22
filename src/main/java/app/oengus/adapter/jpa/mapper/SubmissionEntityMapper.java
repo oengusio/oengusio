@@ -18,7 +18,7 @@ import org.mapstruct.*;
 )
 public interface SubmissionEntityMapper {
     // TODO: implement these when needed
-    @BeanMapping(ignoreUnmappedSourceProperties = { "opponentDtos", "opponents" })
+    @BeanMapping(ignoreUnmappedSourceProperties = {  "opponents" })
 //    @Mapping(source = "user.id", target = "userId")
     @Mapping(target = "marathonId", source = "marathon.id")
     @Mapping(target = "opponents", ignore = true)
@@ -27,7 +27,6 @@ public interface SubmissionEntityMapper {
     // TODO: fix
     @BeanMapping(ignoreUnmappedSourceProperties = { "opponents" })
     @Mapping(target = "fresh", ignore = true)
-    @Mapping(target = "opponentDtos", ignore = true)
     @Mapping(target = "opponents", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")
     SubmissionEntity fromDomain(Submission submission);

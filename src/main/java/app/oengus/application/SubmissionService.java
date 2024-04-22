@@ -72,6 +72,8 @@ public class SubmissionService {
             throw new SubmissionsClosedException();
         }
 
+        submission.setUser(submitter);
+
         final Submission saved = this.saveInternal(submission, submitter, marathon);
 
         // send webhook
@@ -437,7 +439,7 @@ public class SubmissionService {
         );
 
         if (submission.getUser().getId() == deletedBy.getId() || deletedBy.getRoles().contains(Role.ROLE_ADMIN) ||
-                marathon.getCreatorId() == deletedBy.getId() ||
+                marathon.getCreator().getId() == deletedBy.getId() ||
                 marathon.getModerators().stream().anyMatch(u -> u.getId() == deletedBy.getId())) {
 
             // send webhook

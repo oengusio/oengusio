@@ -1,11 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
 import app.oengus.adapter.jpa.entity.comparator.AnswerComparator;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -24,24 +19,18 @@ import static javax.persistence.CascadeType.ALL;
 public class SubmissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonView(Views.Public.class)
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "marathon_id")
-    @JsonBackReference(value = "marathonReference")
-    @JsonView(Views.Public.class)
     private MarathonEntity marathon;
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id ASC")
-    @JsonManagedReference
-    @JsonView(Views.Public.class)
     private Set<GameEntity> games;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -51,23 +40,14 @@ public class SubmissionEntity {
         @AttributeOverride(name = "to", column = @Column(name = "date_to"))
     })
     @OrderBy(value = "date_from ASC")
-    @JsonView(Views.Public.class)
     private List<AvailabilityEntity> availabilities;
 
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "answersReference")
     @SortComparator(AnswerComparator.class)
-    @JsonView(Views.Public.class)
     private SortedSet<AnswerEntity> answers;
 
     @OneToMany(mappedBy = "submission", cascade = ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "opponentReference")
-    @JsonView(Views.Public.class)
     private Set<OpponentEntity> opponents;
-
-    @Transient
-    @JsonView(Views.Public.class)
-    private Set<OpponentSubmissionDto> opponentDtos;
 
     @Override
     public boolean equals(Object o) {

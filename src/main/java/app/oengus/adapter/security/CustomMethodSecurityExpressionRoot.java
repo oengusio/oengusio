@@ -105,7 +105,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         final var marathon = this.getMarathon(marathonId);
 
-        return Objects.equals(marathon.getCreatorId(), user.getId());
+        return Objects.equals(marathon.getCreator().getId(), user.getId());
     }
 
     public boolean isMarathonMod(final String marathonId) throws NotFoundException {
@@ -169,7 +169,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     private boolean isMarathonMod(Marathon marathon, OengusUser user) {
         final int uId = user.getId();
 
-        return marathon.getCreatorId() == uId ||
+        return marathon.getCreator().getId() == uId ||
             marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
     }
 

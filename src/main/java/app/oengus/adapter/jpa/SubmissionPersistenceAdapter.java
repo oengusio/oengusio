@@ -84,6 +84,27 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public Submission save(Submission submission) {
         final var rawEntity = this.mapper.fromDomain(submission);
+
+        if (0 == rawEntity.getId()) {
+            rawEntity.setId(null);
+        }
+
+        rawEntity.getGames().forEach((game) -> {
+            game.setSubmission(rawEntity);
+
+            if (game.getId() < 1) {
+                game.setId(null);
+            }
+
+            game.getCategories().forEach((category) -> {
+                if (category.getId() < 1) {
+                    category.setId(null);
+                }
+
+                category.setGame(game);
+            });
+        });
+
         final var savedEntity = this.repository.save(rawEntity);
 
         return this.mapper.toDomain(savedEntity);
