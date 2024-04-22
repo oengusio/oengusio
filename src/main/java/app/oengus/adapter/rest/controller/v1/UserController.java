@@ -2,14 +2,15 @@ package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
+import app.oengus.adapter.rest.mapper.PatreonStatusDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserService;
+import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.entity.dto.ApplicationUserInformationDto;
 import app.oengus.entity.dto.PatreonStatusDto;
 import app.oengus.entity.dto.UserProfileDto;
 import app.oengus.exception.OengusBusinessException;
-import app.oengus.service.repository.PatreonStatusRepositoryService;
 import app.oengus.spring.model.LoginRequest;
 import app.oengus.spring.model.Role;
 import app.oengus.spring.model.Views;
@@ -43,7 +44,8 @@ public class UserController {
     private final UserSecurityPort securityPort;
     private final UserDtoMapper mapper;
     private final UserService userService;
-    private final PatreonStatusRepositoryService patreonStatusRepositoryService;
+    private final PatreonStatusPersistencePort patreonStatusPersistencePort;
+    private final PatreonStatusDtoMapper patreonStatusDtoMapper;
 
     @Value("${oengus.oauthOrigins}")
     private List<String> oauthOrigins;
@@ -147,7 +149,9 @@ public class UserController {
             throw new OengusBusinessException("ACCOUNT_NOT_OWNED_BY_USER");
         }
 
-        this.patreonStatusRepositoryService.update(patch);
+        final var pledge = this.patreonStatusDtoMapper.toDomain(patch);
+
+        this.patreonStatusPersistencePort.save(pledge);
 
         return ResponseEntity.ok().build();
     }

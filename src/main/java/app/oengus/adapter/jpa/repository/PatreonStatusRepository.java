@@ -1,13 +1,11 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
 import app.oengus.domain.PatreonPledgeStatus;
-import app.oengus.entity.model.PatreonStatus;
+import app.oengus.adapter.jpa.entity.PatreonStatus;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface PatreonStatusRepository extends CrudRepository<PatreonStatus, String> {
     List<PatreonStatus> findByStatus(PatreonPledgeStatus status);
 }

@@ -75,11 +75,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     Sentry.captureException(e);
 					//log.error("ERROR ", e);
 				}
-			}/* else {
-                // cancel request, token is not valid
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }*/
+			}
 		}
 		if (!request.getMethod().equalsIgnoreCase("OPTIONS")) {
 			chain.doFilter(request, response);

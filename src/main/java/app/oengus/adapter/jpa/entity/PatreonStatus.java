@@ -1,14 +1,18 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "patreon_status")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,29 +34,4 @@ public class PatreonStatus {
     @JsonView(Views.Public.class)
     @Column(name = "pledge_amount")
     private int pledgeAmount;
-
-    public String getPatreonId() {
-        return patreonId;
-    }
-
-    public void setPatreonId(String patreonId) {
-        this.patreonId = patreonId;
-    }
-
-    @Nullable
-    public PatreonPledgeStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(@Nullable PatreonPledgeStatus status) {
-        this.status = status;
-    }
-
-    public int getPledgeAmount() {
-        return pledgeAmount;
-    }
-
-    public void setPledgeAmount(int pledgeAmount) {
-        this.pledgeAmount = pledgeAmount;
-    }
 }
