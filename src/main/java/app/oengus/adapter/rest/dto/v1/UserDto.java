@@ -1,9 +1,9 @@
 package app.oengus.adapter.rest.dto.v1;
 
 import app.oengus.domain.IUsername;
-import app.oengus.entity.model.SocialAccount;
+import app.oengus.adapter.jpa.entity.SocialAccount;
 import app.oengus.application.LanguageService;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.neovisionaries.i18n.CountryCode;

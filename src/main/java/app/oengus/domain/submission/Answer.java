@@ -1,6 +1,6 @@
 package app.oengus.domain.submission;
 
-import app.oengus.entity.model.Question;
+import app.oengus.adapter.jpa.entity.Question;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

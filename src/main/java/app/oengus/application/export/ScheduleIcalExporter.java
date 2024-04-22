@@ -5,7 +5,7 @@ import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
-import app.oengus.helper.ScheduleHelper;
+import app.oengus.application.helper.ScheduleHelper;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.fortuna.ical4j.model.*;

@@ -1,20 +1,18 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
-import app.oengus.domain.schedule.Schedule;
-import app.oengus.entity.dto.DataListDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.application.MarathonService;
 import app.oengus.application.ScheduleService;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 @RequiredArgsConstructor
 @RestController("v2ScheduleController")

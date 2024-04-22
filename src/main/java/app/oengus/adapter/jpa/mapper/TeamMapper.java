@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.volunteering.Team;
-import app.oengus.entity.model.TeamEntity;
+import app.oengus.adapter.jpa.entity.TeamEntity;
 import org.mapstruct.*;
 
 @Mapper(

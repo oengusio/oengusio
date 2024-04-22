@@ -1,7 +1,7 @@
 package app.oengus.application.port.persistence;
 
 import app.oengus.domain.submission.Submission;
-import app.oengus.entity.model.Status;
+import app.oengus.domain.submission.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

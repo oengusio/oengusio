@@ -7,7 +7,7 @@ import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.submission.Game;
 import app.oengus.domain.OengusUser;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

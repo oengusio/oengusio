@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.Connection;
-import app.oengus.entity.model.SocialAccount;
+import app.oengus.adapter.jpa.entity.SocialAccount;
 import org.mapstruct.*;
 
 @Mapper(

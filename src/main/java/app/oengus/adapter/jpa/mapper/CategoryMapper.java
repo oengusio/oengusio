@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.submission.Category;
-import app.oengus.entity.model.CategoryEntity;
+import app.oengus.adapter.jpa.entity.CategoryEntity;
 import org.mapstruct.*;
 
 @Mapper(

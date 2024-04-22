@@ -1,7 +1,7 @@
 package app.oengus.domain.schedule;
 
 import app.oengus.domain.OengusUser;
-import app.oengus.helper.StringHelper;
+import app.oengus.application.helper.StringHelper;
 import lombok.Getter;
 import lombok.Setter;
 

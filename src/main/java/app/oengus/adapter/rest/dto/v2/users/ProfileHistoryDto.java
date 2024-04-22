@@ -2,7 +2,7 @@ package app.oengus.adapter.rest.dto.v2.users;
 
 import app.oengus.adapter.rest.dto.v2.simple.SimpleGameDto;
 import app.oengus.adapter.rest.dto.v2.simple.SimpleOpponentDto;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 

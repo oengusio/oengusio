@@ -6,9 +6,8 @@ import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Submission;
-import app.oengus.entity.model.FieldType;
-import app.oengus.entity.model.Status;
-import app.oengus.helper.TimeHelpers;
+import app.oengus.adapter.jpa.entity.FieldType;
+import app.oengus.domain.submission.Status;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -25,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static app.oengus.helper.StringHelper.getUserDisplay;
+import static app.oengus.application.helper.StringHelper.getUserDisplay;
 
 @Component
 @RequiredArgsConstructor

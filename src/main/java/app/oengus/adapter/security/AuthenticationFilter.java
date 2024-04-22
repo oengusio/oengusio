@@ -1,7 +1,7 @@
 package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.sentry.Sentry;
 import org.springframework.beans.factory.annotation.Autowired;

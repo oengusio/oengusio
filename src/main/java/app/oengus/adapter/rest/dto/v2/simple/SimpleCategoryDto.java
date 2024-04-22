@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v2.simple;
 
-import app.oengus.entity.model.Status;
-import app.oengus.spring.model.Views;
+import app.oengus.domain.submission.Status;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -5,7 +5,7 @@ import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserService;
-import app.oengus.entity.dto.DataListDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

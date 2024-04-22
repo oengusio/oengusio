@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.GameEntity;
+import app.oengus.adapter.jpa.entity.CategoryEntity;
+import app.oengus.adapter.jpa.entity.GameEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

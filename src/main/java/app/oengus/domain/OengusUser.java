@@ -1,6 +1,5 @@
 package app.oengus.domain;
 
-import app.oengus.spring.model.Role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 package app.oengus.application.port.persistence;
 
 import app.oengus.domain.submission.Selection;
-import app.oengus.entity.model.Status;
+import app.oengus.domain.submission.Status;
 
 import java.util.List;
 

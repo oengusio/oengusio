@@ -1,8 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
-import app.oengus.entity.model.Question;
-import app.oengus.entity.model.TeamEntity;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

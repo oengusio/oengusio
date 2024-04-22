@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.Getter;

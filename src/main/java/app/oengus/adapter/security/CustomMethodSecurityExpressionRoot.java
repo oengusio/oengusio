@@ -5,7 +5,7 @@ import app.oengus.application.MarathonService;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 import javassist.NotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;

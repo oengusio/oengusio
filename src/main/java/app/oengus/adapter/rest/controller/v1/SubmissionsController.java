@@ -6,12 +6,12 @@ import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
 import app.oengus.application.SubmissionService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.submission.Submission;
-import app.oengus.entity.dto.AvailabilityDto;
-import app.oengus.entity.dto.misc.PageDto;
+import app.oengus.adapter.rest.dto.AvailabilityDto;
+import app.oengus.adapter.rest.dto.misc.PageDto;
 import app.oengus.adapter.rest.dto.v1.AnswerDto;
 import app.oengus.application.ExportService;
 import app.oengus.application.GameService;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 @CrossOrigin(maxAge = 3600)
 @RestController

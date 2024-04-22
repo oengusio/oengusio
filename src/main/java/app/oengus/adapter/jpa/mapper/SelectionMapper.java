@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.submission.Selection;
-import app.oengus.entity.model.SelectionEntity;
+import app.oengus.adapter.jpa.entity.SelectionEntity;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

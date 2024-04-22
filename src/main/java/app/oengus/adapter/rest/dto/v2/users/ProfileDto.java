@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v2.users;
 
 import app.oengus.adapter.jpa.entity.User;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

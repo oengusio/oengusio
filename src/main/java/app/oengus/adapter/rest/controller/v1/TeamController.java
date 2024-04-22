@@ -2,7 +2,7 @@ package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.mapper.TeamDtoMapper;
 import app.oengus.application.TeamService;
-import app.oengus.entity.dto.TeamDto;
+import app.oengus.adapter.rest.dto.TeamDto;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;

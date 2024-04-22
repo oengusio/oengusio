@@ -2,7 +2,7 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.mapper.CategoryDtoMapper;
 import app.oengus.adapter.rest.mapper.GameDtoMapper;
-import app.oengus.entity.dto.DataListDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
 import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 @RequiredArgsConstructor
 @RestController("v2SubmissionController")

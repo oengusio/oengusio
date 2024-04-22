@@ -8,7 +8,7 @@ import app.oengus.domain.submission.Category;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.RunType;
 import app.oengus.domain.submission.Submission;
-import app.oengus.exception.OengusBusinessException;
+import app.oengus.domain.exception.OengusBusinessException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

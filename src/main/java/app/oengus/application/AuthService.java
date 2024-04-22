@@ -1,17 +1,17 @@
 package app.oengus.application;
 
 import app.oengus.adapter.rest.dto.v2.auth.*;
-import app.oengus.application.exception.InvalidMFACodeException;
-import app.oengus.application.exception.InvalidPasswordException;
-import app.oengus.application.exception.auth.UnknownServiceException;
-import app.oengus.application.exception.auth.UserDisabledException;
+import app.oengus.domain.exception.InvalidMFACodeException;
+import app.oengus.domain.exception.InvalidPasswordException;
+import app.oengus.domain.exception.auth.UnknownServiceException;
+import app.oengus.domain.exception.auth.UserDisabledException;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
 import app.oengus.application.port.persistence.PasswordResetPersistencePort;
 import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PendingEmailVerification;
 import app.oengus.domain.PendingPasswordReset;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;

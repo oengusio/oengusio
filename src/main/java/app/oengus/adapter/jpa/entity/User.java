@@ -1,9 +1,8 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.IUsername;
-import app.oengus.entity.model.SocialAccount;
-import app.oengus.spring.model.Role;
-import app.oengus.spring.model.Views;
+import app.oengus.domain.Role;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;

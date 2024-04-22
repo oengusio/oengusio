@@ -1,16 +1,16 @@
 package app.oengus.application;
 
-import app.oengus.api.TwitchApi;
-import app.oengus.api.TwitchOauthApi;
-import app.oengus.application.exception.auth.UnknownUserException;
+import app.oengus.application.api.TwitchApi;
+import app.oengus.application.api.TwitchOauthApi;
+import app.oengus.domain.exception.auth.UnknownUserException;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.dto.SyncDto;
-import app.oengus.entity.model.api.TwitchUser;
-import app.oengus.helper.OauthHelper;
-import app.oengus.spring.model.AccessToken;
-import app.oengus.spring.model.params.TwitchLoginParams;
+import app.oengus.adapter.rest.dto.SyncDto;
+import app.oengus.domain.api.TwitchUser;
+import app.oengus.application.helper.OauthHelper;
+import app.oengus.domain.AccessToken;
+import app.oengus.configuration.params.TwitchLoginParams;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

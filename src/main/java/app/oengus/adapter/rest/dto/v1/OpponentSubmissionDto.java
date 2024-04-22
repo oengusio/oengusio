@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.dto.v1;
 
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;

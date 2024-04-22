@@ -1,8 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.v2.auth.*;
-import app.oengus.entity.dto.BooleanStatusDto;
-import app.oengus.spring.model.LoginRequest;
+import app.oengus.adapter.rest.dto.BooleanStatusDto;
+import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,9 +1,9 @@
 package app.oengus.adapter.jpa.repository;
 
 import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.SelectionEntity;
-import app.oengus.entity.model.Status;
+import app.oengus.adapter.jpa.entity.CategoryEntity;
+import app.oengus.adapter.jpa.entity.SelectionEntity;
+import app.oengus.domain.submission.Status;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

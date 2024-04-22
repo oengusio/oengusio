@@ -1,11 +1,11 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.dto.OrderDto;
+import app.oengus.adapter.rest.dto.OrderDto;
 import app.oengus.adapter.jpa.entity.Donation;
 import app.oengus.application.DonationService;
 import app.oengus.application.ExportService;
 import app.oengus.application.MarathonService;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;

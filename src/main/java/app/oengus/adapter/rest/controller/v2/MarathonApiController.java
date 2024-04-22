@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.function.Function;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 /**
  * TODO: api ideas

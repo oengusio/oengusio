@@ -3,9 +3,9 @@ package app.oengus.application;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.dto.SyncDto;
-import app.oengus.spring.model.LoginRequest;
-import app.oengus.spring.model.Role;
+import app.oengus.adapter.rest.dto.SyncDto;
+import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
+import app.oengus.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

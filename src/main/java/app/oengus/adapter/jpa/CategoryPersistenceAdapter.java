@@ -5,8 +5,8 @@ import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
-import app.oengus.entity.model.CategoryEntity;
-import app.oengus.entity.model.GameEntity;
+import app.oengus.adapter.jpa.entity.CategoryEntity;
+import app.oengus.adapter.jpa.entity.GameEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

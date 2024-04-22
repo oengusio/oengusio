@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.mapper;
 
 import app.oengus.domain.volunteering.Team;
-import app.oengus.entity.dto.TeamDto;
+import app.oengus.adapter.rest.dto.TeamDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

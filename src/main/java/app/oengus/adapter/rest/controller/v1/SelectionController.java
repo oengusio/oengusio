@@ -2,9 +2,9 @@ package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.mapper.SelectionDtoMapper;
 import app.oengus.application.SelectionService;
-import app.oengus.entity.dto.SelectionDto;
-import app.oengus.entity.model.Status;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.dto.SelectionDto;
+import app.oengus.domain.submission.Status;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 @CrossOrigin(maxAge = 3600)
 @RestController

@@ -1,7 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
-import app.oengus.entity.model.Question;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;

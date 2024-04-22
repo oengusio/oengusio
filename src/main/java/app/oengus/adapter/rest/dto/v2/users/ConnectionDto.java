@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v2.users;
 
 import app.oengus.domain.SocialPlatform;
-import app.oengus.entity.model.SocialAccount;
+import app.oengus.adapter.jpa.entity.SocialAccount;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

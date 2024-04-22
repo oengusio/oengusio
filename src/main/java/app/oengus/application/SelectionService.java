@@ -4,7 +4,7 @@ import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SelectionPersistencePort;
 import app.oengus.domain.submission.Selection;
-import app.oengus.entity.model.Status;
+import app.oengus.domain.submission.Status;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

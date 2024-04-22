@@ -4,7 +4,6 @@ import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
-import app.oengus.helper.TimeHelpers;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;

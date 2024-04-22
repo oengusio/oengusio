@@ -2,9 +2,9 @@ package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.application.DiscordService;
 import app.oengus.application.MarathonService;
-import app.oengus.entity.model.api.discord.DiscordInvite;
-import app.oengus.entity.model.api.discord.DiscordMember;
-import app.oengus.exception.OengusBusinessException;
+import app.oengus.domain.api.discord.DiscordInvite;
+import app.oengus.domain.api.discord.DiscordMember;
+import app.oengus.domain.exception.OengusBusinessException;
 import feign.FeignException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;

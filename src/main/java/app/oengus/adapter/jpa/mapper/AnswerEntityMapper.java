@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.mapper;
 
 import app.oengus.domain.submission.Answer;
-import app.oengus.entity.model.AnswerEntity;
+import app.oengus.adapter.jpa.entity.AnswerEntity;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",

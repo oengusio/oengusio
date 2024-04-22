@@ -5,7 +5,7 @@ import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.domain.OengusUser;
-import app.oengus.entity.dto.UserProfileDto;
+import app.oengus.adapter.rest.dto.UserProfileDto;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,10 +29,10 @@ public interface UserDtoMapper {
     @Mapping(target = "history", ignore = true)
     @Mapping(target = "moderatedMarathons", ignore = true)
     @Mapping(target = "volunteeringHistory", ignore = true)
-    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.spring.model.Role.ROLE_BANNED))")
+    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.domain.Role.ROLE_BANNED))")
     UserProfileDto profileFromDomain(OengusUser user);
 
-    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.spring.model.Role.ROLE_BANNED))")
+    @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.domain.Role.ROLE_BANNED))")
     ProfileDto v2ProfileFromDomain(OengusUser user);
 
     @Mapping(target = "pronouns", expression = "java(userPatch.getPronouns() == null || userPatch.getPronouns().isBlank() ? List.of() : List.of(userPatch.getPronouns().split(\",\")))")

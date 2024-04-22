@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v2.marathon;
 
 import app.oengus.domain.submission.RunType;
-import app.oengus.entity.dto.OpponentCategoryDto;
+import app.oengus.adapter.rest.dto.OpponentCategoryDto;
 import lombok.Getter;
 import lombok.Setter;
 

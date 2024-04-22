@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.dto.v1;
 
-import app.oengus.entity.model.SocialAccount;
-import app.oengus.spring.model.Role;
+import app.oengus.adapter.jpa.entity.SocialAccount;
+import app.oengus.domain.Role;
 
 import java.util.List;
 

@@ -7,11 +7,11 @@ import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
 import app.oengus.application.MarathonService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.marathon.Marathon;
-import app.oengus.entity.dto.MarathonDto;
-import app.oengus.entity.dto.marathon.MarathonStatsDto;
+import app.oengus.adapter.rest.dto.MarathonDto;
+import app.oengus.adapter.rest.dto.MarathonStatsDto;
 import app.oengus.application.OengusWebhookService;
 import app.oengus.application.SubmissionService;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static app.oengus.helper.HeaderHelpers.cachingHeaders;
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
 @Tag(name = "marathons-v1")
 @RestController

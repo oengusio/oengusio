@@ -1,9 +1,9 @@
 package app.oengus.application;
 
 import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.entity.dto.DonationStatsDto;
+import app.oengus.adapter.rest.dto.DonationStatsDto;
 import app.oengus.adapter.jpa.entity.Donation;
-import app.oengus.exception.OengusBusinessException;
+import app.oengus.domain.exception.OengusBusinessException;
 import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.exceptions.HttpException;
 import com.paypal.orders.*;

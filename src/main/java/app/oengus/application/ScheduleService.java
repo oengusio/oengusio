@@ -6,7 +6,7 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import app.oengus.domain.schedule.Ticker;
-import app.oengus.exception.schedule.EmptyScheduleException;
+import app.oengus.domain.exception.schedule.EmptyScheduleException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

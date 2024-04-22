@@ -5,7 +5,7 @@ import app.oengus.adapter.jpa.mapper.SelectionMapper;
 import app.oengus.adapter.jpa.repository.SelectionRepository;
 import app.oengus.application.port.persistence.SelectionPersistencePort;
 import app.oengus.domain.submission.Selection;
-import app.oengus.entity.model.Status;
+import app.oengus.domain.submission.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

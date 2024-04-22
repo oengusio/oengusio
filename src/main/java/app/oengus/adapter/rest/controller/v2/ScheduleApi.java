@@ -1,9 +1,9 @@
 package app.oengus.adapter.rest.controller.v2;
 
-import app.oengus.entity.dto.DataListDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

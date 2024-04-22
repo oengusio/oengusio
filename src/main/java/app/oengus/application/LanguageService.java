@@ -1,6 +1,6 @@
 package app.oengus.application;
 
-import app.oengus.entity.dto.LanguageDto;
+import app.oengus.adapter.rest.dto.LanguageDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

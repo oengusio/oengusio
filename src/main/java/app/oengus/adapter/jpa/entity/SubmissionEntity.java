@@ -1,10 +1,8 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
-import app.oengus.entity.comparator.AnswerComparator;
-import app.oengus.entity.model.AnswerEntity;
-import app.oengus.entity.model.GameEntity;
-import app.oengus.spring.model.Views;
+import app.oengus.adapter.jpa.entity.comparator.AnswerComparator;
+import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;

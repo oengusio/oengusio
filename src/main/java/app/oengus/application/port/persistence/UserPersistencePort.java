@@ -1,7 +1,7 @@
 package app.oengus.application.port.persistence;
 
 import app.oengus.domain.OengusUser;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 
 import javax.annotation.Nullable;
 import java.util.List;

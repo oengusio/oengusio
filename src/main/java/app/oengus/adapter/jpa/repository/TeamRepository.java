@@ -1,7 +1,7 @@
 package app.oengus.adapter.jpa.repository;
 
 import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.entity.model.TeamEntity;
+import app.oengus.adapter.jpa.entity.TeamEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package app.oengus.application;
 
-import app.oengus.application.exception.WrappedException;
+import app.oengus.domain.exception.WrappedException;
 import app.oengus.domain.OengusUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;

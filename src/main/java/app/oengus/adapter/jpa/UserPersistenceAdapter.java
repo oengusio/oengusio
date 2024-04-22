@@ -5,7 +5,7 @@ import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.UserRepository;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.spring.model.Role;
+import app.oengus.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,5 @@
 package app.oengus.domain.submission;
 
-import app.oengus.entity.model.Status;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
