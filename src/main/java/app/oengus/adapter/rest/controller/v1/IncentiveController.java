@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.entity.model.Incentive;
-import app.oengus.service.IncentiveService;
+import app.oengus.adapter.jpa.entity.Incentive;
+import app.oengus.application.IncentiveService;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;

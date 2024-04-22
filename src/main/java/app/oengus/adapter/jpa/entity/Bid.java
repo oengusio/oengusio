@@ -1,4 +1,4 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.JsonBackReference;

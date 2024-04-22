@@ -1,7 +1,7 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.entity.comparator.DonationExtraDataComparator;
+import app.oengus.entity.model.FieldType;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.SortComparator;

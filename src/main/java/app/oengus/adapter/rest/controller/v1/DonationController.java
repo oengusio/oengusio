@@ -1,8 +1,8 @@
 package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.entity.dto.OrderDto;
-import app.oengus.entity.model.Donation;
-import app.oengus.service.DonationService;
+import app.oengus.adapter.jpa.entity.Donation;
+import app.oengus.application.DonationService;
 import app.oengus.application.ExportService;
 import app.oengus.application.MarathonService;
 import app.oengus.spring.model.Views;

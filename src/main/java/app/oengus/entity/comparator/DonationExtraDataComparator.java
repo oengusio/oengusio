@@ -1,6 +1,6 @@
 package app.oengus.entity.comparator;
 
-import app.oengus.entity.model.DonationExtraData;
+import app.oengus.adapter.jpa.entity.DonationExtraData;
 
 import java.util.Comparator;
 

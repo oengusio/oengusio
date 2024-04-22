@@ -1,7 +1,7 @@
 package app.oengus.application.export;
 
-import app.oengus.entity.model.Donation;
-import app.oengus.service.DonationService;
+import app.oengus.adapter.jpa.entity.Donation;
+import app.oengus.application.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

@@ -1,12 +1,10 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.Bid;
-import app.oengus.entity.model.DonationIncentiveLink;
-import app.oengus.entity.model.Incentive;
+import app.oengus.adapter.jpa.entity.Bid;
+import app.oengus.adapter.jpa.entity.DonationIncentiveLink;
+import app.oengus.adapter.jpa.entity.Incentive;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface DonationIncentiveLinkRepository extends JpaRepository<DonationIncentiveLink, Integer> {
 
     void deleteByIncentive(Incentive incentive);

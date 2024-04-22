@@ -1,17 +1,15 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.Donation;
+import app.oengus.adapter.jpa.entity.Donation;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 
-@Repository
 public interface DonationRepository extends PagingAndSortingRepository<Donation, Integer> {
 
     Page<Donation> findByMarathonAndApprovedIsTrue(MarathonEntity marathon, Pageable pageable);

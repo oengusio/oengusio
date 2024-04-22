@@ -1,15 +1,13 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.Incentive;
+import app.oengus.adapter.jpa.entity.Incentive;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface IncentiveRepository extends JpaRepository<Incentive, Integer> {
 
     @Query("SELECT i FROM Incentive i WHERE i.marathon = :marathon ORDER BY i.scheduleLine.position ASC")

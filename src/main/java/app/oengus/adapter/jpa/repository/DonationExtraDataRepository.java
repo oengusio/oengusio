@@ -1,14 +1,12 @@
-package app.oengus.dao;
+package app.oengus.adapter.jpa.repository;
 
-import app.oengus.entity.model.DonationExtraData;
+import app.oengus.adapter.jpa.entity.DonationExtraData;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface DonationExtraDataRepository extends JpaRepository<DonationExtraData, Integer> {
 
     @Modifying

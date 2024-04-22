@@ -1,7 +1,5 @@
-package app.oengus.entity.model;
+package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.adapter.jpa.entity.ScheduleLine;
 import app.oengus.spring.model.Views;
 import com.fasterxml.jackson.annotation.*;
 
