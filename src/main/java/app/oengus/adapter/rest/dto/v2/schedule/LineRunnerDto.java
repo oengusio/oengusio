@@ -1,8 +1,6 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.adapter.jpa.entity.ScheduleLineRunner;
-import app.oengus.adapter.jpa.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,21 +25,5 @@ public class LineRunnerDto {
         }
 
         return this.profile.getDisplayName();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static LineRunnerDto fromLineRunner(ScheduleLineRunner lineRunner) {
-        final LineRunnerDto dto = new LineRunnerDto();
-        final User user = lineRunner.getUser();
-
-        if (user == null) {
-            dto.setProfile(null);
-        } else {
-            dto.setProfile(ProfileDto.fromUser(user));
-        }
-
-        dto.setRunnerName(lineRunner.getRunnerName());
-
-        return dto;
     }
 }

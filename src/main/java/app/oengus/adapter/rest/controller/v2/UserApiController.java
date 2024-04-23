@@ -78,19 +78,21 @@ public class UserApiController implements UserApi {
 
     @Override
     public ResponseEntity<DataListDto<ProfileHistoryDto>> userSubmissionHistory(final int id) {
-        // TODO: re-implement
+        final var history = this.userService.getSubmissionHistory(id);
+        final var dtos = history.stream().map(this.mapper::fromDomain).toList();
 
         return ResponseEntity.ok(
-            new DataListDto<>(List.of())
+            new DataListDto<>(dtos)
         );
     }
 
     @Override
     public ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(final int id) {
-        // TODO: re-implement
+        final var history = this.userService.getModeratedHistory(id);
+        final var dtos = history.stream().map(this.mapper::fromDomainMarathon).toList();
 
         return ResponseEntity.ok(
-            new DataListDto<>(List.of())
+            new DataListDto<>(dtos)
         );
     }
 }

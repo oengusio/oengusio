@@ -1,7 +1,6 @@
 package app.oengus.application.port.persistence;
 
 import app.oengus.domain.marathon.Marathon;
-import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.MarathonStats;
 
 import java.time.ZonedDateTime;
@@ -28,10 +27,6 @@ public interface MarathonPersistencePort {
     List<Marathon> findAllModeratedBy(int userId);
 
     List<Marathon> findBetween(ZonedDateTime start, ZonedDateTime end);
-
-    default List<Marathon> findAllModeratedBy(OengusUser user) {
-        return this.findAllModeratedBy(user.getId());
-    }
 
     void markSubmissionsOpen(Marathon marathon);
 

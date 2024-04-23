@@ -1,7 +1,6 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.domain.submission.RunType;
-import app.oengus.adapter.jpa.entity.ScheduleLine;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,40 +54,4 @@ public class LineDto {
     private String customData;
     @Schema(description = "The date and time of when this run is planned to start")
     private ZonedDateTime date;
-
-    @Deprecated(forRemoval = true)
-    public static LineDto fromLine(ScheduleLine line, boolean withCustomData) {
-        final LineDto dto = new LineDto();
-
-        dto.setId(line.getId());
-
-        if (withCustomData) {
-            dto.setCustomData(line.getCustomData());
-        }
-
-        if (line.isSetupBlock()) {
-            dto.setSetupBlock(true);
-            // TODO: not sure what to use
-            dto.setEstimate(line.getEstimate());
-            dto.setSetupTime(line.getSetupTime());
-            dto.setSetupBlockText(line.getSetupBlockText());
-
-            return dto;
-        }
-
-        dto.setSetupBlock(false);
-        dto.setGame(line.getGameName());
-        dto.setConsole(line.getConsole());
-        dto.setEmulated(line.isEmulated());
-        dto.setRatio(line.getRatio());
-        dto.setType(line.getType());
-        dto.setRunners(line.getRunners().stream().map(LineRunnerDto::fromLineRunner).toList());
-        dto.setCategory(line.getCategoryName());
-        dto.setEstimate(line.getEstimate());
-        dto.setSetupTime(line.getSetupTime());
-        dto.setPosition(line.getPosition());
-        dto.setCustomRun(line.isCustomRun());
-
-        return dto;
-    }
 }

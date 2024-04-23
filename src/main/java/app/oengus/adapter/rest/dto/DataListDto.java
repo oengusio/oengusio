@@ -1,8 +1,13 @@
 package app.oengus.adapter.rest.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class DataListDto<T> {
     private List<T> data;
 
@@ -11,14 +16,6 @@ public class DataListDto<T> {
     }
 
     public DataListDto(List<T> data) {
-        this.data = data;
-    }
-
-    public List<T> getData() {
-        return data;
-    }
-
-    public void setData(List<T> data) {
         this.data = data;
     }
 }

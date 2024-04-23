@@ -1,7 +1,5 @@
 package app.oengus.adapter.rest.dto.v2.users;
 
-import app.oengus.adapter.jpa.entity.User;
-import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +12,6 @@ import java.util.List;
 @Setter
 @Schema
 public class ProfileDto {
-
     @Schema(description = "The unique id of this user")
     private int id;
 
@@ -42,39 +39,4 @@ public class ProfileDto {
 
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections;
-
-    @Deprecated(forRemoval = true)
-    public static ProfileDto fromUser(User user) {
-        final ProfileDto profile = new ProfileDto();
-        profile.setId(user.getId());
-        profile.setUsername(user.getUsername());
-        profile.setDisplayName(user.getDisplayName());
-        profile.setEnabled(user.isEnabled());
-        profile.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
-
-        final String pronouns = user.getPronouns();
-
-        if (pronouns != null) {
-            profile.setPronouns(
-                List.of(pronouns.split(","))
-            );
-        }
-
-        final String langs = user.getLanguagesSpoken();
-
-        if (langs != null && !langs.isBlank()) {
-            profile.setLanguagesSpoken(
-                List.of(langs.split(","))
-            );
-        }
-
-        profile.setConnections(
-            user.getConnections()
-                .stream()
-                .map(ConnectionDto::from)
-                .toList()
-        );
-
-        return profile;
-    }
 }

@@ -1,25 +1,28 @@
 package app.oengus.application;
 
+import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.adapter.rest.dto.SyncDto;
 import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import app.oengus.domain.Role;
+import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.user.SubmissionHistoryEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserSecurityPort securityPort;
     private final UserPersistencePort userPersistencePort;
+    private final MarathonPersistencePort marathonPersistencePort;
+    private final SubmissionPersistencePort submissionPersistencePort;
     private final DiscordService discordService;
     private final TwitchService twitchService;
 
@@ -33,6 +36,31 @@ public class UserService {
 
     public Optional<OengusUser> findByEmail(final String email) {
         return this.userPersistencePort.findByEmail(email);
+    }
+
+    public List<SubmissionHistoryEntry> getSubmissionHistory(final int userId) {
+        final Map<String, Marathon> marathonCache = new HashMap<>();
+
+        // We need to combine some data in order for this to work!
+        return this.submissionPersistencePort.findByUser(userId)
+            .stream()
+            .map((submission) -> {
+                final var marathon = marathonCache.computeIfAbsent(
+                    submission.getMarathonId(), (marathonId) -> this.marathonPersistencePort.findById(marathonId).get()
+                );
+
+                final var entry = new SubmissionHistoryEntry();
+
+                entry.setMarathon(marathon);
+                entry.setGames(submission.getGames());
+
+                return entry;
+            })
+            .toList();
+    }
+
+    public List<Marathon> getModeratedHistory(final int userId) {
+        return this.marathonPersistencePort.findAllModeratedBy(userId);
     }
 
     public boolean existsByUsername(String name) {

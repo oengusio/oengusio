@@ -4,8 +4,6 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +26,6 @@ public interface UserApi {
 
     @PermitAll
     @GetMapping("/{name}")
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "Get a user's profile by their username",
         responses = {
@@ -51,7 +48,6 @@ public interface UserApi {
 
     @PermitAll
     @GetMapping("/{id}/submission-history")
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "Get a user's submission history by their ID",
         responses = {
@@ -70,7 +66,6 @@ public interface UserApi {
 
     @PermitAll
     @GetMapping("/{id}/moderation-history")
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "Get a user's moderation history by their ID",
         responses = {
