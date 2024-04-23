@@ -29,6 +29,6 @@ public interface UserMapper {
     @Mapping(target = "password", source = "hashedPassword")
     @Mapping(target = "email", source = "mail")
     @Mapping(target = "pronouns", expression = "java(user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(\",\")))")
-    @Mapping(target = "languagesSpoken", expression = "java(user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(\",\")))")
+    @Mapping(target = "languagesSpoken", expression = "java(user.getLanguagesSpoken() == null || user.getLanguagesSpoken().isBlank() ? List.of() : List.of(user.getLanguagesSpoken().split(\",\")))")
     OengusUser toDomain(@Nonnull User user);
 }

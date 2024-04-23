@@ -30,6 +30,6 @@ public interface UserDtoMapper {
     ProfileDto v2ProfileFromDomain(OengusUser user);
 
     @Mapping(target = "pronouns", expression = "java(userPatch.getPronouns() == null || userPatch.getPronouns().isBlank() ? List.of() : List.of(userPatch.getPronouns().split(\",\")))")
-    @Mapping(target = "languagesSpoken", expression = "java(userPatch.getLanguagesSpoken() == null ? List.of() : List.of(userPatch.getLanguagesSpoken().split(\",\")))")
+    @Mapping(target = "languagesSpoken", expression = "java(userPatch.getLanguagesSpoken() == null || userPatch.getLanguagesSpoken().isBlank() ? List.of() : List.of(userPatch.getLanguagesSpoken().split(\",\")))")
     void applyV1Patch(@MappingTarget OengusUser user, UserDto userPatch);
 }

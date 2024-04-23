@@ -90,7 +90,7 @@ public class UserProfileDto implements IUsername {
             user.getPronouns() == null || user.getPronouns().isBlank() ? List.of() : List.of(user.getPronouns().split(","))
         );
         dto.setLanguagesSpoken(
-            user.getLanguagesSpoken() == null ? List.of() : List.of(user.getLanguagesSpoken().split(","))
+            user.getLanguagesSpoken() == null || user.getLanguagesSpoken().isBlank() ? List.of() : List.of(user.getLanguagesSpoken().split(","))
         );
         dto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
         dto.setCountry(user.getCountry());

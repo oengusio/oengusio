@@ -28,7 +28,7 @@ public class UserService {
     }
 
     public List<OengusUser> searchByUsername(String username) {
-        return List.of();
+        return this.userPersistencePort.findEnabledByUsername(username);
     }
 
     public Optional<OengusUser> findByEmail(final String email) {
@@ -61,7 +61,7 @@ public class UserService {
             return; // TODO: return error
         }
 
-        // TODO: delete all connections
+        // TODO: delete all connections manually?
 
         user.getConnections().clear();
         user.setDiscordId(null);
@@ -73,7 +73,6 @@ public class UserService {
         user.setMfaSecret(null);
         user.setPassword(null);
         user.setRoles(Set.of(
-            Role.ROLE_USER,
             Role.ROLE_BANNED
         ));
 
