@@ -8,6 +8,7 @@ import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class SelectionPersistenceAdapter implements SelectionPersistencePort {
         ).stream().map(this.mapper::toDomain).toList();
     }
 
+    @Transactional
     @Override
     public void rejectTodos(String marathonId) {
         this.repository.rejectTodos(MarathonEntity.ofId(marathonId));

@@ -9,6 +9,7 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -100,6 +101,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .toList();
     }
 
+    @Transactional
     @Override
     public void markSubmissionsOpen(Marathon marathon) {
         this.repository.openSubmissions(
@@ -107,6 +109,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
         );
     }
 
+    @Transactional
     @Override
     public void markSubmissionsClosed(Marathon marathon) {
         this.repository.closeSubmissions(
@@ -134,6 +137,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .toList();
     }
 
+    @Transactional
     @Override
     public void clear(Marathon marathon) {
         this.repository.clearMarathon(

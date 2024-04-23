@@ -74,6 +74,8 @@ public class MarathonUpdateRequestDto {
 
     private Boolean submitsOpen;
 
+    private Boolean scheduleDone;
+
     @DurationMin(minutes = 1)
     private Duration defaultSetupTime;
 
