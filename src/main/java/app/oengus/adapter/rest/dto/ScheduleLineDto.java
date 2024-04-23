@@ -31,9 +31,13 @@ public class ScheduleLineDto {
     private List<UserProfileDto> runners;
     private String setupBlockText;
     private ZonedDateTime date;
-    private String customDataDTO;
+    private String customData;
 
     private ZonedDateTime time;
+
+    public String getCustomDataDTO() {
+        return this.customData;
+    }
 
     public Duration getEffectiveSetupTime() {
         // set the setup time to 0 for setup blocks

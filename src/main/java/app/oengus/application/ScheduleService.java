@@ -2,11 +2,11 @@ package app.oengus.application;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.domain.exception.schedule.EmptyScheduleException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import app.oengus.domain.schedule.Ticker;
-import app.oengus.domain.exception.schedule.EmptyScheduleException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,28 @@ public class ScheduleService {
     }
 
     public Optional<Schedule> findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
-        return this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId);
+        final var optionalSchedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId);
+
+        if (optionalSchedule.isEmpty()) {
+            return Optional.empty();
+        }
+
+        final var schedule = optionalSchedule.get();
+
+        // Strip custom data instead of adding them :)
+        if (!withCustomData) {
+            final List<Line> lines = schedule.getLines();
+
+            // lines can be null, so we check if they are not
+            if (lines != null && !lines.isEmpty()) {
+                // Remove custom data if not requested
+                lines.forEach(
+                    (line) -> line.setCustomData(null)
+                );
+            }
+        }
+
+        return Optional.of(schedule);
     }
 
     ///////////
@@ -42,39 +63,8 @@ public class ScheduleService {
 
     @Nullable
     public Schedule findByMarathon(final String marathonId) {
-        /*final var optionalMarathon = this.marathonPersistencePort.findById(marathonId);
+        return this.schedulePersistencePort.findFirstForMarathon(marathonId).orElse(null);
 
-        if (optionalMarathon.isEmpty()) {
-            return null;
-        }*/
-
-        final var optionalSchedule = this.schedulePersistencePort.findFirstForMarathon(marathonId);
-
-        if (optionalSchedule.isEmpty()) {
-            return null;
-        }
-
-//        final var marathon = optionalMarathon.get();
-        final var schedule = optionalSchedule.get();
-
-        /*// TODO: put this in the repository adapter
-        if (schedule.getLines() != null && !schedule.getLines().isEmpty()) {
-            final List<Line> lines = schedule.getLines();
-
-
-            lines.get(0).setDate(marathon.getStartDate());
-
-            for (int i = 1; i < lines.size(); i++) {
-                final Line previous = lines.get(i - 1);
-                lines.get(i).setDate(
-                    previous.getDate()
-                        .plus(previous.getEstimate())
-                        .plus(previous.getSetupTime())
-                );
-            }
-        }*/
-
-        return schedule;
     }
 
     @Nullable
@@ -84,8 +74,6 @@ public class ScheduleService {
         if (schedule == null) {
             return null;
         }
-
-//        final var schedule = V1ScheduleDto.fromSchedule(byMarathon);
 
         // Strip custom data instead of adding them :)
         if (!withCustomData) {
@@ -162,16 +150,6 @@ public class ScheduleService {
         );
 
         schedule.setMarathonId(marathonId);
-        // TODO: this should be done automatically from now on.
-        /*schedule.getLines().forEach(scheduleLine -> {
-            scheduleLine.setSchedule(schedule);
-
-            scheduleLine.getRunners().forEach((runner) -> {
-                if (runner.getUser() != null) {
-                    runner.setRunnerName(null);
-                }
-            });
-        });*/
 
         this.schedulePersistencePort.save(schedule);
 

@@ -170,6 +170,14 @@ public class UserController {
 
         final var currentUser = this.securityPort.getAuthenticatedUser();
 
+        // Unverify the email if they change it!
+        // TODO: move this logic to the service!
+        if (!userPatch.getEmail().equalsIgnoreCase(currentUser.getEmail())) {
+            currentUser.setEmailVerified(false);
+        }
+
+        userPatch.setEnabled(currentUser.isEnabled());
+
         // TODO: properly compare functionality with old service
         this.mapper.applyV1Patch(currentUser, userPatch);
 

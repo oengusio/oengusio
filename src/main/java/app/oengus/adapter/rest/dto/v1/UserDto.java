@@ -48,7 +48,7 @@ public class UserDto implements IUsername {
 
     @JsonView(Views.Internal.class)
     @Email
-    private String mail;
+    private String email;
 
     @Nullable
     @JsonView(Views.Internal.class)

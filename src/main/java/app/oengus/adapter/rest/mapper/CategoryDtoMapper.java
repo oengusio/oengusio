@@ -26,6 +26,6 @@ public interface CategoryDtoMapper {
     @Mapping(target = "user.id", source = "userId")
     OpponentCategoryDto opponentToOpponentCategoryDto(Opponent opponent);
 
-    @Mapping(target = "status", source = "selection.status")
+    @Mapping(target = "status", source = "selection.status", defaultValue = "TODO")
     SimpleCategoryDto simpleFromDomain(Category category);
 }

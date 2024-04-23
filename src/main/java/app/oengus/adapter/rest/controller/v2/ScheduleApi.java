@@ -3,8 +3,6 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public interface ScheduleApi {
 
     @GetMapping
-    @JsonView(Views.Public.class)
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
         summary = "Get all schedules for a marathon, has a 5 minute cache",
@@ -43,7 +40,6 @@ public interface ScheduleApi {
     ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}")
-    @JsonView(Views.Public.class)
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
         summary = "Get a schedule for a marathon by its id, has a 5 minute cache",
