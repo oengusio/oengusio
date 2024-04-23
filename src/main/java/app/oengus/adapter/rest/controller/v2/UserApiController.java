@@ -89,7 +89,11 @@ public class UserApiController implements UserApi {
     @Override
     public ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(final int id) {
         final var history = this.userService.getModeratedHistory(id);
-        final var dtos = history.stream().map(this.mapper::fromDomainMarathon).toList();
+        // Only show public marathons
+        final var dtos = history.stream()
+            .filter((marathon) -> !marathon.isPrivate())
+            .map(this.mapper::fromDomainMarathon)
+            .toList();
 
         return ResponseEntity.ok(
             new DataListDto<>(dtos)

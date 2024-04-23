@@ -67,4 +67,8 @@ public class MarathonDto {
 
     private BigDecimal donationsTotal;
 	private boolean hasSubmitted;
+
+    public boolean getIsPrivate() {
+        return this.isPrivate;
+    }
 }
