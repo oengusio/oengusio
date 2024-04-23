@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static app.oengus.adapter.rest.dto.v1.UserDto.MASTODON_REGEX;
 import static javax.persistence.CascadeType.ALL;
 
 @Getter
@@ -159,7 +158,7 @@ public class MarathonEntity {
 
     @OneToMany(mappedBy = "marathon", cascade = ALL, orphanRemoval = true)
     @OrderBy("position ASC")
-    private List<Question> questions;
+    private List<QuestionEntity> questions;
 
     @Column(name = "has_donations")
     private boolean hasDonations = false;
@@ -206,12 +205,6 @@ public class MarathonEntity {
 
     public boolean hasWebhook() {
         return StringUtils.isNotEmpty(this.getWebhook());
-    }
-
-    // Can't wait to drop v1 support
-    @AssertTrue(message = "Mastodon instance is not in the valid format")
-    public boolean isMastodonValid() {
-        return this.mastodon == null || this.mastodon.isBlank() || this.mastodon.matches(MASTODON_REGEX);
     }
 
     /**

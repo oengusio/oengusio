@@ -90,6 +90,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
             rawEntity.setId(null);
         }
 
+        rawEntity.getAnswers().forEach((answer) -> {
+            answer.setSubmission(rawEntity);
+
+            if (answer.getId() < 1) {
+                answer.setId(null);
+            }
+        });
+
         rawEntity.getOpponents().forEach((opponent) -> {
             opponent.setSubmission(rawEntity);
 

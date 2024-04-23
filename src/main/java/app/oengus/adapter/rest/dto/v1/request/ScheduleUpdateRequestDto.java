@@ -39,17 +39,11 @@ public class ScheduleUpdateRequestDto {
     @Setter
     public static class LineRunner {
         private String runnerName;
-        private SimpleUser user;
+        private SimpleUserDto user;
 
         @AssertTrue
         public boolean runnerOrNameIsSet() {
             return this.user != null || this.runnerName != null;
         }
-    }
-
-    @Getter
-    @Setter
-    public static class SimpleUser {
-        private int id;
     }
 }

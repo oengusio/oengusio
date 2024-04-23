@@ -182,6 +182,7 @@ public class SubmissionsController {
     @PutMapping
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
+        "&& #submission != null " +
         "&& #submission.id != null " +
         "&& (isSelf(#submission.user.id) || isAdmin())")
     @Operation(hidden = true)
@@ -221,7 +222,7 @@ public class SubmissionsController {
     @GetMapping("/me")
     @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<SubmissionDto> getMySubmission(@PathVariable("marathonId") final String marathonId) {
         final var userId = this.securityPort.getAuthenticatedUserId();

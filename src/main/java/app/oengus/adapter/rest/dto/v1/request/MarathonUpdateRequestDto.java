@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.dto.v1.request;
 
+import app.oengus.adapter.rest.dto.v1.V1QuestionDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.time.DurationMin;
@@ -8,6 +9,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static app.oengus.adapter.rest.dto.v1.UserDto.MASTODON_REGEX;
 
@@ -101,6 +104,10 @@ public class MarathonUpdateRequestDto {
     private Boolean discordRequired;
 
     private Boolean announceAcceptedSubmissions;
+
+    private List<SimpleUserDto> moderators = new ArrayList<>();
+
+    private List<V1QuestionDto> questions = new ArrayList<>();
 
     @AssertTrue(message = "The end date must be after the start date")
     public boolean endDateIsAfterStartDate() {

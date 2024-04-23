@@ -31,6 +31,14 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     public Marathon save(Marathon marathon) {
         final var entity = this.mapper.fromDomain(marathon);
 
+        entity.getQuestions().forEach((question) -> {
+            question.setMarathon(entity);
+
+            if (question.getId() < 1) {
+                question.setId(null);
+            }
+        });
+
         // HACK: teams are not stored in the current domain model so we need to do it this way.
         entity.setTeams(List.of());
 

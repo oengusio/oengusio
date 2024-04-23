@@ -21,7 +21,7 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
     @ManyToOne
     @JoinColumn(name = "question_id")
     @JsonView(Views.Public.class)
-    private Question question;
+    private QuestionEntity question;
 
     @ManyToOne
     @JoinColumn(name = "donation_id")
@@ -53,11 +53,11 @@ public class DonationExtraData implements Comparable<DonationExtraData> {
         this.id = id;
     }
 
-    public Question getQuestion() {
+    public QuestionEntity getQuestion() {
         return this.question;
     }
 
-    public void setQuestion(final Question question) {
+    public void setQuestion(final QuestionEntity question) {
         this.question = question;
     }
 

@@ -5,7 +5,7 @@ import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.*;
-import app.oengus.adapter.jpa.entity.FieldType;
+import app.oengus.domain.marathon.FieldType;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -153,21 +153,21 @@ public class SubmissionCsvExporter implements Exporter {
                 final String statusName = selection.getStatus().name();
                 record.add(lang.getString("run.status." + statusName));
 
-                if (!submission.getAnswers().isEmpty()) {
-                    // TODO: remove free text questions.
-                    /*this.getAnswers()
-                        .stream()
+                final var answers = submission.getAnswers();
+
+                if (!answers.isEmpty()) {
+                    answers.stream()
                         .filter((a) -> a.getQuestion().getFieldType() != FieldType.FREETEXT)
                         .forEach(
                             (answer) -> record.add(answer.getAnswer())
-                        );*/
+                        );
                 }
 
                 final var formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
                 final var zone = ZoneId.of(zoneId);
 
                 submission.getAvailabilities().forEach(
-                    (availability) ->  record.add(
+                    (availability) -> record.add(
                         "%s/%s".formatted(
                             availability.getFrom().withZoneSameInstant(zone),
                             availability.getTo().withZoneSameInstant(zone)

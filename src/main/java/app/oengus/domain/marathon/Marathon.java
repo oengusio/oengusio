@@ -1,7 +1,6 @@
 package app.oengus.domain.marathon;
 
 import app.oengus.domain.OengusUser;
-import app.oengus.adapter.jpa.entity.Question;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

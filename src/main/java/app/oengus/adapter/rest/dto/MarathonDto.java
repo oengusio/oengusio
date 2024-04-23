@@ -1,14 +1,15 @@
 package app.oengus.adapter.rest.dto;
 
-import app.oengus.adapter.rest.dto.v1.V1UserDto;
-import app.oengus.adapter.jpa.entity.Question;
 import app.oengus.adapter.jpa.entity.TeamEntity;
+import app.oengus.adapter.rest.dto.v1.V1QuestionDto;
+import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -40,6 +41,7 @@ public class MarathonDto {
     private boolean scheduleDone;
     private boolean donationsOpen;
     private boolean isPrivate;
+    private boolean onsite;
     private boolean videoRequired;
     private boolean unlimitedGames;
     private boolean unlimitedCategories;
@@ -47,8 +49,7 @@ public class MarathonDto {
     private List<V1UserDto> moderators;
     private boolean hasIncentives;
     private boolean canEditSubmissions;
-    // TODO: questions model
-    private List<Question> questions;
+    private List<V1QuestionDto> questions = new ArrayList<>();
     private boolean hasDonations;
     private String payee;
     private String supportedCharity;

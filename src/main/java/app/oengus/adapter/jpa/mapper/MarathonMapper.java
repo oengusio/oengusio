@@ -11,17 +11,16 @@ import org.mapstruct.*;
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     uses = {
         UserMapper.class,
+        QuestionMapper.class,
     }
 )
 public interface MarathonMapper {
     // TODO: implement these when needed
-    @BeanMapping(ignoreUnmappedSourceProperties = { "mastodonValid", "teams", "userInfoHidden", "cleared" })
-//    @Mapping(target = "creatorId", source = "creator.id")
+    @BeanMapping(ignoreUnmappedSourceProperties = { "teams", "userInfoHidden", "cleared" })
     @Mapping(target = "submissionsOpen", source = "submitsOpen")
     @Mapping(target = "discordPrivate", source = "discordPrivacy")
     Marathon toDomain(MarathonEntity entity);
 
-    @Mapping(target = "mastodonValid", ignore = true)
     // TODO: implement these when needed
     @Mapping(target = "cleared", ignore = true)
     @Mapping(target = "userInfoHidden", ignore = true)

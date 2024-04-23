@@ -1,4 +1,4 @@
-package app.oengus.adapter.jpa.entity;
+package app.oengus.domain.marathon;
 
 public enum FieldType {
 

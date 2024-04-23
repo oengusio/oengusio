@@ -8,7 +8,7 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.*;
 import app.oengus.adapter.rest.dto.AvailabilityDto;
-import app.oengus.adapter.jpa.entity.FieldType;
+import app.oengus.domain.marathon.FieldType;
 import app.oengus.domain.submission.Status;
 import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.exception.SubmissionsClosedException;
@@ -160,20 +160,20 @@ public class SubmissionService {
 
         // TODO: is this even needed?
         //  Maybe a check to see if the question id is valid for the marathon
-        submission.setAnswers(
-            submission.getAnswers().stream()
-                .map((oldAnswer) -> {
-                    final var answer = new Answer(
-                        oldAnswer.getId(),
-                        oldAnswer.getQuestionId(),
-                        submission.getId()
-                    );
-
-                    answer.setAnswer(oldAnswer.getAnswer());
-
-                    return answer;
-                }).collect(Collectors.toSet())
-        );
+//        submission.setAnswers(
+//            submission.getAnswers().stream()
+//                .map((oldAnswer) -> {
+//                    final var answer = new Answer(
+//                        oldAnswer.getId(),
+//                        submission.getId()
+//                    );
+//
+//                    answer.setQuestion(oldAnswer.getQuestion());
+//                    answer.setAnswer(oldAnswer.getAnswer());
+//
+//                    return answer;
+//                }).collect(Collectors.toSet())
+//        );
 
         // TODO: fix opponents
         /*submission.setOpponents(new HashSet<>());

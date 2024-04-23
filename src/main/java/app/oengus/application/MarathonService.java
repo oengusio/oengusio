@@ -73,6 +73,10 @@ public class MarathonService {
         patch.setStartDate(patch.getStartDate().withSecond(0));
         patch.setEndDate(patch.getEndDate().withSecond(0));
 
+        patch.getQuestions().forEach((question) -> {
+            question.setMarathonId(oldMarathon.getId());
+        });
+
         if (markedSelectionDone) {
             // send accepted submissions
             if (patch.isAnnounceAcceptedSubmissions() && patch.hasWebhook()) {
@@ -90,10 +94,15 @@ public class MarathonService {
 
         if (patch.isScheduleDone()) {
             final Schedule schedule = this.scheduleService.findByMarathon(patch.getId());
-            this.scheduleService.computeEndDate(patch, schedule);
-            this.selectionService.rejectTodos(patch.getId());
-            patch.setSelectionDone(true);
-            patch.setCanEditSubmissions(false);
+
+            if (schedule == null) {
+                patch.setScheduleDone(false);
+            } else {
+                this.scheduleService.computeEndDate(patch, schedule);
+                this.selectionService.rejectTodos(patch.getId());
+                patch.setSelectionDone(true);
+                patch.setCanEditSubmissions(false);
+            }
         }
 
         if (patch.isSubmissionsOpen()) {
@@ -108,8 +117,6 @@ public class MarathonService {
             this.eventSchedulerService.unscheduleSubmissions(patch);
         }
 
-        // TODO: do this in the adapter
-//        marathon.getQuestions().forEach(question -> question.setMarathon(marathon));
         this.marathonPersistencePort.save(patch);
     }
 

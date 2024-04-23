@@ -7,13 +7,16 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     unmappedSourcePolicy = ReportingPolicy.ERROR,
-    unmappedTargetPolicy = ReportingPolicy.ERROR
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
+    uses = {
+        QuestionMapper.class,
+        UserMapper.class,
+    }
 )
 public interface AnswerEntityMapper {
     @BeanMapping(ignoreUnmappedSourceProperties = { "answerRequired" })
-    @Mapping(target = "questionId", source = "question.id")
-    @Mapping(target = "question", source = "question")
     @Mapping(target = "submissionId", source = "submission.id")
+    @Mapping(target = "user", source = "submission.user")
     Answer toDomain(AnswerEntity answerEntity);
 
     @InheritInverseConfiguration(name = "toDomain")
