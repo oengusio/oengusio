@@ -11,21 +11,21 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "opponent")
 public class OpponentEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "category_id", referencedColumnName = "id")
-	private CategoryEntity category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private CategoryEntity category;
 
-	@ManyToOne
-	@JoinColumn(name = "opponent_submission_id")
-	private SubmissionEntity submission;
+    @ManyToOne
+    @JoinColumn(name = "opponent_submission_id")
+    private SubmissionEntity submission;
 
-	@Column(name = "video")
-	@Size(max = 100)
-	private String video;
+    @Column(name = "video")
+    @Size(max = 100)
+    private String video;
 
     public static OpponentEntity ofId(int id) {
         final var opponent = new OpponentEntity();

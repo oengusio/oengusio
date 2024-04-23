@@ -21,16 +21,4 @@ public interface OpponentMapper {
 
     @InheritInverseConfiguration(name = "toDomain")
     OpponentEntity fromDomain(Opponent opponent);
-
-    /*default Submission toDomain(SubmissionEntity entity) {
-        var mapper = Mappers.getMapper( SubmissionEntityMapper.class );
-
-        return mapper.toDomain(entity);
-    }
-
-    default SubmissionEntity fromDomain(Submission submission) {
-        var mapper = Mappers.getMapper( SubmissionEntityMapper.class );
-
-        return mapper.fromDomain(submission);
-    }*/
 }

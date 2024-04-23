@@ -1,8 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.rest.dto.OpponentCategoryDto;
 import app.oengus.domain.submission.RunType;
-import app.oengus.domain.submission.Status;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -23,50 +21,44 @@ import java.util.Objects;
 @Entity
 @Table(name = "category")
 public class CategoryEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "game_id")
-	private GameEntity game;
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private GameEntity game;
 
-	@Column(name = "name")
-	@NotBlank
-	@Size(max = 100)
-	private String name;
+    @Column(name = "name")
+    @NotBlank
+    @Size(max = 100)
+    private String name;
 
-	@Column(name = "estimate")
-	@NotNull
-	@DurationMin(seconds = 1)
-	private Duration estimate;
+    @Column(name = "estimate")
+    @NotNull
+    @DurationMin(seconds = 1)
+    private Duration estimate;
 
-	@Column(name = "description")
-	@Size(max = 300)
-	private String description;
+    @Column(name = "description")
+    @Size(max = 300)
+    private String description;
 
-	@Column(name = "video")
-	@Size(max = 100)
-	private String video;
+    @Column(name = "video")
+    @Size(max = 100)
+    private String video;
 
-	@Column(name = "run_type")
-	private RunType type;
+    @Column(name = "run_type")
+    private RunType type;
 
-	@Column(name = "code")
-	@Size(max = 6)
-	private String code;
+    @Column(name = "code")
+    @Size(max = 6)
+    private String code;
 
-	@OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	private SelectionEntity selection;
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SelectionEntity selection;
 
-	@OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
-	private List<OpponentEntity> opponents = new ArrayList<>();
-
-	@Transient
-	private List<OpponentCategoryDto> opponentDtos;
-
-	@Transient
-	private Status status;
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    private List<OpponentEntity> opponents = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

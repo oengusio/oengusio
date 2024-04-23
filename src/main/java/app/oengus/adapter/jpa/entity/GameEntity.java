@@ -19,40 +19,40 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "submission_id")
-	private SubmissionEntity submission;
+    @ManyToOne
+    @JoinColumn(name = "submission_id")
+    private SubmissionEntity submission;
 
-	@Column(name = "name")
-	@NotBlank
-	@Size(max = 100)
-	private String name;
+    @Column(name = "name")
+    @NotBlank
+    @Size(max = 100)
+    private String name;
 
-	@Column(name = "description")
-	@NotBlank
-	@Size(max = 500)
-	private String description;
+    @Column(name = "description")
+    @NotBlank
+    @Size(max = 500)
+    private String description;
 
-	@Column(name = "console")
-	@NotBlank
-	@Size(max = 20) // can grow upto 100 due to db type being varchar(100)
-	private String console;
+    @Column(name = "console")
+    @NotBlank
+    @Size(max = 20) // can grow upto 100 due to db type being varchar(100)
+    private String console;
 
-	@Column(name = "ratio")
-	@NotBlank
-	@Size(max = 10)
-	private String ratio;
+    @Column(name = "ratio")
+    @NotBlank
+    @Size(max = 10)
+    private String ratio;
 
-	@Column(name = "emulated")
-	private boolean emulated;
+    @Column(name = "emulated")
+    private boolean emulated;
 
-	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("id ASC")
-	private List<CategoryEntity> categories;
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private List<CategoryEntity> categories;
 
     @Override
     public boolean equals(Object o) {

@@ -12,15 +12,15 @@ import java.util.List;
 @Table(name = "schedule")
 public class ScheduleEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "marathon_id")
-	private MarathonEntity marathon;
+    @ManyToOne
+    @JoinColumn(name = "marathon_id")
+    private MarathonEntity marathon;
 
-	@OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("position ASC")
-	private List<ScheduleLine> lines;
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
+    private List<ScheduleLine> lines;
 }

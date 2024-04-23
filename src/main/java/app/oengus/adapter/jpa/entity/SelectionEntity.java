@@ -13,20 +13,20 @@ import java.util.Objects;
 @Table(name = "selection")
 public class SelectionEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "marathon_id")
-	private MarathonEntity marathon;
+    @ManyToOne
+    @JoinColumn(name = "marathon_id")
+    private MarathonEntity marathon;
 
-	@OneToOne
-	@JoinColumn(name = "category_id", referencedColumnName = "id")
-	private CategoryEntity category;
+    @OneToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private CategoryEntity category;
 
-	@Column(name = "status")
-	private Status status;
+    @Column(name = "status")
+    private Status status;
 
     @Override
     public boolean equals(Object o) {
