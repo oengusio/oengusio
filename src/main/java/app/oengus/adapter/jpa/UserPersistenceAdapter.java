@@ -33,12 +33,18 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
     @Override
     public void addRole(int userId, Role role) {
-
+        this.userRepository.findById(userId).ifPresent(user -> {
+            user.getRoles().add(role);
+            this.userRepository.save(user);
+        });
     }
 
     @Override
     public void removeRole(int userId, Role role) {
-
+        this.userRepository.findById(userId).ifPresent(user -> {
+            user.getRoles().remove(role);
+            this.userRepository.save(user);
+        });
     }
 
     @Override
@@ -72,6 +78,15 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     @Override
     public OengusUser save(OengusUser user) {
         final var internalUser = this.mapper.fromDomain(user);
+
+        internalUser.getConnections().forEach((connection) -> {
+            connection.setUser(internalUser);
+
+            if (connection.getId() < 1) {
+                connection.setId(null);
+            }
+        });
+
         final var savedUser = this.userRepository.save(internalUser);
 
         return this.mapper.toDomain(savedUser);

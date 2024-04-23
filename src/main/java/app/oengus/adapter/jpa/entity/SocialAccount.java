@@ -1,10 +1,9 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.SocialPlatform;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
@@ -14,67 +13,29 @@ import java.util.Objects;
 
 import static app.oengus.adapter.rest.dto.v1.UserDto.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "social_accounts")
 public class SocialAccount {
     @Id
-    @JsonView(Views.Public.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     @JoinColumn(name = "user_id")
-    @JsonView(Views.Internal.class)
     private User user;
 
     @NotNull
     @Column(name = "platform")
     @Enumerated(EnumType.STRING) /* Default is ORDINAL */
-    @JsonView(Views.Public.class)
     private SocialPlatform platform;
 
     @NotNull
     @Size(max = 320)
     @Column(name = "username")
-    @JsonView(Views.Public.class)
     private String username;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @NotNull
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(@NotNull User user) {
-        this.user = user;
-    }
-
-    @NotNull
-    public SocialPlatform getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(@NotNull SocialPlatform platform) {
-        this.platform = platform;
-    }
-
-    @NotNull
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(@NotNull String username) {
-        this.username = username;
-    }
 
     // TODO: pull out to DTO
     @JsonIgnore

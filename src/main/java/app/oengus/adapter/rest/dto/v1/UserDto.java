@@ -1,12 +1,14 @@
 package app.oengus.adapter.rest.dto.v1;
 
-import app.oengus.domain.IUsername;
 import app.oengus.adapter.jpa.entity.SocialAccount;
-import app.oengus.application.LanguageService;
 import app.oengus.adapter.rest.Views;
+import app.oengus.application.LanguageService;
+import app.oengus.domain.IUsername;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.neovisionaries.i18n.CountryCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -14,6 +16,8 @@ import javax.validation.constraints.*;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Setter
 // TODO: this needs to be renamed
 public class UserDto implements IUsername {
     @JsonIgnore
@@ -80,118 +84,16 @@ public class UserDto implements IUsername {
     @Nullable
     private String languagesSpoken;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     @Deprecated
     public String getUsernameJapanese() {
         return displayName;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    @Nullable
-    public String getDiscordId() {
-        return discordId;
-    }
-
-    public void setDiscordId(@Nullable String discordId) {
-        this.discordId = discordId;
-    }
-
-    @Nullable
-    public String getTwitchId() {
-        return twitchId;
-    }
-
-    public void setTwitchId(@Nullable String twitchId) {
-        this.twitchId = twitchId;
-    }
-
-    @Nullable
-    public String getTwitterId() {
-        return twitterId;
-    }
-
-    public void setTwitterId(@Nullable String twitterId) {
-        this.twitterId = twitterId;
-    }
-
-    @Nullable
-    public String getPatreonId() {
-        return patreonId;
-    }
-
-    public void setPatreonId(@Nullable String patreonId) {
-        this.patreonId = patreonId;
-    }
-
-    @Nullable
-    public String getPronouns() {
-        return pronouns;
-    }
-
-    public void setPronouns(@Nullable String pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    public List<SocialAccount> getConnections() {
-        return connections;
-    }
-
-    public void setConnections(List<SocialAccount> connections) {
-        this.connections = connections;
-    }
-
-    @Nullable
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(@Nullable String country) {
-        this.country = country;
-    }
-
-    public String getLanguagesSpoken() {
-        return languagesSpoken;
-    }
-
-    public void setLanguagesSpoken(String languagesSpoken) {
-        this.languagesSpoken = languagesSpoken;
     }
 
     /// <editor-fold desc="validation" defaultstate="collapsed">
     @AssertTrue(message = "You must have at least one account synced")
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
-        if (!this.enabled) {
+        if (!this.enabled) { // TODO: check if password hash is set
             return true;
         }
 
@@ -219,5 +121,16 @@ public class UserDto implements IUsername {
 
         return Arrays.stream(this.languagesSpoken.split(",")).allMatch(LanguageService::isSupportedLanguage);
     }
+
+    // TODO: fix
+    /*@JsonIgnore
+    @AssertTrue
+    public boolean isEmailPresentForExistingUser() {
+        if (this.id != null && this.enabled) {
+            return StringUtils.isNotEmpty(this.mail);
+        }
+
+        return true;
+    }*/
     /// </editor-fold>
 }

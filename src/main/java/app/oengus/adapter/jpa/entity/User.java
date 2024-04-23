@@ -1,11 +1,8 @@
 package app.oengus.adapter.jpa.entity;
 
-import app.oengus.adapter.rest.Views;
 import app.oengus.domain.IUsername;
 import app.oengus.domain.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -28,93 +25,73 @@ import static app.oengus.adapter.rest.dto.v1.UserDto.USERNAME_REGEX;
 public class User implements IUsername {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
     private Integer id;
 
     @Column
-    @JsonView(Views.Public.class)
     @Size(min = 3, max = 32)
     @Pattern(regexp = USERNAME_REGEX)
     private String username;
 
     @Column(name = "display_name")
-    @JsonView(Views.Public.class)
     @Size(max = 32)
     private String displayName;
 
     @Column(name = "active")
-    @JsonView(Views.Public.class)
     private boolean enabled;
 
     @ElementCollection
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    @JsonView(Views.Public.class)
     private List<Role> roles;
 
-    @JsonManagedReference
     @OrderBy("platform ASC")
-    @JsonView(Views.Public.class)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> connections;
 
     @Email
     @Column
-    @JsonView(Views.Internal.class)
     private String mail;
 
-    @JsonView(Views.NeverFuckingShow.class)
     @Column(name = "hashed_password")
     private String hashedPassword;
 
     @Column(name = "email_verified")
-    @JsonView(Views.Public.class)
     private boolean emailVerified;
 
     @Column(name = "discord_id")
-    @JsonView(Views.Internal.class)
     private String discordId;
 
     @Column(name = "twitch_id")
-    @JsonView(Views.Internal.class)
     private String twitchId;
 
     @Column(name = "twitter_id")
-    @JsonView(Views.Internal.class)
     private String twitterId;
 
     @Column(name = "patreon_id")
-    @JsonView(Views.Internal.class)
     private String patreonId;
 
     @Nullable
     @Column(name = "pronouns")
-    @JsonView(Views.Public.class)
     @Size(max = 255)
     private String pronouns;
 
     @Nullable
     @Size(max = 3)
     @Column(name = "country")
-    @JsonView(Views.Public.class)
     private String country;
 
     @Nullable
     @Column(name = "languages_spoken")
-    @JsonView(Views.Public.class)
     private String languagesSpoken;
 
     @Column(name = "mfa_enabled")
-    @JsonView(Views.Internal.class)
     private boolean mfaEnabled;
 
     @Nullable
     @Column(name = "mfa_secret")
-    @JsonView(Views.NeverFuckingShow.class)
     private String mfaSecret;
 
     // TODO: I hate v1, this should be a DTO
-    @JsonView(Views.Public.class)
     public boolean hasPassword() {
         return StringUtils.isNotEmpty(this.hashedPassword);
     }
@@ -145,11 +122,6 @@ public class User implements IUsername {
         }
 
         return true;
-    }
-
-    @JsonIgnore
-    public String getHashedPassword() {
-        return hashedPassword;
     }
 
     @JsonIgnore

@@ -23,6 +23,8 @@ public record V1UserDto(
 
     // annoying stuff below
     @JsonView(Views.Internal.class)
+    boolean mfaEnabled,
+    @JsonView(Views.Internal.class)
     String email,
     @JsonView(Views.Internal.class)
     String discordId,
