@@ -20,4 +20,9 @@ public class V1CategoryDto {
     private RunType type;
     private String code;
     private List<OpponentCategoryDto> opponents;
+
+    // This is only for backwards compatibility
+    public List<OpponentCategoryDto> getOpponentDtos() {
+        return this.opponents;
+    }
 }

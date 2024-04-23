@@ -29,6 +29,8 @@ public class Line {
     private int position;
     private RunType type;
     private List<Runner> runners = new ArrayList<>();
+    // Category id for filtering in the UI.
+    private Integer categoryId;
 
     // setup block settings
     private boolean setupBlock;

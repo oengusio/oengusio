@@ -3,6 +3,7 @@ package app.oengus.adapter.jpa;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.ScheduleEntity;
 import app.oengus.adapter.jpa.mapper.ScheduleEntityMapper;
+import app.oengus.adapter.jpa.repository.MarathonRepository;
 import app.oengus.adapter.jpa.repository.ScheduleRepository;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleRepository repository;
+    private final MarathonRepository marathonRepository;
     private final ScheduleEntityMapper mapper;
 
     @Override
@@ -58,6 +60,19 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     @Override
     public Schedule save(Schedule schedule) {
         final var entity = this.mapper.fromDomain(schedule);
+
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
+        entity.getLines().forEach((line) -> {
+            line.setSchedule(entity);
+
+            if (line.getId() < 1) {
+                line.setId(null);
+            }
+        });
+
         final var savedEntity = this.repository.save(entity);
 
         return this.entityToDomain(savedEntity);
@@ -71,7 +86,11 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private Schedule entityToDomain(ScheduleEntity entity) {
         final var schedule = this.mapper.toDomain(entity);
 
-        this.setDateOnLines(schedule, entity.getMarathon());
+        // Need to re-fetch the marathon, apparently.
+        // TODO: figure out how safe this get is.
+        final var marathon = this.marathonRepository.findById(entity.getMarathon().getId()).get();
+
+        this.setDateOnLines(schedule, marathon);
 
         return schedule;
     }

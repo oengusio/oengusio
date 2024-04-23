@@ -8,8 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class V1ScheduleDto {
-
     private int id;
     private List<ScheduleLineDto> lines;
-    private List<ScheduleLineDto> linesWithTime;
 }

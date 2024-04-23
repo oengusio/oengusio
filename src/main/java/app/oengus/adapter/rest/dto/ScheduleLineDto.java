@@ -19,6 +19,7 @@ public class ScheduleLineDto {
     private String ratio;
     private String categoryName;
     // Sigh, I hate that this is stored
+    // But it is because of filtering in the UI :/
     @Nullable
     private Integer categoryId;
     private Duration estimate;

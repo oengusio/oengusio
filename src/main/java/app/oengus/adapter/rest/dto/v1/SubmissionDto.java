@@ -17,4 +17,9 @@ public class SubmissionDto {
     private Set<V1GameDto> games;
     private Set<V1AnswerDto> answers;
     private Set<V1OpponentDto> opponents;
+
+    // This is only for backwards compatibility
+    public Set<V1OpponentDto> getOpponentDtos() {
+        return this.opponents;
+    }
 }

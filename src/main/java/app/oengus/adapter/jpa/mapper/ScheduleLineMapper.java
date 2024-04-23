@@ -16,11 +16,10 @@ import org.mapstruct.*;
     }
 )
 public interface ScheduleLineMapper {
-    @BeanMapping(ignoreUnmappedSourceProperties = { "categoryId", "customDataDTO" })
+    @BeanMapping(ignoreUnmappedSourceProperties = { "customDataDTO" })
     @Mapping(target = "scheduleId", source = "schedule.id")
     Line toDomain(ScheduleLine entity);
 
-    @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "customDataDTO", ignore = true)
     @Mapping(target = "schedule.id", source = "scheduleId")
     ScheduleLine fromDomain(Line line);

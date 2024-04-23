@@ -1,7 +1,9 @@
 package app.oengus.adapter.rest.mapper;
 
+import app.oengus.adapter.jpa.entity.SocialAccount;
 import app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.*;
+import app.oengus.domain.Connection;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
@@ -38,6 +40,7 @@ public interface ScheduleDtoMapper {
             dto.setEnabled(true);
             dto.setConnections(List.of());
             dto.setPronouns(List.of());
+            dto.setConnections(List.of());
             dto.setLanguagesSpoken(null);
             dto.setBanned(false);
             dto.setCountry(null);
@@ -47,7 +50,7 @@ public interface ScheduleDtoMapper {
             dto.setUsername(user.getUsername());
             dto.setDisplayName(user.getDisplayName());
             dto.setEnabled(user.isEnabled());
-//            dto.setConnections(user.getConnections());
+            dto.setConnections(this.fromConnections(user.getConnections()));
             dto.setPronouns(user.getPronouns());
             dto.setLanguagesSpoken(user.getLanguagesSpoken());
             dto.setBanned(user.getRoles().contains(Role.ROLE_BANNED));
@@ -57,8 +60,13 @@ public interface ScheduleDtoMapper {
         return dto;
     }
 
+    // TODO: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    //  WHY ARE YOU USING A DATABASE MODEL
+    List<SocialAccount> fromConnections(List<Connection> connections);
+
     ScheduleTickerDto tickerToDto(Ticker ticker);
 
+    @Mapping(target = "id", source = "id")
     Schedule fromV1UpdateRequest(ScheduleUpdateRequestDto requestDto);
 
     Line fromV1UpdateRequest(ScheduleUpdateRequestDto.Line requestLine);
