@@ -18,23 +18,6 @@ discord:
     botTokenRaw: ${DISCORD_BOT_TOKEN}
     botToken: 'Bot ${DISCORD_BOT_TOKEN}'
 
-twitter:
-    oauth:
-        # oauth2
-        clientId: ${TWITTER_OAUTH2_CLIENT_ID}
-        clientSecret: ${TWITTER_OAUTH2_CLIENT_SECRET}
-        redirectUri: '/login/twitter'
-        syncRedirectUri: '/user/settings/sync/twitter'
-        grantType: 'authorization_code'
-        scope:
-            - users.read
-            - tweet.read
-        # oauth 1.0a
-        consumerKey: ${TWITTER_CONSUMER_KEY}
-        consumerSecret: ${TWITTER_CONSUMER_SECRET}
-        accessToken: ${TWITTER_ACCESS_TOKEN}
-        accessTokenSecret: ${TWITTER_ACCESS_TOKEN_SECRET}
-
 rabbitmq:
     uri: ${AMQP_URI}
     username: ${AMQP_USERNAME}
@@ -108,7 +91,7 @@ spring:
                 current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
                 temp:
                     use_jdbc_metadata_defaults: false
-        open-in-view: true
+        open-in-view: true # TODO: should this be false?
     datasource:
         url: ${DB_URL}
         username: ${DB_USERNAME}

@@ -1153,4 +1153,8 @@
                                  deleteCascade="true"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="20240416-1" author="duncte123">
+        <dropTable tableName="twitter_audit"/>
+    </changeSet>
 </databaseChangeLog>

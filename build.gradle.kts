@@ -5,15 +5,15 @@ plugins {
     application
 
     id("org.springframework.boot") version "2.7.0"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.spring.dependency-management") version "1.1.3"
     id("io.freefair.lombok") version "8.4"
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.2")
-    }
-}
+//dependencyManagement {
+//    imports {
+//        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.2")
+//    }
+//}
 
 project.group = "app.oengus"
 project.version = "2024.04.12"
@@ -21,6 +21,12 @@ project.version = "2024.04.12"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }
 
 application {
@@ -34,7 +40,7 @@ repositories {
     maven { url = uri("https://jitpack.io") }
 }
 
-val sentryVersion = "5.7.0"
+val sentryVersion = "7.8.0"
 val mapstructVersion = "1.5.5.Final"
 
 dependencies {
@@ -86,9 +92,6 @@ dependencies {
     // Paypal
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
 
-    // Twitter
-    implementation(group = "org.twitter4j", name = "twitter4j-core", version = "4.0.7")
-
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
@@ -113,6 +116,7 @@ dependencies {
     // development tools, will be removed in production builds
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+//    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 }
 
