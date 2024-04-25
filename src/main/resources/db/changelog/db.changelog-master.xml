@@ -1157,4 +1157,12 @@
     <changeSet id="20240416-1" author="duncte123">
         <dropTable tableName="twitter_audit"/>
     </changeSet>
+
+    <changeSet id="20240425-1" author="duncte123">
+        <addColumn tableName="schedule">
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

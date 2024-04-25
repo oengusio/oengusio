@@ -2,7 +2,6 @@ package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.application.UserLookupService;
-import app.oengus.application.UserService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +47,11 @@ public class UserSecurityAdapter implements UserSecurityPort {
             return null;
         }
 
-        final var principal = auth.getPrincipal();
-
-        if (principal instanceof String str && "anonymousUser".equals(str)) {
-            return null;
+        if (auth.getPrincipal() instanceof UserDetailsDto details) {
+            return details;
         }
 
-        return (UserDetailsDto) auth.getPrincipal();
+        return null;
     }
 
     private Authentication getAuthentication() {

@@ -4,6 +4,7 @@ import app.oengus.adapter.jpa.entity.SocialAccount;
 import app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v1.request.SimpleUserDto;
 import app.oengus.adapter.rest.dto.v2.schedule.*;
+import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleCreateRequestDto;
 import app.oengus.domain.Connection;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.schedule.Line;
@@ -77,6 +78,8 @@ public interface ScheduleDtoMapper {
     OengusUser fromV1UpdateRequest(SimpleUserDto lineUser);
 
     ScheduleInfoDto infoFromSchedule(Schedule schedule);
+
+    Schedule toDomain(ScheduleCreateRequestDto createRequest);
 
     ScheduleDto fromDomain(Schedule schedule);
 

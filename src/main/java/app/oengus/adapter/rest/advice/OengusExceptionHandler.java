@@ -1,6 +1,7 @@
 package app.oengus.adapter.rest.advice;
 
 import app.oengus.domain.exception.OengusBusinessException;
+import app.oengus.domain.exception.base.GenericNotFoundException;
 import io.sentry.Sentry;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +58,13 @@ public class OengusExceptionHandler {
                 .body(exc.getMessage());
         }
 
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .header("Content-Type", "application/json")
+            .body(toMap(req, exc));
+    }
+
+    @ExceptionHandler(GenericNotFoundException.class)
+    public ResponseEntity<?> genericNotFoundHandler(final GenericNotFoundException exc, final HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .header("Content-Type", "application/json")
             .body(toMap(req, exc));
