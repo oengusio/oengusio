@@ -1157,4 +1157,19 @@
     <changeSet id="20240416-1" author="duncte123">
         <dropTable tableName="twitter_audit"/>
     </changeSet>
+
+    <changeSet id="20240425-1" author="duncte123">
+        <addColumn tableName="schedule">
+            <column name="name" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="slug" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addUniqueConstraint tableName="schedule"
+                             columnNames="marathon_id,slug"
+                             constraintName="uq_schedule_marathon_slug"/>
+    </changeSet>
 </databaseChangeLog>

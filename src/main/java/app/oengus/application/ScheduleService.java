@@ -2,6 +2,7 @@ package app.oengus.application;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.exception.schedule.EmptyScheduleException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Line;
@@ -62,6 +63,7 @@ public class ScheduleService {
     // v1 stuff
 
     @Nullable
+    @Deprecated // Multi schedule soontm so this is redundant or needs a rename
     public Schedule findByMarathon(final String marathonId) {
         return this.schedulePersistencePort.findFirstForMarathon(marathonId).orElse(null);
 
@@ -144,26 +146,37 @@ public class ScheduleService {
         );
     }
 
-    public void saveOrUpdate(final String marathonId, final Schedule schedule) throws NotFoundException {
-        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
-            () -> new NotFoundException("Marathon not found")
-        );
+    // TODO: create method that checks if a user has the maximum number of schedules
+    //  Free users: 1 schedule
+    //  Supporters: 4 schedules (Hopefully 4 will be plenty for the coming years for ESA)
+
+    public Schedule saveOrUpdate(final String marathonId, final Schedule schedule) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
 
         schedule.setMarathonId(marathonId);
 
-        this.schedulePersistencePort.save(schedule);
+        final var saved = this.schedulePersistencePort.save(schedule);
 
         if (marathon.isScheduleDone()) {
-            this.computeEndDate(marathon, schedule);
+            this.computeEndDate(marathon, saved);
             this.marathonPersistencePort.save(marathon);
         }
+
+        return saved;
     }
 
     public void computeEndDate(final Marathon marathon, final Schedule schedule) {
         marathon.setEndDate(marathon.getStartDate());
-        schedule.getLines().forEach(scheduleLine -> {
+
+        // TODO: this is probably a nicer way to do this with the stream api
+        //  Maybe reduce?
+        schedule.getLines().forEach(scheduleLine ->
             marathon.setEndDate(
-                marathon.getEndDate().plus(scheduleLine.getEstimate()).plus(scheduleLine.getSetupTime()));
-        });
+                marathon.getEndDate()
+                    .plus(scheduleLine.getEstimate())
+                    .plus(scheduleLine.getSetupTime())
+            )
+        );
     }
 }

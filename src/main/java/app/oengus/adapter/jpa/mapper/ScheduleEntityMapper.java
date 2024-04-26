@@ -16,16 +16,13 @@ import org.mapstruct.*;
 // TODO: un-ignore name when we have one.
 public interface ScheduleEntityMapper {
     @Mapping(target = "marathonId", source = "marathon.id")
-    @Mapping(target = "name", ignore = true)
     Schedule toDomain(ScheduleEntity entity);
 
     @BeanMapping(ignoreUnmappedSourceProperties = { "lines" })
     @Mapping(target = "marathonId", source = "marathon.id")
-    @Mapping(target = "name", ignore = true)
     @Mapping(target = "lines", ignore = true)
     Schedule toDomainNoLines(ScheduleEntity entity);
 
-    @BeanMapping(ignoreUnmappedSourceProperties = { "name" })
     @InheritInverseConfiguration(name = "toDomain")
     ScheduleEntity fromDomain(Schedule schedule);
 }

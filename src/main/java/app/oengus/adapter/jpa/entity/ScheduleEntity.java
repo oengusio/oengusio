@@ -20,6 +20,12 @@ public class ScheduleEntity {
     @JoinColumn(name = "marathon_id")
     private MarathonEntity marathon;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "slug")
+    private String slug;
+
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC")
     private List<ScheduleLine> lines;

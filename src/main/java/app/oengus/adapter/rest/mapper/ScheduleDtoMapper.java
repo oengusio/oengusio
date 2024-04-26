@@ -1,9 +1,9 @@
 package app.oengus.adapter.rest.mapper;
 
 import app.oengus.adapter.jpa.entity.SocialAccount;
-import app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v1.request.SimpleUserDto;
 import app.oengus.adapter.rest.dto.v2.schedule.*;
+import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.domain.Connection;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.schedule.Line;
@@ -16,6 +16,7 @@ import app.oengus.domain.Role;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -68,15 +69,19 @@ public interface ScheduleDtoMapper {
     ScheduleTickerDto tickerToDto(Ticker ticker);
 
     @Mapping(target = "id", source = "id")
-    Schedule fromV1UpdateRequest(ScheduleUpdateRequestDto requestDto);
+    Schedule fromV1UpdateRequest(app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto requestDto);
 
-    Line fromV1UpdateRequest(ScheduleUpdateRequestDto.Line requestLine);
+    Line fromV1UpdateRequest(app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto.Line requestLine);
 
-    Runner fromV1UpdateRequest(ScheduleUpdateRequestDto.LineRunner lineRunner);
+    Runner fromV1UpdateRequest(app.oengus.adapter.rest.dto.v1.request.ScheduleUpdateRequestDto.LineRunner lineRunner);
 
     OengusUser fromV1UpdateRequest(SimpleUserDto lineUser);
 
     ScheduleInfoDto infoFromSchedule(Schedule schedule);
+
+    Schedule toDomain(ScheduleUpdateRequestDto createRequest);
+
+    void applyPatch(@MappingTarget Schedule schedule, ScheduleUpdateRequestDto patchRequest);
 
     ScheduleDto fromDomain(Schedule schedule);
 

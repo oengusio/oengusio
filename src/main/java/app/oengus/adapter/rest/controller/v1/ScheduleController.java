@@ -7,6 +7,7 @@ import app.oengus.adapter.rest.dto.V1ScheduleDto;
 import app.oengus.application.ExportService;
 import app.oengus.application.ScheduleService;
 import app.oengus.adapter.rest.Views;
+import app.oengus.domain.exception.MarathonNotFoundException;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -95,7 +96,12 @@ public class ScheduleController {
     ) throws NotFoundException {
         final var schedule = this.mapper.fromV1UpdateRequest(scheduleDto);
 
-        this.scheduleService.saveOrUpdate(marathonId, schedule);
+        // try-catch for backwards compatibility
+        try {
+            this.scheduleService.saveOrUpdate(marathonId, schedule);
+        } catch (MarathonNotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
 
         return ResponseEntity.noContent().build();
     }
