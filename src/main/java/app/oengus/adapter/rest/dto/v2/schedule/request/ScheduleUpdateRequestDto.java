@@ -16,7 +16,7 @@ public class ScheduleUpdateRequestDto {
     public static final String SCHEDULE_NAME_REGEX = "^[a-zA-Z0-9_\\- ]+$";
     public static final String SCHEDULE_SLUG_REGEX = "^[a-z0-9_\\-]+$";
 
-    // TODO: special update request
+    // TODO: special update request that allows for nullable fields
     @NotNull
     @NotBlank
     @Size(min = 1, max = 50)
