@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -117,6 +118,22 @@ public class OengusExceptionHandler {
             .header("Content-Type", "application/json")
             .body(toMap(req, exc));
     }
+
+    // Finally, proper validation error :D
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(
+        final MethodArgumentNotValidException ex,
+        final HttpServletRequest req
+    ) {
+        final Map<String, Object> stringStringMap = toMap(req, ex);
+
+        stringStringMap.put("errors", ex.getBindingResult().getAllErrors());
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .header("Content-Type", "application/json")
+            .body(stringStringMap);
+    }
+
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, Object>> constraintViolationException(final ConstraintViolationException exc, final HttpServletRequest req) {

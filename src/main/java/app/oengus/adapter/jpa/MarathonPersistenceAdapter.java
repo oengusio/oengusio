@@ -153,6 +153,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
         );
     }
 
+    @Transactional // somehow, this makes stuff not crash WTF
     @Override
     public List<Marathon> findFutureWithScheduledSubmissions() {
         return this.repository.findFutureMarathonsWithScheduledSubmissions()

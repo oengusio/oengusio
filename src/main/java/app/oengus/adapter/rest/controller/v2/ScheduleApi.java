@@ -95,7 +95,34 @@ public interface ScheduleApi {
         @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
-    // Update schedule: name + slug?
+    @PatchMapping("/{scheduleId}")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Update a schedule in a marathon.",
+        responses = {
+            @ApiResponse(
+                description = "Schedule updated",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                )
+            ),
+            @ApiResponse(
+                description = "Invalid data",
+                responseCode = "422"
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<ScheduleInfoDto> updateSchedule(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId,
+        @RequestBody @Valid final ScheduleUpdateRequestDto body
+    );
 
     // get + put /schedules/{scheduleId}/lines to just update the lines for a schedule
 }

@@ -16,6 +16,7 @@ import app.oengus.domain.Role;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -79,6 +80,8 @@ public interface ScheduleDtoMapper {
     ScheduleInfoDto infoFromSchedule(Schedule schedule);
 
     Schedule toDomain(ScheduleUpdateRequestDto createRequest);
+
+    void applyPatch(@MappingTarget Schedule schedule, ScheduleUpdateRequestDto patchRequest);
 
     ScheduleDto fromDomain(Schedule schedule);
 

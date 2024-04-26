@@ -14,4 +14,6 @@ public class ScheduleInfoDto {
     private String marathonId;
     @Schema(description = "The name of this schedule")
     private String name;
+    @Schema(description = "The slug of this schedule, displayed in the url.")
+    private String slug;
 }
