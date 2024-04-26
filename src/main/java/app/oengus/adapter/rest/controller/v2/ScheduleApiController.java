@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
-import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleCreateRequestDto;
+import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
@@ -62,7 +62,7 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
-    public ResponseEntity<ScheduleInfoDto> createSchedule(String marathonId, ScheduleCreateRequestDto body) {
+    public ResponseEntity<ScheduleInfoDto> createSchedule(String marathonId, ScheduleUpdateRequestDto body) {
         final var schedule = this.mapper.toDomain(body);
 
         final var savedSchedule = this.scheduleService.saveOrUpdate(marathonId, schedule);

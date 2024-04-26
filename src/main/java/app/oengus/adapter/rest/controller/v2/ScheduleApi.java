@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
-import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleCreateRequestDto;
+import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,7 +42,6 @@ public interface ScheduleApi {
     )
     ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
-    // TODO: use slugs instead?
     @GetMapping("/{scheduleId}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
@@ -93,7 +92,7 @@ public interface ScheduleApi {
     )
     ResponseEntity<ScheduleInfoDto> createSchedule(
         @PathVariable("marathonId") final String marathonId,
-        @RequestBody @Valid final ScheduleCreateRequestDto body
+        @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
     // Update schedule: name + slug?

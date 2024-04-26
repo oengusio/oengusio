@@ -11,9 +11,10 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@Schema(description = "Data for creating a new schedule")
-public class ScheduleCreateRequestDto {
+@Schema(description = "Data for creating or updating a schedule")
+public class ScheduleUpdateRequestDto {
     public static final String SCHEDULE_NAME_REGEX = "^[a-zA-Z0-9_\\- ]*$";
+    public static final String SCHEDULE_SLUG_REGEX = "^[a-zA-Z0-9_\\-]*$";
 
     @NotNull
     @NotBlank
@@ -21,4 +22,11 @@ public class ScheduleCreateRequestDto {
     @MatchesPattern(SCHEDULE_NAME_REGEX)
     @Schema(description = "The name of this schedule, as displayed in the UI.")
     private String name;
+
+    @NotNull
+    @NotBlank
+    @Size(min = 1, max = 255)
+    @MatchesPattern(SCHEDULE_SLUG_REGEX)
+    @Schema(description = "This is the 'slug' of the schedule, displayed in the url.")
+    private String slug;
 }
