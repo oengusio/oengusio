@@ -2,7 +2,9 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
 import app.oengus.application.MarathonService;
@@ -113,5 +115,33 @@ public class ScheduleApiController implements ScheduleApi {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(new BooleanStatusDto(true));
+    }
+
+    @Override
+    public ResponseEntity<DataListDto<LineDto>> getLinesForSchedule(String marathonId, int scheduleId) {
+        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
+            .orElseThrow(ScheduleNotFoundException::new);
+        final var dtos = schedule.getLines().stream().map(this.mapper::fromDomain).toList();
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new DataListDto<>(dtos));
+    }
+
+    @Override
+    public ResponseEntity<DataListDto<LineDto>> saveLinesForSchedule(String marathonId, int scheduleId, LineUpdateRequestDto body) {
+        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
+            .orElseThrow(ScheduleNotFoundException::new);
+        final var newLines = body.getData().stream().map(this.mapper::toDomain).toList();
+
+        schedule.setLines(newLines);
+
+        final var savedSchedule = this.scheduleService.saveOrUpdate(marathonId, schedule);
+
+        final var dtos = savedSchedule.getLines().stream().map(this.mapper::fromDomain).toList();
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new DataListDto<>(dtos));
     }
 }

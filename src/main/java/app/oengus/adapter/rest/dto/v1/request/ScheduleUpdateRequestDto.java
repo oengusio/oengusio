@@ -19,6 +19,7 @@ public class ScheduleUpdateRequestDto {
     @Getter
     @Setter
     public static class Line {
+        private int id;
         private String gameName;
         private String console;
         private Integer categoryId;
@@ -29,6 +30,7 @@ public class ScheduleUpdateRequestDto {
         private Duration setupTime;
         private boolean setupBlock;
         private boolean customRun;
+        private int position;
         private RunType type;
         private String setupBlockText;
         private String customData;

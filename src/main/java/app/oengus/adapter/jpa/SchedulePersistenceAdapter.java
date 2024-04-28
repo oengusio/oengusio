@@ -85,6 +85,15 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
             if (line.getId() < 1) {
                 line.setId(null);
             }
+
+            line.getRunners().forEach((runner) -> {
+                final var user = runner.getUser();
+
+                // Reset runnerName prop if we have a user id.
+                if (user != null) {
+                    runner.setRunnerName(null);
+                }
+            });
         });
 
         final var savedEntity = this.repository.save(entity);

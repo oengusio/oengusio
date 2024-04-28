@@ -16,4 +16,6 @@ public class ScheduleInfoDto {
     private String name;
     @Schema(description = "The slug of this schedule, displayed in the url.")
     private String slug;
+    @Schema(description = "True if this schedule is published and should be shown in the UI. Unpublished schedule should be filtered out when not displayed on the admin page.")
+    private boolean published = true;
 }

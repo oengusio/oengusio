@@ -2,8 +2,9 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
+import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 @RequestMapping("/v2/marathons/{marathonId}/schedules")
 public interface ScheduleApi {
 
+    // TODO: some filter for published schedules? maybe just do the discord thing and only show the ones that are published in the UI
     @GetMapping
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
@@ -32,7 +34,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ScheduleDto.class))
+                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
                 )
             ),
             @ApiResponse(
@@ -68,8 +70,8 @@ public interface ScheduleApi {
         @RequestParam(defaultValue = "false", required = false) boolean withCustomData*/
     );
 
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @GetMapping("/slug-exists")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Check if a schedule slug exists in a marathon",
         responses = {
@@ -92,6 +94,7 @@ public interface ScheduleApi {
         @RequestParam("slug") final String slug
     );
 
+    // TODO: preauth to see if a new schedule can be added
     @PostMapping
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @Operation(
@@ -102,7 +105,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                    schema = @Schema(implementation = ScheduleInfoDto.class)
                 )
             ),
             @ApiResponse(
@@ -130,7 +133,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                    schema = @Schema(implementation = ScheduleInfoDto.class)
                 )
             ),
             @ApiResponse(
@@ -159,7 +162,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = BooleanStatusDto.class))
+                    schema = @Schema(implementation = BooleanStatusDto.class)
                 )
             ),
             @ApiResponse(
@@ -173,5 +176,56 @@ public interface ScheduleApi {
         @PathVariable final int scheduleId
     );
 
-    // get + put /schedules/{scheduleId}/lines to just update the lines for a schedule
+    @GetMapping("/{scheduleId}/lines")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Get the lines for a schedule, no cache is applied. Custom data is always sent.",
+        responses = {
+            @ApiResponse(
+                description = "Lines for a schedule",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = LineDto.class))
+                )
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<DataListDto<LineDto>> getLinesForSchedule(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId
+    );
+
+    @PutMapping("/{scheduleId}/lines")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Update the lines for a schedule. Custom data is always sent.",
+        responses = {
+            @ApiResponse(
+                description = "Updated lines",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = LineDto.class))
+                )
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            ),
+            @ApiResponse(
+                description = "You sent invalid data",
+                responseCode = "422"
+            )
+        }
+    )
+    ResponseEntity<DataListDto<LineDto>> saveLinesForSchedule(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId,
+        @RequestBody @Valid final LineUpdateRequestDto body
+    );
 }

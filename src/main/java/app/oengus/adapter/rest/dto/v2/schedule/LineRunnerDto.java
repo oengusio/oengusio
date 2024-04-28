@@ -1,11 +1,13 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.AssertTrue;
 
 @Getter
 @Setter
@@ -25,5 +27,12 @@ public class LineRunnerDto {
         }
 
         return this.profile.getDisplayName();
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "Either profile or runnerName must be set")
+    public boolean runnerOrNameIsSet() {
+        return (this.profile != null && this.profile.getId() > 0) ||
+            (this.runnerName != null && !this.runnerName.isBlank());
     }
 }

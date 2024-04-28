@@ -13,10 +13,7 @@ import app.oengus.domain.schedule.Ticker;
 import app.oengus.adapter.rest.dto.UserProfileDto;
 import app.oengus.adapter.rest.dto.V1ScheduleDto;
 import app.oengus.domain.Role;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -85,8 +82,16 @@ public interface ScheduleDtoMapper {
 
     ScheduleDto fromDomain(Schedule schedule);
 
+    @Mapping(target = "gameName", source = "game")
+    @Mapping(target = "categoryName", source = "category")
+    Line toDomain(LineDto dto);
+
+    @InheritInverseConfiguration(name = "toDomain")
     LineDto fromDomain(Line line);
 
     @Mapping(target = "profile", source = "user")
     LineRunnerDto fromDomain(Runner runner);
+
+    @Mapping(target = "user", source = "profile")
+    Runner toDomain(LineRunnerDto dto);
 }
