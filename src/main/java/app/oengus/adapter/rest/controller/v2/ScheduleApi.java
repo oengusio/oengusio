@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
@@ -45,14 +46,14 @@ public interface ScheduleApi {
     @GetMapping("/{scheduleId}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
-        summary = "Get a schedule for a marathon by its id, has a 5 minute cache",
+        summary = "Get the info of a schedule for a marathon by its id, has a 5 minute cache",
         responses = {
             @ApiResponse(
-                description = "The requested schedule",
+                description = "The requested schedule info",
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ScheduleDto.class)
+                    schema = @Schema(implementation = ScheduleInfoDto.class)
                 )
             ),
             @ApiResponse(
@@ -61,10 +62,34 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<ScheduleDto> findScheduleById(
+    ResponseEntity<ScheduleInfoDto> findScheduleById(
         @PathVariable("marathonId") final String marathonId,
-        @PathVariable("scheduleId") final int scheduleId,
-        @RequestParam(defaultValue = "false", required = false) boolean withCustomData
+        @PathVariable("scheduleId") final int scheduleId/*,
+        @RequestParam(defaultValue = "false", required = false) boolean withCustomData*/
+    );
+
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @GetMapping("/slug-exists")
+    @Operation(
+        summary = "Check if a schedule slug exists in a marathon",
+        responses = {
+            @ApiResponse(
+                description = "True if the slug exists, false otherwise",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = BooleanStatusDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<BooleanStatusDto> existsBySlug(
+        @PathVariable("marathonId") final String marathonId,
+        @RequestParam("slug") final String slug
     );
 
     @PostMapping

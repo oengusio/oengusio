@@ -10,7 +10,9 @@ import java.util.Optional;
 public interface ScheduleRepository extends CrudRepository<ScheduleEntity, Integer> {
     Optional<ScheduleEntity> findByMarathonAndId(MarathonEntity marathon, int id);
 
-    List<ScheduleEntity> findByMarathon(MarathonEntity marathon);
+    List<ScheduleEntity> findByMarathonOrderByIdAsc(MarathonEntity marathon);
 
     void deleteByMarathon(MarathonEntity marathon);
+
+    boolean existsByMarathonAndSlug(MarathonEntity marathon, String slug);
 }

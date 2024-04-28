@@ -96,6 +96,21 @@ public class ScheduleController {
     ) throws NotFoundException {
         final var schedule = this.mapper.fromV1UpdateRequest(scheduleDto);
 
+        // Keep old name if possible, or force defaults
+        this.scheduleService.findFirstByMarathon(marathonId).ifPresent((oldSchedule) -> {
+            if (oldSchedule.getName() != null && !oldSchedule.getName().isBlank()) {
+                schedule.setName(oldSchedule.getName());
+            } else {
+                schedule.setName("A cool schedule");
+            }
+
+            if (oldSchedule.getSlug() != null && !oldSchedule.getSlug().isBlank()) {
+                schedule.setSlug(oldSchedule.getSlug());
+            } else {
+                schedule.setSlug("schedule-1");
+            }
+        });
+
         // try-catch for backwards compatibility
         try {
             this.scheduleService.saveOrUpdate(marathonId, schedule);

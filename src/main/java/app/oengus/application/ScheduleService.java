@@ -34,6 +34,10 @@ public class ScheduleService {
         return this.schedulePersistencePort.findAllForMarathon(marathonId);
     }
 
+    public Optional<Schedule> findInfoByScheduleId(final String marathonId, final int scheduleId) {
+        return this.schedulePersistencePort.findByIdForMarathonWithoutLines(marathonId, scheduleId);
+    }
+
     public Optional<Schedule> findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
         final var optionalSchedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId);
 
@@ -59,6 +63,10 @@ public class ScheduleService {
         return Optional.of(schedule);
     }
 
+    public boolean hasUsedSlug(final String marathonId, final String slug) {
+        return this.schedulePersistencePort.existsBySlug(marathonId, slug);
+    }
+
     ///////////
     // v1 stuff
 
@@ -66,6 +74,12 @@ public class ScheduleService {
     @Deprecated // Multi schedule soontm so this is redundant or needs a rename
     public Schedule findByMarathon(final String marathonId) {
         return this.schedulePersistencePort.findFirstForMarathon(marathonId).orElse(null);
+
+    }
+
+    @Deprecated // Multi schedule soontm so this is redundant when the v1 api gets nuked
+    public Optional<Schedule> findFirstByMarathon(final String marathonId) {
+        return this.schedulePersistencePort.findFirstForMarathon(marathonId);
 
     }
 

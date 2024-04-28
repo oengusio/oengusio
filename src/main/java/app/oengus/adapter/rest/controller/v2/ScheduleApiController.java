@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
@@ -44,22 +44,31 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
-    public ResponseEntity<ScheduleDto> findScheduleById(
-        final String marathonId, final int scheduleId, boolean withCustomData
+    public ResponseEntity<ScheduleInfoDto> findScheduleById(
+        final String marathonId, final int scheduleId
     ) {
         if (!this.marathonService.exists(marathonId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
 
-        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, withCustomData).orElseThrow(
+        final var schedule = this.scheduleService.findInfoByScheduleId(marathonId, scheduleId).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found")
         );
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(5, false))
             .body(
-                this.mapper.fromDomain(schedule)
+                this.mapper.infoFromSchedule(schedule)
             );
+    }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> existsBySlug(String marathonId, String slug) {
+        final var exists = this.scheduleService.hasUsedSlug(marathonId, slug);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(exists));
     }
 
     @Override

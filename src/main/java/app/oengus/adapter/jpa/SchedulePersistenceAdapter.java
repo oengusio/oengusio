@@ -23,7 +23,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
 
     @Override
     public Optional<Schedule> findFirstForMarathon(String marathonId) {
-        return this.repository.findByMarathon(MarathonEntity.ofId(marathonId))
+        return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
             .findFirst()
             .map(this::entityToDomain);
@@ -38,8 +38,22 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    public Optional<Schedule> findByIdForMarathonWithoutLines(String marathonId, int scheduleId) {
+        return this.repository.findByMarathonAndId(
+                MarathonEntity.ofId(marathonId), scheduleId
+            )
+            .stream()
+            .peek(
+                // TODO: will this fuck something up?
+                (schedule) -> schedule.setLines(List.of())
+            )
+            .map(this.mapper::toDomainNoLines)
+            .findFirst();
+    }
+
+    @Override
     public List<Schedule> findAllForMarathon(String marathonId) {
-        return this.repository.findByMarathon(MarathonEntity.ofId(marathonId))
+        return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
             .map(this::entityToDomain)
             .toList();
@@ -47,7 +61,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
 
     @Override
     public List<Schedule> findAllForMarathonWithoutLines(String marathonId) {
-        return this.repository.findByMarathon(MarathonEntity.ofId(marathonId))
+        return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
             .peek(
                 // TODO: will this fuck something up?
@@ -81,6 +95,14 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     @Override
     public void deleteAllForMarathon(String marathonId) {
         this.repository.deleteByMarathon(MarathonEntity.ofId(marathonId));
+    }
+
+    @Override
+    public boolean existsBySlug(String marathonId, String slug) {
+        return this.repository.existsByMarathonAndSlug(
+            MarathonEntity.ofId(marathonId),
+            slug
+        );
     }
 
     private Schedule entityToDomain(ScheduleEntity entity) {

@@ -10,6 +10,8 @@ public interface SchedulePersistencePort {
 
     Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId);
 
+    Optional<Schedule> findByIdForMarathonWithoutLines(String marathonId, int scheduleId);
+
     List<Schedule> findAllForMarathon(String marathonId);
 
     List<Schedule> findAllForMarathonWithoutLines(String marathonId);
@@ -17,4 +19,6 @@ public interface SchedulePersistencePort {
     Schedule save(Schedule schedule);
 
     void deleteAllForMarathon(String marathonId);
+
+    boolean existsBySlug(String marathonId, String slug);
 }
