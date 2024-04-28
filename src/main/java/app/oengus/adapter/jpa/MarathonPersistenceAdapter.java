@@ -3,8 +3,10 @@ package app.oengus.adapter.jpa;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.MarathonMapper;
+import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.MarathonRepository;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,17 @@ import java.util.Optional;
 public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     private final MarathonRepository repository;
     private final MarathonMapper mapper;
+    private final UserMapper userMapper;
 
     @Override
     public Optional<Marathon> findById(String marathonId) {
         return this.repository.findById(marathonId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public Optional<OengusUser> findCreatorById(String marathonId) {
+        return this.repository.findCreatorById(MarathonEntity.ofId(marathonId))
+            .map(this.userMapper::toDomain);
     }
 
     @Override

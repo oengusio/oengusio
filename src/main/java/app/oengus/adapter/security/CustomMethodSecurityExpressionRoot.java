@@ -2,10 +2,13 @@ package app.oengus.adapter.security;
 
 import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.application.MarathonService;
+import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
+import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
+import app.oengus.domain.marathon.Marathon;
 import javassist.NotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -18,17 +21,27 @@ import java.util.Objects;
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     implements MethodSecurityExpressionOperations {
 
+    // Free users always had one schedule, this change is just in the UI for them
+    private static final int MAX_SCHEDULE_FREE_USER = 1;
+    private static final int MAX_SCHEDULE_PAID_USER = 4;
+
     private final MarathonService marathonService;
     private final UserPersistencePort userPersistencePort;
+    private final PatreonStatusPersistencePort patreonStatusPersistencePort;
+    private final SchedulePersistencePort schedulePersistencePort;
     private Object filterObject;
     private Object returnObject;
 
     public CustomMethodSecurityExpressionRoot(final Authentication authentication,
                                               final MarathonService marathonService,
-                                              final UserPersistencePort userPersistencePort) {
+                                              final UserPersistencePort userPersistencePort,
+                                              final SchedulePersistencePort schedulePersistencePort,
+                                              final PatreonStatusPersistencePort patreonStatusPersistencePort) {
         super(authentication);
         this.marathonService = marathonService;
         this.userPersistencePort = userPersistencePort;
+        this.schedulePersistencePort = schedulePersistencePort;
+        this.patreonStatusPersistencePort = patreonStatusPersistencePort;
     }
 
     public boolean isSelf(final int id) {
@@ -154,6 +167,17 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return marathon.isScheduleDone();
     }
 
+    public boolean canCreateExtraSchedule(final String marathonId) {
+        final var scheduleCount = this.schedulePersistencePort.getScheduleCountForMarathon(marathonId);
+        final var isSupporter = this.isMarathonCreatorSupporter(marathonId);
+
+        if (isSupporter) {
+            return scheduleCount < MAX_SCHEDULE_PAID_USER;
+        }
+
+        return scheduleCount < MAX_SCHEDULE_FREE_USER;
+    }
+
     public boolean canEditSubmissions(final String marathonId) throws NotFoundException {
         final Marathon marathon = this.getMarathon(marathonId);
 
@@ -218,5 +242,33 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return this.marathonService.findById(marathonId).orElseThrow(
             () -> new NotFoundException("Marathon not found")
         );
+    }
+
+    private boolean isMarathonCreatorSupporter(String marathonId) {
+        final var marathonCreator = this.marathonService.findCreatorById(marathonId);
+
+        if (marathonCreator.isPresent()) {
+            final var creator = marathonCreator.get();
+
+            // Sponsors are different from patrons
+            if (creator.getRoles().contains(Role.ROLE_SPONSOR) || creator.getRoles().contains(Role.ROLE_ADMIN)) {
+                return true;
+            }
+
+            final var userPatreonId = creator.getPatreonId();
+
+            if (userPatreonId != null && !userPatreonId.isBlank()) {
+                final var patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(creator.getPatreonId());
+
+                if (patreonStatus.isPresent()) {
+                    final var status = patreonStatus.get();
+
+                    // Pledge amount is in cents, supporters need to at least pledge €1
+                    return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() > 100;
+                }
+            }
+        }
+
+        return false;
     }
 }

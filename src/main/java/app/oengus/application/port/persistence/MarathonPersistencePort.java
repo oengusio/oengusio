@@ -1,5 +1,6 @@
 package app.oengus.application.port.persistence;
 
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 
@@ -9,6 +10,8 @@ import java.util.Optional;
 
 public interface MarathonPersistencePort {
     Optional<Marathon> findById(String marathonId);
+
+    Optional<OengusUser> findCreatorById(String marathonId);
 
     Marathon save(Marathon marathon);
 

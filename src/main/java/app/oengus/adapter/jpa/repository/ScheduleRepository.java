@@ -15,4 +15,6 @@ public interface ScheduleRepository extends CrudRepository<ScheduleEntity, Integ
     void deleteByMarathon(MarathonEntity marathon);
 
     boolean existsByMarathonAndSlug(MarathonEntity marathon, String slug);
+
+    int countByMarathon(MarathonEntity marathon);
 }

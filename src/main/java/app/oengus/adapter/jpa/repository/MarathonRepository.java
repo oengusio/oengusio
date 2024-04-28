@@ -89,4 +89,6 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
         "FROM CategoryEntity c WHERE c.game.submission.marathon = :marathon")
     Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
 
+    @Query(value = "SELECT m.creator from MarathonEntity m WHERE m = :marathon")
+    Optional<User> findCreatorById(@Param("marathon") MarathonEntity marathon);
 }

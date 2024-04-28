@@ -2,6 +2,8 @@ package app.oengus.configuration.spring.handler;
 
 import app.oengus.adapter.security.CustomMethodSecurityExpressionRoot;
 import app.oengus.application.MarathonService;
+import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
+import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -22,6 +24,8 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     // source: https://synyx.de/blog/bean-x-of-type-y-is-not-eligible-for-getting-processed-by-all-beanpostprocessors/
     private final ObjectFactory<MarathonService> marathonService;
     private final ObjectFactory<UserPersistencePort> userPersistencePort;
+    private final ObjectFactory<SchedulePersistencePort> schedulePersistencePort;
+    private final ObjectFactory<PatreonStatusPersistencePort> patreonStatusPersistencePort;
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
@@ -29,7 +33,9 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(
             authentication,
             this.marathonService.getObject(),
-            this.userPersistencePort.getObject()
+            this.userPersistencePort.getObject(),
+            this.schedulePersistencePort.getObject(),
+            this.patreonStatusPersistencePort.getObject()
         );
 
         root.setPermissionEvaluator(this.getPermissionEvaluator());

@@ -2,6 +2,7 @@ package app.oengus.application;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import app.oengus.domain.schedule.Schedule;
@@ -147,6 +148,10 @@ public class MarathonService {
         final var user = this.securityPort.getAuthenticatedUserId();
 
         return this.marathonPersistencePort.findActiveModeratedBy(user);
+    }
+
+    public Optional<OengusUser> findCreatorById(final String marathonId) {
+        return this.marathonPersistencePort.findCreatorById(marathonId);
     }
 
     // This gets called inside the user service, no need for that

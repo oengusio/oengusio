@@ -7,11 +7,19 @@ import app.oengus.domain.PledgeInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class PatreonStatusPersistenceAdapter implements PatreonStatusPersistencePort {
     private final PatreonStatusRepository repository;
     private final PatreonStatusMapper mapper;
+
+    @Override
+    public Optional<PledgeInfo> findByPatreonId(String patreonId) {
+        return this.repository.findById(patreonId)
+            .map(this.mapper::toDomain);
+    }
 
     @Override
     public void save(PledgeInfo pledge) {

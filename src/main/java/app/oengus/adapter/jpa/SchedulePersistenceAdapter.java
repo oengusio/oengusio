@@ -119,6 +119,11 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
         );
     }
 
+    @Override
+    public int getScheduleCountForMarathon(String marathonId) {
+        return this.repository.countByMarathon(MarathonEntity.ofId(marathonId));
+    }
+
     private Schedule entityToDomain(ScheduleEntity entity) {
         final var schedule = this.mapper.toDomain(entity);
 

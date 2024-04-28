@@ -94,9 +94,8 @@ public interface ScheduleApi {
         @RequestParam("slug") final String slug
     );
 
-    // TODO: preauth to see if a new schedule can be added
     @PostMapping
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId) && canCreateExtraSchedule(#marathonId)")
     @Operation(
         summary = "Create a new schedule in a marathon.",
         responses = {
