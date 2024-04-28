@@ -67,6 +67,10 @@ public class ScheduleService {
         return this.schedulePersistencePort.existsBySlug(marathonId, slug);
     }
 
+    public void deleteSchedule(Schedule schedule) {
+        this.schedulePersistencePort.delete(schedule);
+    }
+
     ///////////
     // v1 stuff
 

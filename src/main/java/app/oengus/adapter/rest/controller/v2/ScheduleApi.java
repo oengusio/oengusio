@@ -149,5 +149,29 @@ public interface ScheduleApi {
         @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
+    @DeleteMapping("/{scheduleId}")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Delete a schedule in a marathon.",
+        responses = {
+            @ApiResponse(
+                description = "Schedule deleted",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = BooleanStatusDto.class))
+                )
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<BooleanStatusDto> deleteSchedule(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId
+    );
+
     // get + put /schedules/{scheduleId}/lines to just update the lines for a schedule
 }

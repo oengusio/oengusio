@@ -93,6 +93,11 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    public void delete(Schedule schedule) {
+        this.repository.deleteById(schedule.getId());
+    }
+
+    @Override
     public void deleteAllForMarathon(String marathonId) {
         this.repository.deleteByMarathon(MarathonEntity.ofId(marathonId));
     }

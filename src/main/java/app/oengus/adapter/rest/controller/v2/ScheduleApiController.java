@@ -102,4 +102,16 @@ public class ScheduleApiController implements ScheduleApi {
             .cacheControl(CacheControl.noCache())
             .body(dto);
     }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> deleteSchedule(String marathonId, int scheduleId) {
+        final var schedule = this.scheduleService.findInfoByScheduleId(marathonId, scheduleId)
+            .orElseThrow(ScheduleNotFoundException::new);
+
+        this.scheduleService.deleteSchedule(schedule);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
+    }
 }

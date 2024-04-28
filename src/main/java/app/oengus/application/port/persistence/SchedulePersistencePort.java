@@ -18,6 +18,8 @@ public interface SchedulePersistencePort {
 
     Schedule save(Schedule schedule);
 
+    void delete(Schedule schedule);
+
     void deleteAllForMarathon(String marathonId);
 
     boolean existsBySlug(String marathonId, String slug);
