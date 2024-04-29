@@ -4,18 +4,18 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
+import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.PermitAll;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -81,4 +81,17 @@ public interface UserApi {
         }
     )
     ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(@PathVariable("id") final int id);
+
+    @Operation(hidden = true)
+    @GetMapping("/{id}/roles")
+    @PreAuthorize("isAdmin()")
+    ResponseEntity<DataListDto<Role>> getUserRoles(@PathVariable("id") final int id);
+
+    @Operation(hidden = true)
+    @PutMapping("/{id}/roles")
+    @PreAuthorize("isAdmin()")
+    ResponseEntity<DataListDto<Role>> updateUserRoles(
+        @PathVariable("id") final int id,
+        @RequestBody @Valid final DataListDto<Role> roles
+    );
 }

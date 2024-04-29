@@ -4,18 +4,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Getter
 @Setter
 public class DataListDto<T> {
-    private List<T> data;
+    private Collection<T> data;
 
     public DataListDto() {
         this(new ArrayList<>());
     }
 
-    public DataListDto(List<T> data) {
+    public DataListDto(Collection<T> data) {
         this.data = data;
     }
 }

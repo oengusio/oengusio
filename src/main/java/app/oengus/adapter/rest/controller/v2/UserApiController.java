@@ -4,8 +4,11 @@ import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
+import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.domain.Role;
+import app.oengus.domain.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,12 +22,13 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
+import java.util.HashSet;
 
 @RequiredArgsConstructor
 @RestController("v2UserController")
 public class UserApiController implements UserApi {
     private final UserService userService;
+    private final UserLookupService lookupService;
     private final UserDtoMapper mapper;
     // TODO: automatically inject this
     private final OkHttpClient client = new OkHttpClient();
@@ -97,6 +101,30 @@ public class UserApiController implements UserApi {
 
         return ResponseEntity.ok(
             new DataListDto<>(dtos)
+        );
+    }
+
+    @Override
+    public ResponseEntity<DataListDto<Role>> getUserRoles(int id) {
+        final var user = this.lookupService.findById(id)
+            .orElseThrow(UserNotFoundException::new);
+
+        return ResponseEntity.ok(
+            new DataListDto<>(user.getRoles())
+        );
+    }
+
+    @Override
+    public ResponseEntity<DataListDto<Role>> updateUserRoles(int id, DataListDto<Role> roles) {
+        final var user = this.lookupService.findById(id)
+            .orElseThrow(UserNotFoundException::new);
+
+        user.setRoles(new HashSet<>(roles.getData()));
+
+        final var saved = this.userService.save(user);
+
+        return ResponseEntity.ok(
+            new DataListDto<>(saved.getRoles())
         );
     }
 }

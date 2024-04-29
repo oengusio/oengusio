@@ -26,6 +26,7 @@ public class UserService {
     private final DiscordService discordService;
     private final TwitchService twitchService;
 
+    // TODO: move these all to the lookup service
     public Optional<OengusUser> findByUsername(final String username) {
         return this.userPersistencePort.findByUsername(username);
     }
