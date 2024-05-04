@@ -22,6 +22,8 @@ public interface SchedulePersistencePort {
 
     void deleteAllForMarathon(String marathonId);
 
+    Optional<Schedule> findBySlugForMarathon(String marathonId, String slug);
+
     boolean existsBySlug(String marathonId, String slug);
 
     int getScheduleCountForMarathon(String marathonId);

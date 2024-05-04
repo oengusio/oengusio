@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Schema
+@Schema(description = "Basic schedule information")
 public class ScheduleInfoDto {
     @Schema(description = "The unique id of the schedule")
     private int id;

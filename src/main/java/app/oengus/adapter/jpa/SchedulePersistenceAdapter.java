@@ -112,6 +112,12 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    public Optional<Schedule> findBySlugForMarathon(String marathonId, String slug) {
+        return this.repository.findByMarathonAndSlug(MarathonEntity.ofId(marathonId), slug)
+            .map(this::entityToDomain);
+    }
+
+    @Override
     public boolean existsBySlug(String marathonId, String slug) {
         return this.repository.existsByMarathonAndSlug(
             MarathonEntity.ofId(marathonId),

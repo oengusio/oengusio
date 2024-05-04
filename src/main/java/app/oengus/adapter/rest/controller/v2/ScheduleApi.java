@@ -3,6 +3,7 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
@@ -66,8 +67,32 @@ public interface ScheduleApi {
     )
     ResponseEntity<ScheduleInfoDto> findScheduleById(
         @PathVariable("marathonId") final String marathonId,
-        @PathVariable("scheduleId") final int scheduleId/*,
-        @RequestParam(defaultValue = "false", required = false) boolean withCustomData*/
+        @PathVariable("scheduleId") final int scheduleId
+    );
+
+    @GetMapping("/for-slug/{slug}")
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #slug)")
+    @Operation(
+        summary = "Get a schedule by its slug, has a 5 minute cache",
+        responses = {
+            @ApiResponse(
+                description = "The requested schedule",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ScheduleDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon or schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<ScheduleDto> findScheduleBySlug(
+        @PathVariable("marathonId") final String marathonId,
+        @PathVariable("slug") final String slug,
+        @RequestParam(defaultValue = "false", required = false) boolean withCustomData
     );
 
     @GetMapping("/slug-exists")

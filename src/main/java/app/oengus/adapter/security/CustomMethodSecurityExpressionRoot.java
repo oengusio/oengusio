@@ -167,6 +167,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return marathon.isScheduleDone();
     }
 
+    public boolean isSchedulePublished(final String marathonId, final String slug) {
+        // TODO: implement this
+        return true;
+    }
+
     public boolean canCreateExtraSchedule(final String marathonId) {
         final var scheduleCount = this.schedulePersistencePort.getScheduleCountForMarathon(marathonId);
         final var isSupporter = this.isMarathonCreatorSupporter(marathonId);

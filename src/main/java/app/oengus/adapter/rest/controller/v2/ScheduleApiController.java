@@ -3,6 +3,7 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
@@ -21,6 +22,7 @@ import java.net.URI;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
+// TODO: throw custom exceptions instead of ResponseStatusException
 @RequiredArgsConstructor
 @RestController("v2ScheduleController")
 public class ScheduleApiController implements ScheduleApi {
@@ -30,7 +32,7 @@ public class ScheduleApiController implements ScheduleApi {
 
     @Override
     public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(final String marathonId) {
-        if (!this.marathonService.exists(marathonId)) {
+        if (!this.marathonService. exists(marathonId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
 
@@ -61,6 +63,22 @@ public class ScheduleApiController implements ScheduleApi {
             .headers(cachingHeaders(5, false))
             .body(
                 this.mapper.infoFromSchedule(schedule)
+            );
+    }
+
+    @Override
+    public ResponseEntity<ScheduleDto> findScheduleBySlug(String marathonId, String slug, boolean withCustomData) {
+        if (!this.marathonService.exists(marathonId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
+        }
+
+        final var schedule = this.scheduleService.findBySlug(marathonId, slug, withCustomData)
+            .orElseThrow(ScheduleNotFoundException::new);
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, false))
+            .body(
+                this.mapper.fromDomain(schedule)
             );
     }
 

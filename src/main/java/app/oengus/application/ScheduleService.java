@@ -30,17 +30,33 @@ public class ScheduleService {
         return this.schedulePersistencePort.findAllForMarathonWithoutLines(marathonId);
     }
 
-    public List<Schedule> findAllByMarathon(final String marathonId, boolean withCustomData) {
-        return this.schedulePersistencePort.findAllForMarathon(marathonId);
-    }
-
     public Optional<Schedule> findInfoByScheduleId(final String marathonId, final int scheduleId) {
         return this.schedulePersistencePort.findByIdForMarathonWithoutLines(marathonId, scheduleId);
     }
 
-    public Optional<Schedule> findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
-        final var optionalSchedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId);
+    public Optional<Schedule> findBySlug(final String marathonId, final String slug, final boolean withCustomData) {
+        return this.parseCustomData(
+            this.schedulePersistencePort.findBySlugForMarathon(marathonId, slug),
+            withCustomData
+        );
+    }
 
+    public Optional<Schedule> findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
+        return this.parseCustomData(
+            this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId),
+            withCustomData
+        );
+    }
+
+    public boolean hasUsedSlug(final String marathonId, final String slug) {
+        return this.schedulePersistencePort.existsBySlug(marathonId, slug);
+    }
+
+    public void deleteSchedule(Schedule schedule) {
+        this.schedulePersistencePort.delete(schedule);
+    }
+
+    private Optional<Schedule> parseCustomData(final Optional<Schedule> optionalSchedule, final boolean withCustomData) {
         if (optionalSchedule.isEmpty()) {
             return Optional.empty();
         }
@@ -61,14 +77,6 @@ public class ScheduleService {
         }
 
         return Optional.of(schedule);
-    }
-
-    public boolean hasUsedSlug(final String marathonId, final String slug) {
-        return this.schedulePersistencePort.existsBySlug(marathonId, slug);
-    }
-
-    public void deleteSchedule(Schedule schedule) {
-        this.schedulePersistencePort.delete(schedule);
     }
 
     ///////////
