@@ -17,6 +17,7 @@ public class Schedule {
     // OwO what's this?
     private String name;
     private String slug;
+    private boolean published;
 
     private List<Line> lines = new ArrayList<>();
 }

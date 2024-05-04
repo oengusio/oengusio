@@ -9,6 +9,7 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.schedule.Schedule;
 import javassist.NotFoundException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -167,9 +168,18 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return marathon.isScheduleDone();
     }
 
+    public boolean isSchedulePublished(final String marathonId, final int scheduleId) {
+        return this.schedulePersistencePort.findByIdForMarathonWithoutLines(marathonId, scheduleId)
+            .map(Schedule::isPublished)
+            .orElse(false);
+
+    }
+
     public boolean isSchedulePublished(final String marathonId, final String slug) {
-        // TODO: implement this
-        return true;
+        return this.schedulePersistencePort.findBySlugForMarathon(marathonId, slug)
+            .map(Schedule::isPublished)
+            .orElse(false);
+
     }
 
     public boolean canCreateExtraSchedule(final String marathonId) {

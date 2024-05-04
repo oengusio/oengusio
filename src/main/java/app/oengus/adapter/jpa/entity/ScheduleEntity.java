@@ -26,6 +26,9 @@ public class ScheduleEntity {
     @Column(name = "slug")
     private String slug;
 
+    @Column(name = "published")
+    private boolean published;
+
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC")
     private List<ScheduleLine> lines;

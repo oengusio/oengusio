@@ -23,8 +23,6 @@ import javax.validation.Valid;
 @Tag(name = "schedules-v2")
 @RequestMapping("/v2/marathons/{marathonId}/schedules")
 public interface ScheduleApi {
-
-    // TODO: some filter for published schedules? maybe just do the discord thing and only show the ones that are published in the UI
     @GetMapping
     @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
     @Operation(
@@ -47,7 +45,7 @@ public interface ScheduleApi {
     ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}")
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
     @Operation(
         summary = "Get the info of a schedule for a marathon by its id, has a 5 minute cache",
         responses = {
