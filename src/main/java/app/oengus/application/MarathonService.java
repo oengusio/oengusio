@@ -94,6 +94,7 @@ public class MarathonService {
         }
 
         if (patch.isScheduleDone()) {
+            // TODO: check if any schedule info is published
             final Schedule schedule = this.scheduleService.findByMarathon(patch.getId());
 
             if (schedule == null) {
@@ -106,6 +107,7 @@ public class MarathonService {
             }
         }
 
+        // TODO: moving this above the previous check prevents submissions open and schedule published at the same time.
         if (patch.isSubmissionsOpen()) {
             patch.setCanEditSubmissions(true);
         }

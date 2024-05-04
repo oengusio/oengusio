@@ -22,6 +22,7 @@ import java.util.Optional;
 public class ScheduleService {
     private final SchedulePersistencePort schedulePersistencePort;
     private final MarathonPersistencePort marathonPersistencePort;
+    private final SelectionService selectionService;
 
     ///////////
     // v2 stuff
@@ -41,6 +42,7 @@ public class ScheduleService {
         );
     }
 
+    // If you don't need the lines, it's better to fetch the info only
     public Optional<Schedule> findByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
         return this.parseCustomData(
             this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId),
@@ -54,6 +56,37 @@ public class ScheduleService {
 
     public void deleteSchedule(Schedule schedule) {
         this.schedulePersistencePort.delete(schedule);
+    }
+
+    // NOTE: this always needs a fulls schedule WITH CUSTOM DATA since we are saving it to the database.
+    // TODO: remove persist settings for lines in model when we ditch the v1 update api
+    public void publishSchedule(Schedule schedule) {
+        final var marathon = this.marathonPersistencePort.findById(schedule.getMarathonId())
+            .orElseThrow(MarathonNotFoundException::new);
+
+        if (schedule.isPublished()) {
+            return;
+        }
+
+        schedule.setPublished(true);
+
+        final var newSchedule = this.schedulePersistencePort.save(schedule);
+
+        // We need to tell the marathon that the schedule is done.
+        // We check if it is not set because updating the marathon is an expensive db operation.
+        if (!marathon.isScheduleDone()) {
+            // Copied this from the marathon service (update method)
+            // this needs to be consolidated into a single method
+            marathon.setScheduleDone(true);
+
+            this.computeEndDate(marathon, newSchedule);
+            this.selectionService.rejectTodos(marathon.getId());
+
+            marathon.setSelectionDone(true);
+            marathon.setCanEditSubmissions(false);
+
+            this.marathonPersistencePort.save(marathon);
+        }
     }
 
     private Optional<Schedule> parseCustomData(final Optional<Schedule> optionalSchedule, final boolean withCustomData) {

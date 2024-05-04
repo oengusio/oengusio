@@ -174,6 +174,30 @@ public interface ScheduleApi {
         @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
+    @PostMapping("/{scheduleId}/publish")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Publish schedule {scheduleId}",
+        responses = {
+            @ApiResponse(
+                description = "Schedule published",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = BooleanStatusDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<BooleanStatusDto> publishSchedule(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId
+    );
+
     @DeleteMapping("/{scheduleId}")
     @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
     @Operation(

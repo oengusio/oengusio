@@ -97,7 +97,7 @@ public class ScheduleController {
         final var schedule = this.mapper.fromV1UpdateRequest(scheduleDto);
 
         // Keep old name if possible, or force defaults
-        this.scheduleService.findFirstByMarathon(marathonId).ifPresent((oldSchedule) -> {
+        this.scheduleService.findFirstByMarathon(marathonId).ifPresentOrElse((oldSchedule) -> {
             if (oldSchedule.getName() != null && !oldSchedule.getName().isBlank()) {
                 schedule.setName(oldSchedule.getName());
             } else {
@@ -109,6 +109,10 @@ public class ScheduleController {
             } else {
                 schedule.setSlug("schedule-1");
             }
+        }, () -> {
+            // We have no schedule, set the name and slug
+            schedule.setName("A cool schedule");
+            schedule.setSlug("schedule-1");
         });
 
         // try-catch for backwards compatibility
@@ -152,7 +156,8 @@ public class ScheduleController {
                 try (final Writer writer = this.exportService.exportScheduleToJson(marathonId, zoneId, locale)) {
                     final String export = writer.toString();
                     addDefaultHeaders.apply("application/json", "json");
-                    response.getWriter().write(export);}
+                    response.getWriter().write(export);
+                }
             }
             case "ics" -> {
                 try (final Writer writer = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale)) {
