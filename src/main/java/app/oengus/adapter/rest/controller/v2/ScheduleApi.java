@@ -68,6 +68,7 @@ public interface ScheduleApi {
         @PathVariable("scheduleId") final int scheduleId
     );
 
+    // TODO: make slug a query param instead?
     @GetMapping("/for-slug/{slug}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #slug)")
     @Operation(
