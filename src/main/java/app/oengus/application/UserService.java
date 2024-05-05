@@ -1,15 +1,18 @@
 package app.oengus.application;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.adapter.rest.dto.SyncDto;
 import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
+import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.user.SubmissionHistoryEntry;
+import app.oengus.domain.user.SupporterStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ public class UserService {
     private final UserPersistencePort userPersistencePort;
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
+    private final PatreonStatusPersistencePort patreonStatusPersistencePort;
     private final DiscordService discordService;
     private final TwitchService twitchService;
 
@@ -62,6 +66,26 @@ public class UserService {
 
     public List<Marathon> getModeratedHistory(final int userId) {
         return this.marathonPersistencePort.findAllModeratedBy(userId);
+    }
+
+    public SupporterStatus getSupporterStatus(final OengusUser user) {
+        final boolean patreonStatus;
+
+        if (user.getPatreonId() == null || user.getPatreonId().isBlank()) {
+            patreonStatus = false;
+        } else {
+            patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(user.getPatreonId())
+                .map(
+                    // Pledge amount is in cents, supporters need to at least pledge €1
+                    (status) -> status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() > 100
+                )
+                .orElse(false);
+        }
+
+        return SupporterStatus.builder()
+            .sponsor(user.getRoles().contains(Role.ROLE_SPONSOR))
+            .patron(patreonStatus)
+            .build();
     }
 
     public boolean existsByUsername(String name) {

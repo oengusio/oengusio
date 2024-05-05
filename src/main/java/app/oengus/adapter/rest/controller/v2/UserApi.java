@@ -4,6 +4,7 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
+import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
 import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -94,4 +95,9 @@ public interface UserApi {
         @PathVariable("id") final int id,
         @RequestBody @Valid final DataListDto<Role> roles
     );
+
+    @Operation(hidden = true)
+    @GetMapping("/{id}/supporter-status")
+    @PreAuthorize("isAuthenticated() && !isBanned()")
+    ResponseEntity<SupporterStatusDto> getUserSupporterStatus(@PathVariable final int id);
 }

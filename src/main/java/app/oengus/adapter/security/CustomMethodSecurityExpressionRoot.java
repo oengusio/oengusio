@@ -270,6 +270,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
                 return true;
             }
 
+            // TODO: use UserService#getSupporterStatus? Current impl saves a database call if sponsor role is found.
             final var userPatreonId = creator.getPatreonId();
 
             if (userPatreonId != null && !userPatreonId.isBlank()) {

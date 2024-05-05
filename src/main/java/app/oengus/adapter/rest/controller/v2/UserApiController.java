@@ -1,12 +1,14 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
+import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
-import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.Role;
 import app.oengus.domain.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +26,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @RequiredArgsConstructor
 @RestController("v2UserController")
 public class UserApiController implements UserApi {
     private final UserService userService;
+    private final UserSecurityPort securityPort;
     private final UserLookupService lookupService;
     private final UserDtoMapper mapper;
     // TODO: automatically inject this
@@ -126,5 +131,15 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok(
             new DataListDto<>(saved.getRoles())
         );
+    }
+
+    @Override
+    public ResponseEntity<SupporterStatusDto> getUserSupporterStatus(int id) {
+        final var authUser = this.securityPort.getAuthenticatedUser();
+        final var model = this.userService.getSupporterStatus(authUser);
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(this.mapper.fromDomain(model));
     }
 }

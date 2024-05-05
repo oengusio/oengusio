@@ -6,9 +6,11 @@ import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
+import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.user.SubmissionHistoryEntry;
+import app.oengus.domain.user.SupporterStatus;
 import org.mapstruct.*;
 
 @Mapper(
@@ -43,4 +45,6 @@ public interface UserDtoMapper {
     @Mapping(target = "marathonName", source = "marathon.name")
     @Mapping(target = "marathonStartDate", source = "marathon.startDate")
     ModeratedHistoryDto fromDomainMarathon(Marathon marathon);
+
+    SupporterStatusDto fromDomain(SupporterStatus status);
 }
