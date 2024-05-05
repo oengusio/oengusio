@@ -54,4 +54,7 @@ public class LineDto {
     private String customData;
     @Schema(description = "The date and time of when this run is planned to start")
     private ZonedDateTime date;
+
+    @Schema(description = "Internal ID of a category that was submitted. Only ever used to hide categories from the UI if they are moved to the schedule.")
+    private int categoryId;
 }
