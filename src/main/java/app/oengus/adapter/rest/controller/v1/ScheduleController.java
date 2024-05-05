@@ -143,24 +143,29 @@ public class ScheduleController {
             return null;
         };
 
+        final var scheduleId = this.scheduleService.findFirstByMarathon(marathonId)
+            .orElseThrow(
+                () -> new NotFoundException("No schedules found")
+            ).getId();
+
         // Oh the urge to use reflection to clean this up :(
         switch (format.toLowerCase()) {
             case "csv" -> {
-                try (final Writer writer = this.exportService.exportScheduleToCsv(marathonId, zoneId, locale)) {
+                try (final Writer writer = this.exportService.exportScheduleToCsv(marathonId, scheduleId, zoneId, locale)) {
                     final String export = writer.toString();
                     addDefaultHeaders.apply("text/csv", "csv");
                     response.getWriter().write(export);
                 }
             }
             case "json" -> {
-                try (final Writer writer = this.exportService.exportScheduleToJson(marathonId, zoneId, locale)) {
+                try (final Writer writer = this.exportService.exportScheduleToJson(marathonId, scheduleId, zoneId, locale)) {
                     final String export = writer.toString();
                     addDefaultHeaders.apply("application/json", "json");
                     response.getWriter().write(export);
                 }
             }
             case "ics" -> {
-                try (final Writer writer = this.exportService.exportScheduleToIcal(marathonId, zoneId, locale)) {
+                try (final Writer writer = this.exportService.exportScheduleToIcal(marathonId, scheduleId, zoneId, locale)) {
                     final String export = writer.toString();
                     addDefaultHeaders.apply("text/calendar", "ics");
                     response.getWriter().write(export);

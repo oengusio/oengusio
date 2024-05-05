@@ -1,12 +1,13 @@
 package app.oengus.application.export;
 
+import app.oengus.application.helper.ScheduleHelper;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.domain.exception.MarathonNotFoundException;
+import app.oengus.domain.exception.schedule.ScheduleNotFoundException;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
-import app.oengus.application.helper.ScheduleHelper;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -35,12 +36,12 @@ public class ScheduleIcalExporter implements Exporter {
     private final UidGenerator ug = new RandomUidGenerator();
 
     @Override
-    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final Schedule schedule = this.schedulePersistencePort.findFirstForMarathon(marathonId).orElseThrow(
-            () -> new NotFoundException("Schedule not found")
+    public Writer export(final String marathonId, final int itemId, final String zoneId, final String language) throws IOException {
+        final Schedule schedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, itemId).orElseThrow(
+            ScheduleNotFoundException::new
         );
         final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
-            () -> new NotFoundException("Marathon not found")
+            MarathonNotFoundException::new
         );
 
         final var resourceBundle = ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));

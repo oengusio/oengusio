@@ -66,7 +66,7 @@ public class SubmissionsController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-submissions.csv\"");
 
-        try (final var writer = this.exportService.exportSubmissionsToCsv(marathonId, zoneId, locale)) {
+        try (final var writer = this.exportService.exportSubmissionsToCsv(marathonId, -1, zoneId, locale)) {
             response.getWriter().write(writer.toString());
         }
     }

@@ -138,7 +138,7 @@ spring:
         test-connection: false
 
 springdoc:
-    packages-to-scan: app.oengus.web
+    packages-to-scan: app.oengus.adapter.rest.controller
     pathsToMatch: /**
 
 management:

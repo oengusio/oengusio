@@ -8,6 +8,8 @@ import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @CrossOrigin(maxAge = 3600)
 @Tag(name = "schedules-v2")
@@ -275,4 +278,61 @@ public interface ScheduleApi {
         @PathVariable final int scheduleId,
         @RequestBody @Valid final LineUpdateRequestDto body
     );
+
+    @GetMapping("/{scheduleId}/export")
+    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
+    @Operation(
+        summary = "Export a schedule",
+        parameters = {
+            @Parameter(
+                in = ParameterIn.QUERY,
+                name = "format",
+                schema = @Schema(
+                    type = "string",
+                    description = "The format of the export, json is Horaro compatible!",
+                    allowableValues = { "csv", "json", "ics" },
+                    example = "json"
+                )
+            ),
+            @Parameter(
+                in = ParameterIn.QUERY,
+                name = "zoneId",
+                schema = @Schema(
+                    type = "string",
+                    description = "The timezone of the timestamps present in the export.",
+                    example = "Europe/Amsterdam"
+                )
+            ),
+            @Parameter(
+                in = ParameterIn.QUERY,
+                name = "locale",
+                schema = @Schema(
+                    type = "string",
+                    description = "Language of the export, translated by the community.",
+                    example = "nb-NO"
+                )
+            ),
+        },
+        responses = {
+            @ApiResponse(
+                description = "Schedule export",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "text/csv,application/json,text/calendar",
+                    schema = @Schema(implementation = String.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<String> export(
+        @PathVariable final String marathonId,
+        @PathVariable final int scheduleId,
+        @RequestParam final String format,
+        @RequestParam final String zoneId,
+        @RequestParam final String locale
+    ) throws IOException;
 }

@@ -8,17 +8,20 @@ import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
+import app.oengus.application.ExportService;
 import app.oengus.application.MarathonService;
 import app.oengus.application.ScheduleService;
+import app.oengus.domain.exception.InvalidExportFormatException;
 import app.oengus.domain.exception.schedule.ScheduleNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
@@ -28,6 +31,7 @@ import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 public class ScheduleApiController implements ScheduleApi {
     private final MarathonService marathonService;
     private final ScheduleService scheduleService;
+    private final ExportService exportService;
     private final ScheduleDtoMapper mapper;
 
     @Override
@@ -179,5 +183,53 @@ public class ScheduleApiController implements ScheduleApi {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(new DataListDto<>(dtos));
+    }
+
+    @Override
+    public ResponseEntity<String> export(
+        String marathonId, int scheduleId, String format, String zoneId, String locale
+    ) throws IOException {
+        // We need to write the string on a diff line in case any exception is thrown
+        switch (format.toLowerCase(Locale.ROOT)) {
+            case "csv" -> {
+                try (final var writer = this.exportService.exportScheduleToCsv(marathonId, scheduleId, zoneId, locale)) {
+                    final var content = writer.toString();
+
+                    return this.buildExportResponse("text/csv", marathonId, "csv", content);
+                }
+            }
+
+            case "json" -> {
+                try (final var writer = this.exportService.exportScheduleToJson(marathonId, scheduleId, zoneId, locale)) {
+                    final var content = writer.toString();
+
+                    return this.buildExportResponse("application/json", marathonId, "json", content);
+                }
+            }
+
+            case "ics" -> {
+                try (final var writer = this.exportService.exportScheduleToIcal(marathonId, scheduleId, zoneId, locale)) {
+                    final var content = writer.toString();
+
+                    return this.buildExportResponse("text/calendar", marathonId, "ics", content);
+                }
+            }
+
+            default -> throw new InvalidExportFormatException(format);
+        }
+    }
+
+    private ResponseEntity<String> buildExportResponse(
+        String contentType, String marathonId, String extension, String content
+    ) {
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(30))
+            .header(HttpHeaders.CONTENT_ENCODING, StandardCharsets.UTF_8.name())
+            .header(HttpHeaders.CONTENT_TYPE, contentType)
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + marathonId + "-schedule." + extension + "\""
+            )
+            .body(content);
     }
 }

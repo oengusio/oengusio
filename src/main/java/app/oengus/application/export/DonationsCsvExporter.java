@@ -19,7 +19,7 @@ public class DonationsCsvExporter implements Exporter {
     private final DonationService donationService;
 
 	@Override
-	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException {
+	public Writer export(final String marathonId, final int itemId, final String zoneId, final String language) throws IOException {
 		final StringWriter out = new StringWriter();
 		Page<Donation> donations;
 		int i = 0;

@@ -1,20 +1,21 @@
 package app.oengus.application.export;
 
+import app.oengus.application.helper.ScheduleHelper;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
-import app.oengus.domain.schedule.Line;
-import app.oengus.domain.schedule.Runner;
-import app.oengus.domain.schedule.Schedule;
+import app.oengus.domain.exception.MarathonNotFoundException;
+import app.oengus.domain.exception.OengusBusinessException;
+import app.oengus.domain.exception.schedule.ScheduleNotFoundException;
 import app.oengus.domain.horaro.Horaro;
 import app.oengus.domain.horaro.HoraroEvent;
 import app.oengus.domain.horaro.HoraroItem;
 import app.oengus.domain.horaro.HoraroSchedule;
-import app.oengus.domain.exception.OengusBusinessException;
-import app.oengus.application.helper.ScheduleHelper;
+import app.oengus.domain.schedule.Line;
+import app.oengus.domain.schedule.Runner;
+import app.oengus.domain.schedule.Schedule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -42,12 +43,12 @@ public class ScheduleJsonExporter implements Exporter {
     private final SchedulePersistencePort schedulePersistencePort;
 
     @Override
-    public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final Schedule schedule = this.schedulePersistencePort.findFirstForMarathon(marathonId).orElseThrow(
-            () -> new NotFoundException("Schedule not found")
+    public Writer export(final String marathonId, final int itemId, final String zoneId, final String language) throws IOException {
+        final Schedule schedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, itemId).orElseThrow(
+            ScheduleNotFoundException::new
         );
         final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
-            () -> new NotFoundException("Marathon not found")
+            MarathonNotFoundException::new
         );
 
         final Locale locale = Locale.forLanguageTag(language);
@@ -60,8 +61,10 @@ public class ScheduleJsonExporter implements Exporter {
         horaroEvent.setSlug(marathon.getId());
 
         horaroSchedule.setEvent(horaroEvent);
-        horaroSchedule.setName(marathon.getName());
-        horaroSchedule.setSlug(marathon.getId());
+        horaroSchedule.setName(schedule.getName());
+        horaroSchedule.setSlug(
+            "%s-%s".formatted(marathon.getId(), schedule.getSlug())
+        );
         horaroSchedule.setTimezone(zoneId);
         horaroSchedule.setStart(
             marathon

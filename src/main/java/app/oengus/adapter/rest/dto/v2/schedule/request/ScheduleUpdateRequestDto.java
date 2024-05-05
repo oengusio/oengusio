@@ -21,13 +21,13 @@ public class ScheduleUpdateRequestDto {
     @NotBlank
     @Size(min = 1, max = 50)
     @Pattern(regexp = SCHEDULE_NAME_REGEX)
-    @Schema(description = "The name of this schedule, as displayed in the UI.")
+    @Schema(description = "The name of this schedule, as displayed in the UI.", example = "My cool schedule")
     private String name;
 
     @NotNull
     @NotBlank
     @Size(min = 1, max = 255)
     @Pattern(regexp = SCHEDULE_SLUG_REGEX)
-    @Schema(description = "This is the 'slug' of the schedule, displayed in the url.")
+    @Schema(description = "This is the 'slug' of the schedule, displayed in the url.", example = "stream-1")
     private String slug;
 }

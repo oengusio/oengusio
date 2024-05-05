@@ -4,9 +4,8 @@ import app.oengus.application.SubmissionService;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.domain.submission.*;
 import app.oengus.domain.marathon.FieldType;
-import javassist.NotFoundException;
+import app.oengus.domain.submission.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -36,7 +35,7 @@ public class SubmissionCsvExporter implements Exporter {
     private final SubmissionPersistencePort submissionPersistencePort;
 
     @Override
-    public Writer export(String marathonId, String zoneId, String language) throws IOException, NotFoundException {
+    public Writer export(String marathonId, int itemId, String zoneId, String language) throws IOException {
         final List<Submission> submissions = this.submissionService.findAllByMarathon(marathonId);
 
         final StringWriter out = new StringWriter();

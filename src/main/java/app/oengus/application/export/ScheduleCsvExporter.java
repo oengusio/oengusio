@@ -1,11 +1,11 @@
 package app.oengus.application.export;
 
 import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.domain.exception.schedule.ScheduleNotFoundException;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -31,9 +31,9 @@ public class ScheduleCsvExporter implements Exporter {
     private final SchedulePersistencePort schedulePersistencePort;
 
 	@Override
-	public Writer export(final String marathonId, final String zoneId, final String language) throws IOException, NotFoundException {
-        final Schedule schedule = this.schedulePersistencePort.findFirstForMarathon(marathonId).orElseThrow(
-            () -> new NotFoundException("Schedule not found")
+	public Writer export(final String marathonId, final int itemId, final String zoneId, final String language) throws IOException {
+        final Schedule schedule = this.schedulePersistencePort.findByIdForMarathon(marathonId, itemId).orElseThrow(
+            ScheduleNotFoundException::new
         );
 
         final var lines = schedule.getLines();

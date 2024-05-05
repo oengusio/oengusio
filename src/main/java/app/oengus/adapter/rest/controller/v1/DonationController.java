@@ -99,7 +99,7 @@ public class DonationController {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; filename=\"" + marathonId + "-donations.csv\"");
-        response.getWriter().write(this.exportService.exportDonationsToCsv(marathonId, zoneId, null).toString());
+        response.getWriter().write(this.exportService.exportDonationsToCsv(marathonId, -1, zoneId, null).toString());
     }
 
 }
