@@ -61,6 +61,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         null
                     );
 
+                    // TODO: properly test if this works as expected
+                    /*Sentry.setUser(User.fromMap(Map.of(
+                        "id", details.id(),
+                        "username", details.username()
+                    ), new SentryOptions()));*/
+
 					final var authentication = new UsernamePasswordAuthenticationToken(
                         details,
                         null,
