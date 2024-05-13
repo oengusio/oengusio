@@ -6,6 +6,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.sentry.Hint;
+import io.sentry.Sentry;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +16,7 @@ import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Component
 public class JWTAdapter implements JWTPort {
@@ -42,6 +46,18 @@ public class JWTAdapter implements JWTPort {
             return new Date().before(claims.getExpiration());
 //            return true;
         } catch (final SecurityException | JwtException e) {
+            return false;
+        } catch (final NoSuchElementException nse) {
+            final var hint = new Hint();
+
+            hint.set("tokenNull", token == null);
+            hint.set("tokenBlank", StringUtils.isBlank(token));
+            hint.set("token", token);
+
+            // Send the token to sentry
+            // I think the token might be fucked in BACKEND-7T
+            Sentry.captureException(nse, hint);
+
             return false;
         }
     }
