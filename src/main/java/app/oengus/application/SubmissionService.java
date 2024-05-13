@@ -342,7 +342,7 @@ public class SubmissionService {
         final boolean qNotEmpty = !queryLower.isBlank();
         final Predicate<OengusUser> matchesUsername = (user) ->
             user.getUsername().toLowerCase().contains(queryLower) ||
-                user.getDisplayName().toLowerCase().contains(queryLower);
+                (user.getDisplayName() != null && user.getDisplayName().toLowerCase().contains(queryLower));
 
         final var foundItems = bySearch.stream()
             .filter(
