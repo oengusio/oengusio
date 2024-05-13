@@ -3,6 +3,7 @@ package app.oengus.application;
 import app.oengus.adapter.rest.dto.v2.auth.*;
 import app.oengus.domain.exception.InvalidMFACodeException;
 import app.oengus.domain.exception.InvalidPasswordException;
+import app.oengus.domain.exception.auth.InvalidEmailException;
 import app.oengus.domain.exception.auth.UnknownServiceException;
 import app.oengus.domain.exception.auth.UserDisabledException;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
@@ -129,6 +130,10 @@ public class AuthService {
     }
 
     public void sendNewVerificationEmail(OengusUser user) {
+        if (StringUtils.isBlank(user.getEmail())) {
+            throw new InvalidEmailException("Email address is missing.");
+        }
+
         final var verificationHash = UUID.randomUUID().toString();
         final var emailVerification = new PendingEmailVerification(
             user, verificationHash, LocalDate.now()
