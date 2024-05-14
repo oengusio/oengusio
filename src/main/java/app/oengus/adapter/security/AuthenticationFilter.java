@@ -67,6 +67,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         "username", details.username()
                     ), new SentryOptions()));*/
 
+                    // Since we implement "UserDetails" in our DTO sentry will see the username from that.
 					final var authentication = new UsernamePasswordAuthenticationToken(
                         details,
                         null,
