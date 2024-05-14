@@ -24,6 +24,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,6 +172,13 @@ public class OengusExceptionHandler {
         }
 
         return ResponseEntity.badRequest()
+            .header("Content-Type", "application/json")
+            .body(toMap(req, e));
+    }
+
+    @ExceptionHandler(DateTimeException.class)
+    public ResponseEntity<?> handleDateTimeException(final HttpServletRequest req, final DateTimeException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .header("Content-Type", "application/json")
             .body(toMap(req, e));
     }
