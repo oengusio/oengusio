@@ -43,7 +43,7 @@ postgres@hostname:~$ createdb oengus
 ## Discord integration
 
 Discord integration is needed to allow you to login into your Oengus dev environment with your real Discord account.
-You can also use Twitch and Twitter integration, but Discord is recommended as the easiest to set up.
+You can also use Twitch integration, but Discord is recommended as the easiest to set up.
 
 Follow [these instructions][Discord instructions] to create a Discord client ID and client secret values. Name your
 application something like `<your name>-oengus-dev`.

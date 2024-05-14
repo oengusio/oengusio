@@ -29,6 +29,8 @@ The redirect urls for this are:
 - Login: \[base_url]/login/discord
 - Sync: \[base_url]/user/settings/sync/discord
 
+Alternatively you can just use username/password login
+
 ```
 AMQP_URI=amqp://localhost/;
 AMQP_USERNAME=guest;
@@ -41,15 +43,6 @@ DISCORD_CLIENT_SECRET=;
 DISCORD_BOT_TOKEN=;
 TWITCH_CLIENT_ID=;
 TWITCH_CLIENT_SECRET=;
-TWITTER_CONSUMER_KEY=;
-TWITTER_CONSUMER_SECRET=;
-TWITTER_ACCESS_TOKEN=;
-TWITTER_ACCESS_TOKEN_SECRET=;
-twitter4j.debug=true;
-twitter4j.oauth.consumerKey=;
-twitter4j.oauth.consumerSecret=;
-TWITTER_OAUTH2_CLIENT_ID=;
-TWITTER_OAUTH2_CLIENT_SECRET=;
 DB_URL=jdbc:postgresql://localhost:5432/oengus;
 DB_USERNAME=;
 DB_PASSWORD=;
