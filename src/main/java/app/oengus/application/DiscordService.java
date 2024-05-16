@@ -56,7 +56,9 @@ public class DiscordService {
         final Optional<OengusUser> user = this.userPersistencePort.findByDiscordId(discordUser.getId());
 
         if (user.isEmpty()) {
-            throw new UnknownUserException();
+            throw new UnknownUserException(
+                discordUser.getUsername()
+            );
         }
 
         return user.get();

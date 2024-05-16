@@ -37,7 +37,7 @@ public class TwitchService {
         final Optional<OengusUser> user = this.userPersistencePort.findByTwitchId(twitchUser.getId());
 
         if (user.isEmpty()) {
-            throw new UnknownUserException();
+            throw new UnknownUserException(twitchUser.getLogin());
         }
 
         return user.get();
@@ -65,7 +65,7 @@ public class TwitchService {
         ).getData();
 
         if (foundUsers.isEmpty()) {
-            throw new UnknownUserException();
+            throw new UnknownUserException(null, null);
         }
 
         return foundUsers.get(0);

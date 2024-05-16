@@ -37,12 +37,13 @@ public class AuthControllerAdvice {
     }
 
     @ExceptionHandler(UnknownUserException.class)
-    public ResponseEntity<LoginResponseDto> handleUnknownUser() {
+    public ResponseEntity<LoginResponseDto> handleUnknownUser(UnknownUserException ex) {
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(
                 new LoginResponseDto()
                     .setStatus(LoginResponseDto.Status.OAUTH_ACCOUNT_NOT_FOUND)
+                    .setToken(ex.getUsername())
             );
     }
 
