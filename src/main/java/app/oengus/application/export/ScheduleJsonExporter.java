@@ -134,7 +134,8 @@ public class ScheduleJsonExporter implements Exporter {
                     Map.of(
                         "setup", this.formatCustomSetupTime(
                             getEffectiveSetupTime(scheduleLineDto)
-                        )
+                        ),
+                        "emulated", scheduleLineDto.isEmulated()
                     )
                 )
             ));

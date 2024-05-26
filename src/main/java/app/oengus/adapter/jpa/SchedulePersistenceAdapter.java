@@ -86,6 +86,10 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
                 line.setId(null);
             }
 
+            if (line.getCategoryId() != null && line.getCategoryId() < 1) {
+                line.setCategoryId(null);
+            }
+
             line.getRunners().forEach((runner) -> {
                 final var user = runner.getUser();
 

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleCsvExporter implements Exporter {
     private static final List<String> DEFAULT_HEADERS =
-        List.of("time", "runners", "game", "category", "type", "console", "estimate", "setup_time", "custom_data");
+        List.of("time", "runners", "game", "emulated", "category", "type", "console", "estimate", "setup_time", "custom_data");
 
     private final SchedulePersistencePort schedulePersistencePort;
 
@@ -73,6 +73,8 @@ public class ScheduleCsvExporter implements Exporter {
             .map(Runner::getEffectiveDisplay)
             .collect(Collectors.joining(", ")));
         record.add(line.getGameName());
+        // TODO: translate this
+        record.add(line.isEmulated() ? "Yes" : "No");
         record.add(line.getCategoryName());
         record.add(resourceBundle.getString("run.type." + line.getType().name()));
         record.add(line.getConsole());
