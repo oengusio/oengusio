@@ -72,6 +72,7 @@ public class SubmissionsController {
     }
 
     @DeleteMapping("/games/{id}")
+//    @PreAuthorize("(!isBanned() && isMarathonMod(#marathonId)) || isAdmin()")
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,

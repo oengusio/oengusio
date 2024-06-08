@@ -261,39 +261,6 @@ public class SubmissionService {
 
     }
 
-    /*private OpponentSubmissionDto mapOpponent(final OpponentEntity opponent, final User user) {
-        final OpponentSubmissionDto opponentDto = new OpponentSubmissionDto();
-        final CategoryEntity opponentCategory = opponent.getCategory();
-
-        if (opponentCategory == null || opponentCategory.getGame() == null) {
-            return null;
-        }
-
-        final GameEntity opponentGame = opponentCategory.getGame();
-
-        opponentDto.setId(opponent.getId());
-        opponentDto.setGameName(opponentGame.getName());
-        opponentDto.setCategoryId(opponentCategory.getId());
-        opponentDto.setCategoryName(opponentCategory.getName());
-        opponentDto.setVideo(opponent.getVideo());
-        final List<User> users = new ArrayList<>();
-        users.add(opponentGame.getSubmission().getUser());
-        users.addAll(opponentCategory
-            .getOpponents()
-            .stream()
-            .map((opponent1) -> opponent1.getSubmission().getUser())
-            .filter((user1) -> !Objects.equals(user1.getId(), user.getId()))
-            .collect(
-                Collectors.toSet()));
-        opponentDto.setUsers(
-            users.stream()
-                .map(this.userMapper::fromDbModel)
-                .toList()
-        );
-
-        return opponentDto;
-    }*/
-
     public List<Answer> findAnswersByMarathon(final String marathonId) {
         final var byMarathon = this.submissionPersistencePort.findAllByMarathon(marathonId);
         final List<Answer> answers = new ArrayList<>();
@@ -460,35 +427,4 @@ public class SubmissionService {
             throw new OengusBusinessException("NOT_AUTHORIZED");
         }
     }
-
-    /*private app.oengus.adapter.rest.dto.v1.SubmissionDto mapSubmissionDto(SubmissionEntity submission, boolean selectionDone) {
-        final app.oengus.adapter.rest.dto.v1.SubmissionDto dto = new app.oengus.adapter.rest.dto.v1.SubmissionDto();
-
-        dto.setId(submission.getId());
-        dto.setUser(SubmissionUserDto.fromUser(submission.getUser()));
-
-        submission.getGames().forEach((game) -> {
-            game.getCategories().forEach((category) -> {
-                if (category.getOpponents() != null) {
-                    category.setOpponentDtos(new ArrayList<>());
-                    category.getOpponents().forEach(opponent -> {
-                        final OpponentCategoryDto opponentCategoryDto = new OpponentCategoryDto();
-                        opponentCategoryDto.setId(opponent.getId());
-                        opponentCategoryDto.setVideo(opponent.getVideo());
-                        opponentCategoryDto.setUser(ProfileDto.fromUser(opponent.getSubmission().getUser()));
-                        opponentCategoryDto.setAvailabilities(opponent.getSubmission().getAvailabilities());
-                        category.getOpponentDtos().add(opponentCategoryDto);
-                    });
-                }
-
-                if (selectionDone) {
-                    category.setStatus(category.getSelection().getStatus());
-                }
-            });
-        });
-
-        dto.setGames(submission.getGames());
-
-        return dto;
-    }*/
 }
