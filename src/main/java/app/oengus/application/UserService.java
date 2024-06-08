@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 
+import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -77,7 +79,7 @@ public class UserService {
             patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(user.getPatreonId())
                 .map(
                     // Pledge amount is in cents, supporters need to at least pledge €1
-                    (status) -> status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() > 100
+                    (status) -> status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT
                 )
                 .orElse(false);
         }

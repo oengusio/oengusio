@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
+
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     implements MethodSecurityExpressionOperations {
 
@@ -280,7 +282,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
                     final var status = patreonStatus.get();
 
                     // Pledge amount is in cents, supporters need to at least pledge €1
-                    return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() > 100;
+                    return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT;
                 }
             }
         }
