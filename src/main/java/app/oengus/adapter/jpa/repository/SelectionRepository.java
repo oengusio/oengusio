@@ -18,6 +18,8 @@ public interface SelectionRepository extends CrudRepository<SelectionEntity, Int
 
     Optional<SelectionEntity> findByCategory(CategoryEntity category);
 
+    List<SelectionEntity> findByCategoryIn(List<CategoryEntity> category);
+
     List<SelectionEntity> findByMarathonAndStatusIn(MarathonEntity marathon, List<Status> statuses);
 
     @Modifying

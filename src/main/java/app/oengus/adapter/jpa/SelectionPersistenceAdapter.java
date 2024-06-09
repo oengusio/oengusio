@@ -27,6 +27,13 @@ public class SelectionPersistenceAdapter implements SelectionPersistencePort {
     }
 
     @Override
+    public List<Selection> findByCategoryIds(List<Integer> categoryIds) {
+        return this.repository.findByCategoryIn(
+            categoryIds.stream().map(CategoryEntity::ofId).toList()
+        ).stream().map(this.mapper::toDomain).toList();
+    }
+
+    @Override
     public List<Selection> findByMarathon(String marathonId) {
         return this.repository.findByMarathon(
             MarathonEntity.ofId(marathonId)

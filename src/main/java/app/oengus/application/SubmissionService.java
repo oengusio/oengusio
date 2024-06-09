@@ -121,13 +121,33 @@ public class SubmissionService {
             availability.setTo(availability.getTo().withSecond(0));
         });
 
+        // Fetch all selections in batch, faster and more efficient operation
+        final var categoryIds = submission.getGames().stream()
+            .flatMap(
+                (game) -> game.getCategories()
+                    .stream()
+                    .map(Category::getId)
+                    .filter((id) -> id > 0)
+            )
+            .toList();
+
+        // Put the selections in a map for O(1) lookup
+        final Map<Integer, Selection> selectionMap = new HashMap<>();
+
+        this.selectionPersistencePort.findByCategoryIds(categoryIds).forEach((selection) ->
+            selectionMap.put(
+                selection.getCategoryId(),
+                selection
+            )
+        );
+
         // TODO: make sure no new games can be added when submissions are closed
         submission.getGames().forEach(game -> {
             game.getCategories().forEach(category -> {
-                // TODO: this should be able to be done more efficiently in batch
                 if (category.getId() > 0) {
-                    this.selectionPersistencePort.findByCategoryId(category.getId())
-                        .ifPresent(category::setSelection);
+                    category.setSelection(
+                        selectionMap.get(category.getId())
+                    );
                 }
 
                 // Truncate the estimate to minutes?
