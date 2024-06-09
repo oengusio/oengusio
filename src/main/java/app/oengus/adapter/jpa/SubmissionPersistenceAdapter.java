@@ -86,7 +86,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     public Submission save(Submission submission) {
         final var rawEntity = this.mapper.fromDomain(submission);
 
-        if (0 == rawEntity.getId()) {
+        if (rawEntity.getId() < 1) {
             rawEntity.setId(null);
         }
 

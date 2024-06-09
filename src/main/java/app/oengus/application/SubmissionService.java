@@ -41,6 +41,7 @@ public class SubmissionService {
     private final CategoryPersistencePort categoryPersistencePort;
     private final GamePersistencePort gamePersistencePort;
     private final UserPersistencePort userPersistencePort;
+    private final SelectionPersistencePort selectionPersistencePort;
 
     private final OengusWebhookService webhookService;
     private final UserDtoMapper userMapper;
@@ -121,19 +122,13 @@ public class SubmissionService {
         });
 
         // TODO: make sure no new games can be added when submissions are closed
-        // Only allow to update availabilities when submissions are closed.
         submission.getGames().forEach(game -> {
             game.getCategories().forEach(category -> {
-                // TODO: fix this in the front-end
-                /*if (category.getId() <= 0) {
-                    this.createSelection(category, marathon);
-                } else {
-                    final Selection selection = this.selectionRepositoryService.findByCategory(category);
-                    if (selection == null) {
-                        this.createSelection(category, marathon);
-                    }
-                    category.setSelection(selection);
-                }*/
+                // TODO: this should be able to be done more efficiently in batch
+                if (category.getId() > 0) {
+                    this.selectionPersistencePort.findByCategoryId(category.getId())
+                        .ifPresent(category::setSelection);
+                }
 
                 // Truncate the estimate to minutes?
                 if (category.getEstimate().toSecondsPart() > 0) {

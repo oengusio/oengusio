@@ -10,12 +10,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SelectionRepository extends CrudRepository<SelectionEntity, Integer> {
 
     List<SelectionEntity> findByMarathon(MarathonEntity marathon);
 
-    SelectionEntity findByCategory(CategoryEntity category);
+    Optional<SelectionEntity> findByCategory(CategoryEntity category);
 
     List<SelectionEntity> findByMarathonAndStatusIn(MarathonEntity marathon, List<Status> statuses);
 

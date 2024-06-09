@@ -1,5 +1,6 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.CategoryEntity;
 import app.oengus.adapter.jpa.entity.MarathonEntity;
 import app.oengus.adapter.jpa.mapper.SelectionMapper;
 import app.oengus.adapter.jpa.repository.SelectionRepository;
@@ -11,12 +12,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class SelectionPersistenceAdapter implements SelectionPersistencePort {
     private final SelectionRepository repository;
     private final SelectionMapper mapper;
+
+    @Override
+    public Optional<Selection> findByCategoryId(int categoryId) {
+        return this.repository.findByCategory(CategoryEntity.ofId(categoryId))
+            .map(this.mapper::toDomain);
+    }
 
     @Override
     public List<Selection> findByMarathon(String marathonId) {
