@@ -1,12 +1,11 @@
 package app.oengus.adapter.jpa;
 
-import app.oengus.adapter.jpa.entity.GameEntity;
-import app.oengus.adapter.jpa.entity.MarathonEntity;
-import app.oengus.adapter.jpa.entity.OpponentEntity;
-import app.oengus.adapter.jpa.entity.User;
+import app.oengus.adapter.jpa.entity.*;
 import app.oengus.adapter.jpa.mapper.SubmissionEntityMapper;
+import app.oengus.adapter.jpa.mapper.UserMapper;
 import app.oengus.adapter.jpa.repository.SubmissionRepository;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Status;
 import app.oengus.domain.submission.Submission;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import java.util.Optional;
 public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final SubmissionRepository repository;
     private final SubmissionEntityMapper mapper;
+    private final UserMapper userMapper;
 
     @Override
     public Optional<Submission> findById(int id) {
@@ -167,5 +167,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     public Optional<Integer> getUserIdFromOpponentId(int opponentId) {
         return this.repository.findFirstByOpponentsContaining(OpponentEntity.ofId(opponentId))
             .map((it) -> it.getUser().getId());
+    }
+
+    @Override
+    public List<OengusUser> findUsersByIds(List<Integer> submissionIds) {
+        return ((List<SubmissionEntity>) this.repository.findAllById(submissionIds))
+            .stream()
+            .map(SubmissionEntity::getUser)
+            .map(this.userMapper::toDomain)
+            .toList();
     }
 }

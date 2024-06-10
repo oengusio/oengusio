@@ -16,6 +16,7 @@ import app.oengus.application.helper.OengusConstants;
 import app.oengus.domain.Role;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static app.oengus.application.CategoryService.MULTIPLAYER_RUN_TYPES;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
@@ -323,8 +325,8 @@ public class SubmissionService {
 
         final boolean qNotEmpty = !queryLower.isBlank();
         final Predicate<OengusUser> matchesUsername = (user) ->
-            user.getUsername().toLowerCase().contains(queryLower) ||
-                (user.getDisplayName() != null && user.getDisplayName().toLowerCase().contains(queryLower));
+            user.getUsername().toLowerCase(Locale.ROOT).contains(queryLower) ||
+                (user.getDisplayName() != null && user.getDisplayName().toLowerCase(Locale.ROOT).contains(queryLower));
 
         final var foundItems = bySearch.stream()
             .filter(
@@ -338,7 +340,7 @@ public class SubmissionService {
                     final Set<Game> gameSet = submission.getGames()
                         .stream()
                         .filter((game) -> {
-                            if (qNotEmpty && game.getName().toLowerCase().contains(queryLower)) {
+                            if (qNotEmpty && game.getName().toLowerCase(Locale.ROOT).contains(queryLower)) {
                                 return true;
                             }
 
@@ -349,21 +351,26 @@ public class SubmissionService {
                                         boolean base = true;
 
                                         if (qNotEmpty) {
-                                            if (category.getOpponents() != null) {
-                                                // TODO: this fucking sucks!
+                                            final var oppList = category.getOpponents();
+
+                                            if (oppList != null && !oppList.isEmpty()) {
+                                                // TODO: this fucking sucks! It takes 2 minutes to search if there are opponents WTF
                                                 //  Is there a better way of getting the usernames?
-                                                base = category.getOpponents()
-                                                    .stream()
-                                                    .map(Opponent::getSubmissionId)
-                                                    .map(this.submissionPersistencePort::findById)
-                                                    .map(Optional::get)
-                                                    .map(Submission::getUser)
-                                                    .anyMatch(matchesUsername);
+                                                try {
+                                                    final var submissionIds = oppList.stream()
+                                                        .map(Opponent::getSubmissionId)
+                                                        .toList();
+                                                    final var users = this.submissionPersistencePort.findUsersByIds(submissionIds);
+
+                                                    base = users.stream().anyMatch(matchesUsername);
+                                                } catch (Exception e) {
+                                                    log.error("Search failed", e);
+                                                }
                                             }
 
                                             // if we did not find an opponent, search category name
                                             if (!base) {
-                                                base = category.getName().toLowerCase().contains(queryLower);
+                                                base = category.getName().toLowerCase(Locale.ROOT).contains(queryLower);
                                             }
                                         }
 

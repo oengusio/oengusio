@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public interface SubmissionRepository extends CrudRepository<SubmissionEntity, Integer> {
     ///////////
@@ -24,6 +22,8 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
         "(SELECT COUNT(c.id) FROM CategoryEntity c WHERE c.game = (SELECT g FROM GameEntity g WHERE g.submission = s)) as total " +
         "FROM SubmissionEntity s WHERE s.marathon = :marathon")
     List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") MarathonEntity marathon);
+
+    List<SubmissionEntity> findByOpponentsIn(Set<OpponentEntity> opponents);
 
     SubmissionEntity findByGamesContaining(GameEntity game);
 
@@ -48,9 +48,9 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(s.user.displayName) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "(" +
-                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE " +
+                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE opp.category = c AND (" +
                     "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
-                    "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%')" +
+                    "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%'))" +
             ") > 0 OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) GROUP BY s")
@@ -65,9 +65,9 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
             "LOWER(s.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(s.user.displayName) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "(" +
-                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE " +
+                "SELECT COUNT(opp.id) FROM OpponentEntity opp WHERE opp.category = c AND (" +
                     "LOWER(opp.submission.user.username) LIKE concat('%',LOWER(:searchQ),'%') OR " +
-            "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%')" +
+                    "LOWER(opp.submission.user.displayName) LIKE concat('%',LOWER(:searchQ),'%'))" +
             ") > 0 OR " +
             "LOWER(g.name) LIKE concat('%',LOWER(:searchQ),'%') OR " +
             "LOWER(c.name) LIKE concat('%',LOWER(:searchQ),'%')) AND sel.status = :status GROUP BY s")

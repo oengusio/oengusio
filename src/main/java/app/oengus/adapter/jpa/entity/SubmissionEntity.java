@@ -102,4 +102,12 @@ public class SubmissionEntity {
             submission.getGames().forEach(GameEntity::initialize);
         }
     }
+
+    public static SubmissionEntity ofId(int id) {
+        final var submission = new SubmissionEntity();
+
+        submission.setId(id);
+
+        return submission;
+    }
 }

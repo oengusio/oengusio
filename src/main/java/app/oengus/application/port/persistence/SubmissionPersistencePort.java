@@ -1,7 +1,8 @@
 package app.oengus.application.port.persistence;
 
-import app.oengus.domain.submission.Submission;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Status;
+import app.oengus.domain.submission.Submission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -37,4 +38,6 @@ public interface SubmissionPersistencePort {
     List<Submission> findAllByMarathon(String marathonId);
 
     Optional<Integer> getUserIdFromOpponentId(int opponentId);
+
+    List<OengusUser> findUsersByIds(List<Integer> submissionIds);
 }
