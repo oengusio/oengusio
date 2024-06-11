@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 public class OpponentCategoryDto {
 	private int id;
+    private int submissionId;
 	private V1UserDto user;
 	private String video;
 	private List<Availability> availabilities;

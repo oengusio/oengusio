@@ -1,12 +1,12 @@
 package app.oengus.adapter.rest;
 
-import app.oengus.adapter.rest.dto.OpponentCategoryDto;
 import app.oengus.adapter.rest.dto.v1.SubmissionDto;
 import app.oengus.adapter.rest.dto.v1.V1OpponentDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
 import app.oengus.domain.submission.Submission;
@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -47,23 +49,36 @@ public class OpponentRestService {
         });
     }
 
+    // Be careful with alterations to this method.
+    // Incorrect changes may cause this mapping to take 2 fucking minutes
     public void setCategoryAndGameNameOnOpponents(Page<SubmissionDto> submissions, String marathonId) {
-        final Map<Integer, Game> gameCache = new HashMap<>();
-        final Map<Integer, Submission> submissionCache = new HashMap<>();
+        final List<Integer> submissionIds = new ArrayList<>();
 
         submissions.forEach((submission) -> {
-            submission.getOpponents().forEach((opponent) -> {
-                this.mapOpponent(opponent, gameCache, submissionCache);
-            });
+            submissionIds.add(submission.getId());
 
             submission.getGames().forEach((game) -> {
                 game.getCategories().forEach((category) -> {
                     category.getOpponents().forEach((opponent) -> {
-                        // this.mapOpponent(opponent, gameCache, submissionCache);`
-                        final var user = this.userPersistencePort.findById(opponent.getUser().id()).get();
+                        submissionIds.add(opponent.getSubmissionId());
+                    });
+                });
+            });
+
+            final var userCache = findSubmissionUsers(submissionIds);
+
+            submission.getGames().forEach((game) -> {
+                game.getCategories().forEach((category) -> {
+                    category.getOpponents().forEach((opponent) -> {
+                        final var subId = opponent.getSubmissionId();
+                        var cachedUser = userCache.get(subId);
+
+                        if (cachedUser == null) {
+                            cachedUser = this.submissionPersistencePort.findUsersByIds(List.of(subId)).get(0);
+                        }
 
                         opponent.setUser(
-                            this.userDtoMapper.fromDomain(user)
+                            this.userDtoMapper.fromDomain(cachedUser)
                         );
                     });
                 });
@@ -132,6 +147,20 @@ public class OpponentRestService {
 //        opponent.setCategoryName(cat.getName());
 //        opponent.setUsers(oppUsers);
 //    }
+
+    private Map<Integer, OengusUser> findSubmissionUsers(List<Integer> submissionIds) {
+        final var sortedIds = submissionIds.stream()
+            .sorted(Integer::compare)
+            .toList();
+        final Map<Integer, OengusUser> userCache = new HashMap<>();
+        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(submissionIds);
+
+        for (int i = 0; i < opponentUsers.size(); i++) {
+            userCache.put(sortedIds.get(i), opponentUsers.get(i));
+        }
+
+        return userCache;
+    }
 
     private Submission findSubmission(Map<Integer, Submission> submissionCache, int submissionId) {
         if (!submissionCache.containsKey(submissionId)) {

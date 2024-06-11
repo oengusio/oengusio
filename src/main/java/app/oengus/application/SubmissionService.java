@@ -328,6 +328,27 @@ public class SubmissionService {
             user.getUsername().toLowerCase(Locale.ROOT).contains(queryLower) ||
                 (user.getDisplayName() != null && user.getDisplayName().toLowerCase(Locale.ROOT).contains(queryLower));
 
+        final var opponentSubmissionIds = bySearch.stream()
+            .flatMap(
+                (s) -> s.getGames()
+                    .stream()
+                    .flatMap(
+                        (g) -> g.getCategories()
+                            .stream()
+                            .filter((c) -> c.getOpponents() != null && !c.getOpponents().isEmpty())
+                            .flatMap((c) -> c.getOpponents().stream())
+                            .map(Opponent::getSubmissionId)
+                    )
+            )
+            .sorted(Integer::compare)
+            .toList();
+        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
+        final Map<Integer, OengusUser> opponentUserCache = new HashMap<>();
+
+        for (int i = 0; i < opponentUsers.size(); i++) {
+            opponentUserCache.put(opponentSubmissionIds.get(i), opponentUsers.get(i));
+        }
+
         final var foundItems = bySearch.stream()
             .filter(
                 (submission) -> {
@@ -348,19 +369,18 @@ public class SubmissionService {
                                 .stream()
                                 .filter(
                                     (category) -> {
-                                        boolean base = true;
+                                        boolean base = false;
 
                                         if (qNotEmpty) {
                                             final var oppList = category.getOpponents();
 
                                             if (oppList != null && !oppList.isEmpty()) {
-                                                // TODO: this fucking sucks! It takes 2 minutes to search if there are opponents WTF
-                                                //  Is there a better way of getting the usernames?
                                                 try {
-                                                    final var submissionIds = oppList.stream()
+                                                    final var users = oppList.stream()
                                                         .map(Opponent::getSubmissionId)
+                                                        .map(opponentUserCache::get)
+                                                        .filter(Objects::nonNull)
                                                         .toList();
-                                                    final var users = this.submissionPersistencePort.findUsersByIds(submissionIds);
 
                                                     base = users.stream().anyMatch(matchesUsername);
                                                 } catch (Exception e) {
@@ -375,7 +395,11 @@ public class SubmissionService {
                                         }
 
                                         if (cStat != null && category.getSelection() != null) {
-                                            base &= category.getSelection().getStatus() == cStat;
+                                            if (qNotEmpty) {
+                                                base &= category.getSelection().getStatus() == cStat;
+                                            } else {
+                                                base = category.getSelection().getStatus() == cStat;
+                                            }
                                         }
 
                                         return base;

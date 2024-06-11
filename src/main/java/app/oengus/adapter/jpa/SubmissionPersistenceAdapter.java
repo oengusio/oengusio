@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -173,6 +174,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     public List<OengusUser> findUsersByIds(List<Integer> submissionIds) {
         return ((List<SubmissionEntity>) this.repository.findAllById(submissionIds))
             .stream()
+            .sorted(Comparator.comparingInt(SubmissionEntity::getId))
             .map(SubmissionEntity::getUser)
             .map(this.userMapper::toDomain)
             .toList();
