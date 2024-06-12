@@ -39,7 +39,7 @@ public class GameEntity {
 
     @Column(name = "console")
     @NotBlank
-    @Size(max = 20) // can grow upto 100 due to db type being varchar(100)
+    @Size(max = 45) // can grow upto 100 due to db type being varchar(100)
     private String console;
 
     @Column(name = "ratio")
