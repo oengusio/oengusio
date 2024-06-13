@@ -42,13 +42,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
         return this.repository.findByMarathonAndId(
                 MarathonEntity.ofId(marathonId), scheduleId
             )
-            .stream()
-            .peek(
-                // TODO: will this fuck something up?
-                (schedule) -> schedule.setLines(List.of())
-            )
-            .map(this.mapper::toDomainNoLines)
-            .findFirst();
+            .map(this.mapper::toDomainNoLines);
     }
 
     @Override

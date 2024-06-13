@@ -79,6 +79,7 @@ public class ScheduleService {
             // this needs to be consolidated into a single method
             marathon.setScheduleDone(true);
 
+            // TODO: we always need to compute the end date when a published schedule is updated.
             this.computeEndDate(marathon, newSchedule);
             this.selectionService.rejectTodos(marathon.getId());
 
@@ -110,6 +111,58 @@ public class ScheduleService {
         }
 
         return Optional.of(schedule);
+    }
+
+    private Ticker scheduleToTicker(final Marathon marathon, final Schedule schedule) {
+        final ZonedDateTime endDate = marathon.getEndDate();
+        final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
+        final var lines = schedule.getLines();
+
+        // fast return if the marathon has ended
+        if (now.isAfter(endDate) || now.isEqual(endDate)) {
+            return new Ticker(
+                lines.get(lines.size() - 1),
+                null,
+                null
+            );
+        }
+
+        Line previous = null;
+        Line current = null;
+        Line next = null;
+
+        for (final Line line : lines) {
+            if (now.isEqual(line.getDate()) || now.isAfter(line.getDate())) {
+                previous = current;
+                current = line;
+            } else {
+                next = line;
+                // we always will find the next one last
+                break;
+            }
+        }
+
+        return new Ticker(
+            previous,
+            current,
+            next
+        );
+    }
+
+    public Optional<Ticker> findTickerByScheduleId(final String marathonId, final int scheduleId, boolean withCustomData) {
+        // TODO: only parse this at the end when we finish parsing the ticker?
+        return this.parseCustomData(
+            this.schedulePersistencePort.findByIdForMarathon(marathonId, scheduleId), withCustomData
+        ).map((schedule) -> {
+            if (schedule.getLines().isEmpty()) {
+                throw new EmptyScheduleException("This schedule is empty");
+            }
+
+            final var marathon = this.marathonPersistencePort.findById(marathonId)
+                .orElseThrow(MarathonNotFoundException::new);
+
+            return this.scheduleToTicker(marathon, schedule);
+        });
     }
 
     ///////////
@@ -163,46 +216,17 @@ public class ScheduleService {
             throw new NotFoundException("Schedule not found");
         }
 
+        if (schedule.getLines().isEmpty()) {
+            throw new EmptyScheduleException("This schedule is empty");
+        }
+
         final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
             () -> new NotFoundException("Marathon not found")
         );
         final ZonedDateTime endDate = marathon.getEndDate();
         final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
-        final List<Line> lines = schedule.getLines();
 
-        if (lines.isEmpty()) {
-            throw new EmptyScheduleException("This schedule is empty");
-        }
-
-        // fast return if the marathon has ended
-        if (now.isAfter(endDate) || now.isEqual(endDate)) {
-            return new Ticker(
-                lines.get(lines.size() - 1),
-                null,
-                null
-            );
-        }
-
-        Line previous = null;
-        Line current = null;
-        Line next = null;
-
-        for (final Line line : lines) {
-            if (now.isEqual(line.getDate()) || now.isAfter(line.getDate())) {
-                previous = current;
-                current = line;
-            } else {
-                next = line;
-                // we always will find the next one last
-                break;
-            }
-        }
-
-        return new Ticker(
-            previous,
-            current,
-            next
-        );
+        return this.scheduleToTicker(marathon, schedule);
     }
 
     // TODO: create method that checks if a user has the maximum number of schedules
@@ -218,6 +242,7 @@ public class ScheduleService {
         final var saved = this.schedulePersistencePort.save(schedule);
 
         if (marathon.isScheduleDone()) {
+            // TODO: this seems a little broken??
             this.computeEndDate(marathon, saved);
             this.marathonPersistencePort.save(marathon);
         }
@@ -228,7 +253,7 @@ public class ScheduleService {
     public void computeEndDate(final Marathon marathon, final Schedule schedule) {
         marathon.setEndDate(marathon.getStartDate());
 
-        // TODO: this is probably a nicer way to do this with the stream api
+        // TODO: there is probably a nicer way to do this with the stream api
         //  Maybe reduce?
         schedule.getLines().forEach(scheduleLine ->
             marathon.setEndDate(

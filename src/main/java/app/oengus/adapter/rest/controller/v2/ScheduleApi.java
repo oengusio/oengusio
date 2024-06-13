@@ -5,6 +5,7 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleTickerDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +70,31 @@ public interface ScheduleApi {
     ResponseEntity<ScheduleInfoDto> findScheduleById(
         @PathVariable("marathonId") final String marathonId,
         @PathVariable("scheduleId") final int scheduleId
+    );
+
+    @GetMapping("/{scheduleId}/ticker")
+    @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
+    @Operation(
+        summary = "Get the ticker for this schedule. Cache is present but varies",
+        responses = {
+            @ApiResponse(
+                description = "The requested ticker",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ScheduleTickerDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon or schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<ScheduleTickerDto> findScheduleTickerById(
+        @PathVariable("marathonId") final String marathonId,
+        @PathVariable("scheduleId") final int scheduleId,
+        @RequestParam(defaultValue = "false", required = false) boolean withCustomData
     );
 
     // TODO: make slug a query param instead?

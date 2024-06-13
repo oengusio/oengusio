@@ -5,6 +5,7 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleTickerDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.LineUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.ScheduleDtoMapper;
@@ -67,6 +68,24 @@ public class ScheduleApiController implements ScheduleApi {
             .headers(cachingHeaders(5, false))
             .body(
                 this.mapper.infoFromSchedule(schedule)
+            );
+    }
+
+    @Override
+    public ResponseEntity<ScheduleTickerDto> findScheduleTickerById(
+        String marathonId, int scheduleId, boolean withCustomData
+    ) {
+        if (!this.marathonService.exists(marathonId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
+        }
+
+        final var ticker = this.scheduleService.findTickerByScheduleId(marathonId, scheduleId, withCustomData)
+            .orElseThrow(ScheduleNotFoundException::new);
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, false))
+            .body(
+                this.mapper.tickerToDto(ticker)
             );
     }
 
