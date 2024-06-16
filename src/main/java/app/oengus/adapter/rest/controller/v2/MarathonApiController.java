@@ -41,9 +41,9 @@ public class MarathonApiController implements MarathonApi {
             .headers(cachingHeaders(5, false))
             .body(
                 new MarathonHomeDto(
+                    transform.apply(live),
                     transform.apply(next),
-                    transform.apply(open),
-                    transform.apply(live)
+                    transform.apply(open)
                 )
             );
     }
