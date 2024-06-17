@@ -342,12 +342,7 @@ public class SubmissionService {
             )
             .sorted(Integer::compare)
             .toList();
-        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
-        final Map<Integer, OengusUser> opponentUserCache = new HashMap<>();
-
-        for (int i = 0; i < opponentUsers.size(); i++) {
-            opponentUserCache.put(opponentSubmissionIds.get(i), opponentUsers.get(i));
-        }
+        final var opponentUserCache = this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
 
         final var foundItems = bySearch.stream()
             .filter(

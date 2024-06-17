@@ -74,7 +74,7 @@ public class OpponentRestService {
                         var cachedUser = userCache.get(subId);
 
                         if (cachedUser == null) {
-                            cachedUser = this.submissionPersistencePort.findUsersByIds(List.of(subId)).get(0);
+                            cachedUser = this.submissionPersistencePort.findUsersByIds(List.of(subId)).get(subId);
                         }
 
                         opponent.setUser(
@@ -149,17 +149,7 @@ public class OpponentRestService {
 //    }
 
     private Map<Integer, OengusUser> findSubmissionUsers(List<Integer> submissionIds) {
-        final var sortedIds = submissionIds.stream()
-            .sorted(Integer::compare)
-            .toList();
-        final Map<Integer, OengusUser> userCache = new HashMap<>();
-        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(submissionIds);
-
-        for (int i = 0; i < opponentUsers.size(); i++) {
-            userCache.put(sortedIds.get(i), opponentUsers.get(i));
-        }
-
-        return userCache;
+        return this.submissionPersistencePort.findUsersByIds(submissionIds);
     }
 
     private Submission findSubmission(Map<Integer, Submission> submissionCache, int submissionId) {

@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -171,12 +173,11 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
-    public List<OengusUser> findUsersByIds(List<Integer> submissionIds) {
+    public Map<Integer, OengusUser> findUsersByIds(List<Integer> submissionIds) {
         return ((List<SubmissionEntity>) this.repository.findAllById(submissionIds))
             .stream()
-            .sorted(Comparator.comparingInt(SubmissionEntity::getId))
-            .map(SubmissionEntity::getUser)
-            .map(this.userMapper::toDomain)
-            .toList();
+            .collect(Collectors.toMap(
+                SubmissionEntity::getId, (v) -> this.userMapper.toDomain(v.getUser())
+            ));
     }
 }
