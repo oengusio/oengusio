@@ -48,6 +48,7 @@ public class UserService {
     public List<SubmissionHistoryEntry> getSubmissionHistory(final int userId) {
         final Map<String, Marathon> marathonCache = new HashMap<>();
 
+        // TODO: this needs pagination so we can have a "load more" button on the profile
         // We need to combine some data in order for this to work!
         return this.submissionPersistencePort.findByUser(userId)
             .stream()
@@ -63,6 +64,7 @@ public class UserService {
 
                 return entry;
             })
+            .sorted((a, b) -> b.getMarathon().getStartDate().compareTo(a.getMarathon().getStartDate()))
             .toList();
     }
 
