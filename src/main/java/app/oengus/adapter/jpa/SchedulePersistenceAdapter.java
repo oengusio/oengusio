@@ -10,6 +10,7 @@ import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -105,6 +106,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public void deleteAllForMarathon(String marathonId) {
         this.repository.deleteByMarathon(MarathonEntity.ofId(marathonId));
     }

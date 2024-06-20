@@ -118,16 +118,16 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .toList();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void markSubmissionsOpen(Marathon marathon) {
         this.repository.openSubmissions(
             MarathonEntity.ofId(marathon.getId())
         );
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void markSubmissionsClosed(Marathon marathon) {
         this.repository.closeSubmissions(
             MarathonEntity.ofId(marathon.getId())
@@ -154,16 +154,16 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .toList();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void clear(Marathon marathon) {
         this.repository.clearMarathon(
             MarathonEntity.ofId(marathon.getId())
         );
     }
 
-    @Transactional // somehow, this makes stuff not crash WTF
     @Override
+    @Transactional // somehow, this makes stuff not crash WTF
     public List<Marathon> findFutureWithScheduledSubmissions() {
         return this.repository.findFutureMarathonsWithScheduledSubmissions()
             .stream()
