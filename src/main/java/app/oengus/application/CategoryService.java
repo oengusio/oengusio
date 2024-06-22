@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -67,7 +68,10 @@ public class CategoryService {
 
         // re-use the same data to prevent loads of db lookups
         final var opponentSubmissionIds = category.getOpponents().stream().map(Opponent::getSubmissionId).toList();
-        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
+        final Map<Integer, OengusUser> opponentUsers =
+            opponentSubmissionIds.isEmpty()
+                ? Map.of()
+                : this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
 
         if (selfUser != null) {
             if (Objects.equals(submission.getUser().getId(), selfUser.getId())) {
@@ -79,6 +83,7 @@ public class CategoryService {
                 .map(
                     opponent -> opponentUsers.get(opponent.getSubmissionId())
                 )
+                .filter(Objects::nonNull)
                 .anyMatch(userId -> userId.getId() == selfUser.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
@@ -87,7 +92,10 @@ public class CategoryService {
         final List<OengusUser> users = new ArrayList<>();
 
         users.add(submission.getUser());
-        users.addAll(opponentUsers.values());
+
+        if (!opponentUsers.isEmpty()) {
+            users.addAll(opponentUsers.values());
+        }
 
         final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())
             .orElseThrow(
