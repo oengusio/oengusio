@@ -1185,4 +1185,10 @@
             UPDATE schedule SET published = True WHERE marathon_id IN ( SELECT id FROM marathon WHERE id = marathon_id AND schedule_done = True);
         </sql>
     </changeSet>
+
+    <changeSet id="20240622-1" author="duncte123">
+        <createIndex indexName="category_code" tableName="category">
+            <column name="code" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

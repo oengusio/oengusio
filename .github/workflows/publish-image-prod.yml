@@ -1,5 +1,6 @@
 name: Publish prod
 on:
+    workflow_dispatch: {}
     release:
         types: [ published ]
 jobs:
