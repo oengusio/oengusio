@@ -250,6 +250,25 @@ public class ScheduleService {
         return saved;
     }
 
+    public Schedule saveOrUpdateV1(final String marathonId, final Schedule schedule) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+        final var scheduleDone = marathon.isScheduleDone();
+
+        schedule.setMarathonId(marathonId);
+        schedule.setPublished(scheduleDone);
+
+        final var saved = this.schedulePersistencePort.save(schedule);
+
+        if (scheduleDone) {
+            // TODO: this seems a little broken??
+            this.computeEndDate(marathon, saved);
+            this.marathonPersistencePort.save(marathon);
+        }
+
+        return saved;
+    }
+
     public void computeEndDate(final Marathon marathon, final Schedule schedule) {
         marathon.setEndDate(marathon.getStartDate());
 

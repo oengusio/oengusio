@@ -117,7 +117,9 @@ public class ScheduleController {
 
         // try-catch for backwards compatibility
         try {
-            this.scheduleService.saveOrUpdate(marathonId, schedule);
+            // 🙃
+            // The sooner I remove the old UI, the better
+            this.scheduleService.saveOrUpdateV1(marathonId, schedule);
         } catch (MarathonNotFoundException e) {
             throw new NotFoundException(e.getMessage());
         }

@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
 @Setter
 public class LineUpdateRequestDto {
     @NotNull
-    @Size(max = 50)
+//    @Size(max = 50) // TODO: do we want to give a max?
     private List<LineDto> data;
 }
