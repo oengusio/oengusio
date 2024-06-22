@@ -4,12 +4,13 @@ import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.submission.Category;
+import app.oengus.domain.OengusUser;
+import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Opponent;
 import app.oengus.domain.submission.RunType;
 import app.oengus.domain.submission.Submission;
-import app.oengus.domain.exception.OengusBusinessException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class CategoryService {
     ///////////
     // v1 stuff
 
-    public Pair<Category, List<Integer>> findCategoryByCode(final String marathonId, final String code) {
+    public Pair<Category, List<OengusUser>> findCategoryByCode(final String marathonId, final String code) {
         final var optionalCategory = this.categoryPersistencePort.findByCode(code);
 
         if (optionalCategory.isEmpty()) {
@@ -55,7 +54,7 @@ public class CategoryService {
 
         final var category = optionalCategory.get();
 
-        final var user = this.securityPort.getAuthenticatedUser();
+        final var selfUser = this.securityPort.getAuthenticatedUser();
         final Submission submission = this.submissionPersistencePort.getByGameId(category.getGameId());
 
         if (!Objects.equals(submission.getMarathonId(), marathonId)) {
@@ -67,48 +66,40 @@ public class CategoryService {
         }
 
         // re-use the same data to prevent loads of db lookups
+        final var opponentSubmissionIds = category.getOpponents().stream().map(Opponent::getSubmissionId).toList();
+        final var opponentUsers = this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
 
-        final var opponentUsers = category
-            .getOpponents()
-            .stream()
-            .collect(
-                Collectors.toMap(
-                    Opponent::getId,
-                    opponent -> this.submissionPersistencePort.getUserIdFromOpponentId(opponent.getId()).get()
-                )
-            );
-
-        if (user != null) {
-            if (Objects.equals(submission.getUser().getId(), user.getId())) {
+        if (selfUser != null) {
+            if (Objects.equals(submission.getUser().getId(), selfUser.getId())) {
                 throw new OengusBusinessException("SAME_USER");
             }
 
             if (category.getOpponents()
                 .stream()
                 .map(
-                    opponent -> opponentUsers.get(opponent.getId())
+                    opponent -> opponentUsers.get(opponent.getSubmissionId())
                 )
-                .anyMatch(userId -> userId == user.getId())) {
+                .anyMatch(userId -> userId.getId() == selfUser.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
         }
 
-        final List<Integer> userIds = new ArrayList<>();
+        final List<OengusUser> users = new ArrayList<>();
 
-        userIds.add(submission.getUser().getId());
-        userIds.addAll(opponentUsers.values());
+        users.add(submission.getUser());
+        users.addAll(opponentUsers.values());
 
         final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())
             .orElseThrow(
                 () -> new OengusBusinessException("SUBMISSION_MARATHON_MISSING")
             );
 
-        if (marathon.getMaxNumberOfScreens() <= userIds.size()) {
+        if (marathon.getMaxNumberOfScreens() <= users.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
         }
 
         return Pair.of(
-            category, userIds
+            category, users
         );
     }
 
@@ -137,7 +128,7 @@ public class CategoryService {
             try {
                 this.webhookService.sendCategoryDeleteEvent(webhook, category, deletedBy);
             } catch (Exception e) {
-                LoggerFactory.getLogger(GameService.class).error("Error when handling webhook", e);
+                LoggerFactory.getLogger(CategoryService.class).error("Error when handling webhook", e);
             }
         }
 

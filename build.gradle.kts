@@ -4,8 +4,8 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "2.7.0"
-    id("io.spring.dependency-management") version "1.1.3"
+    id("org.springframework.boot") version "2.7.18"
+    id("io.spring.dependency-management") version "1.1.5"
     id("io.freefair.lombok") version "8.4"
 }
 
@@ -64,7 +64,7 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "com.zaxxer", name = "HikariCP", version = "5.0.1")
+    implementation(group = "com.zaxxer", name = "HikariCP", version = "5.1.0")
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
