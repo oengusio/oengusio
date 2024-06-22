@@ -56,7 +56,7 @@ public class CategoryService {
         final var category = optionalCategory.get();
 
         final var selfUser = this.securityPort.getAuthenticatedUser();
-        final Submission submission = this.submissionPersistencePort.getByGameId(category.getGameId());
+        final Submission submission = this.submissionPersistencePort.getToplevelByGamId(category.getGameId());
 
         if (!Objects.equals(submission.getMarathonId(), marathonId)) {
             throw new OengusBusinessException("DIFFERENT_MARATHON");

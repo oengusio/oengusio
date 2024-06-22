@@ -21,6 +21,14 @@ public interface SubmissionEntityMapper {
     @Mapping(target = "marathonId", source = "marathon.id")
     Submission toDomain(SubmissionEntity submissionEntity);
 
+    @BeanMapping(ignoreUnmappedSourceProperties = { "games", "availabilities", "answers", "opponents" })
+    @Mapping(target = "opponents", ignore = true)
+    @Mapping(target = "answers", ignore = true)
+    @Mapping(target = "games", ignore = true)
+    @Mapping(target = "availabilities", ignore = true)
+    @Mapping(target = "marathonId", source = "marathon.id")
+    Submission toToplevelDomain(SubmissionEntity submissionEntity);
+
     // TODO: fix
     @Mapping(target = "fresh", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")

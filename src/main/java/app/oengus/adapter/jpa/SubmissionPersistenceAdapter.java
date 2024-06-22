@@ -41,6 +41,15 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    public Submission getToplevelByGamId(int gameId) {
+        final var entity = this.repository.findByGamesContaining(
+            GameEntity.ofId(gameId)
+        );
+
+        return this.mapper.toToplevelDomain(entity);
+    }
+
+    @Override
     public Optional<Submission> findForUserInMarathon(int userId, String marathonId) {
         return this.repository.findByUserAndMarathon(
             User.ofId(userId),

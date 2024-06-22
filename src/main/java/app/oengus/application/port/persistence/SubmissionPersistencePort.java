@@ -15,6 +15,8 @@ public interface SubmissionPersistencePort {
 
     Submission getByGameId(int gameId);
 
+    Submission getToplevelByGamId(int gameId);
+
     Optional<Submission> findForUserInMarathon(int userId, String marathonId);
 
     // Extra boolean method is more efficient than mapping the models
