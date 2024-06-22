@@ -58,6 +58,11 @@ public class CategoryService {
         final var selfUser = this.securityPort.getAuthenticatedUser();
         final Submission submission = this.submissionPersistencePort.getToplevelByGamId(category.getGameId());
 
+        System.out.println("==========================================");
+        System.out.println("GOT SUBMISSION");
+        System.out.println(submission);
+        System.out.println("==========================================");
+
         if (!Objects.equals(submission.getMarathonId(), marathonId)) {
             throw new OengusBusinessException("DIFFERENT_MARATHON");
         }
@@ -73,10 +78,19 @@ public class CategoryService {
                 ? Map.of()
                 : this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
 
+        System.out.println("==========================================");
+        System.out.println("GOT USERS");
+        System.out.println(opponentUsers);
+        System.out.println("==========================================");
+
         if (selfUser != null) {
             if (Objects.equals(submission.getUser().getId(), selfUser.getId())) {
                 throw new OengusBusinessException("SAME_USER");
             }
+
+            System.out.println("==========================================");
+            System.out.println("SELF CHECK PASSED");
+            System.out.println("==========================================");
 
             if (category.getOpponents()
                 .stream()
@@ -87,6 +101,10 @@ public class CategoryService {
                 .anyMatch(userId -> userId.getId() == selfUser.getId())) {
                 throw new OengusBusinessException("ALREADY_IN_OPPONENTS");
             }
+
+            System.out.println("==========================================");
+            System.out.println("OPPONENT CHECK PASSED");
+            System.out.println("==========================================");
         }
 
         final List<OengusUser> users = new ArrayList<>();
@@ -97,10 +115,18 @@ public class CategoryService {
             users.addAll(opponentUsers.values());
         }
 
+        System.out.println("==========================================");
+        System.out.println("PRE MARATHON FETCH");
+        System.out.println("==========================================");
+
         final Marathon marathon = this.marathonPersistencePort.findById(submission.getMarathonId())
             .orElseThrow(
                 () -> new OengusBusinessException("SUBMISSION_MARATHON_MISSING")
             );
+
+        System.out.println("==========================================");
+        System.out.println("MARATHON FETCHED");
+        System.out.println("==========================================");
 
         if (marathon.getMaxNumberOfScreens() <= users.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
