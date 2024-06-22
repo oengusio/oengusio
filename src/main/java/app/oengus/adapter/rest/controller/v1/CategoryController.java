@@ -25,6 +25,7 @@ public class CategoryController {
     private final UserPersistencePort userPersistencePort;
 
     @GetMapping("/{code}")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Find a multiplayer category by its code and return basic information")
     public ResponseEntity<OpponentSubmissionDto> findCategoryByCode(
         @PathVariable("marathonId") final String marathonId, @PathVariable("code") final String code
