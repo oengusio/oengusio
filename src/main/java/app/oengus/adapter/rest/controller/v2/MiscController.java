@@ -18,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @CrossOrigin(maxAge = 3600)
 @Tag(name = "misc-v1")
 @RestController
@@ -30,7 +32,9 @@ public class MiscController {
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> bonk() throws Exception {
-        return ResponseEntity.ok("bonk!");
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(30, false))
+            .body("bonk!");
     }
 
     @GetMapping("/pronouns")

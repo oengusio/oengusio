@@ -18,6 +18,7 @@ public class HeaderHelpers {
         headers.setCacheControl(
             CacheControl.maxAge(Duration.ofMinutes(minutes))
                 .cachePublic()
+                .mustRevalidate()
         );
 
         if (varies) {

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @RestController
 @Tag(name = "root")
 @RequestMapping("/")
@@ -20,6 +22,7 @@ public class RootController {
     @Operation(hidden = true)
     public ResponseEntity<String> index() {
         return ResponseEntity.ok()
+            .headers(cachingHeaders(60, false))
             .contentType(MediaType.TEXT_HTML)
             .body("Go visit <a href=\"https://docs.oengus.io/\" target=\"_blank\">https://docs.oengus.io/</a> ;)");
     }
