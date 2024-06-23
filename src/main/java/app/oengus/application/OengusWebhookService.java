@@ -1,15 +1,15 @@
 package app.oengus.application;
 
+import app.oengus.adapter.rest.Views;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.application.rabbitmq.IRabbitMQService;
+import app.oengus.domain.OengusBotUrl;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Submission;
-import app.oengus.domain.OengusBotUrl;
-import app.oengus.application.rabbitmq.IRabbitMQService;
-import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 // TODO: needs a lot of cleanup
 @Service
@@ -37,13 +35,6 @@ public class OengusWebhookService {
     private final IRabbitMQService rabbitMq;
     private final GamePersistencePort gamePersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
-
-    // NOTE: this can only do two at the same time
-    private final ScheduledExecutorService selectionTImer = Executors.newScheduledThreadPool(2, (r) -> {
-        final Thread t = new Thread(r, "selection announcement thread");
-        t.setDaemon(true);
-        return t;
-    });
 
     // TODO: replace bot webhook with settings.
     /// <editor-fold desc="event functions">

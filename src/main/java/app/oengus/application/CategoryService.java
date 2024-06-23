@@ -84,7 +84,8 @@ public class CategoryService {
                 : this.submissionPersistencePort.findUsersByIds(opponentSubmissionIds);
 
         System.out.println("==========================================");
-        System.out.println("GOT USERS");
+        System.out.println("GOT USERS (null? " + (opponentUsers == null) + ')');
+        System.out.println("Opponent ids: " + opponentSubmissionIds);
         System.out.println(opponentUsers);
         System.out.println("==========================================");
 

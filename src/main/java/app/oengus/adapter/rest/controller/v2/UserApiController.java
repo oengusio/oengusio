@@ -45,7 +45,9 @@ public class UserApiController implements UserApi {
         );
         final var profile = this.mapper.v2ProfileFromDomain(user);
 
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(profile);
     }
 
     @Override
@@ -90,9 +92,11 @@ public class UserApiController implements UserApi {
         final var history = this.userService.getSubmissionHistory(id);
         final var dtos = history.stream().map(this.mapper::fromDomain).toList();
 
-        return ResponseEntity.ok(
-            new DataListDto<>(dtos)
-        );
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(
+                new DataListDto<>(dtos)
+            );
     }
 
     @Override
@@ -104,9 +108,11 @@ public class UserApiController implements UserApi {
             .map(this.mapper::fromDomainMarathon)
             .toList();
 
-        return ResponseEntity.ok(
-            new DataListDto<>(dtos)
-        );
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(
+                new DataListDto<>(dtos)
+            );
     }
 
     @Override
@@ -114,9 +120,11 @@ public class UserApiController implements UserApi {
         final var user = this.lookupService.findById(id)
             .orElseThrow(UserNotFoundException::new);
 
-        return ResponseEntity.ok(
-            new DataListDto<>(user.getRoles())
-        );
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(
+                new DataListDto<>(user.getRoles())
+            );
     }
 
     @Override
@@ -128,9 +136,11 @@ public class UserApiController implements UserApi {
 
         final var saved = this.userService.save(user);
 
-        return ResponseEntity.ok(
-            new DataListDto<>(saved.getRoles())
-        );
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5))
+            .body(
+                new DataListDto<>(saved.getRoles())
+            );
     }
 
     @Override
