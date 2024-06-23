@@ -128,6 +128,7 @@ public class CategoryService {
         System.out.println("MARATHON FETCHED");
         System.out.println("==========================================");
 
+        // hangs on this check???
         if (marathon.getMaxNumberOfScreens() <= users.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
         }
