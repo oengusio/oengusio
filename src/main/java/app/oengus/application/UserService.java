@@ -11,6 +11,7 @@ import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
+import app.oengus.domain.submission.Status;
 import app.oengus.domain.user.SubmissionHistoryEntry;
 import app.oengus.domain.user.SupporterStatus;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +63,25 @@ public class UserService {
                 entry.setMarathon(marathon);
                 entry.setGames(submission.getGames());
 
+                // strip the status if the pics have not been published yet
+                if (!marathon.isSelectionDone()) {
+                    entry.getGames().forEach(
+                        (game) -> game.getCategories().forEach((category) -> {
+                            final var sel = category.getSelection();
+
+                            if (sel != null) {
+                                sel.setStatus(Status.TODO);
+                            }
+
+                            category.setCode(null);
+                        })
+                    );
+                }
+
                 return entry;
             })
+            // Remove private events
+            .filter((submission) -> !submission.getMarathon().isPrivate())
             .sorted((a, b) -> b.getMarathon().getStartDate().compareTo(a.getMarathon().getStartDate()))
             .toList();
     }
