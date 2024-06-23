@@ -55,6 +55,11 @@ public class CategoryService {
 
         final var category = optionalCategory.get();
 
+        System.out.println("==========================================");
+        System.out.println("GOT CATEGORY");
+        System.out.println(category);
+        System.out.println("==========================================");
+
         final var selfUser = this.securityPort.getAuthenticatedUser();
         final Submission submission = this.submissionPersistencePort.getToplevelByGamId(category.getGameId());
 
