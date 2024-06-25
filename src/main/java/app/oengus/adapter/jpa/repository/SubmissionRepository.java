@@ -24,7 +24,7 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
     List<Map<String, ?>> findByMarathonToplevel(@Param("marathon") MarathonEntity marathon);
 
     @Query("SELECT s FROM SubmissionEntity s JOIN FETCH s.games g WHERE g = :game")
-    SubmissionEntity findByGamesContaining(GameEntity game);
+    SubmissionEntity findByGamesContaining(@Param("game") GameEntity game);
 
     ////////////
     // Old stuff
