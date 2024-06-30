@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final SubmissionRepository repository;
     private final SubmissionEntityMapper mapper;
     private final UserMapper userMapper;
+    private final SchedulePersistenceAdapter schedulePersistenceAdapter;
 
     @Override
     public Optional<Submission> findById(int id) {
@@ -68,8 +70,8 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public List<Submission> findAcceptedInMarathon(String marathonId) {
         return this.repository.findValidatedOrBonusSubmissionsForMarathon(
-            MarathonEntity.ofId(marathonId)
-        )
+                MarathonEntity.ofId(marathonId)
+            )
             .stream()
             .map(this.mapper::toDomain)
             .toList();
@@ -95,6 +97,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Submission save(Submission submission) {
         final var rawEntity = this.mapper.fromDomain(submission);
 
@@ -110,13 +113,19 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
             }
         });
 
-        rawEntity.getOpponents().forEach((opponent) -> {
-            opponent.setSubmission(rawEntity);
+        rawEntity.getOpponents()
+            .stream()
+            .sorted(Comparator.comparingInt(OpponentEntity::getId))
+            .peek((o) -> {
+                if (o.getId() < 1) {
+                    o.setId(null);
+                }
 
-            if (opponent.getId() < 1) {
-                opponent.setId(null);
-            }
-        });
+            })
+            .distinct()
+            .forEach((opponent) -> {
+                opponent.setSubmission(rawEntity);
+            });
 
         rawEntity.getGames().forEach((game) -> {
             game.setSubmission(rawEntity);
@@ -129,6 +138,14 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
                 if (category.getId() < 1) {
                     category.setId(null);
                 }
+
+                category.getOpponents().forEach((opponent) -> {
+                    if (opponent.getId() < 1) {
+                        opponent.setId(null);
+                    }
+
+                    opponent.setCategory(category);
+                });
 
                 category.setGame(game);
             });
@@ -169,8 +186,8 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     @Override
     public List<Submission> findAllByMarathon(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(
-            MarathonEntity.ofId(marathonId)
-        )
+                MarathonEntity.ofId(marathonId)
+            )
             .stream()
             .map(this.mapper::toDomain)
             .toList();

@@ -1,11 +1,16 @@
 package app.oengus.application;
 
+import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import app.oengus.domain.schedule.Schedule;
+import app.oengus.domain.submission.Selection;
+import app.oengus.domain.webhook.CategoryAndUserId;
+import app.oengus.domain.webhook.WebhookSelectionDone;
 import io.sentry.Sentry;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +22,9 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,7 +32,9 @@ import java.util.Optional;
 public class MarathonService {
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionService submissionService;
+    private final SubmissionPersistencePort submissionPersistencePort;
     private final ScheduleService scheduleService;
+    private final CategoryPersistencePort categoryPersistencePort;
     private final IncentiveService incentiveService;
 //    private final EventSchedulerService eventSchedulerService;
     private final SelectionService selectionService;
@@ -81,10 +90,35 @@ public class MarathonService {
             // send accepted submissions
             if (patch.isAnnounceAcceptedSubmissions() && patch.hasWebhook()) {
                 try {
-                    this.webhookService.sendSelectionDoneEvent(
-                        patch.getWebhook(),
-                        this.selectionService.findAllByMarathonId(patch.getId())
-                    );
+                    final var selections = this.selectionService.findAllByMarathonId(patch.getId());
+
+                    // TODO: optimize this to a single query, I want to see if I can fetch the category with the userid
+                    final var categoryIds = selections.stream().map(Selection::getCategoryId).toList();
+                    final var categories = this.categoryPersistencePort.findAllById(categoryIds);
+                    final Map<Integer, CategoryAndUserId> categoryMap = new HashMap<>();
+
+                    for (final var category : categories) {
+                        final var userId = this.submissionPersistencePort.getToplevelByGamId(category.getGameId()).getUser().getId();
+                        categoryMap.put(category.getId(), new CategoryAndUserId(category, userId));
+                    }
+
+                    final var parsedSelections = selections
+                        .stream()
+                        .map((sel) -> {
+                            final var data = categoryMap.get(sel.getCategoryId());
+                            final var hookData = new WebhookSelectionDone(
+                                sel.getId(), sel.getCategoryId(),
+                                data.category(), data.userId()
+                            );
+
+                            hookData.setMarathonId(sel.getMarathonId());
+                            hookData.setStatus(sel.getStatus());
+
+                            return hookData;
+                        })
+                        .toList();
+
+                    this.webhookService.sendSelectionDoneEvent(patch.getWebhook(), parsedSelections);
                 } catch (IOException e) {
                     Sentry.captureException(e);
                     LoggerFactory.getLogger(MarathonService.class).error("Sending selection done event failed", e);

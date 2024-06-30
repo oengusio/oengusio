@@ -8,8 +8,8 @@ import app.oengus.domain.OengusBotUrl;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
-import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Submission;
+import app.oengus.domain.webhook.WebhookSelectionDone;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -148,7 +148,7 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSelectionDoneEvent(final String url, final List<Selection> selections) throws IOException {
+    public void sendSelectionDoneEvent(final String url, final List<WebhookSelectionDone> selections) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SELECTION_DONE");
         data.set("selections", parseJson(selections));

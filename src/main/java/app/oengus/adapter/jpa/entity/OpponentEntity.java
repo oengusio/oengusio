@@ -1,10 +1,12 @@
 package app.oengus.adapter.jpa.entity;
 
+import liquibase.pro.packaged.O;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -33,5 +35,20 @@ public class OpponentEntity {
         opponent.setId(id);
 
         return opponent;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OpponentEntity e) {
+            return Objects.equals(getId(), e.getId()) &&
+                Objects.equals(getVideo(), e.getVideo());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, video);
     }
 }
