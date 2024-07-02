@@ -152,7 +152,7 @@ public class SubmissionsController {
         final var answers = this.submissionService.findAnswersByMarathon(marathonId);
 
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
+            .headers(cachingHeaders(5, true))
             .body(
                 answers.stream().map(this.answerMapper::fromDomain).toList()
             );
@@ -218,7 +218,11 @@ public class SubmissionsController {
         @PathVariable("marathonId") final String marathonId,
         @PathVariable("userId") final int userId
     ) {
-        return ResponseEntity.ok(this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId));
+        final var result = this.submissionService.getRunnerAvailabilitiesForMarathon(marathonId, userId);
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(5, true))
+            .body(result);
     }
 
     @GetMapping("/me")

@@ -46,7 +46,7 @@ public class UserApiController implements UserApi {
         final var profile = this.mapper.v2ProfileFromDomain(user);
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5))
+            .headers(cachingHeaders(30))
             .body(profile);
     }
 
@@ -93,7 +93,7 @@ public class UserApiController implements UserApi {
         final var dtos = history.stream().map(this.mapper::fromDomain).toList();
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5))
+            .headers(cachingHeaders(30))
             .body(
                 new DataListDto<>(dtos)
             );
@@ -109,7 +109,7 @@ public class UserApiController implements UserApi {
             .toList();
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5))
+            .headers(cachingHeaders(30))
             .body(
                 new DataListDto<>(dtos)
             );

@@ -158,7 +158,7 @@ public class MarathonController {
         "- next: 5 earliest upcoming marathons\n" +
         "- open: all marathons with submissions open\n" +
         "- live: all currently live marathons\n" +
-        "Has a 5 minute cache")
+        "Has a 30 minute cache")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathons() {
         final var next = this.marathonService.findNext();
         final var open = this.marathonService.findSubmitsOpen();
@@ -168,7 +168,7 @@ public class MarathonController {
             (items) -> items.stream().map(this.mapper::toBasicInfo).toList();
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(30, false))
             .body(
                 Map.of(
                     "next", transform.apply(next),
@@ -194,7 +194,7 @@ public class MarathonController {
 
     @GetMapping("/forDates")
     @PermitAll
-    @Operation(summary = "Get marathons between given dates, has a 5 minute cache")
+    @Operation(summary = "Get marathons between given dates, has a 30 minute cache")
     public ResponseEntity<List<MarathonBasicInfoDto>> getMarathonsForDates(
         @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime start,
         @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final ZonedDateTime end,
@@ -202,7 +202,7 @@ public class MarathonController {
         final var marathons = this.marathonService.findMarathonsForDates(start, end, zoneId);
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(30, false))
             .body(
                 marathons.stream().map(this.mapper::toBasicInfo).toList()
             );

@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @Tag(name = "users-v1")
 @RestController
 @RequiredArgsConstructor
@@ -87,7 +89,9 @@ public class UserController {
             }
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(10))
+            .body(response);
     }
 
     @GetMapping("/{name}/search")
@@ -97,12 +101,14 @@ public class UserController {
         response = User.class,
         responseContainer = "List"*/)
     public ResponseEntity<List<V1UserDto>> search(@PathVariable("name") final String name) {
-        return ResponseEntity.ok(
-            this.userService.searchByUsername(name)
-                .stream()
-                .map(this.mapper::fromDomain)
-                .toList()
-        );
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(10))
+            .body(
+                this.userService.searchByUsername(name)
+                    .stream()
+                    .map(this.mapper::fromDomain)
+                    .toList()
+            );
     }
 
     @GetMapping("/{name}")
@@ -118,7 +124,9 @@ public class UserController {
 
         // TODO: apply moderated marathons and submissions
 
-        return ResponseEntity.ok(userProfile);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(30))
+            .body(userProfile);
     }
 
     @GetMapping("/{name}/avatar")

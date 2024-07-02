@@ -38,7 +38,7 @@ public class MarathonApiController implements MarathonApi {
             (items) -> items.stream().map(this.mapper::toBasicInfo).toList();
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(10, false))
             .body(
                 new MarathonHomeDto(
                     transform.apply(live),

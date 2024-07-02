@@ -21,7 +21,7 @@ public interface MarathonApi {
     @PermitAll
     @GetMapping("/for-home")
     @Operation(
-        summary = "Get marathons as shown on the front page. Has a 5 minute cache",
+        summary = "Get marathons as shown on the front page. Has a 10 minute cache",
         responses = {
             @ApiResponse(
                 description = "Marathons as shown on the front page.",

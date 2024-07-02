@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @RestController
 @RequestMapping("/v1/marathons/{marathonId}/categories")
 @Tag(name = "categories-v1")
@@ -60,7 +62,9 @@ public class CategoryController {
         opponentDto.setCategoryName(category.getName());
         opponentDto.setCategoryId(category.getId());
 
-        return ResponseEntity.ok(opponentDto);
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(10, true))
+            .body(opponentDto);
     }
 
     @DeleteMapping("/{id}")

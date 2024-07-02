@@ -76,7 +76,7 @@ public class MiscController {
         // Cache for five minutes to not spam the api.
         return ResponseEntity
             .status(HttpStatus.OK)
-            .headers(HeaderHelpers.cachingHeaders(5))
+            .headers(HeaderHelpers.cachingHeaders(10))
             .body(response);
     }
 
@@ -108,7 +108,7 @@ public class MiscController {
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .headers(HeaderHelpers.cachingHeaders(5))
+            .headers(HeaderHelpers.cachingHeaders(10))
             .body(
                 this.languageService.searchLanguages(search, searchLang)
             );

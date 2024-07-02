@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 
+import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
+
 @Hidden
 @Tag(name = "discord-v1")
 @RestController
@@ -35,7 +37,9 @@ public class DiscordController {
         try {
             final DiscordInvite invite = this.discordService.fetchInvite(inviteCode);
 
-            return ResponseEntity.ok().body(invite.getGuild());
+            return ResponseEntity.ok()
+                .headers(cachingHeaders(10, true))
+                .body(invite.getGuild());
         } catch (FeignException e) {
             if (e.status() == 404) {
                 return ResponseEntity.notFound().build();
@@ -68,7 +72,9 @@ public class DiscordController {
                 return ResponseEntity.notFound().build();
             }
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok()
+                .headers(cachingHeaders(10, true))
+                .build();
         } catch (FeignException e) {
             if (e.status() == 404) { // member not in guild
                 return ResponseEntity.notFound().build();

@@ -71,6 +71,7 @@ public class ScheduleApiController implements ScheduleApi {
             );
     }
 
+    // TODO: change cache duration to be run time - now
     @Override
     public ResponseEntity<ScheduleTickerDto> findScheduleTickerById(
         String marathonId, int scheduleId, boolean withCustomData
