@@ -1,7 +1,7 @@
 package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.dto.v1.SubmissionDto;
-import app.oengus.adapter.rest.OpponentRestService;
+import app.oengus.adapter.rest.helper.OpponentRestService;
 import app.oengus.adapter.rest.mapper.AnswerDtoMapper;
 import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
 import app.oengus.application.SubmissionService;
