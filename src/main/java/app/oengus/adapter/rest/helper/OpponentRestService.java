@@ -29,10 +29,9 @@ public class OpponentRestService {
 
     public void setCategoryAndGameNameOnOpponents(SubmissionDto submission, String marathonId) {
         final Map<Integer, Game> gameCache = new HashMap<>();
-        final Map<Integer, Submission> submissionCache = new HashMap<>();
 
-        final var submissionIds = collectSubmissionIds(submission);
-        final var userCache = findSubmissionUsers(submissionIds);
+        final var submissionIds = collectSubmissionIds(submission, gameCache);
+        final var userCache = lookupSubmissionUsers(submissionIds);
 
         submission.getOpponents().forEach((opponent) -> {
             this.mapOpponent(opponent, gameCache, userCache);
@@ -44,9 +43,11 @@ public class OpponentRestService {
     // Be careful with alterations to this method.
     // Incorrect changes may cause this mapping to take 2 fucking minutes
     public void setCategoryAndGameNameOnOpponents(Page<SubmissionDto> submissions, String marathonId) {
+        final Map<Integer, Game> gameCache = new HashMap<>();
+
         submissions.forEach((submission) -> {
-            final var submissionIds = collectSubmissionIds(submission);
-            final var userCache = findSubmissionUsers(submissionIds);
+            final var submissionIds = collectSubmissionIds(submission, gameCache);
+            final var userCache = lookupSubmissionUsers(submissionIds);
 
             this.setOpponentUserFromCache(submission, userCache);
         });
@@ -55,7 +56,7 @@ public class OpponentRestService {
     // TODO: Find a way to do even less queries
     private void mapOpponent(V1OpponentDto opponent, Map<Integer, Game> gameCache, Map<Integer, OengusUser> userCache) {
         final var catId = opponent.getCategoryId();
-        final var game = findGame(gameCache, catId);
+        final var game = lookupGame(gameCache, catId);
         final var cat = findCategory(game, catId);
         final var oppUsers = opponent.getUsers();
         final var user1 = userCache.get(game.getSubmissionId());
@@ -79,11 +80,11 @@ public class OpponentRestService {
     }
 
     // Submission id -> User
-    private Map<Integer, OengusUser> findSubmissionUsers(List<Integer> submissionIds) {
+    private Map<Integer, OengusUser> lookupSubmissionUsers(List<Integer> submissionIds) {
         return this.submissionPersistencePort.findUsersByIds(submissionIds);
     }
 
-    private Submission findSubmission(Map<Integer, Submission> submissionCache, int submissionId) {
+    private Submission lookupSubmission(Map<Integer, Submission> submissionCache, int submissionId) {
         if (!submissionCache.containsKey(submissionId)) {
             submissionCache.put(
                 submissionId,
@@ -94,7 +95,7 @@ public class OpponentRestService {
         return submissionCache.get(submissionId);
     }
 
-    private Game findGame(Map<Integer, Game> gameCache, int catId) {
+    private Game lookupGame(Map<Integer, Game> gameCache, int catId) {
         if (!gameCache.containsKey(catId)) {
             gameCache.put(
                 catId,
@@ -115,26 +116,36 @@ public class OpponentRestService {
         return null;
     }
 
-    private List<Integer> collectSubmissionIds(Page<SubmissionDto> submissions) {
+    private List<Integer> collectSubmissionIds(Page<SubmissionDto> submissions, Map<Integer, Game> gameCache) {
         final List<Integer> submissionIds = new ArrayList<>();
 
         submissions.forEach(
             (submission) -> submissionIds.addAll(
-                collectSubmissionIds(submission)
+                collectSubmissionIds(submission, gameCache)
             )
         );
 
         return submissionIds;
     }
 
-    private List<Integer> collectSubmissionIds(SubmissionDto submission) {
+    private List<Integer> collectSubmissionIds(SubmissionDto submission, Map<Integer, Game> gameCache) {
         final List<Integer> submissionIds = new ArrayList<>();
 
         submissionIds.add(submission.getId());
 
-        submission.getOpponents().forEach(
-            (opponent) -> submissionIds.add(opponent.getSubmissionId())
-        );
+        submission.getOpponents().forEach((opponent) -> {
+            submissionIds.add(opponent.getSubmissionId());
+
+            final var game = lookupGame(gameCache, opponent.getCategoryId());
+
+            submissionIds.add(game.getSubmissionId());
+
+            final var category = findCategory(game, opponent.getCategoryId());
+
+            category.getOpponents().forEach((oppCat) -> {
+                submissionIds.add(oppCat.getSubmissionId());
+            });
+        });
 
         submission.getGames().forEach((game) -> {
             game.getCategories().forEach((category) -> {
@@ -144,7 +155,7 @@ public class OpponentRestService {
             });
         });
 
-        return submissionIds;
+        return submissionIds.stream().distinct().toList();
     }
 
     private void setOpponentUserFromCache(SubmissionDto submission, Map<Integer, OengusUser> userCache) {

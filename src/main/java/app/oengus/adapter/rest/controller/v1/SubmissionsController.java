@@ -6,6 +6,7 @@ import app.oengus.adapter.rest.mapper.AnswerDtoMapper;
 import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
 import app.oengus.application.SubmissionService;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.submission.Opponent;
 import app.oengus.domain.submission.Submission;
 import app.oengus.adapter.rest.dto.AvailabilityDto;
 import app.oengus.adapter.rest.dto.misc.PageDto;
