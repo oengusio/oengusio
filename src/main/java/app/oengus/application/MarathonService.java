@@ -15,7 +15,6 @@ import io.sentry.Sentry;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,18 +35,9 @@ public class MarathonService {
     private final ScheduleService scheduleService;
     private final CategoryPersistencePort categoryPersistencePort;
     private final IncentiveService incentiveService;
-//    private final EventSchedulerService eventSchedulerService;
     private final SelectionService selectionService;
     private final OengusWebhookService webhookService;
     private final UserSecurityPort securityPort;
-
-    /*@PostConstruct
-    public void initScheduledEvents() {
-        final List<Marathon> marathonsWithScheduledSubmissions =
-            this.marathonPersistencePort.findFutureWithScheduledSubmissions();
-
-        marathonsWithScheduledSubmissions.forEach(this.eventSchedulerService::scheduleSubmissions);
-    }*/
 
     public Optional<Marathon> findById(String id) {
         return this.marathonPersistencePort.findById(id);
@@ -148,9 +138,6 @@ public class MarathonService {
         if (patch.getSubmissionsStartDate() != null && patch.getSubmissionsEndDate() != null) {
             patch.setSubmissionsStartDate(patch.getSubmissionsStartDate().withSecond(0));
             patch.setSubmissionsEndDate(patch.getSubmissionsEndDate().withSecond(0));
-//            this.eventSchedulerService.scheduleSubmissions(patch);
-        } else {
-//            this.eventSchedulerService.unscheduleSubmissions(patch);
         }
 
         this.marathonPersistencePort.save(patch);
@@ -158,7 +145,6 @@ public class MarathonService {
 
     public void delete(final String marathonId) throws NotFoundException {
         this.marathonPersistencePort.findById(marathonId).ifPresent((marathon) -> {
-//            this.eventSchedulerService.unscheduleSubmissions(marathon);
             this.incentiveService.deleteByMarathon(marathonId);
             this.scheduleService.deleteByMarathon(marathonId);
             this.submissionService.deleteByMarathon(marathon.getId());
@@ -204,7 +190,8 @@ public class MarathonService {
         );
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    // Disabled, causes issues
+    /*@Scheduled(cron = "0 0 0 * * *")
     public void clearDonationExtraData() {
         final List<Marathon> marathons =
             this.marathonPersistencePort.findNotClearedBefore(
@@ -215,5 +202,5 @@ public class MarathonService {
             // TODO: move this to the microservice when we have donations again
             this.marathonPersistencePort.clear(marathon);
         });
-    }
+    }*/
 }
