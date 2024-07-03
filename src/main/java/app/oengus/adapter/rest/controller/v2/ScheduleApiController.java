@@ -134,7 +134,7 @@ public class ScheduleApiController implements ScheduleApi {
 
     @Override
     public ResponseEntity<ScheduleInfoDto> updateSchedule(String marathonId, int scheduleId, ScheduleUpdateRequestDto body) {
-        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, false)
+        final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
             .orElseThrow(ScheduleNotFoundException::new);
 
         this.mapper.applyPatch(schedule, body);

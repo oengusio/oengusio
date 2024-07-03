@@ -1191,4 +1191,86 @@
             <column name="code" />
         </createIndex>
     </changeSet>
+
+    <changeSet id="202240703-1" author="duncte123">
+        <createIndex tableName="answer" indexName="answer_question_id">
+            <column name="question_id"/>
+        </createIndex>
+        <createIndex tableName="answer" indexName="answer_submission_id">
+            <column name="submission_id"/>
+        </createIndex>
+
+        <createIndex tableName="availability" indexName="availability_submission_id">
+            <column name="submission_id"/>
+        </createIndex>
+
+        <createIndex tableName="category" indexName="category_game_id">
+            <column name="game_id"/>
+        </createIndex>
+
+        <createIndex tableName="email_verification" indexName="email_verification_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="email_verification" indexName="email_verification_verify_hash">
+            <column name="verify_hash"/>
+        </createIndex>
+
+        <createIndex tableName="game" indexName="game_submission_id">
+            <column name="submission_id"/>
+        </createIndex>
+
+        <createIndex tableName="marathon" indexName="marathon_creator_id">
+            <column name="creator_id"/>
+        </createIndex>
+
+        <createIndex tableName="moderator" indexName="moderator_marathon_user">
+            <column name="marathon_id"/>
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="opponent" indexName="opponent_category_id">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex tableName="opponent" indexName="opponent_opponent_submission_id">
+            <column name="opponent_submission_id"/>
+        </createIndex>
+
+        <createIndex tableName="password_resets" indexName="password_resets_token">
+            <column name="token"/>
+        </createIndex>
+
+        <createIndex tableName="question" indexName="question_marathon_id">
+            <column name="marathon_id"/>
+        </createIndex>
+
+        <createIndex tableName="schedule" indexName="schedule_marathon_id">
+            <column name="marathon_id"/>
+        </createIndex>
+
+        <createIndex tableName="schedule_line" indexName="schedule_line_schedule_id">
+            <column name="schedule_id"/>
+        </createIndex>
+
+        <createIndex tableName="schedule_line_runner" indexName="schedule_line_runner_schedule_line_id">
+            <column name="schedule_line_id"/>
+        </createIndex>
+
+        <createIndex tableName="social_accounts" indexName="social_accounts_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="user_roles" indexName="user_role_user">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="users" indexName="users_discord_id">
+            <column name="discord_id"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="users_twitch_id">
+            <column name="twitch_id"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="users_mail">
+            <column name="mail"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
