@@ -145,8 +145,8 @@ public class UserApiController implements UserApi {
 
     @Override
     public ResponseEntity<SupporterStatusDto> getUserSupporterStatus(int id) {
-        final var authUser = this.securityPort.getAuthenticatedUser();
-        final var model = this.userService.getSupporterStatus(authUser);
+        final var foundUser = this.lookupService.findById(id).orElseThrow(UserNotFoundException::new);
+        final var model = this.userService.getSupporterStatus(foundUser);
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(5))
