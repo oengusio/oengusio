@@ -207,11 +207,10 @@ public class UserService {
     }
 
     private SyncDto checkPatreonSync(String id) throws LoginException {
-        final var user = this.userPersistencePort.findByPatreonId(id).orElseThrow(
-            () -> new LoginException("User not found")
-        );
+        final var user = this.userPersistencePort.findByPatreonId(id).orElse(null);
 
-        if (!Objects.equals(user.getId(), this.securityPort.getAuthenticatedUserId())) {
+        // user == null means that we don't have this account synced in the database
+        if (user != null && !Objects.equals(user.getId(), this.securityPort.getAuthenticatedUserId())) {
             throw new LoginException("ACCOUNT_ALREADY_SYNCED");
         }
 
