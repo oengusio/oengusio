@@ -209,7 +209,7 @@ public class MarathonController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && isMarathonAdmin(#id) && !isBanned()")
+    @PreAuthorize("isMarathonAdmin(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final String id) throws NotFoundException {
         this.marathonService.delete(id);
@@ -218,7 +218,7 @@ public class MarathonController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("canUpdateMarathon(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@PathVariable("id") final String id,
                                     @RequestBody @Valid final MarathonUpdateRequestDto patch,
@@ -246,7 +246,7 @@ public class MarathonController {
 
     // we're checking the webhook on the backend to ensure "localhost" will fail
     @GetMapping("/{id}/webhook")
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("canUpdateMarathon(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> isWebhookOnline(@PathVariable("id") final String id,
                                              @RequestParam("url") final String url) {
@@ -259,7 +259,7 @@ public class MarathonController {
     }
 
     @PostMapping("/{id}/selections/publish")
-    @PreAuthorize("isAuthenticated() && canUpdateMarathon(#id) && !isBanned()")
+    @PreAuthorize("canUpdateMarathon(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> publishSelection(@PathVariable("id") final String id) throws NotFoundException {
         final var marathon = this.marathonService.findById(id).orElseThrow(

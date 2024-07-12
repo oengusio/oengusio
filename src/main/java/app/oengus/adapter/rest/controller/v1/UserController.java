@@ -122,8 +122,6 @@ public class UserController {
         );
         final var userProfile = this.mapper.profileFromDomain(user);
 
-        // TODO: apply moderated marathons and submissions
-
         return ResponseEntity.ok()
             .headers(cachingHeaders(30))
             .body(userProfile);
@@ -143,7 +141,7 @@ public class UserController {
 
     @Operation(hidden = true)
     @PutMapping("/{id}/patreon-status")
-    @PreAuthorize("isSelf(#id) && !isBanned()")
+    @PreAuthorize("isSelf(#id)")
     public ResponseEntity<?> updateUserPatreonStatus(
         @PathVariable("id") final int id,
         @RequestBody @Valid final PatreonStatusDto patch,
@@ -167,7 +165,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isSelf(#id) && !isBanned()")
+    @PreAuthorize("isSelf(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final UserDto userPatch,
@@ -195,7 +193,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("(isSelf(#id) && !isBanned()) || isAdmin()")
+    @PreAuthorize("isSelfOrAdmin(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) throws NotFoundException {
         this.userService.markDeleted(id);
@@ -216,7 +214,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/ban")
-    @PreAuthorize("isAuthenticated() && isAdmin()")
+    @PreAuthorize("isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> ban(@PathVariable int id) {
         this.userService.addRole(id, Role.ROLE_BANNED);
@@ -225,7 +223,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/ban")
-    @PreAuthorize("isAuthenticated() && isAdmin()")
+    @PreAuthorize("isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> unban(@PathVariable int id) {
         this.userService.removeRole(id, Role.ROLE_BANNED);
@@ -234,7 +232,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/enabled")
-    @PreAuthorize("isAuthenticated() && isAdmin()")
+    @PreAuthorize("isAdmin()")
     @Operation(hidden = true)
     public ResponseEntity<?> setEnabled(@PathVariable int id, @RequestParam("status") final boolean status) throws NotFoundException {
         final var user = this.userLookupService.getById(id);
@@ -251,7 +249,7 @@ public class UserController {
     }
 
     @Operation(hidden = true)
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("!isBanned()")
     @GetMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> getApplicationInfo() {
@@ -260,7 +258,7 @@ public class UserController {
     }
 
     @Operation(hidden = true)
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("!isBanned()")
     @PostMapping("/me/application-info")
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> updateApplicationInfo(

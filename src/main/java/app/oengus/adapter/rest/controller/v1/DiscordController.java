@@ -31,7 +31,7 @@ public class DiscordController {
     private final MarathonService marathonService;
 
     @GetMapping("/lookup-invite")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     public ResponseEntity<?> lookupInvite(@PathVariable("marathonId") final String marathonId,
                                           @RequestParam("invite_code") final String inviteCode) {
         try {
