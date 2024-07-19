@@ -28,7 +28,7 @@ import java.io.IOException;
 @RequestMapping("/v2/marathons/{marathonId}/schedules")
 public interface ScheduleApi {
     @GetMapping
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
+    @PreAuthorize("canUpdateMarathonOrIsScheduleDone(#marathonId)")
     @Operation(
         summary = "Get all schedules for a marathon, has a 5 minute cache",
         responses = {
@@ -73,7 +73,7 @@ public interface ScheduleApi {
     );
 
     @GetMapping("/{scheduleId}/ticker")
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
+    @PreAuthorize("isSchedulePublished(#marathonId, #scheduleId) || canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Get the ticker for this schedule. Cache is present but varies",
         responses = {
@@ -99,7 +99,7 @@ public interface ScheduleApi {
 
     // TODO: make slug a query param instead?
     @GetMapping("/for-slug/{slug}")
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #slug)")
+    @PreAuthorize("isSchedulePublished(#marathonId, #slug) || canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Get a schedule by its slug, has a 5 minute cache",
         responses = {
@@ -124,7 +124,7 @@ public interface ScheduleApi {
     );
 
     @GetMapping("/slug-exists")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Check if a schedule slug exists in a marathon",
         responses = {
@@ -148,7 +148,7 @@ public interface ScheduleApi {
     );
 
     @PostMapping
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId) && canCreateExtraSchedule(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId) && canCreateExtraSchedule(#marathonId)")
     @Operation(
         summary = "Create a new schedule in a marathon.",
         responses = {
@@ -176,7 +176,7 @@ public interface ScheduleApi {
     );
 
     @PatchMapping("/{scheduleId}")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Update a schedule in a marathon.",
         responses = {
@@ -205,7 +205,7 @@ public interface ScheduleApi {
     );
 
     @PostMapping("/{scheduleId}/publish")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Publish schedule {scheduleId}",
         responses = {
@@ -229,7 +229,7 @@ public interface ScheduleApi {
     );
 
     @DeleteMapping("/{scheduleId}")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Delete a schedule in a marathon.",
         responses = {
@@ -253,7 +253,7 @@ public interface ScheduleApi {
     );
 
     @GetMapping("/{scheduleId}/lines")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Get the lines for a schedule, no cache is applied. Custom data is always sent.",
         responses = {
@@ -277,7 +277,7 @@ public interface ScheduleApi {
     );
 
     @PutMapping("/{scheduleId}/lines")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Update the lines for a schedule. Custom data is always sent.",
         responses = {
@@ -306,7 +306,7 @@ public interface ScheduleApi {
     );
 
     @GetMapping("/{scheduleId}/export")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
+    @PreAuthorize("isSchedulePublished(#marathonId, #scheduleId) || canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Export a schedule",
         parameters = {

@@ -69,8 +69,8 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId)) || isAdmin()")
-    // canUpdateMarathon does an isAdmin check for us
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    // canUpdateMarathon does an isAdmin and isBanned check for us
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
                                     @PathVariable("id") final int id) throws NotFoundException {

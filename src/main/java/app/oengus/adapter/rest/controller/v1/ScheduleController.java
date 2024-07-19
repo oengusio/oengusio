@@ -39,7 +39,7 @@ public class ScheduleController {
     private final ScheduleDtoMapper mapper;
 
     @GetMapping
-    @PreAuthorize("(canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId))")
+    @PreAuthorize("canUpdateMarathonOrIsScheduleDone(#marathonId)")
     @JsonView(Views.Public.class)
     @Operation(summary = "Get schedule for a marathon, has a 30 minute cache"/*, response = Schedule.class*/)
     public ResponseEntity<V1ScheduleDto> findAllForMarathon(@PathVariable("marathonId") final String marathonId,
@@ -88,7 +88,7 @@ public class ScheduleController {
     }
 
     @PutMapping
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> saveOrUpdate(
         @PathVariable("marathonId") final String marathonId,
@@ -128,7 +128,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/export")
-    @PreAuthorize("canUpdateMarathon(#marathonId) || isScheduleDone(#marathonId)")
+    @PreAuthorize("canUpdateMarathonOrIsScheduleDone(#marathonId)")
     @Operation(summary = "Export schedule to format specified in parameter. Available formats : csv, json, ics. Cached for 30 minutes.")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
                                      @RequestParam("format") final String format,

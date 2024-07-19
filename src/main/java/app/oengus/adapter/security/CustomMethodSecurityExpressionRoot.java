@@ -50,18 +50,44 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean isSelf(final int id) {
         final var user = this.getUser();
 
+        if (this.isBanned(user)) {
+            return false;
+        }
+
+        return user != null && Objects.equals(user.getId(), id);
+    }
+
+    public boolean isSelfOrAdmin(final int id) {
+        final var user = this.getUser();
+
+        if (this.isAdmin(user)) {
+            return true;
+        }
+
+        if (this.isBanned(user)) {
+            return false;
+        }
+
         return user != null && Objects.equals(user.getId(), id);
     }
 
     public boolean isAdmin() {
-        final var user = this.getUser();
+        return this.isAdmin(this.getUser());
+    }
 
-        return user != null && user.getRoles().contains(Role.ROLE_ADMIN);
+    public boolean isAdmin(OengusUser user) {
+        if (user == null) {
+            return false;
+        }
+
+        return user.getRoles().contains(Role.ROLE_ADMIN);
     }
 
     public boolean isBanned() {
-        final var user = this.getUser();
+        return this.isBanned(this.getUser());
+    }
 
+    public boolean isBanned(OengusUser user) {
         if (user == null) {
             return true;
         }
@@ -115,7 +141,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return false;
         }
 
-        if (this.isAdmin()) {
+        if(this.isBanned(user)) {
+            return false;
+        }
+
+        if (this.isAdmin(user)) {
             return true;
         }
 
@@ -131,7 +161,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return false;
         }
 
-        if (this.isAdmin()) {
+        if(this.isBanned(user)) {
+            return false;
+        }
+
+        if (this.isAdmin(user)) {
             return true;
         }
 
@@ -142,16 +176,23 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
     public boolean canUpdateMarathon(final String id) throws NotFoundException {
         final var user = this.getUser();
+        final Marathon marathon = this.getMarathon(id);
 
+        return this.canUpdateMarathon(marathon, user);
+    }
+
+    public boolean canUpdateMarathon(final Marathon marathon, final OengusUser user) {
         if (user == null) {
             return false;
         }
 
-        if (this.isAdmin()) {
-            return true;
+        if (this.isBanned(user)) {
+            return false;
         }
 
-        final Marathon marathon = this.getMarathon(id);
+        if (this.isAdmin(user)) {
+            return true;
+        }
 
         return this.isMarathonMod(marathon, user) && ZonedDateTime.now().isBefore(marathon.getEndDate());
     }
@@ -169,6 +210,20 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         return marathon.isScheduleDone();
     }
+
+    public boolean canUpdateMarathonOrIsScheduleDone(final String marathonId) throws NotFoundException {
+        final Marathon marathon = this.getMarathon(marathonId);
+
+        if (marathon.isScheduleDone()) {
+            return true;
+        }
+
+        final var user = this.getUser();
+
+        return this.canUpdateMarathon(marathon, user);
+    }
+
+    // TODO: canUpdateMarathonOrIsSchedulePublished (both schedule id and slug)??
 
     public boolean isSchedulePublished(final String marathonId, final int scheduleId) {
         return this.schedulePersistencePort.findByIdForMarathonWithoutLines(marathonId, scheduleId)

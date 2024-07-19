@@ -44,7 +44,7 @@ public class SelectionController {
     // ADMIN ROUTES
 
     @GetMapping("/admin")
-    @PreAuthorize("(!isBanned() && canUpdateMarathon(#marathonId))")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @JsonView(Views.Public.class)
     @Operation(hidden = true)
     public ResponseEntity<?> findAllForMarathonAdmin(@PathVariable("marathonId") final String marathonId,
@@ -55,7 +55,7 @@ public class SelectionController {
     }
 
     @PutMapping
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> saveOrUpdate(@PathVariable("marathonId") final String marathonId,
                                           @RequestBody final List<SelectionDto> selections) throws NotFoundException {

@@ -54,7 +54,7 @@ public class SubmissionsController {
     ///////// GameController.java ////////
 
     @GetMapping("/export")
-    @PreAuthorize("isMarathonMod(#marathonId) && !isBanned()")
+    @PreAuthorize("isMarathonMod(#marathonId)")
     @JsonView(Views.Public.class)
     @Operation(summary = "Export all submitted games by marathon to CSV")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,
@@ -74,7 +74,7 @@ public class SubmissionsController {
 
     @DeleteMapping("/games/{id}")
 //    @PreAuthorize("(!isBanned() && isMarathonMod(#marathonId)) || isAdmin()")
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned() || isAdmin()")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("marathonId") final String marathonId,
                                     @PathVariable("id") final int id) throws NotFoundException {
@@ -147,7 +147,7 @@ public class SubmissionsController {
     @GetMapping("/answers")
     @JsonView(Views.Public.class)
     @Operation(summary = "Get the answers for this marathon")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     public ResponseEntity<List<AnswerDto>> findAllAnswers(@PathVariable("marathonId") final String marathonId) {
         final var answers = this.submissionService.findAnswersByMarathon(marathonId);
 
@@ -186,7 +186,7 @@ public class SubmissionsController {
     @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission != null " +
         "&& #submission.id != null " +
-        "&& (isSelf(#submission.user.id) || isAdmin())")
+        "&& isSelfOrAdmin(#submission.user.id)")
     @Operation(hidden = true)
     public ResponseEntity<?> update(@RequestBody @Valid final SubmissionDto submission,
                                     @PathVariable("marathonId") final String marathonId,
@@ -203,7 +203,7 @@ public class SubmissionsController {
     }
 
     @GetMapping("/availabilities")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> getAvailabilities(@PathVariable("marathonId") final String marathonId) {
         return ResponseEntity.ok()
@@ -212,7 +212,7 @@ public class SubmissionsController {
     }
 
     @GetMapping("/availabilities/{userId}")
-    @PreAuthorize("!isBanned() && canUpdateMarathon(#marathonId)")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<Map<String, List<AvailabilityDto>>> getAvailabilitiesForUser(
         @PathVariable("marathonId") final String marathonId,
