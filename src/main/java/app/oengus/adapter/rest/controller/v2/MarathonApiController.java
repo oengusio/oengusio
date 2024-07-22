@@ -11,6 +11,7 @@ import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.MarathonService;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -99,12 +101,22 @@ public class MarathonApiController implements MarathonApi {
 
     @Override
     public ResponseEntity<BooleanStatusDto> updateModerators(String marathonId, ModeratorsUpdateRequest body) {
-        return null;
+        final var users = Arrays.stream(body.getUserIds()).mapToObj(OengusUser::new).toList();
+
+        this.marathonService.setModerators(marathonId, users);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
     }
 
     @Override
     public ResponseEntity<BooleanStatusDto> removeModerator(String marathonId, int userId) {
-        return null;
+        this.marathonService.removeModerator(marathonId, userId);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
     }
 
     @Override

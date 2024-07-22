@@ -8,7 +8,6 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
-import app.oengus.domain.schedule.Schedule;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.webhook.CategoryAndUserId;
 import app.oengus.domain.webhook.WebhookSelectionDone;
@@ -65,6 +64,31 @@ public class MarathonService {
             .orElseThrow(MarathonNotFoundException::new);
 
         return marathon.getModerators();
+    }
+
+    public void setModerators(final String id, final List<OengusUser> moderators) {
+        final var marathon = this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        marathon.setModerators(moderators);
+
+        this.marathonPersistencePort.save(marathon);
+    }
+
+    public void removeModerator(final String marathonId, final int userId) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        final var mods = marathon.getModerators();
+
+        for (final var mod : mods) {
+            if (mod.getId() == userId) {
+                mods.remove(mod);
+                break;
+            }
+        }
+
+        this.marathonPersistencePort.save(marathon);
     }
 
     public Marathon update(final String id, final Marathon patch) {
