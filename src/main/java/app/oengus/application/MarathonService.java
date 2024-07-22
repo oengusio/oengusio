@@ -60,6 +60,13 @@ public class MarathonService {
         return this.marathonPersistencePort.existsById(id);
     }
 
+    public List<OengusUser> findModerators(final String id) {
+        final var marathon = this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        return marathon.getModerators();
+    }
+
     public Marathon update(final String id, final Marathon patch) {
         final var oldMarathon = this.marathonPersistencePort.findById(id)
             .orElseThrow(MarathonNotFoundException::new);
@@ -172,12 +179,6 @@ public class MarathonService {
 
     public Optional<OengusUser> findCreatorById(final String marathonId) {
         return this.marathonPersistencePort.findCreatorById(marathonId);
-    }
-
-    // This gets called inside the user service, no need for that
-    @Deprecated(forRemoval = true)
-    public List<Marathon> findAllMarathonsIModerate(int user) {
-        return this.marathonPersistencePort.findAllModeratedBy(user);
     }
 
     public List<Marathon> findMarathonsForDates(

@@ -9,6 +9,7 @@ import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.marathon.request.QuestionsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
+import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.MarathonService;
 import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
@@ -26,6 +27,7 @@ import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 @RequiredArgsConstructor
 public class MarathonApiController implements MarathonApi {
     private final MarathonDtoMapper mapper;
+    private final UserDtoMapper userDtoMapper;
     private final MarathonService marathonService;
 
     @Override
@@ -84,7 +86,15 @@ public class MarathonApiController implements MarathonApi {
 
     @Override
     public ResponseEntity<List<ProfileDto>> getModerators(String marathonId) {
-        return null;
+        final var moderators = this.marathonService.findModerators(marathonId);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(
+                moderators.stream()
+                    .map(this.userDtoMapper::v2ProfileFromDomain)
+                    .toList()
+            );
     }
 
     @Override
