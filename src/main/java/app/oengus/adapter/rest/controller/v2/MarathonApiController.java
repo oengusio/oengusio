@@ -9,6 +9,7 @@ import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.marathon.request.QuestionsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
+import app.oengus.adapter.rest.mapper.QuestionDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.MarathonService;
 import app.oengus.domain.OengusUser;
@@ -29,6 +30,7 @@ import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 @RequiredArgsConstructor
 public class MarathonApiController implements MarathonApi {
     private final MarathonDtoMapper mapper;
+    private final QuestionDtoMapper questionMapper;
     private final UserDtoMapper userDtoMapper;
     private final MarathonService marathonService;
 
@@ -121,7 +123,15 @@ public class MarathonApiController implements MarathonApi {
 
     @Override
     public ResponseEntity<List<QuestionDto>> getQuestions(String marathonId) {
-        return null;
+        final var questions = this.marathonService.findQuestions(marathonId);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(
+                questions.stream()
+                    .map(this.questionMapper::toDto)
+                    .toList()
+            );
     }
 
     @Override
@@ -131,6 +141,10 @@ public class MarathonApiController implements MarathonApi {
 
     @Override
     public ResponseEntity<BooleanStatusDto> removeQuestion(String marathonId, int questionId) {
-        return null;
+        this.marathonService.removeQuestion(marathonId, questionId);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
     }
 }

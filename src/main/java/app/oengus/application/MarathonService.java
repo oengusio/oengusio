@@ -8,6 +8,7 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
+import app.oengus.domain.marathon.Question;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.webhook.CategoryAndUserId;
 import app.oengus.domain.webhook.WebhookSelectionDone;
@@ -60,10 +61,9 @@ public class MarathonService {
     }
 
     public List<OengusUser> findModerators(final String id) {
-        final var marathon = this.marathonPersistencePort.findById(id)
-            .orElseThrow(MarathonNotFoundException::new);
-
-        return marathon.getModerators();
+        return this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new)
+            .getModerators();
     }
 
     public void setModerators(final String id, final List<OengusUser> moderators) {
@@ -84,6 +84,28 @@ public class MarathonService {
         for (final var mod : mods) {
             if (mod.getId() == userId) {
                 mods.remove(mod);
+                break;
+            }
+        }
+
+        this.marathonPersistencePort.save(marathon);
+    }
+
+    public List<Question> findQuestions(final String id) {
+        return this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new)
+            .getQuestions();
+    }
+
+        public void removeQuestion(final String marathonId, final int questionId) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        final var questions = marathon.getQuestions();
+
+        for (final var question : questions) {
+            if (question.getId() == questionId) {
+                questions.remove(question);
                 break;
             }
         }

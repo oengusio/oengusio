@@ -5,6 +5,7 @@ import app.oengus.adapter.rest.dto.v1.V1QuestionDto;
 import app.oengus.adapter.rest.dto.v1.request.MarathonCreateRequestDto;
 import app.oengus.adapter.rest.dto.v1.request.MarathonUpdateRequestDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
+import app.oengus.adapter.rest.dto.v2.marathon.QuestionDto;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import app.oengus.adapter.rest.dto.MarathonDto;

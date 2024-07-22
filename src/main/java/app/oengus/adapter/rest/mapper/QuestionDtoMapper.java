@@ -1,6 +1,7 @@
 package app.oengus.adapter.rest.mapper;
 
 import app.oengus.adapter.rest.dto.v1.V1QuestionDto;
+import app.oengus.adapter.rest.dto.v2.marathon.QuestionDto;
 import app.oengus.domain.marathon.Question;
 import app.oengus.domain.marathon.QuestionType;
 import org.mapstruct.InheritInverseConfiguration;
@@ -15,6 +16,8 @@ public interface QuestionDtoMapper {
 
     @InheritInverseConfiguration(name = "fromV1Dto")
     V1QuestionDto toV1Dto(Question question);
+
+    QuestionDto toDto(Question question);
 
     @ValueMapping(target = "SUBMISSION", source = "SUBMISSION")
     @ValueMapping(target = "DONATION", source = "DONATION")
