@@ -5,6 +5,7 @@ import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import app.oengus.domain.schedule.Schedule;
@@ -59,14 +60,9 @@ public class MarathonService {
         return this.marathonPersistencePort.existsById(id);
     }
 
-    public void update(final String id, final Marathon patch) throws NotFoundException {
-        final var optionalMarathon = this.marathonPersistencePort.findById(id);
-
-        if (optionalMarathon.isEmpty()) {
-            throw new NotFoundException("Marathon not found");
-        }
-
-        final var oldMarathon = optionalMarathon.get();
+    public Marathon update(final String id, final Marathon patch) {
+        final var oldMarathon = this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new);
         final boolean markedSelectionDone = !oldMarathon.isSelectionDone() && patch.isSelectionDone();
 
         patch.setStartDate(patch.getStartDate().withSecond(0));
@@ -116,15 +112,18 @@ public class MarathonService {
             }
         }
 
+        // TODO: handle multi-schedules properly
         if (patch.isScheduleDone()) {
             // TODO: check if any schedule info is published
-            final Schedule schedule = this.scheduleService.findByMarathon(patch.getId());
+            final var schedules = this.scheduleService.findAllInfoByMarathon(patch.getId());
 
-            if (schedule == null) {
+            if (schedules.isEmpty()) {
                 patch.setScheduleDone(false);
             } else {
-                this.scheduleService.computeEndDate(patch, schedule);
+                // Calculate it using the proper schedule
+                this.scheduleService.computeEndDate(patch, schedules.get(0));
                 this.selectionService.rejectTodos(patch.getId());
+
                 patch.setSelectionDone(true);
                 patch.setCanEditSubmissions(false);
             }
@@ -140,7 +139,7 @@ public class MarathonService {
             patch.setSubmissionsEndDate(patch.getSubmissionsEndDate().withSecond(0));
         }
 
-        this.marathonPersistencePort.save(patch);
+        return this.marathonPersistencePort.save(patch);
     }
 
     public void delete(final String marathonId) throws NotFoundException {

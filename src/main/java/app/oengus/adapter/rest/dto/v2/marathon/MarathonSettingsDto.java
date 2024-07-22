@@ -85,8 +85,11 @@ public class MarathonSettingsDto {
     private Boolean videoRequired = true;
     private Boolean allowEmulators = true;
     private Boolean discordRequired = false;
+    private String discordGuildId;
+    private String discordGuildName;
     // TODO: can the user configure this field?
-    private Boolean canEditSubmissions = false;
+//    private Boolean canEditSubmissions = false;
+    private Boolean submissionsOpen = false;
 
     // Could paywall these ;)
     // For real tho, these are not cheap to have
@@ -98,7 +101,7 @@ public class MarathonSettingsDto {
     private String mastodon;
     private String discord;
     private String youtube;
-    private Boolean hideDiscord;
+    private Boolean discordPrivate;
 
     @NotNull
     @Schema(
