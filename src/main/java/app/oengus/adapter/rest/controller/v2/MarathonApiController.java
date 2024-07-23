@@ -136,7 +136,18 @@ public class MarathonApiController implements MarathonApi {
 
     @Override
     public ResponseEntity<BooleanStatusDto> updateQuestions(String marathonId, QuestionsUpdateRequest body) {
-        return null;
+        this.marathonService.updateQuestions(
+            marathonId,
+            body.getQuestions()
+                .stream()
+                .map(this.questionMapper::fromDto)
+                .peek((q) -> q.setMarathonId(marathonId))
+                .toList()
+        );
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
     }
 
     @Override

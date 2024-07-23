@@ -97,7 +97,16 @@ public class MarathonService {
             .getQuestions();
     }
 
-        public void removeQuestion(final String marathonId, final int questionId) {
+    public void updateQuestions(final String marathonId, final List<Question> questions) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        marathon.setQuestions(questions);
+
+        this.marathonPersistencePort.save(marathon);
+    }
+
+    public void removeQuestion(final String marathonId, final int questionId) {
         final var marathon = this.marathonPersistencePort.findById(marathonId)
             .orElseThrow(MarathonNotFoundException::new);
 

@@ -19,6 +19,9 @@ public interface QuestionDtoMapper {
 
     QuestionDto toDto(Question question);
 
+    @InheritInverseConfiguration(name = "toDto")
+    Question fromDto(QuestionDto dto);
+
     @ValueMapping(target = "SUBMISSION", source = "SUBMISSION")
     @ValueMapping(target = "DONATION", source = "DONATION")
     QuestionType typeFromString(String type);
