@@ -2,6 +2,7 @@ package app.oengus.adapter.rest.dto.v2.marathon.request;
 
 import app.oengus.adapter.rest.dto.v2.marathon.QuestionDto;
 import app.oengus.domain.marathon.QuestionType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class QuestionsUpdateRequest {
     @Schema(description = "The questions to be updated, only questions of type SUBMISSION are supported", required = true)
     private List<QuestionDto> questions;
 
+    @JsonIgnore
     @AssertTrue(message = "All questions must be of type SUBMISSION")
     public boolean areQuestionsValidType() {
         return this.questions.stream().allMatch(q -> q.type() == QuestionType.SUBMISSION);

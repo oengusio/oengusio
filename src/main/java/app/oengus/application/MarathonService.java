@@ -80,15 +80,18 @@ public class MarathonService {
             .orElseThrow(MarathonNotFoundException::new);
 
         final var mods = marathon.getModerators();
+        var modRemoved = false;
 
         for (final var mod : mods) {
             if (mod.getId() == userId) {
-                mods.remove(mod);
+                modRemoved = mods.remove(mod);
                 break;
             }
         }
 
-        this.marathonPersistencePort.save(marathon);
+        if (modRemoved) {
+            this.marathonPersistencePort.save(marathon);
+        }
     }
 
     public List<Question> findQuestions(final String id) {
@@ -111,15 +114,18 @@ public class MarathonService {
             .orElseThrow(MarathonNotFoundException::new);
 
         final var questions = marathon.getQuestions();
+        var questionRemoved = false;
 
         for (final var question : questions) {
             if (question.getId() == questionId) {
-                questions.remove(question);
+                questionRemoved = questions.remove(question);
                 break;
             }
         }
 
-        this.marathonPersistencePort.save(marathon);
+        if (questionRemoved) {
+            this.marathonPersistencePort.save(marathon);
+        }
     }
 
     public Marathon update(final String id, final Marathon patch) {
