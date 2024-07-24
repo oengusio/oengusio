@@ -60,7 +60,7 @@ public class MarathonSettingsDto {
     private ZonedDateTime submissionsEndDate;
 
     @Schema(required = true, description = "On-site vs online marathon, true to mark this marathon as on-site")
-    private Boolean onSite;
+    private Boolean onsite;
 
     @Size(max = 150)
     private String location;

@@ -1,6 +1,7 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
 import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
@@ -57,7 +58,7 @@ public interface MarathonApi {
     )
     ResponseEntity<MarathonSettingsDto> getSettings(@PathVariable("id") final String marathonId);
 
-    @PutMapping("/{id}/settings")
+    @PatchMapping("/{id}/settings")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Update the settings for a marathon",
@@ -89,7 +90,7 @@ public interface MarathonApi {
             )
         }
     )
-    ResponseEntity<List<ProfileDto>> getModerators(@PathVariable("id") final String marathonId);
+    ResponseEntity<DataListDto<ProfileDto>> getModerators(@PathVariable("id") final String marathonId);
 
     @PutMapping("/{id}/settings/moderators")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
@@ -133,7 +134,7 @@ public interface MarathonApi {
             )
         }
     )
-    ResponseEntity<List<QuestionDto>> getQuestions(@PathVariable("id") final String marathonId);
+    ResponseEntity<DataListDto<QuestionDto>> getQuestions(@PathVariable("id") final String marathonId);
 
     @PutMapping("/{id}/settings/questions")
     @PreAuthorize("canUpdateMarathon(#marathonId)")

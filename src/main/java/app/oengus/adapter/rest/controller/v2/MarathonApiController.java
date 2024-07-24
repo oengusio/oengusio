@@ -1,6 +1,7 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
+import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
@@ -70,6 +71,9 @@ public class MarathonApiController implements MarathonApi {
     public ResponseEntity<MarathonSettingsDto> saveSettings(String marathonId, MarathonSettingsDto patch) {
         final String newMstdn = patch.getMastodon();
 
+        // Prevent funny business with id
+        patch.setId(marathonId);
+
         if (newMstdn != null && newMstdn.isBlank()) {
             patch.setMastodon(null);
         }
@@ -89,15 +93,17 @@ public class MarathonApiController implements MarathonApi {
     }
 
     @Override
-    public ResponseEntity<List<ProfileDto>> getModerators(String marathonId) {
+    public ResponseEntity<DataListDto<ProfileDto>> getModerators(String marathonId) {
         final var moderators = this.marathonService.findModerators(marathonId);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(
-                moderators.stream()
-                    .map(this.userDtoMapper::v2ProfileFromDomain)
-                    .toList()
+                new DataListDto<>(
+                    moderators.stream()
+                        .map(this.userDtoMapper::v2ProfileFromDomain)
+                        .toList()
+                )
             );
     }
 
@@ -122,15 +128,17 @@ public class MarathonApiController implements MarathonApi {
     }
 
     @Override
-    public ResponseEntity<List<QuestionDto>> getQuestions(String marathonId) {
+    public ResponseEntity<DataListDto<QuestionDto>> getQuestions(String marathonId) {
         final var questions = this.marathonService.findQuestions(marathonId);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(
-                questions.stream()
-                    .map(this.questionMapper::toDto)
-                    .toList()
+                new DataListDto<>(
+                    questions.stream()
+                        .map(this.questionMapper::toDto)
+                        .toList()
+                )
             );
     }
 

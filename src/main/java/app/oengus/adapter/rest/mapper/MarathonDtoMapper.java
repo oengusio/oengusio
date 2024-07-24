@@ -44,7 +44,6 @@ public interface MarathonDtoMapper {
     Question questionFromV1Dto(V1QuestionDto dto);
 
     @Mapping(target = "isPrivate", source = "private")
-    @Mapping(target = "onSite", source = "onsite")
     @Mapping(target = "discordPrivate", source = "discordPrivate")
     @Mapping(target = "allowEmulators", source = "emulatorAuthorized")
     @Mapping(target = "allowMultiplayer", source = "hasMultiplayer")
@@ -58,12 +57,12 @@ public interface MarathonDtoMapper {
 
 
     @Mapping(target = "private", source = "isPrivate")
-    @Mapping(target = "onsite", source = "onSite")
     @Mapping(target = "emulatorAuthorized", source = "allowEmulators")
     @Mapping(target = "hasMultiplayer", source = "allowMultiplayer")
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "moderators", ignore = true)
     @Mapping(target = "questions", ignore = true)
     @Mapping(target = "canEditSubmissions", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy =  NullValuePropertyMappingStrategy.IGNORE)
     void applyUpdateRequest(@MappingTarget Marathon marathon, MarathonSettingsDto createRequest);
 }
