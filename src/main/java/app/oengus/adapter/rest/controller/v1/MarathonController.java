@@ -92,7 +92,7 @@ public class MarathonController {
     @GetMapping("/{id}")
     @JsonView(Views.Public.class)
     @Operation(
-        summary = "Get information about a marathon"/*,
+        summary = "Get information about a marathon, has a one minute cache"/*,
         response = MarathonDto.class*/
     )
     public ResponseEntity<MarathonDto> get(@PathVariable("id") final String id) {
@@ -120,7 +120,7 @@ public class MarathonController {
         }
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, true))
+            .headers(cachingHeaders(1, true))
             .body(dto);
 
     }
