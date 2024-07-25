@@ -5,9 +5,10 @@ import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.exception.MarathonNotFoundException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
-import app.oengus.domain.schedule.Schedule;
+import app.oengus.domain.marathon.Question;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.webhook.CategoryAndUserId;
 import app.oengus.domain.webhook.WebhookSelectionDone;
@@ -59,15 +60,79 @@ public class MarathonService {
         return this.marathonPersistencePort.existsById(id);
     }
 
-    public void update(final String id, final Marathon patch) throws NotFoundException {
-        final var optionalMarathon = this.marathonPersistencePort.findById(id);
+    public List<OengusUser> findModerators(final String id) {
+        return this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new)
+            .getModerators();
+    }
 
-        if (optionalMarathon.isEmpty()) {
-            throw new NotFoundException("Marathon not found");
+    public void setModerators(final String id, final List<OengusUser> moderators) {
+        final var marathon = this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        marathon.setModerators(moderators);
+
+        this.marathonPersistencePort.save(marathon);
+    }
+
+    public void removeModerator(final String marathonId, final int userId) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        final var mods = marathon.getModerators();
+        var modRemoved = false;
+
+        for (final var mod : mods) {
+            if (mod.getId() == userId) {
+                modRemoved = mods.remove(mod);
+                break;
+            }
         }
 
-        final var oldMarathon = optionalMarathon.get();
+        if (modRemoved) {
+            this.marathonPersistencePort.save(marathon);
+        }
+    }
+
+    public List<Question> findQuestions(final String id) {
+        return this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new)
+            .getQuestions();
+    }
+
+    public void updateQuestions(final String marathonId, final List<Question> questions) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        marathon.setQuestions(questions);
+
+        this.marathonPersistencePort.save(marathon);
+    }
+
+    public void removeQuestion(final String marathonId, final int questionId) {
+        final var marathon = this.marathonPersistencePort.findById(marathonId)
+            .orElseThrow(MarathonNotFoundException::new);
+
+        final var questions = marathon.getQuestions();
+        var questionRemoved = false;
+
+        for (final var question : questions) {
+            if (question.getId() == questionId) {
+                questionRemoved = questions.remove(question);
+                break;
+            }
+        }
+
+        if (questionRemoved) {
+            this.marathonPersistencePort.save(marathon);
+        }
+    }
+
+    public Marathon update(final String id, final Marathon patch) {
+        final var oldMarathon = this.marathonPersistencePort.findById(id)
+            .orElseThrow(MarathonNotFoundException::new);
         final boolean markedSelectionDone = !oldMarathon.isSelectionDone() && patch.isSelectionDone();
+        final boolean markedScheduleDone = !oldMarathon.isScheduleDone() && patch.isScheduleDone();
 
         patch.setStartDate(patch.getStartDate().withSecond(0));
         patch.setEndDate(patch.getEndDate().withSecond(0));
@@ -116,15 +181,18 @@ public class MarathonService {
             }
         }
 
+        // TODO: handle multi-schedules properly
         if (patch.isScheduleDone()) {
             // TODO: check if any schedule info is published
-            final Schedule schedule = this.scheduleService.findByMarathon(patch.getId());
+            final var schedules = this.scheduleService.findAllInfoByMarathon(patch.getId());
 
-            if (schedule == null) {
+            if (schedules.isEmpty()) {
                 patch.setScheduleDone(false);
             } else {
-                this.scheduleService.computeEndDate(patch, schedule);
+                // Calculate it using the proper schedule
+                this.scheduleService.computeEndDate(patch, schedules.get(0));
                 this.selectionService.rejectTodos(patch.getId());
+
                 patch.setSelectionDone(true);
                 patch.setCanEditSubmissions(false);
             }
@@ -140,7 +208,7 @@ public class MarathonService {
             patch.setSubmissionsEndDate(patch.getSubmissionsEndDate().withSecond(0));
         }
 
-        this.marathonPersistencePort.save(patch);
+        return this.marathonPersistencePort.save(patch);
     }
 
     public void delete(final String marathonId) throws NotFoundException {
@@ -173,12 +241,6 @@ public class MarathonService {
 
     public Optional<OengusUser> findCreatorById(final String marathonId) {
         return this.marathonPersistencePort.findCreatorById(marathonId);
-    }
-
-    // This gets called inside the user service, no need for that
-    @Deprecated(forRemoval = true)
-    public List<Marathon> findAllMarathonsIModerate(int user) {
-        return this.marathonPersistencePort.findAllModeratedBy(user);
     }
 
     public List<Marathon> findMarathonsForDates(

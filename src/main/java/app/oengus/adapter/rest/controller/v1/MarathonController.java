@@ -1,17 +1,16 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
-import app.oengus.adapter.rest.dto.v1.request.MarathonCreateRequestDto;
-import app.oengus.adapter.rest.dto.v1.request.MarathonUpdateRequestDto;
-import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
-import app.oengus.application.MarathonService;
-import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.marathon.Marathon;
+import app.oengus.adapter.rest.Views;
 import app.oengus.adapter.rest.dto.MarathonDto;
 import app.oengus.adapter.rest.dto.MarathonStatsDto;
+import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
+import app.oengus.adapter.rest.dto.v1.request.MarathonCreateRequestDto;
+import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
+import app.oengus.application.MarathonService;
 import app.oengus.application.OengusWebhookService;
 import app.oengus.application.SubmissionService;
-import app.oengus.adapter.rest.Views;
+import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.marathon.Marathon;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -215,33 +214,6 @@ public class MarathonController {
         this.marathonService.delete(id);
 
         return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}")
-    @PreAuthorize("canUpdateMarathon(#id)")
-    @Operation(hidden = true)
-    public ResponseEntity<?> update(@PathVariable("id") final String id,
-                                    @RequestBody @Valid final MarathonUpdateRequestDto patch,
-                                    final BindingResult bindingResult) throws NotFoundException {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
-
-        final var marathon = this.marathonService.findById(id).orElseThrow(
-            () -> new NotFoundException("Marathon not found")
-        );
-
-        this.mapper.applyUpdateRequest(marathon, patch);
-
-        final String newMstdn = patch.getMastodon();
-
-        if (newMstdn != null && newMstdn.isBlank()) {
-            patch.setMastodon(null);
-        }
-
-        this.marathonService.update(id, marathon);
-
-        return ResponseEntity.noContent().build();
     }
 
     // we're checking the webhook on the backend to ensure "localhost" will fail

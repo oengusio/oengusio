@@ -33,7 +33,7 @@ public class SelectionEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SelectionEntity selection = (SelectionEntity) o;
-        return id == selection.id && marathon.equals(selection.marathon) && status == selection.status;
+        return Objects.equals(id, selection.id) && marathon.equals(selection.marathon) && status == selection.status;
     }
 
     @Override
