@@ -40,10 +40,6 @@ public interface MarathonApi {
     )
     ResponseEntity<MarathonHomeDto> getMarathonsForHome();
 
-    // /marathons/{id}/settings GET/PUT
-    // /marathons/{id}/settings/moderators GET/PUT/DELETE
-    // /marathons/{id}/settings/questions GET/PUT/DELETE
-
     @GetMapping("/{id}/settings")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
