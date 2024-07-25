@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,4 +33,13 @@ public class ScheduleEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC")
     private List<ScheduleLine> lines;
+
+    public void setLines(List<ScheduleLine> lines) {
+        if (this.lines == null) {
+            this.lines = new ArrayList<>();
+        }
+
+        this.lines.clear();
+        this.lines.addAll(lines);
+    }
 }

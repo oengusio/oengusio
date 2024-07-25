@@ -132,6 +132,7 @@ public class MarathonService {
         final var oldMarathon = this.marathonPersistencePort.findById(id)
             .orElseThrow(MarathonNotFoundException::new);
         final boolean markedSelectionDone = !oldMarathon.isSelectionDone() && patch.isSelectionDone();
+        final boolean markedScheduleDone = !oldMarathon.isScheduleDone() && patch.isScheduleDone();
 
         patch.setStartDate(patch.getStartDate().withSecond(0));
         patch.setEndDate(patch.getEndDate().withSecond(0));
