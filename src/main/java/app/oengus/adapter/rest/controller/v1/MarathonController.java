@@ -5,7 +5,6 @@ import app.oengus.adapter.rest.dto.MarathonDto;
 import app.oengus.adapter.rest.dto.MarathonStatsDto;
 import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.adapter.rest.dto.v1.request.MarathonCreateRequestDto;
-import app.oengus.adapter.rest.dto.v1.request.MarathonUpdateRequestDto;
 import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
 import app.oengus.application.MarathonService;
 import app.oengus.application.OengusWebhookService;
@@ -215,15 +214,6 @@ public class MarathonController {
         this.marathonService.delete(id);
 
         return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}")
-    @PreAuthorize("canUpdateMarathon(#id)")
-    @Operation(hidden = true)
-    public ResponseEntity<?> update(@PathVariable("id") final String id,
-                                    @RequestBody @Valid final MarathonUpdateRequestDto patch,
-                                    final BindingResult bindingResult) throws NotFoundException {
-        throw new RuntimeException("Use the v2 api pls");
     }
 
     // we're checking the webhook on the backend to ensure "localhost" will fail
