@@ -58,10 +58,6 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     public List<Schedule> findAllForMarathonWithoutLines(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
-            .peek(
-                // TODO: will this fuck something up?
-                (schedule) -> schedule.setLines(List.of())
-            )
             .map(this.mapper::toDomainNoLines)
             .toList();
     }
