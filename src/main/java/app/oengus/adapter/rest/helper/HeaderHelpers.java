@@ -8,11 +8,11 @@ import java.util.List;
 
 public class HeaderHelpers {
 
-    public static HttpHeaders cachingHeaders(int minutes) {
+    public static HttpHeaders cachingHeaders(long minutes) {
         return cachingHeaders(minutes, true);
     }
 
-    public static HttpHeaders cachingHeaders(int minutes, boolean varies) {
+    public static HttpHeaders cachingHeaders(long minutes, boolean varies) {
         final HttpHeaders headers = new HttpHeaders();
 
         headers.setCacheControl(

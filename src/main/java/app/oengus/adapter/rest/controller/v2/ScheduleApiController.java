@@ -44,7 +44,7 @@ public class ScheduleApiController implements ScheduleApi {
         final var schedules = this.scheduleService.findAllInfoByMarathon(marathonId);
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(1, false))
             .body(new DataListDto<>(
                 schedules.stream()
                     .map(this.mapper::infoFromSchedule)
@@ -65,7 +65,7 @@ public class ScheduleApiController implements ScheduleApi {
         );
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(1, false))
             .body(
                 this.mapper.infoFromSchedule(schedule)
             );
@@ -100,7 +100,7 @@ public class ScheduleApiController implements ScheduleApi {
             .orElseThrow(ScheduleNotFoundException::new);
 
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(1, false))
             .body(
                 this.mapper.fromDomain(schedule)
             );

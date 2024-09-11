@@ -30,7 +30,7 @@ public interface ScheduleApi {
     @GetMapping
     @PreAuthorize("canUpdateMarathonOrIsScheduleDone(#marathonId)")
     @Operation(
-        summary = "Get all schedules for a marathon, has a 5 minute cache",
+        summary = "Get all schedules for a marathon, has a 1 minute cache",
         responses = {
             @ApiResponse(
                 description = "List of schedules for this marathon",
@@ -51,7 +51,7 @@ public interface ScheduleApi {
     @GetMapping("/{scheduleId}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
     @Operation(
-        summary = "Get the info of a schedule for a marathon by its id, has a 5 minute cache",
+        summary = "Get the info of a schedule for a marathon by its id, has a 1 minute cache",
         responses = {
             @ApiResponse(
                 description = "The requested schedule info",
@@ -101,7 +101,7 @@ public interface ScheduleApi {
     @GetMapping("/for-slug/{slug}")
     @PreAuthorize("isSchedulePublished(#marathonId, #slug) || canUpdateMarathon(#marathonId)")
     @Operation(
-        summary = "Get a schedule by its slug, has a 5 minute cache",
+        summary = "Get a schedule by its slug, has a 1 minute cache",
         responses = {
             @ApiResponse(
                 description = "The requested schedule",
