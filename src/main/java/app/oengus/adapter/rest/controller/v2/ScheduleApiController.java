@@ -15,6 +15,7 @@ import app.oengus.application.ScheduleService;
 import app.oengus.domain.exception.InvalidExportFormatException;
 import app.oengus.domain.exception.schedule.ScheduleNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,6 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
@@ -83,8 +87,28 @@ public class ScheduleApiController implements ScheduleApi {
         final var ticker = this.scheduleService.findTickerByScheduleId(marathonId, scheduleId, withCustomData)
             .orElseThrow(ScheduleNotFoundException::new);
 
+        // One minute default cache, in case the current run has not started yet.
+        var cacheMins = 1L;
+        try {
+            final var current = ticker.current();
+
+            if (current != null) {
+                final var now = ZonedDateTime.now(ZoneOffset.UTC);
+                final var currDate = current.getDate();
+
+                cacheMins = ChronoUnit.MINUTES.between(currDate, now);
+            }
+
+            // To prevent database spam, we do a 10-minute cache for schedules that have no more runs.
+            if (current == null && ticker.next() == null) {
+                cacheMins = 10;
+            }
+        } catch (Exception e) {
+            LoggerFactory.getLogger(ScheduleApiController.class).error("Skill issue bro (ticker cache)", e);
+        }
+
         return ResponseEntity.ok()
-            .headers(cachingHeaders(5, false))
+            .headers(cachingHeaders(cacheMins, false))
             .body(
                 this.mapper.tickerToDto(ticker)
             );
