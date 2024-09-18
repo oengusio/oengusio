@@ -19,7 +19,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.PermitAll;
-import java.util.List;
 
 @Tag(name = "marathons-v2")
 @CrossOrigin(maxAge = 3600)
@@ -41,7 +40,7 @@ public interface MarathonApi {
     ResponseEntity<MarathonHomeDto> getMarathonsForHome();
 
     @GetMapping("/{id}/settings")
-    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @PreAuthorize("isMarathonMod(#marathonId)")
     @Operation(
         summary = "Get the settings for a specific marathon",
         responses = {
@@ -72,7 +71,7 @@ public interface MarathonApi {
     ResponseEntity<MarathonSettingsDto> saveSettings(@PathVariable("id") final String marathonId, @RequestBody final MarathonSettingsDto patch);
 
     @GetMapping("/{id}/settings/moderators")
-    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @PreAuthorize("isMarathonMod(#marathonId)")
     @Operation(
         summary = "List the moderators for a marathon",
         responses = {
@@ -116,7 +115,7 @@ public interface MarathonApi {
     ResponseEntity<BooleanStatusDto> removeModerator(@PathVariable("id") final String marathonId, @PathVariable("userId") final int userId);
 
     @GetMapping("/{id}/settings/questions")
-    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @PreAuthorize("isMarathonMod(#marathonId)")
     @Operation(
         summary = "List the questions for a marathon",
         responses = {
