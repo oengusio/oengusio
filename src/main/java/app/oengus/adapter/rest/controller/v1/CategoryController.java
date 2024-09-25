@@ -36,22 +36,11 @@ public class CategoryController {
         @PathVariable("marathonId") final String marathonId, @PathVariable("code") final String code
     ) {
         final var pair = this.categoryService.findCategoryByCode(marathonId, code);
-
-        System.out.println("==========================================");
-        System.out.println("RETURNED FROM SERVICE");
-        System.out.println(pair);
-        System.out.println("==========================================");
-
         final var category = pair.getLeft();
         final var users = pair.getRight();
         final var opponentDto = new OpponentSubmissionDto();
         // technically we are allowed to use the port here, but it is still too much logic for a controller
         final Game game = this.gamePersistencePort.findById(category.getGameId()).get();
-
-        System.out.println("==========================================");
-        System.out.println("GAME FETCHED FROM PORT");
-        System.out.println(game);
-        System.out.println("==========================================");
 
         opponentDto.setUsers(
             users.stream()
