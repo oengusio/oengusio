@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class LineDto {
     private boolean customRun;
     @Schema(description = "true if this is a setup block. NOTE: enabling this nulls all properties related to the game.")
     private boolean setupBlock;
-    @Schema(description = "Text to be displayed on the setup block")
+    @Size(max = 255)
+    @Schema(description = "Text to be displayed on the setup block, max 255 chars")
     private String setupBlockText;
     @Schema(description = "Custom data assigned by a marathon administrator. Useful for automation software like nodecg-speedcontrol. Speedcontrol will parse this string as a json object.")
     private String customData;

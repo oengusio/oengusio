@@ -1273,4 +1273,8 @@
             <column name="mail"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="20240928-1" author="duncte123">
+        <modifyDataType tableName="schedule_line" columnName="setup_block_text" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>
