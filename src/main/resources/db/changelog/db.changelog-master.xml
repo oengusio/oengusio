@@ -1277,4 +1277,8 @@
     <changeSet id="20240928-1" author="duncte123">
         <modifyDataType tableName="schedule_line" columnName="setup_block_text" newDataType="varchar(255)"/>
     </changeSet>
+
+    <changeSet id="20241003-01" author="duncte123">
+        <modifyDataType tableName="marathon" columnName="description" newDataType="varchar(10000)"/>
+    </changeSet>
 </databaseChangeLog>

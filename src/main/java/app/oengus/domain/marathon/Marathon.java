@@ -15,6 +15,8 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class Marathon {
+    public static final int MAX_DESC_LENGTH = 10000;
+
     private final String id;
 
     private OengusUser creator;

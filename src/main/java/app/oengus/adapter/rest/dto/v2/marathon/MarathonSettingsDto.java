@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.dto.v2.marathon;
 
+import app.oengus.domain.marathon.Marathon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class MarathonSettingsDto {
     private String name;
 
     @NotNull(message = "The marathon description must not be null, empty strings are allowed however")
-    @Size(max = 5000)
+    @Size(max = Marathon.MAX_DESC_LENGTH)
     @Schema(required = true, description = "The description is what is shown to users when they visit this marathon's homepage")
     private String description;
 

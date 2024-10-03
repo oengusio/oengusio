@@ -1,5 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
+import app.oengus.domain.marathon.Marathon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +54,7 @@ public class MarathonEntity {
     private ZonedDateTime submissionsEndDate;
 
     @Column(name = "description")
-    @Size(max = 5000)
+    @Size(max = Marathon.MAX_DESC_LENGTH)
     private String description;
 
     @Column(name = "is_onsite")
