@@ -415,7 +415,7 @@ public class SubmissionService {
             )
             .toList();
 
-        return new PageImpl<>(foundItems);
+        return new PageImpl<>(foundItems, bySearch.getPageable(), bySearch.getTotalElements());
     }
 
     public Page<Submission> findByMarathonNew(final String marathonId, int page) {
