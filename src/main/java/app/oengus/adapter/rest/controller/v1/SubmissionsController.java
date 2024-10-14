@@ -2,11 +2,11 @@ package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.rest.dto.v1.SubmissionDto;
 import app.oengus.adapter.rest.helper.OpponentRestService;
+import app.oengus.adapter.rest.helper.SubmissionHelpers;
 import app.oengus.adapter.rest.mapper.AnswerDtoMapper;
 import app.oengus.adapter.rest.mapper.SubmissionDtoMapper;
 import app.oengus.application.SubmissionService;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.submission.Opponent;
 import app.oengus.domain.submission.Submission;
 import app.oengus.adapter.rest.dto.AvailabilityDto;
 import app.oengus.adapter.rest.dto.misc.PageDto;
@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -94,14 +95,7 @@ public class SubmissionsController {
     ) {
         final var foundSubmissions = this.submissionService.findByMarathonNew(marathonId, Math.max(0, page - 1));
 
-        // Strip code from response here
-        foundSubmissions.forEach((submission) -> {
-            submission.getGames().forEach((game) -> {
-                game.getCategories().forEach((category) -> {
-                    category.setCode(null);
-                });
-            });
-        });
+        SubmissionHelpers.stripSensitiveInfo(foundSubmissions);
 
         final var res = foundSubmissions.map(this.mapper::toV1Dto);
 
@@ -122,18 +116,11 @@ public class SubmissionsController {
         @RequestParam(value = "page", required = false, defaultValue = "1") final int page
     ) {
         final String nullableStatus = ValueConstants.DEFAULT_NONE.equals(status) ? null : status;
-        final var foundSubmissions = this.submissionService.searchForMarathon(
+        final Page<Submission> foundSubmissions = this.submissionService.searchForMarathon(
             marathonId, q, nullableStatus, Math.max(0, page - 1)
         );
 
-        // Strip code from response here
-        foundSubmissions.forEach((submission) -> {
-            submission.getGames().forEach((game) -> {
-                game.getCategories().forEach((category) -> {
-                    category.setCode(null);
-                });
-            });
-        });
+        SubmissionHelpers.stripSensitiveInfo(foundSubmissions);
 
         final var res = foundSubmissions.map(this.mapper::toV1Dto);
 
