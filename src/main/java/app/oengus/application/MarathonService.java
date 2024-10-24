@@ -189,8 +189,9 @@ public class MarathonService {
             if (schedules.isEmpty()) {
                 patch.setScheduleDone(false);
             } else {
+                final var scheduleDate = this.scheduleService.findByScheduleId(patch.getId(), schedules.get(0).getId(), false).orElseThrow();
                 // Calculate it using the proper schedule
-                this.scheduleService.computeEndDate(patch, schedules.get(0));
+                this.scheduleService.computeEndDate(patch, scheduleDate);
                 this.selectionService.rejectTodos(patch.getId());
 
                 patch.setSelectionDone(true);
