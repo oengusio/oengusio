@@ -163,6 +163,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public void delete(Submission submission) {
         this.repository.deleteById(submission.getId());
     }

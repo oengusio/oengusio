@@ -457,12 +457,14 @@ public class SubmissionService {
                 }
             }
 
-            submission.getGames().forEach((game) -> {
-                this.categoryPersistencePort.deleteAllById(
-                    game.getCategories().stream().map(Category::getId).toList()
-                );
-                this.gamePersistencePort.deleteById(game.getId());
-            });
+            // Schrödinger's delete
+            // Sometimes it works, other times it fails
+//            submission.getGames().forEach((game) -> {
+////                this.categoryPersistencePort.deleteAllById(
+////                    game.getCategories().stream().map(Category::getId).toList()
+////                );
+//                this.gamePersistencePort.deleteById(game.getId());
+//            });
             this.submissionPersistencePort.delete(submission);
         } else {
             throw new OengusBusinessException("NOT_AUTHORIZED");

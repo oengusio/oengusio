@@ -10,6 +10,7 @@ import app.oengus.adapter.jpa.entity.GameEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,6 +76,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    @Transactional
     public void deleteAllById(List<Integer> ids) {
         this.repository.deleteAllById(ids);
     }

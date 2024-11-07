@@ -1281,4 +1281,12 @@
     <changeSet id="20241003-01" author="duncte123">
         <modifyDataType tableName="marathon" columnName="description" newDataType="varchar(10000)"/>
     </changeSet>
+
+    <!-- Hi, yes we are removing a constraint. -->
+    <!-- This key is only used for ui-based filtering, so I do not care about consistency here-->
+    <changeSet id="20241107-1" author="duncte123">
+        <dropForeignKeyConstraint baseTableName="schedule_line"
+                                  constraintName="fk_schedule_line_category"
+        />
+    </changeSet>
 </databaseChangeLog>
