@@ -5,7 +5,7 @@ plugins {
     application
 
     id("org.springframework.boot") version "2.7.18"
-    id("io.spring.dependency-management") version "1.1.5"
+    id("io.spring.dependency-management") version "1.1.6"
     id("io.freefair.lombok") version "8.4"
 }
 
