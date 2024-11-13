@@ -96,7 +96,7 @@ dependencies {
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "3.14.9")
 
     // COUNTRY SUPPORT
-    implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.28")
+    implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
 
     // Sentry
     implementation(group = "io.sentry", name = "sentry-spring-boot-starter", version = sentryVersion)
