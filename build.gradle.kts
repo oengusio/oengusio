@@ -41,7 +41,7 @@ repositories {
 }
 
 val sentryVersion = "7.9.0"
-val mapstructVersion = "1.5.5.Final"
+val mapstructVersion = "1.6.3"
 
 dependencies {
     // SPRING
