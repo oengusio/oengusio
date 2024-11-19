@@ -114,10 +114,16 @@ dependencies {
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 //    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+
+    // And of course, we are going to write unit tests.
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("net.datafaker:datafaker:2.0.2")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 val wrapper: Wrapper by tasks

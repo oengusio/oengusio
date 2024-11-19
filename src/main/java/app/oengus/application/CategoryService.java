@@ -46,6 +46,7 @@ public class CategoryService {
     ///////////
     // v1 stuff
 
+    // TODO: this function does too much
     public Pair<Category, List<OengusUser>> findCategoryByCode(final String marathonId, final String code) {
         final var optionalCategory = this.categoryPersistencePort.findByCode(code);
 
