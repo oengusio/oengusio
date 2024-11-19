@@ -2,10 +2,12 @@ package net.oengus.factory;
 
 import net.datafaker.Faker;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.lang.NonNull;
 
 public abstract class AbstractFactory<T> implements FactoryBean<T> {
     protected Faker faker = new Faker();
 
+    @NonNull
     @Override
     abstract public T getObject();
 

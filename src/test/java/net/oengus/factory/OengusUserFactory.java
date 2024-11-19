@@ -2,13 +2,17 @@ package net.oengus.factory;
 
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.Role;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+@Component
 public class OengusUserFactory extends AbstractFactory<OengusUser> {
+    @NotNull
     @Override
     public OengusUser getObject() {
         final var user = new OengusUser(
@@ -24,8 +28,8 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
         user.setCountry(faker.country().countryCode2());
         // good enough for now
         user.setLanguagesSpoken(List.of(
-            faker.country().countryCode2(),
-            faker.country().countryCode2()
+            faker.nation().isoLanguage(),
+            faker.nation().isoLanguage()
         ));
 
         return user;
@@ -38,7 +42,6 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
     public OengusUser getAdminUser() {
         final var user = this.getObject();
 
-        assert user != null;
         user.setRoles(Set.of(Role.ROLE_USER, Role.ROLE_ADMIN));
 
         return user;

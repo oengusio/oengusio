@@ -3,8 +3,12 @@ package net.oengus.factory.submission;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.RunType;
 import net.oengus.factory.AbstractFactory;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CategoryFactory extends AbstractFactory<Category> {
+    @NotNull
     @Override
     public Category getObject() {
         return this.getCategoryForGame(faker.number().randomDigit());

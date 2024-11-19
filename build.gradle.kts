@@ -6,6 +6,7 @@ plugins {
 
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.6"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
     id("io.freefair.lombok") version "8.4"
 }
 
@@ -39,6 +40,10 @@ repositories {
 
     maven { url = uri("https://jitpack.io") }
 }
+
+val snippetsDir = file("build/generated-snippets")
+
+extra["snippetsDir"] = snippetsDir
 
 val sentryVersion = "7.9.0"
 val mapstructVersion = "1.6.3"
@@ -153,6 +158,19 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     source = javaSources + fileTree(sourcesForRelease.destinationDir)
 
     dependsOn(sourcesForRelease)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+tasks.test {
+    outputs.dir(snippetsDir)
+}
+
+tasks.asciidoctor {
+    inputs.dir(snippetsDir)
+    dependsOn(tasks.test)
 }
 
 compileJava.apply {

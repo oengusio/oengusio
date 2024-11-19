@@ -2,8 +2,12 @@ package net.oengus.factory;
 
 import app.oengus.domain.Connection;
 import app.oengus.domain.SocialPlatform;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConnectionFactory extends AbstractFactory<Connection> {
+    @NotNull
     @Override
     public Connection getObject() {
         final var con = new Connection();
