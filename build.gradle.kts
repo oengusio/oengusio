@@ -68,7 +68,7 @@ dependencies {
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
-    implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.3")
+    implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.6")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.12.3")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.12.3")
     // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
