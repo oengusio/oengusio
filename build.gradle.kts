@@ -64,7 +64,7 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "com.zaxxer", name = "HikariCP", version = "5.1.0")
+    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
