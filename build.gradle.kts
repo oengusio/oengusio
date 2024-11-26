@@ -81,7 +81,7 @@ dependencies {
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
 
     // JACKSON
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.18.1")
 
     // documentation
     implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.8.0")
