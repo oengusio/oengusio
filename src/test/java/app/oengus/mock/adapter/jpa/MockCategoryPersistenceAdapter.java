@@ -7,21 +7,28 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Profile("test")
 @Component
 @RequiredArgsConstructor
 public class MockCategoryPersistenceAdapter implements CategoryPersistencePort {
+    private final Map<Integer, Category> fakeDb = new HashMap<>();
+
     @Override
     public Optional<Category> findById(int id) {
-        return Optional.empty();
+        return Optional.ofNullable(this.fakeDb.get(id));
     }
 
     @Override
     public List<Category> findByGameId(int gameId) {
-        return List.of();
+        return this.fakeDb.values()
+            .stream()
+            .filter(category -> category.getGameId() == gameId)
+            .toList();
     }
 
     @Override
@@ -31,7 +38,7 @@ public class MockCategoryPersistenceAdapter implements CategoryPersistencePort {
 
     @Override
     public List<Category> findByGame(Game game) {
-        return List.of();
+        return this.findByGameId(game.getId());
     }
 
     @Override
@@ -41,26 +48,31 @@ public class MockCategoryPersistenceAdapter implements CategoryPersistencePort {
 
     @Override
     public Optional<Category> findByCode(String code) {
-        return Optional.empty();
+        return this.fakeDb.values()
+            .stream()
+            .filter((c) -> c.getCode().equals(code))
+            .findFirst();
     }
 
     @Override
     public boolean existsByCode(String code) {
-        return false;
+        return this.fakeDb.values()
+            .stream()
+            .anyMatch((category) -> category.getCode().equals(code));
     }
 
     @Override
     public void delete(Category category) {
-
+        this.fakeDb.remove(category.getId());
     }
 
     @Override
     public void deleteAllById(List<Integer> ids) {
-
+        // TODO
     }
 
     @Override
     public void save(Category category) {
-
+        this.fakeDb.put(category.getId(), category);
     }
 }

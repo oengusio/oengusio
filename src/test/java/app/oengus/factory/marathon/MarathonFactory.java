@@ -3,17 +3,20 @@ package app.oengus.factory.marathon;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.factory.AbstractFactory;
+import app.oengus.factory.OengusUserFactory;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class MarathonFactory extends AbstractFactory<Marathon> {
-//    private final OengusUserFactory oengusUserFactory;
+    private final OengusUserFactory oengusUserFactory;
 
     @NotNull
     @Override
     public Marathon getObject() {
-        return null;// this.withCreator(oengusUserFactory.getNormalUser());
+        return this.withCreator(oengusUserFactory.getNormalUser());
     }
 
     public Marathon withCreator(OengusUser creator) {

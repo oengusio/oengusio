@@ -5,10 +5,27 @@ on:
             - master
     pull_request:
 jobs:
+    run_gradle_tests:
+        concurrency:
+            group: ${{ github.ref }}-test
+            cancel-in-progress: true
+
+    steps:
+        -   uses: actions/checkout@v3
+        -   name: Set up java
+            uses: actions/setup-java@v3
+            with:
+                distribution: 'zulu'
+                java-version: 21
+        -   name: Grant execute permission for gradlew
+            run: chmod +x gradlew
+        -   name: build all needed
+            run: ./gradlew --no-daemon test
+
     build_docker_file:
 
         concurrency:
-            group: ${{ github.ref }}
+            group: ${{ github.ref }}-docker
             cancel-in-progress: true
 
         name: Build docker image

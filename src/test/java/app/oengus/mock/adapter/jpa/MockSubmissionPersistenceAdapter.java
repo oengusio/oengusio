@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,19 +19,27 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class MockSubmissionPersistenceAdapter implements SubmissionPersistencePort {
+    private final Map<Integer, Submission> fakeDb = new HashMap<>();
+
     @Override
     public Optional<Submission> findById(int id) {
-        return Optional.empty();
+        return Optional.ofNullable(this.fakeDb.get(id));
     }
 
     @Override
     public Submission getByGameId(int gameId) {
-        return null;
+        return this.fakeDb.values()
+            .stream()
+            .filter(
+                (s) -> s.getGames().stream().anyMatch((g) -> g.getId() == gameId)
+            )
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
     public Submission getToplevelByGamId(int gameId) {
-        return null;
+        return this.getByGameId(gameId);
     }
 
     @Override
@@ -60,7 +69,9 @@ public class MockSubmissionPersistenceAdapter implements SubmissionPersistencePo
 
     @Override
     public Submission save(Submission submission) {
-        return null;
+        this.fakeDb.put(submission.getId(), submission);
+
+        return submission;
     }
 
     @Override

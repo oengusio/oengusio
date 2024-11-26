@@ -9,16 +9,20 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Profile("test")
 @Component
 @RequiredArgsConstructor
 public class MockMarathonPersistenceAdapter implements MarathonPersistencePort {
+    private final Map<String, Marathon> fakeDb = new HashMap<>();
+
     @Override
     public Optional<Marathon> findById(String marathonId) {
-        return Optional.empty();
+        return Optional.ofNullable(this.fakeDb.get(marathonId));
     }
 
     @Override
@@ -28,17 +32,19 @@ public class MockMarathonPersistenceAdapter implements MarathonPersistencePort {
 
     @Override
     public Marathon save(Marathon marathon) {
-        return null;
+        this.fakeDb.put(marathon.getId(), marathon);
+
+        return marathon;
     }
 
     @Override
     public void delete(Marathon marathon) {
-
+        this.fakeDb.remove(marathon.getId());
     }
 
     @Override
     public boolean existsById(String marathonId) {
-        return false;
+        return this.fakeDb.containsKey(marathonId);
     }
 
     @Override

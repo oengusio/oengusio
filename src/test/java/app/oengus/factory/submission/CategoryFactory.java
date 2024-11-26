@@ -6,8 +6,12 @@ import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Component
 public class CategoryFactory extends AbstractFactory<Category> {
+    private final AtomicInteger idStore = new AtomicInteger();
+
     @NotNull
     @Override
     public Category getObject() {
@@ -16,7 +20,7 @@ public class CategoryFactory extends AbstractFactory<Category> {
 
     public Category getCategoryForGame(int gameId) {
         final var category = new Category(
-            faker.number().randomDigit(),
+            this.idStore.incrementAndGet(),
             gameId
         );
 
