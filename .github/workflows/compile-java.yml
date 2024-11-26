@@ -6,6 +6,8 @@ on:
     pull_request:
 jobs:
     run_gradle_tests:
+        name: Run gradle tests
+        runs-on: ubuntu-latest
         concurrency:
             group: ${{ github.ref }}-test
             cancel-in-progress: true
