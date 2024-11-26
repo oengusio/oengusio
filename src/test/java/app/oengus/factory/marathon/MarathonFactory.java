@@ -1,10 +1,8 @@
-package net.oengus.factory.marathon;
+package app.oengus.factory.marathon;
 
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
-import lombok.RequiredArgsConstructor;
-import net.oengus.factory.AbstractFactory;
-import net.oengus.factory.OengusUserFactory;
+import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 

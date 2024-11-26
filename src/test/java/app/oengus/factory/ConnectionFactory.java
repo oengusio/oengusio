@@ -1,4 +1,4 @@
-package net.oengus.factory;
+package app.oengus.factory;
 
 import app.oengus.domain.Connection;
 import app.oengus.domain.SocialPlatform;

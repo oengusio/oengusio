@@ -1,3 +1,42 @@
+oengus:
+    jwt:
+        secret: 'CorrectHorseBatteryStaple'
+        expiration: 604800
+    baseUrl: 'https://oengus.net'
+    oauthOrigins: 'oengus.io'
+    shortUrl: "https://oengus.fun"
+    pageSize: 2
+
+discord:
+    clientId: 'n/a'
+    clientSecret: 'n/a'
+    grantType: 'authorization_code'
+    redirectUri: '/login/discord'
+    syncRedirectUri: '/user/settings/sync/discord'
+    scope:
+        - identify
+    botTokenRaw: 'n/a'
+    botToken: 'n/a'
+
+paypal:
+    clientId: 'n/a'
+    clientSecret: 'n/a'
+
+twitch:
+    login:
+        clientId: 'n/a'
+        clientSecret: 'n/a'
+        grantType: 'authorization_code'
+        redirectUri: '/login/twitch'
+        syncRedirectUri: '/user/settings/sync/twitch'
+        scope:
+            - openid
+
+rabbitmq:
+    uri: 'amqp://example.com:5672'
+    username: ''
+    password: ''
+
 spring:
     autoconfigure:
         exclude:
@@ -11,3 +50,24 @@ spring:
         password: sa
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
+    mail:
+        host: ${MAIL_SERVER:smtp.eu.mailgun.org}
+        port: ${MAIL_PORT:465}
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        properties:
+            mail:
+                transport:
+                    protocol: smtp
+                smtp:
+                    ssl:
+                        enable: ${MAIL_SSL:true}
+                    starttls:
+                        enable: ${MAIL_STARTTLS:false}
+                        required: ${MAIL_STARTTLS:false}
+                auth: true
+                from:
+                    address: ${MAIL_FROM:no-reply@mg.oengus.io}
+                    name: Oengus
+        default-encoding: utf-8
+        test-connection: false

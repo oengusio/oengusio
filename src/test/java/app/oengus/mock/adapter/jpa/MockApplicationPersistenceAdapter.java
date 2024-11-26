@@ -1,4 +1,4 @@
-package net.oengus.mock.adapter.jpa;
+package app.oengus.mock.adapter.jpa;
 
 import app.oengus.application.port.persistence.ApplicationPersistencePort;
 import app.oengus.domain.volunteering.Application;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-@Profile("test")
 @Component
+@Profile("test")
 @RequiredArgsConstructor
 public class MockApplicationPersistenceAdapter implements ApplicationPersistencePort {
     @Override

@@ -6,12 +6,14 @@ import app.oengus.adapter.jpa.repository.TeamRepository;
 import app.oengus.application.port.persistence.TeamPersistencePort;
 import app.oengus.domain.volunteering.Team;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class TeamPersistenceAdapter implements TeamPersistencePort {
     private final TeamRepository repository;

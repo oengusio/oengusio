@@ -1,4 +1,4 @@
-package net.oengus.factory;
+package app.oengus.factory;
 
 import net.datafaker.Faker;
 import org.springframework.beans.factory.FactoryBean;

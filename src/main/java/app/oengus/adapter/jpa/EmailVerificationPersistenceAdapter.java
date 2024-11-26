@@ -5,11 +5,13 @@ import app.oengus.adapter.jpa.repository.EmailVerificationRepository;
 import app.oengus.application.port.persistence.EmailVerificationPersistencePort;
 import app.oengus.domain.PendingEmailVerification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class EmailVerificationPersistenceAdapter implements EmailVerificationPersistencePort {
     private final EmailVerificationRepository emailVerificationRepository;

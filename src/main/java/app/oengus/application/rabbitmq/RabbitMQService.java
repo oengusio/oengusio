@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Component
-@Profile("!sandbox")
+@Profile(value = {"prod", "local"})
 public class RabbitMQService implements IRabbitMQService {
     private static final String QUEUE_NAME_BASE = "oengus.bot";
     private final Connection connection;

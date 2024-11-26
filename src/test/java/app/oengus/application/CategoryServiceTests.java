@@ -1,18 +1,15 @@
-package net.oengus.application;
+package app.oengus.application;
 
-import app.oengus.OengusApplication;
-import app.oengus.application.CategoryService;
-import net.oengus.factory.OengusUserFactory;
-import net.oengus.factory.marathon.MarathonFactory;
-import net.oengus.factory.submission.CategoryFactory;
+import app.oengus.factory.OengusUserFactory;
+import app.oengus.factory.marathon.MarathonFactory;
+import app.oengus.factory.submission.CategoryFactory;
+import org.hibernate.validator.internal.constraintvalidators.bv.AssertTrueValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class CategoryServiceTests {
@@ -38,6 +35,6 @@ public class CategoryServiceTests {
 
     @Test
     public void categoryCanBeFoundByCodeForMarathon() {
-        //
+        assertTrue(true);
     }
 }

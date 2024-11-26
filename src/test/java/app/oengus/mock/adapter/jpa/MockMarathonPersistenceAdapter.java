@@ -1,4 +1,4 @@
-package net.oengus.mock.adapter.jpa;
+package app.oengus.mock.adapter.jpa;
 
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.domain.OengusUser;

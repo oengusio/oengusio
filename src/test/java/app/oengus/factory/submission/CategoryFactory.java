@@ -1,8 +1,8 @@
-package net.oengus.factory.submission;
+package app.oengus.factory.submission;
 
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.RunType;
-import net.oengus.factory.AbstractFactory;
+import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
