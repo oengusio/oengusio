@@ -69,7 +69,7 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "com.zaxxer", name = "HikariCP", version = "5.1.0")
+    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
     implementation(group = "org.postgresql", name = "postgresql")
 
     // JWT
@@ -83,13 +83,13 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.2")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.1.3")
 
     // JACKSON
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.13.2")
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.18.1")
 
     // documentation
-    implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.6.8")
+    implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.8.0")
 
     // iCal4J
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.2.2")
@@ -108,7 +108,7 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.18.0")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.24.2")
     implementation("org.passay:passay:1.6.4")
 
     // idk
