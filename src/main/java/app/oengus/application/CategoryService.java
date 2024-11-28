@@ -102,7 +102,6 @@ public class CategoryService {
                 () -> new OengusBusinessException("SUBMISSION_MARATHON_MISSING")
             );
 
-        // hangs on this check???
         if (marathon.getMaxNumberOfScreens() <= users.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
         }
