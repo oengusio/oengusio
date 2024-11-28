@@ -21,9 +21,6 @@ import java.util.Optional;
 public class MockSubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final Map<Integer, Submission> fakeDb = new HashMap<>();
 
-    // We need to fetch users for some parts
-    private final MockUserPersistenceAdapter userPersistenceAdapter;
-
     @Override
     public Optional<Submission> findById(int id) {
         return Optional.ofNullable(this.fakeDb.get(id));
