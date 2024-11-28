@@ -21,6 +21,9 @@ import java.util.Optional;
 public class MockSubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final Map<Integer, Submission> fakeDb = new HashMap<>();
 
+    // We need to fetch users for some parts
+    private final MockUserPersistenceAdapter userPersistenceAdapter;
+
     @Override
     public Optional<Submission> findById(int id) {
         return Optional.ofNullable(this.fakeDb.get(id));
@@ -106,6 +109,12 @@ public class MockSubmissionPersistenceAdapter implements SubmissionPersistencePo
 
     @Override
     public Map<Integer, OengusUser> findUsersByIds(List<Integer> submissionIds) {
-        return Map.of();
+        final Map<Integer, OengusUser> users = new HashMap<>();
+
+        for (int id : submissionIds) {
+            users.put(id, this.fakeDb.get(id).getUser());
+        }
+
+        return users;
     }
 }

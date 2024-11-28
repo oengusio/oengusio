@@ -9,14 +9,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class OengusUserFactory extends AbstractFactory<OengusUser> {
+    private final AtomicInteger idStore = new AtomicInteger();
+
     @NotNull
     @Override
     public OengusUser getObject() {
         final var user = new OengusUser(
-            faker.number().randomDigit()
+            idStore.incrementAndGet()
         );
 
         user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT));
