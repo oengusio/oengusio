@@ -33,7 +33,11 @@ public class MockCategoryPersistenceAdapter implements CategoryPersistencePort {
 
     @Override
     public List<Category> findByMarathonSubmissionAndGameId(String marathonId, int submissionId, int gameId) {
-        return List.of();
+        // We are doing a "trust me bro" for this mock, will change when it actually is needed
+        return this.fakeDb.values()
+            .stream()
+            .filter(category -> category.getGameId() == gameId)
+            .toList();
     }
 
     @Override

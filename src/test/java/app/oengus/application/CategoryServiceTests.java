@@ -39,11 +39,35 @@ public class CategoryServiceTests {
     private final SubmissionHelpers submissionHelpers;
 
     @Test
+    public void testCategoriesCanBeFoundByGameId() {
+        final var pair = this.createMarathonAndSubmission("OENGUS");
+        final var marathon = pair.getLeft();
+        final var submission = pair.getRight();
+        final var game = submission.getGames().stream().findFirst().orElseThrow();
+        final var firstCat = game.getCategories().get(0);
+
+        final var category = this.categoryFactory.getCategoryForGame(game.getId());
+
+        category.setType(RunType.SINGLE);
+
+        this.categoryPersistencePort.save(category);
+
+        final var foundCategories = this.categoryService.findByGameId(
+            marathon.getId(), submission.getId(), game.getId()
+        );
+
+        assertEquals(2, foundCategories.size());
+
+        assertEquals(firstCat, foundCategories.get(0));
+        assertEquals(category, foundCategories.get(1));
+    }
+
+    @Test
     public void testCategoryCanBeFoundByCodeForMarathon() {
         final var pair = this.createMarathonAndSubmission("OENGUS");
         final var marathon = pair.getLeft();
         final var submission = pair.getRight();
-        final var game = submission.getGames().stream().findFirst().orElse(null);
+        final var game = submission.getGames().stream().findFirst().orElseThrow();
         final var category = game.getCategories().get(0);
 
         final var categoryRes = this.categoryService.findCategoryByCode(marathon.getId(), "OENGUS");
@@ -61,7 +85,7 @@ public class CategoryServiceTests {
         marathon.setMaxNumberOfScreens(3);
 
         final var submission = pair.getRight();
-        final var game = submission.getGames().stream().findFirst().orElse(null);
+        final var game = submission.getGames().stream().findFirst().orElseThrow();
         final var category = game.getCategories().get(0);
 
         this.submissionHelpers.addOpponents(1, category, marathon.getId());
@@ -81,7 +105,7 @@ public class CategoryServiceTests {
         marathon.setMaxNumberOfScreens(3);
 
         final var submission = pair.getRight();
-        final var game = submission.getGames().stream().findFirst().orElse(null);
+        final var game = submission.getGames().stream().findFirst().orElseThrow();
         final var category = game.getCategories().get(0);
 
         // We're adding 2 opponents to make 3 as the original submitter is also included.

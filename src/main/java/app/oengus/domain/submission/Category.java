@@ -1,5 +1,6 @@
 package app.oengus.domain.submission;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class Category {
     private final int id;
