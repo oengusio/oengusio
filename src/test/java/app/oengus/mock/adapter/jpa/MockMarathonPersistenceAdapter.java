@@ -27,7 +27,7 @@ public class MockMarathonPersistenceAdapter implements MarathonPersistencePort {
 
     @Override
     public Optional<OengusUser> findCreatorById(String marathonId) {
-        return Optional.empty();
+        return this.findById(marathonId).map(Marathon::getCreator);
     }
 
     @Override

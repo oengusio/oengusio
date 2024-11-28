@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
+
 @Component
 @RequiredArgsConstructor
 public class MarathonFactory extends AbstractFactory<Marathon> {
@@ -37,6 +40,13 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
         marathon.setMaxCategoriesPerGame(faker.number().numberBetween(1, 100));
         marathon.setHasMultiplayer(faker.bool().bool());
         marathon.setMaxNumberOfScreens(faker.number().numberBetween(1, 100));
+
+        final var fakeStartDate = faker.date().future(20, TimeUnit.DAYS);
+
+        marathon.setStartDate(fakeStartDate.toLocalDateTime().atZone(ZoneOffset.UTC));
+        marathon.setEndDate(marathon.getStartDate().plusDays(
+            faker.number().numberBetween(1, 69)
+        ));
 
         // TODO: add settings as needed
 
