@@ -9,6 +9,7 @@ import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleRepository repository;

@@ -5,6 +5,7 @@ import app.oengus.application.UserLookupService;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.OengusUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nullable;
 
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 public class UserSecurityAdapter implements UserSecurityPort {
     private final UserLookupService userService;

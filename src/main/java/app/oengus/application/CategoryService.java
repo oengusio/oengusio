@@ -46,6 +46,7 @@ public class CategoryService {
     ///////////
     // v1 stuff
 
+    // TODO: this function does too much
     public Pair<Category, List<OengusUser>> findCategoryByCode(final String marathonId, final String code) {
         final var optionalCategory = this.categoryPersistencePort.findByCode(code);
 
@@ -101,7 +102,6 @@ public class CategoryService {
                 () -> new OengusBusinessException("SUBMISSION_MARATHON_MISSING")
             );
 
-        // hangs on this check???
         if (marathon.getMaxNumberOfScreens() <= users.size()) {
             throw new OengusBusinessException("MAX_SIZE_REACHED");
         }

@@ -6,12 +6,14 @@ import app.oengus.adapter.jpa.repository.GameRepository;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.domain.submission.Game;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class GamePersistenceAdapter implements GamePersistencePort {
     private final GameRepository repository;

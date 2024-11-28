@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("sandbox")
+@Profile(value = {"sandbox", "test"})
 public class DisabledRabbitMQService implements IRabbitMQService {
     public DisabledRabbitMQService() {
         System.out.println("===============================");

@@ -10,6 +10,7 @@ import app.oengus.domain.volunteering.ApplicationStatus;
 import app.oengus.adapter.jpa.entity.TeamEntity;
 import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class ApplicationPersistenceAdapter implements ApplicationPersistencePort {
     private final ApplicationRepository repository;

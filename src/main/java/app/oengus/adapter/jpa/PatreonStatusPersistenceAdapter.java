@@ -5,11 +5,13 @@ import app.oengus.adapter.jpa.repository.PatreonStatusRepository;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.domain.PledgeInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class PatreonStatusPersistenceAdapter implements PatreonStatusPersistencePort {
     private final PatreonStatusRepository repository;

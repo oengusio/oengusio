@@ -8,6 +8,7 @@ import app.oengus.domain.submission.Game;
 import app.oengus.adapter.jpa.entity.CategoryEntity;
 import app.oengus.adapter.jpa.entity.GameEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryRepository repository;

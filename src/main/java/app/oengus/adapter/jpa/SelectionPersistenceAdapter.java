@@ -8,6 +8,7 @@ import app.oengus.application.port.persistence.SelectionPersistencePort;
 import app.oengus.domain.submission.Selection;
 import app.oengus.domain.submission.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class SelectionPersistenceAdapter implements SelectionPersistencePort {
     private final SelectionRepository repository;

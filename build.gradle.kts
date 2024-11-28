@@ -6,6 +6,7 @@ plugins {
 
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.6"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
     id("io.freefair.lombok") version "8.4"
 }
 
@@ -39,6 +40,10 @@ repositories {
 
     maven { url = uri("https://jitpack.io") }
 }
+
+val snippetsDir = file("build/generated-snippets")
+
+extra["snippetsDir"] = snippetsDir
 
 val sentryVersion = "7.9.0"
 val mapstructVersion = "1.6.3"
@@ -78,7 +83,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.1.3")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.9")
 
     // JACKSON
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.18.1")
@@ -114,10 +119,16 @@ dependencies {
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 //    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+
+    // And of course, we are going to write unit tests.
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("net.datafaker:datafaker:2.0.2")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 val wrapper: Wrapper by tasks
@@ -147,6 +158,19 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     source = javaSources + fileTree(sourcesForRelease.destinationDir)
 
     dependsOn(sourcesForRelease)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+tasks.test {
+    outputs.dir(snippetsDir)
+}
+
+tasks.asciidoctor {
+    inputs.dir(snippetsDir)
+    dependsOn(tasks.test)
 }
 
 compileJava.apply {
