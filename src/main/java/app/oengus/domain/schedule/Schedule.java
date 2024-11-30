@@ -14,7 +14,6 @@ public class Schedule {
     private final int id;
     private String marathonId;
 
-    // OwO what's this?
     private String name;
     private String slug;
     private boolean published;

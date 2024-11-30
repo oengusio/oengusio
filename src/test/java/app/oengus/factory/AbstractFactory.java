@@ -15,4 +15,6 @@ public abstract class AbstractFactory<T> implements FactoryBean<T> {
     public boolean isSingleton() {
         return false;
     }
+
+//    @Override abstract public Class<T> getObjectType();
 }
