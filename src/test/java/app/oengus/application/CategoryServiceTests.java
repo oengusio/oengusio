@@ -40,7 +40,7 @@ public class CategoryServiceTests {
 
     @Test
     public void testCategoriesCanBeFoundByGameId() {
-        final var pair = this.createMarathonAndSubmission("OENGUS");
+        final var pair = this.createMarathonAndSubmission("OENGUS0");
         final var marathon = pair.getLeft();
         final var submission = pair.getRight();
         final var game = submission.getGames().stream().findFirst().orElseThrow();
