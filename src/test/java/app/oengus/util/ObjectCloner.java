@@ -1,4 +1,4 @@
-package app.oengus.domain.cloners;
+package app.oengus.util;
 
 import app.oengus.domain.marathon.Marathon;
 import org.mapstruct.InjectionStrategy;

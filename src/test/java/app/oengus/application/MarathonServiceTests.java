@@ -5,7 +5,7 @@ import app.oengus.factory.OengusUserFactory;
 import app.oengus.factory.marathon.MarathonFactory;
 import app.oengus.mock.adapter.jpa.MockMarathonPersistenceAdapter;
 import app.oengus.mock.adapter.jpa.MockSchedulePersistenceAdapter;
-import app.oengus.domain.cloners.ObjectCloner;
+import app.oengus.util.ObjectCloner;
 import app.oengus.util.ScheduleHelpers;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -82,9 +82,6 @@ public class MarathonServiceTests {
             expectedEndTime = expectedEndTime.plus(fiveMin).plus(fiveMin);
         }
 
-        System.out.println(startDate);
-        System.out.println(expectedEndTime);
-
         assertNotEquals(startDate, expectedEndTime);
 
         schedule.getLines().forEach(line -> {
@@ -95,7 +92,7 @@ public class MarathonServiceTests {
 
         this.schedulePersistenceAdapter.save(schedule);
 
-        marathon.setSelectionDone(true);
+        marathon.setScheduleDone(true);
 
         final var updatedMarathon = this.marathonService.update(marathon.getId(), marathon);
 
