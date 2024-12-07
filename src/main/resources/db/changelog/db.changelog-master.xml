@@ -1289,4 +1289,10 @@
                                   constraintName="fk_schedule_line_category"
         />
     </changeSet>
+
+    <changeSet id="20241207-1" author="duncte123">
+        <sql>
+            UPDATE schedule SET slug = '1', name = 'Schedule' WHERE slug IS NULL OR slug = '';
+        </sql>
+    </changeSet>
 </databaseChangeLog>

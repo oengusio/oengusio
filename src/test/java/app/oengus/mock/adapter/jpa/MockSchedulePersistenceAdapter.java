@@ -20,15 +20,6 @@ public class MockSchedulePersistenceAdapter implements SchedulePersistencePort {
     private final MockMarathonPersistenceAdapter marathonPersistenceAdapter;
 
     @Override
-    public Optional<Schedule> findFirstForMarathon(String marathonId) {
-        return this.fakeDb.values()
-            .stream()
-            .filter((schedule) -> schedule.getMarathonId().equals(marathonId))
-            .findFirst()
-            .map(this::setDateOnLines);
-    }
-
-    @Override
     public Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId) {
         return this.fakeDb.values()
             .stream()

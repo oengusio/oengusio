@@ -25,14 +25,6 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleEntityMapper mapper;
 
     @Override
-    public Optional<Schedule> findFirstForMarathon(String marathonId) {
-        return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
-            .stream()
-            .findFirst()
-            .map(this::entityToDomain);
-    }
-
-    @Override
     public Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId) {
         return this.repository.findByMarathonAndId(
             MarathonEntity.ofId(marathonId), scheduleId
