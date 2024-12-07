@@ -1,5 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
+import app.oengus.domain.Connection;
 import app.oengus.domain.SocialPlatform;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -41,13 +42,7 @@ public class SocialAccount {
     @JsonIgnore
     @AssertTrue(message = "The username does not have a valid format for the platform")
     public boolean isUsernameValidForPlatform() {
-        return switch (this.platform) {
-            case SPEEDRUNCOM -> this.username.length() < 20 && this.username.matches(SPEEDRUN_COM_NAME_REGEX);
-            case DISCORD -> this.username.matches(DISCORD_USERNAME_REGEX);
-            case EMAIL -> this.username.matches(EMAIL_REGEX);
-            case MASTODON -> this.username.matches(MASTODON_REGEX);
-            default -> this.username.matches(USERNAME_REGEX);
-        };
+        return Connection.isUsernameValidForPlatform(this.username, this.platform);
     }
 
     @Override
