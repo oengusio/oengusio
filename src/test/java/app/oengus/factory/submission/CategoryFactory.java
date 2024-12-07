@@ -29,6 +29,7 @@ public class CategoryFactory extends AbstractFactory<Category> {
         category.setDescription(faker.backToTheFuture().quote());
         category.setVideo(faker.internet().url());
         category.setType(faker.options().option(RunType.values()));
+        category.setCode(faker.random().hex(5));
 
         return category;
     }

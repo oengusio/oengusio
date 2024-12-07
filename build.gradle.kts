@@ -128,6 +128,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("net.datafaker:datafaker:2.0.2")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2")
 }
 
@@ -166,6 +167,10 @@ tasks.withType<Test> {
 
 tasks.test {
     outputs.dir(snippetsDir)
+
+    testLogging {
+        showStandardStreams = System.getenv("CI") == null
+    }
 }
 
 tasks.asciidoctor {
