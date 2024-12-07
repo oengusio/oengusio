@@ -13,7 +13,12 @@ public class Connection {
     private SocialPlatform platform;
     private String username;
 
-    public void setUsername(String username) {
+    public Connection() {}
+
+    public Connection(int id, SocialPlatform platform, String username) {
+        this.id = id;
+        this.platform = platform;
+
         if (!isUsernameValidForPlatform(username, this.platform)) {
             throw new InvalidUsernameException(this.platform, username);
         }
@@ -23,6 +28,7 @@ public class Connection {
 
     public static boolean isUsernameValidForPlatform(String username, SocialPlatform platform) {
         return switch (platform) {
+            case BLUESKY -> username.matches(BLUESKY_USERNAME_REGEX);
             case SPEEDRUNCOM -> username.length() < 20 && username.matches(SPEEDRUN_COM_NAME_REGEX);
             case DISCORD -> username.matches(DISCORD_USERNAME_REGEX);
             case EMAIL -> username.matches(EMAIL_REGEX);

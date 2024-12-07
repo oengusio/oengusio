@@ -26,12 +26,9 @@ public class ConnectionTests {
 
     @Test
     public void testSettingInvalidUsernameThrowsException() {
-        final var connection = new Connection();
-        connection.setPlatform(SocialPlatform.MASTODON);
-
         assertThrows(
             InvalidUsernameException.class,
-            () -> connection.setUsername("not a valid username")
+            () -> new Connection(-1, SocialPlatform.MASTODON, "not a valid username")
         );
     }
 }

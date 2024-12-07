@@ -57,6 +57,8 @@ sentry:
     send-default-pii: true
 
 spring:
+    profiles:
+        active: ${SPRING_PROFILE:local}
     # TODO: read into this, cache can do a lot
     # https://www.ehcache.org/documentation/3.3/107.html
     # https://github.com/gibsong/ehcache-jsr107-spring/tree/master/src/main/resources
