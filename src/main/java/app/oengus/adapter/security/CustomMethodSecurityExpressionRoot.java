@@ -204,12 +204,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     }
 
     // TODO: hasAtLeastOneSchedulePublished(String marathonId)
-    @Deprecated(forRemoval = true)
-    public boolean isScheduleDone(final String id) throws NotFoundException {
-        final Marathon marathon = this.getMarathon(id);
-
-        return marathon.isScheduleDone();
-    }
 
     public boolean canUpdateMarathonOrIsScheduleDone(final String marathonId) throws NotFoundException {
         final Marathon marathon = this.getMarathon(marathonId);

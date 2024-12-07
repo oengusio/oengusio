@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SchedulePersistencePort {
-    Optional<Schedule> findFirstForMarathon(String marathonId);
-
     Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId);
 
     Optional<Schedule> findByIdForMarathonWithoutLines(String marathonId, int scheduleId);

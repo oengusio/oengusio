@@ -8,11 +8,9 @@ import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import app.oengus.domain.schedule.Ticker;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -168,65 +166,8 @@ public class ScheduleService {
     ///////////
     // v1 stuff
 
-    @Nullable
-    @Deprecated // Multi schedule soontm so this is redundant or needs a rename
-    public Schedule findByMarathon(final String marathonId) {
-        return this.schedulePersistencePort.findFirstForMarathon(marathonId).orElse(null);
-
-    }
-
-    @Deprecated // Multi schedule soontm so this is redundant when the v1 api gets nuked
-    public Optional<Schedule> findFirstByMarathon(final String marathonId) {
-        return this.schedulePersistencePort.findFirstForMarathon(marathonId);
-
-    }
-
-    @Nullable
-    public Schedule findByMarathonCustomDataControl(final String marathonId, boolean withCustomData) {
-        final Schedule schedule = this.findByMarathon(marathonId);
-
-        if (schedule == null) {
-            return null;
-        }
-
-        // Strip custom data instead of adding them :)
-        if (!withCustomData) {
-            final List<Line> lines = schedule.getLines();
-
-            // lines can be null, so we check if they are not
-            if (lines != null && !lines.isEmpty()) {
-                // Remove custom data if not requested
-                lines.forEach(
-                    (line) -> line.setCustomData(null)
-                );
-            }
-        }
-
-        return schedule;
-    }
-
     public void deleteByMarathon(final String marathonId) {
         this.schedulePersistencePort.deleteAllForMarathon(marathonId);
-    }
-
-    public Ticker getForTicker(final String marathonId, boolean withCustomData) throws NotFoundException {
-        final Schedule schedule = this.findByMarathonCustomDataControl(marathonId, withCustomData);
-
-        if (schedule == null) {
-            throw new NotFoundException("Schedule not found");
-        }
-
-        if (schedule.getLines().isEmpty()) {
-            throw new EmptyScheduleException("This schedule is empty");
-        }
-
-        final var marathon = this.marathonPersistencePort.findById(marathonId).orElseThrow(
-            () -> new NotFoundException("Marathon not found")
-        );
-        final ZonedDateTime endDate = marathon.getEndDate();
-        final ZonedDateTime now = ZonedDateTime.now(endDate.getZone());
-
-        return this.scheduleToTicker(marathon, schedule);
     }
 
     // TODO: create method that checks if a user has the maximum number of schedules
@@ -242,26 +183,6 @@ public class ScheduleService {
         final var saved = this.schedulePersistencePort.save(schedule);
 
         if (marathon.isScheduleDone()) {
-            // TODO: this seems a little broken??
-            this.computeEndDate(marathon, saved);
-            this.marathonPersistencePort.save(marathon);
-        }
-
-        return saved;
-    }
-
-    public Schedule saveOrUpdateV1(final String marathonId, final Schedule schedule) {
-        final var marathon = this.marathonPersistencePort.findById(marathonId)
-            .orElseThrow(MarathonNotFoundException::new);
-        final var scheduleDone = marathon.isScheduleDone();
-
-        schedule.setMarathonId(marathonId);
-        schedule.setPublished(scheduleDone);
-
-        final var saved = this.schedulePersistencePort.save(schedule);
-
-        if (scheduleDone) {
-            // TODO: this seems a little broken??
             this.computeEndDate(marathon, saved);
             this.marathonPersistencePort.save(marathon);
         }
