@@ -76,11 +76,7 @@ public class MarathonServiceTests {
         final var lineCount = schedule.getLines().size();
         final var fiveMin = Duration.ofMinutes(5);
         // Each line gets a setup and estimate of 5 minutes making 10 minutes per line.
-        var expectedEndTime = startDate;
-
-        for (int i = 0; i < lineCount; i++) {
-            expectedEndTime = expectedEndTime.plus(fiveMin).plus(fiveMin);
-        }
+        final var expectedEndTime = startDate.plusMinutes(lineCount * 10L);
 
         assertNotEquals(startDate, expectedEndTime);
 
