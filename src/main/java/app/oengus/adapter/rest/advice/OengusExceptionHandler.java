@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static app.oengus.adapter.rest.advice.HandlerHelpers.toMap;
+
 // TODO: Add proper json errors once we have the new front end going
 //  https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
 @ControllerAdvice
@@ -211,16 +213,5 @@ public class OengusExceptionHandler {
                 .header("Content-Type", "application/json")
                 .body(toMap(req, e));
         }
-    }
-
-    private Map<String, Object> toMap(final HttpServletRequest req, final Exception exception) {
-        final Map<String, Object> mapper = new HashMap<>();
-
-        mapper.put("type", exception.getClass().getSimpleName());
-        mapper.put("message", exception.getMessage());
-        mapper.put("method", req.getMethod());
-        mapper.put("path", req.getServletPath());
-
-        return mapper;
     }
 }
