@@ -92,7 +92,7 @@ dependencies {
     implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.8.0")
 
     // iCal4J
-    implementation(group = "org.mnode.ical4j", name = "ical4j", version = "3.2.2")
+    implementation(group = "org.mnode.ical4j", name = "ical4j", version = "4.0.6")
 
     // Paypal
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
