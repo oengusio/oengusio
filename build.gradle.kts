@@ -108,7 +108,7 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.24.2")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.24.3")
     implementation("org.passay:passay:1.6.4")
 
     // idk
