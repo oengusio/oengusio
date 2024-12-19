@@ -9,7 +9,10 @@ import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
 import lombok.RequiredArgsConstructor;
-import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ProdId;
@@ -21,7 +24,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -48,7 +50,7 @@ public class ScheduleIcalExporter implements Exporter {
         final Calendar calendar = new Calendar();
 
         calendar.getProperties().add(new ProdId(marathon.getName()));
-        calendar.getProperties().add(CalScale.GREGORIAN);
+        calendar.getProperties().add(new CalScale(CalScale.VALUE_GREGORIAN));
 
         final TimeZone timeZone = this.registry.getTimeZone(zoneId);
         final var rawLines = schedule.getLines();
@@ -79,12 +81,12 @@ public class ScheduleIcalExporter implements Exporter {
         };
         final String title = messageFormat.format(arguments);
         final VEvent event = new VEvent(
-            new DateTime(Date.from(line.getDate().toInstant()), tz),
-            new DateTime(Date.from(line.getDate().plus(line.getEstimate()).toInstant()), tz),
+            line.getDate(),
+            line.getDate().plus(line.getEstimate()),
             title
         );
 
-        event.getProperties().add(tz.getVTimeZone().getTimeZoneId());
+        tz.getVTimeZone().getTimeZoneId().ifPresent(event.getProperties()::add);
         event.getProperties().add(this.ug.generateUid());
 
         return event;
