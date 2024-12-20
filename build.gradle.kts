@@ -47,7 +47,9 @@ extra["snippetsDir"] = snippetsDir
 
 val sentryVersion = "7.9.0"
 val mapstructVersion = "1.6.3"
+val jacksonVersion = "2.18.2"
 
+// TODO: gradle version catalog
 dependencies {
     // SPRING
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-validation")
@@ -86,7 +88,9 @@ dependencies {
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.9")
 
     // JACKSON
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.18.1")
+    implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = jacksonVersion)
+    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = jacksonVersion)
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = jacksonVersion)
 
     // documentation
     implementation(group = "org.springdoc", name = "springdoc-openapi-webmvc-core", version = "1.8.0")
