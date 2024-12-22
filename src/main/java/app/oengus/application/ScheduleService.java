@@ -58,6 +58,18 @@ public class ScheduleService {
 
     // NOTE: this always needs a fulls schedule WITH CUSTOM DATA since we are saving it to the database.
     // TODO: remove persist settings for lines in model when we ditch the v1 update api
+    /**
+     * Publishes a schedule for a marathon.
+     * <p>
+     * This method sets the schedule as published, saves it to the database, and updates the marathon's status.
+     * If the marathon's schedule is not already marked as done, it sets the schedule as done, computes the end date,
+     * rejects all runs in to-do for the marathon, and updates the marathon's selection and submission status.
+     *
+     * @param schedule The schedule to be published. It must be associated with a valid marathon and must not be null.
+     *                 The schedule must have custom data included since it is being saved to the database.
+     *
+     * @throws MarathonNotFoundException If the marathon associated with the schedule is not found.
+     */
     public void publishSchedule(Schedule schedule) {
         final var marathon = this.marathonPersistencePort.findById(schedule.getMarathonId())
             .orElseThrow(MarathonNotFoundException::new);
