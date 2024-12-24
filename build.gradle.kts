@@ -85,7 +85,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.9")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.2.0")
 
     // JACKSON
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = jacksonVersion)
