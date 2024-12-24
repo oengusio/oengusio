@@ -113,7 +113,7 @@ dependencies {
 
     // security and shit
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.24.3")
-    implementation("org.passay:passay:1.6.4")
+    implementation("org.passay:passay:1.6.6")
 
     // idk
     implementation("org.javassist:javassist:3.30.2-GA")
