@@ -4,7 +4,7 @@ import app.oengus.domain.submission.RunType;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.AssertTrue;
 import java.time.Duration;
 import java.util.List;
 

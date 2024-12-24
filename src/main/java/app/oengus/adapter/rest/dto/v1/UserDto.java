@@ -12,7 +12,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.util.Arrays;
 import java.util.List;
 

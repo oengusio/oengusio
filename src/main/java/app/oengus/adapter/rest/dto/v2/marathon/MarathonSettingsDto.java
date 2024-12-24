@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 

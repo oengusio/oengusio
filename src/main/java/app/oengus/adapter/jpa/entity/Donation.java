@@ -6,9 +6,9 @@ import app.oengus.domain.marathon.FieldType;
 import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.SortComparator;
 
-import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Pattern;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

@@ -10,9 +10,9 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -27,9 +27,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -146,7 +146,6 @@ public class SubmissionsController {
     }
 
     @PostMapping
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned() && areSubmissionsOpen(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> create(@RequestBody @Valid final SubmissionDto submission,
@@ -169,7 +168,6 @@ public class SubmissionsController {
     }
 
     @PutMapping
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission != null " +
         "&& #submission.id != null " +
@@ -213,7 +211,6 @@ public class SubmissionsController {
     }
 
     @GetMapping("/me")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
@@ -237,7 +234,6 @@ public class SubmissionsController {
     }
 
     @DeleteMapping("/{id}")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final int id) throws NotFoundException {

@@ -4,9 +4,9 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "2.7.18"
+    id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.6"
-    id("org.asciidoctor.jvm.convert") version "4.0.4"
+    id("org.asciidoctor.jvm.convert") version "4.0.4" // TODO: do we need this?
     id("io.freefair.lombok") version "8.11"
 }
 
@@ -20,8 +20,8 @@ project.group = "app.oengus"
 project.version = "2024.10.27"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -85,7 +85,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.9.0")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "3.1.9")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.2.0")
 
     // JACKSON
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = jacksonVersion)
@@ -108,7 +108,7 @@ dependencies {
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
 
     // Sentry
-    implementation(group = "io.sentry", name = "sentry-spring-boot-starter", version = sentryVersion)
+    implementation(group = "io.sentry", name = "sentry-spring-boot-starter-jakarta", version = sentryVersion)
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit

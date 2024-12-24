@@ -21,8 +21,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.util.NestedServletException;
 
 import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.time.DateTimeException;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ public class OengusExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> responseStatusEx(final ResponseStatusException ex, final HttpServletRequest req) {
-        return ResponseEntity.status(ex.getStatus())
+        return ResponseEntity.status(ex.getStatusCode())
             .header("Content-Type", "application/json")
             .body(toMap(req, ex));
     }

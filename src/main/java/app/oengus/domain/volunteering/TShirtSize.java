@@ -1,6 +1,6 @@
 package app.oengus.domain.volunteering;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public enum TShirtSize {
     XS("XS"),

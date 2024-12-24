@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
@@ -40,7 +40,6 @@ public class IncentiveController {
 
     @PostMapping
     @JsonView(Views.Public.class)
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> save(@PathVariable("marathonId") final String marathonId,

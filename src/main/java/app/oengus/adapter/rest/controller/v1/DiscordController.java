@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
@@ -50,7 +50,6 @@ public class DiscordController {
     }
 
     @GetMapping("/in-guild/{userId}")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {

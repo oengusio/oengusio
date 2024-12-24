@@ -76,7 +76,7 @@ spring:
             javax:
                 persistence:
                     sharedCache:
-                        # javax.persistence.SharedCacheMode
+                        # jakarta.persistence.SharedCacheMode
                         mode: ${SHARED_CACHE_MODE:NONE}
 #                        mode: ENABLE_SELECTIVE
             hibernate:
@@ -90,7 +90,7 @@ spring:
 #                    provider: org.ehcache.jsr107.EhcacheCachingProvider
 #                    region:
 #                        factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
-                dialect: org.hibernate.dialect.PostgreSQL82Dialect
+                dialect: org.hibernate.dialect.PostgreSQLDialect
                 current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
                 temp:
                     use_jdbc_metadata_defaults: false

@@ -2,8 +2,8 @@ package app.oengus.adapter.rest.dto.validation;
 
 import org.passay.*;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 // Inspired by https://github.com/Baeldung/spring-security-registration
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {

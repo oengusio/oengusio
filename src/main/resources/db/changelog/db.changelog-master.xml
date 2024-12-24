@@ -325,12 +325,6 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="20190922-01" author="gyoo">
-        <addColumn tableName="marathon">
-            <column name="is_private" type="boolean" defaultValueBoolean="false"/>
-        </addColumn>
-    </changeSet>
-
     <changeSet id="20190922-02" author="gyoo">
         <addColumn tableName="users">
             <column name="twitch_id" type="text"/>

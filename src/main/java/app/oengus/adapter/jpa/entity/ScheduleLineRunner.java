@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.AssertTrue;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.AssertTrue;
 
 @Getter
 @Setter
