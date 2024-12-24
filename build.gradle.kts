@@ -6,7 +6,7 @@ plugins {
 
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.6"
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("org.asciidoctor.jvm.convert") version "4.0.4"
     id("io.freefair.lombok") version "8.11"
 }
 
