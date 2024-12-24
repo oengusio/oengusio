@@ -3,10 +3,10 @@ package app.oengus.adapter.jpa.entity;
 import app.oengus.adapter.rest.Views;
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
 

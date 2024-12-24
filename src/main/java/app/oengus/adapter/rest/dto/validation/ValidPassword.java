@@ -9,8 +9,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Payload;
-import javax.validation.Constraint;
+import jakarta.validation.Payload;
+import jakarta.validation.Constraint;
 
 // Inspired by https://github.com/Baeldung/spring-security-registration
 @Documented

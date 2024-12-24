@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
 
@@ -35,7 +36,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(final Authentication authentication,
+    public CustomMethodSecurityExpressionRoot(final Supplier<Authentication> authentication,
                                               final MarathonService marathonService,
                                               final UserPersistencePort userPersistencePort,
                                               final SchedulePersistencePort schedulePersistencePort,
@@ -338,4 +339,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         return false;
     }
+
+
 }

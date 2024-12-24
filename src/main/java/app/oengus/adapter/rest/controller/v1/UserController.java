@@ -27,11 +27,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.PermitAll;
 import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,6 @@ public class UserController {
 
     @Operation(hidden = true)
     @PostMapping("/sync")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("!isBanned()")
     public ResponseEntity<?> sync(@RequestBody final LoginRequest request, @RequestHeader("Origin") final String host) throws LoginException {
         if (!this.oauthOrigins.contains(host)) {
@@ -202,7 +200,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @RolesAllowed({"ROLE_USER"})
+    @PreAuthorize("hasRole('ROLE_USER')")
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<V1UserDto> me() {
@@ -251,7 +249,6 @@ public class UserController {
     @Operation(hidden = true)
     @PreAuthorize("!isBanned()")
     @GetMapping("/me/application-info")
-    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> getApplicationInfo() {
         // TODO: re-implement when we are actually doing applications
         return ResponseEntity.notFound().build();
@@ -260,7 +257,6 @@ public class UserController {
     @Operation(hidden = true)
     @PreAuthorize("!isBanned()")
     @PostMapping("/me/application-info")
-    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> updateApplicationInfo(
         @RequestBody @Valid final ApplicationUserInformationDto infoPatch,
         final BindingResult bindingResult

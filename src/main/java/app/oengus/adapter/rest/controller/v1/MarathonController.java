@@ -23,9 +23,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.ZonedDateTime;
@@ -49,7 +49,6 @@ public class MarathonController {
     private final SubmissionService submissionService;
 
     @PutMapping
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> create(
@@ -178,7 +177,6 @@ public class MarathonController {
     }
 
     @GetMapping("/moderated-by/me")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(summary = "Returns marathons that are moderated by the currently logged-in user")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate() {

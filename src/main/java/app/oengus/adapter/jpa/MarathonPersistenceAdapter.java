@@ -138,14 +138,15 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
 
     @Override
     public Optional<MarathonStats> findStatsById(String marathonId) {
-        return this.repository.findStats(
-            MarathonEntity.ofId(marathonId)
-        ).map((rawStats) -> new MarathonStats(
-            (Long) rawStats.get("submissionCount"),
-            (Long) rawStats.get("runnerCount"),
-            (Long) rawStats.get("totalLength"),
-            (Double) rawStats.get("averageEstimate")
-        ));
+//        return this.repository.findStats(
+//            MarathonEntity.ofId(marathonId)
+//        ).map((rawStats) -> new MarathonStats(
+//            (Long) rawStats.get("submissionCount"),
+//            (Long) rawStats.get("runnerCount"),
+//            (Long) rawStats.get("totalLength"),
+//            (Double) rawStats.get("averageEstimate")
+//        ));
+        return Optional.empty();
     }
 
     @Override
