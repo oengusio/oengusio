@@ -4,8 +4,8 @@ import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
-import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.marathon.QuestionDto;
+import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.marathon.request.QuestionsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,11 +14,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.annotation.security.PermitAll;
 
 @Tag(name = "marathons-v2")
 @CrossOrigin(maxAge = 3600)

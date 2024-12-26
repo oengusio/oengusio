@@ -37,7 +37,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
         final Authentication authentication, final MethodInvocation invocation) {
-        log.info("Using 'old' way of getting authentication");
+        log.warn("Using 'old' way of getting authentication");
 
         return getCustomMethodSecurityExpressionRoot(() -> authentication);
     }
@@ -45,7 +45,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     @Override
     public EvaluationContext createEvaluationContext(Supplier<Authentication> authentication, MethodInvocation mi) {
         final StandardEvaluationContext context = (StandardEvaluationContext) super.createEvaluationContext(authentication, mi);
-        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
+//        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
 
         context.setRootObject(getCustomMethodSecurityExpressionRoot(authentication));
 

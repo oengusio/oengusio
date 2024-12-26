@@ -191,7 +191,9 @@ compileJava.apply {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
+    // NOTE: use -java-parameters for the kotlin compiler
+    // see https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes
+    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked", "-parameters")
 }
 
 wrapper.apply {
