@@ -1,8 +1,8 @@
 package app.oengus.adapter.rest.controller.v1;
 
 import app.oengus.adapter.jpa.entity.Incentive;
-import app.oengus.application.IncentiveService;
 import app.oengus.adapter.rest.Views;
+import app.oengus.application.IncentiveService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
