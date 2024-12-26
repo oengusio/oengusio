@@ -82,12 +82,12 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
     @Query("UPDATE MarathonEntity m SET m.submitsOpen = false WHERE m = :marathon")
     void closeSubmissions(@Param("marathon") MarathonEntity marathon);
 
-//    @Query("SELECT COUNT(c.id) AS submissionCount," +
-//        "COUNT(DISTINCT c.game.submission.user) AS runnerCount," +
-//        "SUM(c.estimate) AS totalLength," +
-//        "AVG(c.estimate) AS averageEstimate " +
-//        "FROM CategoryEntity c WHERE c.game.submission.marathon = :marathon")
-    // Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
+    @Query("SELECT COUNT(c.id) AS submissionCount," +
+        "COUNT(DISTINCT c.game.submission.user) AS runnerCount," +
+        "SUM(c.estimate) AS totalLength," +
+        "AVG(cast(c.estimate as bigdecimal)) AS averageEstimate " +
+        "FROM CategoryEntity c WHERE c.game.submission.marathon = :marathon")
+     Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
 
     @Query(value = "SELECT m.creator from MarathonEntity m WHERE m = :marathon")
     Optional<User> findCreatorById(@Param("marathon") MarathonEntity marathon);
