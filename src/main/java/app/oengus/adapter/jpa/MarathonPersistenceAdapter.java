@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -143,8 +144,8 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
         ).map((rawStats) -> new MarathonStats(
             (Long) rawStats.get("submissionCount"),
             (Long) rawStats.get("runnerCount"),
-            (Long) rawStats.get("totalLength"),
-            (Double) rawStats.get("averageEstimate")
+            safeBigDecToLong(rawStats.get("totalLength")), // Why is this a big dec? I don't know
+            safeObjectToDouble(rawStats.get("averageEstimate"))
         ));
     }
 
@@ -179,5 +180,22 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .stream()
             .map(this.mapper::toDomain)
             .toList();
+    }
+
+    // TODO: possibly extract these to helper functions in the domain model
+    private long safeBigDecToLong(Object rawVal) {
+        if (rawVal instanceof BigDecimal bigDec) {
+            return bigDec.longValue();
+        }
+
+        return 0L;
+    }
+
+    private double safeObjectToDouble(Object rawVal) {
+        if (rawVal instanceof Double doubleVal) {
+            return doubleVal;
+        }
+
+        return 0d;
     }
 }

@@ -8,13 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.time.DurationMin;
 
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 @Getter
 @Setter

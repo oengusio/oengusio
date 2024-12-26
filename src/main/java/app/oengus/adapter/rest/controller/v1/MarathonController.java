@@ -14,6 +14,8 @@ import app.oengus.domain.marathon.Marathon;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,9 +25,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.ZonedDateTime;
@@ -49,7 +48,6 @@ public class MarathonController {
     private final SubmissionService submissionService;
 
     @PutMapping
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> create(
@@ -178,7 +176,6 @@ public class MarathonController {
     }
 
     @GetMapping("/moderated-by/me")
-    @RolesAllowed({"ROLE_USER"})
     @PreAuthorize("isAuthenticated() && !isBanned()")
     @Operation(summary = "Returns marathons that are moderated by the currently logged-in user")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate() {

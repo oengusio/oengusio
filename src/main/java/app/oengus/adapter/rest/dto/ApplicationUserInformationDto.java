@@ -3,7 +3,7 @@ package app.oengus.adapter.rest.dto;
 import app.oengus.domain.volunteering.TShirtSize;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class ApplicationUserInformationDto {

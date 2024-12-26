@@ -7,10 +7,10 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.SortComparator;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 @Getter
 @Setter

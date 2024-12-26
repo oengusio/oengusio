@@ -6,8 +6,12 @@ import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -15,6 +19,9 @@ import org.springframework.security.authentication.AuthenticationTrustResolverIm
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Supplier;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
@@ -30,6 +37,23 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
         final Authentication authentication, final MethodInvocation invocation) {
+        log.info("Using 'old' way of getting authentication");
+
+        return getCustomMethodSecurityExpressionRoot(() -> authentication);
+    }
+
+    @Override
+    public EvaluationContext createEvaluationContext(Supplier<Authentication> authentication, MethodInvocation mi) {
+        final StandardEvaluationContext context = (StandardEvaluationContext) super.createEvaluationContext(authentication, mi);
+        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
+
+        context.setRootObject(getCustomMethodSecurityExpressionRoot(authentication));
+
+        return context;
+    }
+
+    @NotNull
+    private CustomMethodSecurityExpressionRoot getCustomMethodSecurityExpressionRoot(Supplier<Authentication> authentication) {
         final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(
             authentication,
             this.marathonService.getObject(),

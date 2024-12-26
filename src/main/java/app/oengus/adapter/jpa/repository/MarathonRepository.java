@@ -85,7 +85,7 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
     @Query("SELECT COUNT(c.id) AS submissionCount," +
         "COUNT(DISTINCT c.game.submission.user) AS runnerCount," +
         "SUM(c.estimate) AS totalLength," +
-        "AVG(c.estimate) AS averageEstimate " +
+        "AVG(cast(c.estimate as bigdecimal)) AS averageEstimate " +
         "FROM CategoryEntity c WHERE c.game.submission.marathon = :marathon")
     Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
 
