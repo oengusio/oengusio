@@ -87,7 +87,7 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
         "SUM(c.estimate) AS totalLength," +
         "AVG(cast(c.estimate as bigdecimal)) AS averageEstimate " +
         "FROM CategoryEntity c WHERE c.game.submission.marathon = :marathon")
-     Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
+    Optional<Map<String, Object>> findStats(@Param("marathon") MarathonEntity marathon);
 
     @Query(value = "SELECT m.creator from MarathonEntity m WHERE m = :marathon")
     Optional<User> findCreatorById(@Param("marathon") MarathonEntity marathon);

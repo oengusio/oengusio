@@ -24,12 +24,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JWTAdapter jwtPort; // TODO: See if autowire via constructor is a better option
 
-	private static final String AUTH_HEADER = "Authorization";
+    private static final String AUTH_HEADER = "Authorization";
 
-	@Override
-	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+    @Override
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     @NotNull final FilterChain chain)
-			throws ServletException, IOException {
+        throws ServletException, IOException {
 
         // TODO: why the fuck is this required, should already have been configured by spring
         response.addHeader("Access-Control-Allow-Origin", "*");
@@ -44,18 +44,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
 
-		final String authHeader = request.getHeader(AUTH_HEADER);
+        final String authHeader = request.getHeader(AUTH_HEADER);
 
         // TODO: there is probably a better way of going about this
-		if (authHeader != null && authHeader.startsWith("Bearer ")) {
-			final String token = authHeader.substring(7);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            final String token = authHeader.substring(7);
 
-			if (this.jwtPort.isTokenValid(token)) {
-				try {
-					final Claims claims = this.jwtPort.getAllClaimsFromToken(token);
-					@SuppressWarnings("unchecked")
-                    final List<String> rolesString = claims.get("role", List.class);
-					final boolean enabled = claims.get("enabled", Boolean.class);
+            if (this.jwtPort.isTokenValid(token)) {
+                try {
+                    final Claims claims = this.jwtPort.getAllClaimsFromToken(token);
+                    @SuppressWarnings("unchecked") final List<String> rolesString = claims.get("role", List.class);
+                    final boolean enabled = claims.get("enabled", Boolean.class);
 
                     final var details = new UserDetailsDto(
                         Integer.parseInt(claims.getId()),
@@ -72,24 +71,24 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     ), new SentryOptions()));*/
 
                     // Since we implement "UserDetails" in our DTO sentry will see the username from that.
-					final var authentication = new UsernamePasswordAuthenticationToken(
+                    final var authentication = new UsernamePasswordAuthenticationToken(
                         details,
                         null,
                         details.getAuthorities()
                     );
-					authentication.setDetails(
+                    authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                     );
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				} catch (final Exception e) {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } catch (final Exception e) {
                     Sentry.captureException(e);
-					//log.error("ERROR ", e);
-				}
-			}
-		}
+                    //log.error("ERROR ", e);
+                }
+            }
+        }
 
-		if (!request.getMethod().equalsIgnoreCase("OPTIONS")) {
-			chain.doFilter(request, response);
-		}
-	}
+        if (!request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            chain.doFilter(request, response);
+        }
+    }
 }
