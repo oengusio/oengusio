@@ -200,7 +200,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("!isBanned()")
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<V1UserDto> me() {

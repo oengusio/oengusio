@@ -4,7 +4,11 @@ import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.sentry.Sentry;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,14 +16,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@Slf4j
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
@@ -29,18 +28,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-	                                final FilterChain chain)
+                                    @NotNull final FilterChain chain)
 			throws ServletException, IOException {
-        log.info("Filtering request");
 
         // TODO: why the fuck is this required, should already have been configured by spring
         response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Expose-Headers", "Location");
+        response.addHeader("Access-Control-Expose-Headers", "Location, Origin");
         response.addHeader("Access-Control-Allow-Headers", "*");
         if (request.getHeader("Access-Control-Request-Method") != null &&
             "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.addHeader("Access-Control-Allow-Headers", "Authorization");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type, Location, Origin");
             response.addHeader("Access-Control-Max-Age", "1");
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
         }
@@ -48,13 +46,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 		final String authHeader = request.getHeader(AUTH_HEADER);
 
-        log.info("Auth headder: {}", authHeader);
-
         // TODO: there is probably a better way of going about this
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			final String token = authHeader.substring(7);
-
-            log.info("token {}", token);
 
 			if (this.jwtPort.isTokenValid(token)) {
 				try {
@@ -93,6 +87,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 				}
 			}
 		}
+
 		if (!request.getMethod().equalsIgnoreCase("OPTIONS")) {
 			chain.doFilter(request, response);
 		}

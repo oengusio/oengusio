@@ -21,9 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
     private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
@@ -37,25 +37,17 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
         final Authentication authentication, final MethodInvocation invocation) {
-        log.info("=======================================");
-        log.info("INITIALISED");
-        log.info("=======================================");
+        log.info("Using 'old' way of getting authentication");
 
         return getCustomMethodSecurityExpressionRoot(() -> authentication);
     }
 
     @Override
     public EvaluationContext createEvaluationContext(Supplier<Authentication> authentication, MethodInvocation mi) {
-        log.info("=======================================");
-        log.info("INITIALISED 2: electric boogaloo");
-        log.info("=======================================");
-
         final StandardEvaluationContext context = (StandardEvaluationContext) super.createEvaluationContext(authentication, mi);
         final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
 
-        final var root = getCustomMethodSecurityExpressionRoot(authentication);
-
-        context.setRootObject(root);
+        context.setRootObject(getCustomMethodSecurityExpressionRoot(authentication));
 
         return context;
     }
@@ -73,6 +65,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         root.setPermissionEvaluator(this.getPermissionEvaluator());
         root.setTrustResolver(this.trustResolver);
         root.setRoleHierarchy(this.getRoleHierarchy());
+
         return root;
     }
 }

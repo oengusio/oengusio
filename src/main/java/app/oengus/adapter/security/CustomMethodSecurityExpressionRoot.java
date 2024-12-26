@@ -339,6 +339,4 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         return false;
     }
-
-
 }
