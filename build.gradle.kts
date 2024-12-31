@@ -99,7 +99,7 @@ dependencies {
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "4.0.8")
 
     // Paypal
-    implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "1.0.3")
+    implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "2.0.0")
 
     // OKHTTP
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0")
