@@ -48,8 +48,7 @@ jobs:
                 env:
                     webhook_url: ${{ secrets.PROD_WEBHOOK_URL }}
 
-# TODO: ask zeph for a new link
-#            -   name: Trigger sandbox webhook
-#                uses: distributhor/workflow-webhook@v3
-#                env:
-#                    webhook_url: ${{ secrets.SANDBOX_WEBHOOK_URL }}
+            -   name: Trigger sandbox webhook
+                uses: distributhor/workflow-webhook@v3
+                env:
+                    webhook_url: ${{ secrets.SANDBOX_WEBHOOK_URL }}
