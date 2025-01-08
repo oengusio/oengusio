@@ -49,15 +49,15 @@ public class ScheduleIcalExporter implements Exporter {
         final var resourceBundle = ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
         final Calendar calendar = new Calendar();
 
-        calendar.getProperties().add(new ProdId(marathon.getName()));
-        calendar.getProperties().add(new CalScale(CalScale.VALUE_GREGORIAN));
+        calendar.getPropertyList().add(new ProdId(marathon.getName()));
+        calendar.getPropertyList().add(new CalScale(CalScale.VALUE_GREGORIAN));
 
         final TimeZone timeZone = this.registry.getTimeZone(zoneId);
         final var rawLines = schedule.getLines();
         final var timedLines = ScheduleHelper.mapTimeToZone(rawLines, zoneId);
 
         timedLines.forEach(
-            (line) -> calendar.getComponents().add(
+            (line) -> calendar.getComponentList().add(
                 this.mapLineToEvent(line, timeZone, resourceBundle)
             )
         );
@@ -86,8 +86,8 @@ public class ScheduleIcalExporter implements Exporter {
             title
         );
 
-        tz.getVTimeZone().getTimeZoneId().ifPresent(event.getProperties()::add);
-        event.getProperties().add(this.ug.generateUid());
+        tz.getVTimeZone().getTimeZoneId().ifPresent(event.getPropertyList()::add);
+        event.getPropertyList().add(this.ug.generateUid());
 
         return event;
     }
