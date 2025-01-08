@@ -89,6 +89,10 @@ public class UserPersistenceAdapter implements UserPersistencePort {
             }
         });
 
+        if (internalUser.getId() < 1) {
+            internalUser.setId(null);
+        }
+
         final var savedUser = this.userRepository.save(internalUser);
 
         return this.mapper.toDomain(savedUser);

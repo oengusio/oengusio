@@ -59,7 +59,7 @@ public class EmailService {
 
             this.mailSender.send(message);
         } catch (Exception e) {
-            throw new WrappedException(e);
+            throw new WrappedException("Failed to send password reset email", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class EmailService {
 
             this.mailSender.send(message);
         } catch (Exception e) {
-            throw new WrappedException(e);
+            throw new WrappedException("Failed to send verification email", e);
         }
     }
 }
