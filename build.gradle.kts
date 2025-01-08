@@ -18,7 +18,7 @@ plugins {
 
 project.group = "app.oengus"
 // Version code is year.month.(release num)
-project.version = "2025.01.1"
+project.version = "2025.01.2"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
