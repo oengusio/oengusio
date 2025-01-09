@@ -58,7 +58,14 @@ public class SelectionPersistenceAdapter implements SelectionPersistencePort {
 
     @Override
     public void saveAll(List<Selection> selections) {
-        final var entities = selections.stream().map(this.mapper::fromDomain).toList();
+        final var entities = selections.stream()
+            .map(this.mapper::fromDomain)
+            .peek((entity) -> {
+                if (entity.getId() < 1) {
+                    entity.setId(null);
+                }
+            })
+            .toList();
 
         this.repository.saveAll(entities);
     }

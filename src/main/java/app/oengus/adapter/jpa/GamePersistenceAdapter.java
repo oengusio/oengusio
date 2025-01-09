@@ -44,6 +44,11 @@ public class GamePersistenceAdapter implements GamePersistencePort {
     @Override
     public Game save(Game game) {
         final var entity = this.mapper.fromDomain(game);
+
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
         final var savedEntity = this.repository.save(entity);
 
         return this.mapper.toDomain(savedEntity);

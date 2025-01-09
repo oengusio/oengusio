@@ -38,6 +38,11 @@ public class TeamPersistenceAdapter implements TeamPersistencePort {
     @Override
     public Team save(Team team) {
         final var entity = this.mapper.fromDomain(team);
+
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
         final var savedEntity = this.repository.save(entity);
 
         return this.mapper.toDomain(savedEntity);

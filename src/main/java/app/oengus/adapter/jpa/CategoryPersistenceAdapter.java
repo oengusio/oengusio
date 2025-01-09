@@ -87,6 +87,10 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     public void save(Category category) {
         final var entity = this.mapper.fromDomain(category);
 
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
         this.repository.save(entity);
     }
 }

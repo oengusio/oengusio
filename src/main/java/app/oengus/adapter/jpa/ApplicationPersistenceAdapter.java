@@ -41,6 +41,11 @@ public class ApplicationPersistenceAdapter implements ApplicationPersistencePort
     @Override
     public Application save(Application application) {
         final var entity = this.mapper.fromDomain(application);
+
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
         final var savedEntity = this.repository.save(entity);
 
         return this.mapper.toDomain(savedEntity);
