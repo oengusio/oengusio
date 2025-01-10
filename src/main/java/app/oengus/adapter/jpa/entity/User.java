@@ -2,7 +2,6 @@ package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.IUsername;
 import app.oengus.domain.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -101,7 +100,6 @@ public class User implements IUsername {
         return this.username;
     }
 
-    @JsonIgnore
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
@@ -114,7 +112,6 @@ public class User implements IUsername {
             StringUtils.isNotEmpty(this.twitterId);
     }
 
-    @JsonIgnore
     @AssertTrue
     public boolean isEmailPresentForExistingUser() {
         if (this.id != null && this.enabled) {
@@ -122,11 +119,6 @@ public class User implements IUsername {
         }
 
         return true;
-    }
-
-    @JsonIgnore
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
     }
 
     public void setConnections(List<SocialAccount> connections) {

@@ -2,7 +2,6 @@ package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.Connection;
 import app.oengus.domain.SocialPlatform;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +38,6 @@ public class SocialAccount {
     private String username;
 
     // TODO: pull out to DTO
-    @JsonIgnore
     @AssertTrue(message = "The username does not have a valid format for the platform")
     public boolean isUsernameValidForPlatform() {
         return Connection.isUsernameValidForPlatform(this.username, this.platform);

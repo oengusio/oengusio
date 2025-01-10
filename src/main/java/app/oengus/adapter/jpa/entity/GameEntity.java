@@ -1,6 +1,5 @@
 package app.oengus.adapter.jpa.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -16,7 +15,6 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "game")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class GameEntity {
 
     @Id

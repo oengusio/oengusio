@@ -1,7 +1,6 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.marathon.Marathon;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -121,7 +120,6 @@ public class MarathonEntity {
     private boolean scheduleDone = false;
 
     @Column(name = "cleared")
-    @JsonIgnore
     private boolean cleared = false; // what the fuck is this?
 
     @Column(name = "donation_open")
