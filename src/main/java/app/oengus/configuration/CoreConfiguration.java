@@ -4,7 +4,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,7 +29,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public OpenApiCustomiser consumerTypeHeaderOpenAPICustomiser() {
+    public OpenApiCustomizer consumerTypeHeaderOpenAPICustomiser() {
         return (openApi) -> {
             openApi.setInfo(
                 new Info()
