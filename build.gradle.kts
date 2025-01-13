@@ -83,7 +83,7 @@ dependencies {
 
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.17.0")
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.12.0")
+    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.13.0")
 
     // FEIGN
     implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.2.0")
