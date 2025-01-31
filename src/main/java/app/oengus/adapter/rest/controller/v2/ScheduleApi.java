@@ -175,7 +175,52 @@ public interface ScheduleApi {
         @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
-    @PatchMapping("/{scheduleId}")
+    @GetMapping("/manage")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Get all schedules for a marathon, management endpoint, no cache",
+        responses = {
+            @ApiResponse(
+                description = "List of schedules for this marathon",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathonManagement(@PathVariable("marathonId") final String marathonId);
+
+    @GetMapping("/{scheduleId}/manage")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
+    @Operation(
+        summary = "Get the info of a schedule for a marathon by its id, management endpoint, no cache",
+        responses = {
+            @ApiResponse(
+                description = "The requested schedule info",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ScheduleInfoDto.class)
+                )
+            ),
+            @ApiResponse(
+                description = "Marathon or schedule not found",
+                responseCode = "404"
+            )
+        }
+    )
+    ResponseEntity<ScheduleInfoDto> findScheduleByIdManagement(
+        @PathVariable("marathonId") final String marathonId,
+        @PathVariable("scheduleId") final int scheduleId
+    );
+
+    @PatchMapping("/{scheduleId}/manage")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Update a schedule in a marathon.",
@@ -204,7 +249,7 @@ public interface ScheduleApi {
         @RequestBody @Valid final ScheduleUpdateRequestDto body
     );
 
-    @PostMapping("/{scheduleId}/publish")
+    @PostMapping("/{scheduleId}/manage/publish")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Publish schedule {scheduleId}",
@@ -228,7 +273,7 @@ public interface ScheduleApi {
         @PathVariable final int scheduleId
     );
 
-    @DeleteMapping("/{scheduleId}")
+    @DeleteMapping("/{scheduleId}/manage")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
         summary = "Delete a schedule in a marathon.",
@@ -252,10 +297,10 @@ public interface ScheduleApi {
         @PathVariable final int scheduleId
     );
 
-    @GetMapping("/{scheduleId}/lines")
+    @GetMapping("/{scheduleId}/manage/lines")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
-        summary = "Get the lines for a schedule, no cache is applied. Custom data is always sent.",
+        summary = "Get the lines for a schedule, management endpoint, no cache. Custom data is always sent.",
         responses = {
             @ApiResponse(
                 description = "Lines for a schedule",
@@ -276,10 +321,10 @@ public interface ScheduleApi {
         @PathVariable final int scheduleId
     );
 
-    @PutMapping("/{scheduleId}/lines")
+    @PutMapping("/{scheduleId}/manage/lines")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(
-        summary = "Update the lines for a schedule. Custom data is always sent.",
+        summary = "Update the lines for a schedule, management endpoint. Custom data is always sent.",
         responses = {
             @ApiResponse(
                 description = "Updated lines",

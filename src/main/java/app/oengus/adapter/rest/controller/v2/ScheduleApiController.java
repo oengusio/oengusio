@@ -157,6 +157,40 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
+    public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathonManagement(String marathonId) {
+        if (!this.marathonService. exists(marathonId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
+        }
+
+        final var schedules = this.scheduleService.findAllInfoByMarathon(marathonId);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new DataListDto<>(
+                schedules.stream()
+                    .map(this.mapper::infoFromSchedule)
+                    .toList()
+            ));
+    }
+
+    @Override
+    public ResponseEntity<ScheduleInfoDto> findScheduleByIdManagement(String marathonId, int scheduleId) {
+        if (!this.marathonService.exists(marathonId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
+        }
+
+        final var schedule = this.scheduleService.findInfoByScheduleId(marathonId, scheduleId).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found")
+        );
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(
+                this.mapper.infoFromSchedule(schedule)
+            );
+    }
+
+    @Override
     public ResponseEntity<ScheduleInfoDto> updateSchedule(String marathonId, int scheduleId, ScheduleUpdateRequestDto body) {
         final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
             .orElseThrow(ScheduleNotFoundException::new);
