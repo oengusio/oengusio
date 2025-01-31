@@ -21,7 +21,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .maxAge(3600)
-            .exposedHeaders("Location")
+            .exposedHeaders("Location", "Origin")
             .allowedMethods("GET", "PUT", "OPTIONS", "POST", "DELETE", "PATCH")
             .allowedOrigins("*")
             .allowCredentials(false)

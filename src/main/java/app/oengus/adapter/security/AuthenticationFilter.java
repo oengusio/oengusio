@@ -27,14 +27,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTH_HEADER = "Authorization";
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+    protected void doFilterInternal(final HttpServletRequest request, @NotNull final HttpServletResponse response,
                                     @NotNull final FilterChain chain)
         throws ServletException, IOException {
 
-        // TODO: why the fuck is this required, should already have been configured by spring
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Expose-Headers", "Location, Origin");
-        response.addHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Permissions-Policy", "web-share=(self \"https://oengus.fun\")");
         if (request.getHeader("Access-Control-Request-Method") != null &&
             "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.addHeader("Access-Control-Allow-Headers", "Authorization");
