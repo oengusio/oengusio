@@ -13,7 +13,7 @@ import java.util.List;
 public class V1QuestionDto {
     private int id;
 
-    @Size(max = 50)
+    @Size(max = 100)
     private String label;
 
     private FieldType fieldType;

@@ -1289,4 +1289,8 @@
             UPDATE schedule SET slug = '1', name = 'Schedule' WHERE slug IS NULL OR slug = '';
         </sql>
     </changeSet>
+
+    <changeSet id="20250131-01" author="duncte123">
+        <modifyDataType tableName="question" columnName="label" newDataType="varchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

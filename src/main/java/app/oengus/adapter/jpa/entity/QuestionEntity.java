@@ -25,7 +25,7 @@ public class QuestionEntity {
     private MarathonEntity marathon;
 
     @Column(name = "label")
-    @Size(max = 50)
+    @Size(max = 100) // can grow up to 255 if needed
     private String label;
 
     @Column(name = "field_type")
