@@ -1,9 +1,9 @@
 package app.oengus.application;
 
-import app.oengus.adapter.rest.Views;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
 import app.oengus.application.rabbitmq.IRabbitMQService;
+import app.oengus.application.webhook.mapper.WebhookDtoMapper;
 import app.oengus.domain.OengusBotUrl;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Category;
@@ -32,6 +32,7 @@ public class OengusWebhookService {
     private final OkHttpClient client = new OkHttpClient();
 
     private final ObjectMapper mapper;
+    private final WebhookDtoMapper dtoMapper;
     private final IRabbitMQService rabbitMq;
     private final GamePersistencePort gamePersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
@@ -42,7 +43,7 @@ public class OengusWebhookService {
     public void sendDonationEvent(final String url, final Object donation) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "DONATION")
-            .set("donation", parseJson(donation));
+            .putPOJO("donation", donation);
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -59,7 +60,7 @@ public class OengusWebhookService {
     public void sendNewSubmissionEvent(final String url, final Submission submission) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_ADD")
-            .set("submission", parseJson(submission));
+            .putPOJO("submission", this.dtoMapper.fromDomain(submission));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -74,8 +75,8 @@ public class OengusWebhookService {
 
     public void sendSubmissionUpdateEvent(final String url, final Submission newSubmission, final Submission oldSubmission) throws IOException {
         final ObjectNode data = mapper.createObjectNode().put("event", "SUBMISSION_EDIT");
-        data.set("submission", parseJson(newSubmission));
-        data.set("original_submission", parseJson(oldSubmission));
+        data.putPOJO("submission", this.dtoMapper.fromDomain(newSubmission));
+        data.putPOJO("original_submission", this.dtoMapper.fromDomain(oldSubmission));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -91,8 +92,8 @@ public class OengusWebhookService {
     public void sendSubmissionDeleteEvent(final String url, final Submission submission, final OengusUser deletedBy) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_DELETE");
-        data.set("submission", parseJson(submission));
-        data.set("deleted_by", parseJson(deletedBy));
+        data.putPOJO("submission", this.dtoMapper.fromDomain(submission));
+        data.putPOJO("deleted_by", this.dtoMapper.fromDomain(deletedBy));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -110,9 +111,9 @@ public class OengusWebhookService {
 
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "GAME_DELETE");
-        data.set("game", parseJson(game));
-        data.set("deleted_by", parseJson(deletedBy));
-        data.set("submission", parseJson(submission));
+        data.putPOJO("game", game);
+        data.putPOJO("deleted_by", this.dtoMapper.fromDomain(deletedBy));
+        data.putPOJO("submission", this.dtoMapper.fromDomain(submission));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -132,10 +133,10 @@ public class OengusWebhookService {
         // TODO: map these to DTOs
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "CATEGORY_DELETE");
-        data.set("category", parseJson(category));
-        data.set("submission", parseJson(submission));
-        data.set("game", parseJson(game));
-        data.set("deleted_by", parseJson(deletedBy));
+        data.putPOJO("category", category);
+        data.putPOJO("submission", this.dtoMapper.fromDomain(submission));
+        data.putPOJO("game", game);
+        data.putPOJO("deleted_by", this.dtoMapper.fromDomain(deletedBy));
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -151,7 +152,7 @@ public class OengusWebhookService {
     public void sendSelectionDoneEvent(final String url, final List<WebhookSelectionDone> selections) throws IOException {
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SELECTION_DONE");
-        data.set("selections", parseJson(selections));
+        data.putPOJO("selections", selections);
 
         if (handleOnBot(url)) {
             data.put("url", url);
@@ -167,7 +168,7 @@ public class OengusWebhookService {
     public boolean sendPingEvent(final String url) {
         try {
             final JsonNode data = mapper.createObjectNode().put("event", "PING");
-            final RequestBody body = RequestBody.create(null, mapper.writeValueAsBytes(data));
+            final RequestBody body = RequestBody.create(mapper.writeValueAsBytes(data), null);
             final Request request = new Request.Builder()
                 .header("User-Agent", "oengus.io webhook")
                 .header("Content-Type", "application/json")
@@ -184,14 +185,6 @@ public class OengusWebhookService {
         }
     }
     /// </editor-fold>
-
-    // TODO: use mappers for this.
-    private JsonNode parseJson(final Object model) throws IOException {
-        // hacky work around so we can use views
-        final byte[] json = mapper.writerWithView(Views.Public.class).writeValueAsBytes(model);
-
-        return mapper.readTree(json);
-    }
 
     private boolean handleOnBot(final String rawUrl) {
         if (!rawUrl.startsWith("oengus-bot")) {
