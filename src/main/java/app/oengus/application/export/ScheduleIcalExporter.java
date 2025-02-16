@@ -86,7 +86,7 @@ public class ScheduleIcalExporter implements Exporter {
             title
         );
 
-        tz.getVTimeZone().getTimeZoneId().ifPresent(event.getPropertyList()::add);
+        event.getPropertyList().add(tz.getVTimeZone().getTimeZoneId());
         event.getPropertyList().add(this.ug.generateUid());
 
         return event;
