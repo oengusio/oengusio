@@ -53,7 +53,7 @@ public class AuthApiControllerTests {
         testUser.setUsername("testuser2");
         testUser.setPassword("");
         testUser.setEmail("test@example.com");
-        testUser.setNeedsPasswordReset(true);
+        testUser.setNeedsPasswordReset(false);
 
         this.userService.save(testUser);
 
