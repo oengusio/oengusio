@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,9 @@ public class OengusUser implements IUsername {
     private List<String> languagesSpoken = new ArrayList<>();
     private boolean mfaEnabled;
     private String mfaSecret;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime lastLogin;
+    private boolean needsPasswordReset;
 
     private String patreonId;
     private String discordId;

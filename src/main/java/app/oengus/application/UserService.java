@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
@@ -118,6 +121,11 @@ public class UserService {
 
     public OengusUser save(final OengusUser user) {
         return this.userPersistencePort.save(user);
+    }
+
+    public void setLastLoginToNow(final OengusUser user) {
+        user.setLastLogin(ZonedDateTime.now(ZoneOffset.UTC));
+        this.save(user);
     }
 
     // TODO: test if user exists for these two?

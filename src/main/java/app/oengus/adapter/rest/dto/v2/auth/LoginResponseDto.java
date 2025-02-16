@@ -41,5 +41,7 @@ public class LoginResponseDto {
         USERNAME_PASSWORD_INCORRECT,
         @Schema(description = "Returned when logging in via a provider and the account does not exist.")
         OAUTH_ACCOUNT_NOT_FOUND,
+        @Schema(description = "Returned when the user needs to reset their password.")
+        PASSWORD_RESET_REQUIRED,
     }
 }

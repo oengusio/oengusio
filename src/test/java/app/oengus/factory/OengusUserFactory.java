@@ -34,6 +34,7 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
             faker.nation().isoLanguage(),
             faker.nation().isoLanguage()
         ));
+        user.setNeedsPasswordReset(false);
 
         return user;
     }

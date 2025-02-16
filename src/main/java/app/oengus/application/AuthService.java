@@ -11,6 +11,7 @@ import app.oengus.domain.Role;
 import app.oengus.domain.exception.InvalidMFACodeException;
 import app.oengus.domain.exception.InvalidPasswordException;
 import app.oengus.domain.exception.auth.InvalidEmailException;
+import app.oengus.domain.exception.auth.PasswordResetRequiredException;
 import app.oengus.domain.exception.auth.UnknownServiceException;
 import app.oengus.domain.exception.auth.UserDisabledException;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,10 @@ public class AuthService {
             throw new InvalidPasswordException();
         }
 
+        if (user.isNeedsPasswordReset()) {
+            throw new PasswordResetRequiredException();
+        }
+
         // Validate password before 2fa, that feels more secure
         // If the password fails, send them an error.
         if (!this.validatePassword(body.getPassword(), user.getPassword())) {
@@ -79,6 +84,8 @@ public class AuthService {
             }
         }
 
+        this.userService.setLastLoginToNow(user);
+
         // login successful, return body
         return new LoginResponseDto()
             .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)
@@ -96,7 +103,11 @@ public class AuthService {
             throw new UserDisabledException();
         }
 
-        // TODO: to MFA or to not MFA?
+        if (user.isNeedsPasswordReset()) {
+            throw new PasswordResetRequiredException();
+        }
+
+        this.userService.setLastLoginToNow(user);
 
         return new LoginResponseDto()
             .setStatus(LoginResponseDto.Status.LOGIN_SUCCESS)

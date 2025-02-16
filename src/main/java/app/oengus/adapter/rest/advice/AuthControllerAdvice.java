@@ -4,10 +4,7 @@ import app.oengus.adapter.rest.dto.ExceptionDto;
 import app.oengus.domain.exception.InvalidMFACodeException;
 import app.oengus.domain.exception.InvalidPasswordException;
 import app.oengus.adapter.rest.dto.v2.auth.LoginResponseDto;
-import app.oengus.domain.exception.auth.InvalidEmailException;
-import app.oengus.domain.exception.auth.UnknownServiceException;
-import app.oengus.domain.exception.auth.UnknownUserException;
-import app.oengus.domain.exception.auth.UserDisabledException;
+import app.oengus.domain.exception.auth.*;
 import app.oengus.adapter.rest.controller.v2.AuthApiController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +61,16 @@ public class AuthControllerAdvice {
             .body(
                 new LoginResponseDto()
                     .setStatus(LoginResponseDto.Status.ACCOUNT_DISABLED)
+            );
+    }
+
+    @ExceptionHandler(PasswordResetRequiredException.class)
+    public ResponseEntity<LoginResponseDto> handlePasswordResetRequired() {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(
+                new LoginResponseDto()
+                    .setStatus(LoginResponseDto.Status.PASSWORD_RESET_REQUIRED)
             );
     }
 
