@@ -9,13 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static app.oengus.adapter.rest.dto.v1.UserDto.USERNAME_REGEX;
-
-// TODO: add created time so we can delete accounts 1 year days of not verifying the email.
 
 @Entity
 @Getter
@@ -90,15 +90,14 @@ public class User implements IUsername {
     @Column(name = "mfa_secret")
     private String mfaSecret;
 
-    // TODO: I hate v1, this should be a DTO
-    public boolean hasPassword() {
-        return StringUtils.isNotEmpty(this.hashedPassword);
-    }
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
 
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
+    @Column(name = "last_login")
+    private ZonedDateTime lastLogin;
+
+    @Column(name = "needs_password_reset")
+    private boolean needsPasswordReset;
 
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {

@@ -1293,4 +1293,14 @@
     <changeSet id="20250131-01" author="duncte123">
         <modifyDataType tableName="question" columnName="label" newDataType="varchar(255)"/>
     </changeSet>
+
+    <changeSet id="2025_02_16-01" author="duncte123">
+        <addColumn tableName="users">
+            <column name="created_at" type="timestamp with time zone" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login" type="timestamp with time zone"/>
+            <column name="needs_password_reset" type="bool" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
