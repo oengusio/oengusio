@@ -9,6 +9,7 @@ import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
 import lombok.RequiredArgsConstructor;
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -16,6 +17,8 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import net.fortuna.ical4j.util.RandomUidGenerator;
 import net.fortuna.ical4j.util.UidGenerator;
 import org.springframework.stereotype.Component;
@@ -49,21 +52,27 @@ public class ScheduleIcalExporter implements Exporter {
         final var resourceBundle = ResourceBundle.getBundle("export.Exports", Locale.forLanguageTag(language));
         final Calendar calendar = new Calendar();
 
-        calendar.getPropertyList().add(new ProdId(marathon.getName()));
-        calendar.getPropertyList().add(new CalScale(CalScale.VALUE_GREGORIAN));
+        calendar.add(new ProdId(
+            "-//%s//Oengus//%s".formatted(marathon.getName(), language.toUpperCase(Locale.ROOT))
+        ));
+        calendar.add(ImmutableVersion.VERSION_2_0);
+        calendar.add(ImmutableCalScale.GREGORIAN);
 
         final TimeZone timeZone = this.registry.getTimeZone(zoneId);
         final var rawLines = schedule.getLines();
         final var timedLines = ScheduleHelper.mapTimeToZone(rawLines, zoneId);
 
         timedLines.forEach(
-            (line) -> calendar.getComponentList().add(
+            (line) -> calendar.add(
                 this.mapLineToEvent(line, timeZone, resourceBundle)
             )
         );
 
+        final CalendarOutputter outputter = new CalendarOutputter();
         final StringWriter out = new StringWriter();
-        out.append(calendar.toString());
+
+        outputter.output(calendar, out);
+
         return out;
     }
 
@@ -86,8 +95,8 @@ public class ScheduleIcalExporter implements Exporter {
             title
         );
 
-        event.getPropertyList().add(tz.getVTimeZone().getTimeZoneId());
-        event.getPropertyList().add(this.ug.generateUid());
+        event.add(tz.getVTimeZone().getTimeZoneId());
+        event.add(this.ug.generateUid());
 
         return event;
     }
