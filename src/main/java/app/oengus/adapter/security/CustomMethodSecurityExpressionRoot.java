@@ -96,6 +96,30 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return user.getRoles().contains(Role.ROLE_BANNED);
     }
 
+    public boolean hasVerifiedEmailAndIsNotBanned() {
+        return this.hasVerifiedEmailAndIsNotBanned(this.getUser());
+    }
+
+    public boolean hasVerifiedEmailAndIsNotBanned(OengusUser user) {
+        if (user == null) {
+            return false;
+        }
+
+        return this.hasVerifiedEmail(user) && !this.isBanned(user);
+    }
+
+    public boolean hasVerifiedEmail() {
+        return this.hasVerifiedEmail(this.getUser());
+    }
+
+    public boolean hasVerifiedEmail(OengusUser user) {
+        if (user == null) {
+            return false;
+        }
+
+        return user.isEmailVerified();
+    }
+
     public boolean isMarathonArchived(final String id) throws NotFoundException {
         final Marathon marathon = this.getMarathon(id);
 
@@ -142,6 +166,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return false;
         }
 
+        if (!this.hasVerifiedEmail(user)) {
+            return false;
+        }
+
         if(this.isBanned(user)) {
             return false;
         }
@@ -162,7 +190,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return false;
         }
 
-        if(this.isBanned(user)) {
+        if (!this.hasVerifiedEmail(user)) {
+            return false;
+        }
+
+        if (this.isBanned(user)) {
             return false;
         }
 
@@ -184,6 +216,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
     public boolean canUpdateMarathon(final Marathon marathon, final OengusUser user) {
         if (user == null) {
+            return false;
+        }
+
+        if (!this.hasVerifiedEmail(user)) {
             return false;
         }
 

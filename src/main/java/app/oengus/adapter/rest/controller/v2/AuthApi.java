@@ -82,7 +82,7 @@ public interface AuthApi {
     ResponseEntity<SignupResponseDto> signUp(@RequestBody @Valid SignUpDto body);
 
     @PostMapping("/refresh-token")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(
         summary = "Refresh the JWT token",
         responses = {
@@ -107,7 +107,7 @@ public interface AuthApi {
     ResponseEntity<BooleanStatusDto> requestNewEmailVerification();
 
     @PutMapping("/mfa/init")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(
         summary = "Set up MFA/2fa for your account.",
         responses = {
@@ -128,7 +128,7 @@ public interface AuthApi {
     ResponseEntity<InitMFADto> initMFA() throws IOException, WriterException;
 
     @PostMapping("/mfa")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(
         summary = "Verify and enable MFA/2fa for your account.",
         responses = {
@@ -160,7 +160,7 @@ public interface AuthApi {
     ResponseEntity<BooleanStatusDto> verifyAndStoreMFA(@RequestParam final String code);
 
     @DeleteMapping("/mfa")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(
         summary = "Verify and remove MFA/2fa for your account.",
         responses = {

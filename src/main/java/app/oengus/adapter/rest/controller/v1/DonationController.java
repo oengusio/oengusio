@@ -89,7 +89,7 @@ public class DonationController {
     }
 
     @GetMapping("/export")
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @JsonView(Views.Public.class)
     @Operation(summary = "Export all submitted donations by marathon to CSV")
     public void exportAllForMarathon(@PathVariable("marathonId") final String marathonId,

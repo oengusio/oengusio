@@ -39,7 +39,7 @@ public class IncentiveController {
 
     @PostMapping
     @JsonView(Views.Public.class)
-    @PreAuthorize("canUpdateMarathon(#marathonId) && !isBanned()")
+    @PreAuthorize("canUpdateMarathon(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> save(@PathVariable("marathonId") final String marathonId,
                                   @RequestBody final List<Incentive> incentives) {

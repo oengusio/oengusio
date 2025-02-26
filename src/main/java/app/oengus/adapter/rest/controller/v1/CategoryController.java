@@ -1,13 +1,11 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.adapter.rest.Views;
 import app.oengus.adapter.rest.dto.v1.OpponentSubmissionDto;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.CategoryService;
 import app.oengus.application.port.persistence.GamePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.submission.Game;
-import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javassist.NotFoundException;
@@ -29,8 +27,7 @@ public class CategoryController {
     private final UserPersistencePort userPersistencePort;
 
     @GetMapping("/{code}")
-    @JsonView(Views.Public.class)
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(summary = "Find a multiplayer category by its code and return basic information")
     public ResponseEntity<OpponentSubmissionDto> findCategoryByCode(
         @PathVariable("marathonId") final String marathonId, @PathVariable("code") final String code

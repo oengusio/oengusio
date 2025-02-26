@@ -48,7 +48,7 @@ public class MarathonController {
     private final SubmissionService submissionService;
 
     @PutMapping
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> create(
         @RequestBody @Valid final MarathonCreateRequestDto createRequest, final BindingResult bindingResult
@@ -176,7 +176,7 @@ public class MarathonController {
     }
 
     @GetMapping("/moderated-by/me")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(summary = "Returns marathons that are moderated by the currently logged-in user")
     public ResponseEntity<Map<String, List<MarathonBasicInfoDto>>> getMarathonsIModerate() {
         final var marathons = this.marathonService.findActiveMarathonsIModerate();

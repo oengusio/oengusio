@@ -28,7 +28,7 @@ public class ApplicationController {
 
     // admin
     @GetMapping
-    @PreAuthorize("isAuthenticated() && canUpdateTeam(#teamId) && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && canUpdateTeam(#teamId)")
     public ResponseEntity<List<V1ApplicationDto>> fetchAllApplications(@PathVariable("teamId") int teamId) {
         final var applications = this.applicationService.getByTeam(teamId);
 
@@ -43,7 +43,7 @@ public class ApplicationController {
 
     // user
     @GetMapping("/{userId}")
-    @PreAuthorize("isAuthenticated() && (isSelf(#userId) || canUpdateTeam(#teamId)) && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && (isSelf(#userId) || canUpdateTeam(#teamId))")
     public ResponseEntity<V1ApplicationDto> viewApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId
@@ -56,7 +56,7 @@ public class ApplicationController {
     }
 
     @PostMapping("/{userId}")
-    @PreAuthorize("isAuthenticated() && isSelf(#userId) && applicationsOpen(#teamId) && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#userId) && applicationsOpen(#teamId)")
     public ResponseEntity<V1ApplicationDto> createApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId,
@@ -72,7 +72,7 @@ public class ApplicationController {
     }
 
     @PatchMapping("/{userId}")
-    @PreAuthorize("isAuthenticated() && isSelf(#userId) && applicationsOpen(#teamId) && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#userId) && applicationsOpen(#teamId)")
     public ResponseEntity<V1ApplicationDto> updateApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId,
@@ -90,7 +90,7 @@ public class ApplicationController {
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("isAuthenticated() && isSelf(#userId) && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#userId)")
     public ResponseEntity<?> withdrawApplication(
         @PathVariable("teamId") int teamId,
         @PathVariable("userId") int userId

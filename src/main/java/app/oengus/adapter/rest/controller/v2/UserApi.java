@@ -98,6 +98,6 @@ public interface UserApi {
 
     @Operation(hidden = true)
     @GetMapping("/{id}/supporter-status")
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     ResponseEntity<SupporterStatusDto> getUserSupporterStatus(@PathVariable final int id);
 }

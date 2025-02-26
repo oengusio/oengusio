@@ -4,8 +4,6 @@ import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
 import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
 import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
-import app.oengus.adapter.rest.Views;
-import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/v2/marathons/{marathonId}/submissions")
 public interface SubmissionsApi {
     @GetMapping
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "List submissions for marathon",
         description = "List all submissions for a marathon, top-level info only, has a 30 minute cache"
@@ -29,7 +26,6 @@ public interface SubmissionsApi {
     );
 
     @GetMapping("/{submissionId}/games")
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "List games for a submission",
         description = "List all games for a specific submission, has a 30 minute cache"
@@ -40,7 +36,6 @@ public interface SubmissionsApi {
     );
 
     @GetMapping("/{submissionId}/games/{gameId}/categories")
-    @JsonView(Views.Public.class)
     @Operation(
         summary = "List categories for a game",
         description = "List all categories for a specific game, has a 30 minute cache"

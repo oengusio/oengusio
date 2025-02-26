@@ -48,7 +48,7 @@ public class DiscordController {
     }
 
     @GetMapping("/in-guild/{userId}")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     public ResponseEntity<?> isUserInGuild(@PathVariable("marathonId") final String marathonId,
                                            @PathVariable("userId") final String userId) throws NotFoundException {
         try {

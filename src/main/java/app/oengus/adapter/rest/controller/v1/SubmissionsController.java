@@ -145,7 +145,7 @@ public class SubmissionsController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated() && !isBanned() && areSubmissionsOpen(#marathonId)")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && areSubmissionsOpen(#marathonId)")
     @Operation(hidden = true)
     public ResponseEntity<?> create(@RequestBody @Valid final SubmissionDto submission,
                                     @PathVariable("marathonId") final String marathonId,
@@ -167,7 +167,7 @@ public class SubmissionsController {
     }
 
     @PutMapping
-    @PreAuthorize(value = "!isBanned() && canEditSubmissions(#marathonId) " +
+    @PreAuthorize(value = "hasVerifiedEmailAndIsNotBanned() && canEditSubmissions(#marathonId) " +
         "&& #submission != null " +
         "&& #submission.id != null " +
         "&& isSelfOrAdmin(#submission.user.id)")
@@ -210,7 +210,7 @@ public class SubmissionsController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<SubmissionDto> getMySubmission(@PathVariable("marathonId") final String marathonId) {
@@ -233,7 +233,7 @@ public class SubmissionsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && !isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @Operation(hidden = true)
     public ResponseEntity<?> delete(@PathVariable("id") final int id) throws NotFoundException {
         this.submissionService.delete(id, this.securityPort.getAuthenticatedUser());

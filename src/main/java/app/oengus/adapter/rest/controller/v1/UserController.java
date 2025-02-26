@@ -163,7 +163,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isSelf(#id)")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final UserDto userPatch,
@@ -200,7 +200,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("isAuthenticated()")
     @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<V1UserDto> me() {
@@ -247,7 +247,7 @@ public class UserController {
     }
 
     @Operation(hidden = true)
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @GetMapping("/me/application-info")
     public ResponseEntity<?> getApplicationInfo() {
         // TODO: re-implement when we are actually doing applications
@@ -255,7 +255,7 @@ public class UserController {
     }
 
     @Operation(hidden = true)
-    @PreAuthorize("!isBanned()")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     @PostMapping("/me/application-info")
     public ResponseEntity<?> updateApplicationInfo(
         @RequestBody @Valid final ApplicationUserInformationDto infoPatch,
