@@ -9,7 +9,6 @@ import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.Status;
-import app.oengus.domain.submission.Submission;
 import app.oengus.domain.user.SubmissionHistoryEntry;
 import app.oengus.domain.user.SupporterStatus;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import javax.security.auth.login.LoginException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
@@ -51,11 +49,10 @@ public class UserService {
 
     public List<SubmissionHistoryEntry> getSubmissionHistory(final int userId) {
         final Map<String, Marathon> marathonCache = new HashMap<>();
-        final Map<String, List<Submission>> marathonSubmissionMap = new HashMap<>();
 
         // TODO: this needs pagination so we can have a "load more" button on the profile
         // Somehow this should be a singular query, oh well :D
-        final var submissionMap = this.submissionPersistencePort.findByUser(userId)
+        /*final var submissionMap = this.submissionPersistencePort.findByUser(userId)
             .stream()
             .collect(Collectors.groupingBy(Submission::getMarathonId));
 
@@ -63,17 +60,19 @@ public class UserService {
         this.opponentPersistencePort.findParentSubmissionsForUser(userId).forEach((os) -> {
             final var subList = submissionMap.get(os.getMarathonId());
 
-            subList.add(os);
-        });
+            if (subList.isEmpty()) {
+                subList.add(os);
+            } else {
+                subList.getFirst().getGames().addAll(os.getGames());
+            }
+        });*/
 
-
-//        final var opponentStream = this.opponentPersistencePort.findParentSubmissionsForUser(userId).stream();
-//        final var userOwnSubmissionStream = this.submissionPersistencePort.findByUser(userId).stream();
+        // Combining data is hard, so I am going to do it the easy way
+        final var opponentStream = this.opponentPersistencePort.findParentSubmissionsForUser(userId).stream();
+        final var userOwnSubmissionStream = this.submissionPersistencePort.findByUser(userId).stream();
 
         // We need to combine some data in order for this to work!
-        return submissionMap.values()
-            .stream()
-            .flatMap(Collection::stream)
+        return Stream.concat(opponentStream, userOwnSubmissionStream)
             .map((submission) -> {
                 final var marathon = marathonCache.computeIfAbsent(
                     submission.getMarathonId(), (marathonId) -> this.marathonPersistencePort.findById(marathonId).get()
