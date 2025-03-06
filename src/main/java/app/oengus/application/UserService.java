@@ -1,13 +1,10 @@
 package app.oengus.application;
 
-import app.oengus.application.port.persistence.MarathonPersistencePort;
-import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
-import app.oengus.application.port.persistence.SubmissionPersistencePort;
-import app.oengus.application.port.persistence.UserPersistencePort;
-import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.domain.OengusUser;
 import app.oengus.adapter.rest.dto.SyncDto;
 import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
+import app.oengus.application.port.persistence.*;
+import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
@@ -18,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
 
@@ -32,6 +29,7 @@ public class UserService {
     private final UserPersistencePort userPersistencePort;
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
+    private final OpponentPersistencePort opponentPersistencePort;
     private final PatreonStatusPersistencePort patreonStatusPersistencePort;
     private final DiscordService discordService;
     private final TwitchService twitchService;
@@ -53,9 +51,28 @@ public class UserService {
         final Map<String, Marathon> marathonCache = new HashMap<>();
 
         // TODO: this needs pagination so we can have a "load more" button on the profile
-        // We need to combine some data in order for this to work!
-        return this.submissionPersistencePort.findByUser(userId)
+        // Somehow this should be a singular query, oh well :D
+        /*final var submissionMap = this.submissionPersistencePort.findByUser(userId)
             .stream()
+            .collect(Collectors.groupingBy(Submission::getMarathonId));
+
+        // TODO: can this be made more efficient?
+        this.opponentPersistencePort.findParentSubmissionsForUser(userId).forEach((os) -> {
+            final var subList = submissionMap.get(os.getMarathonId());
+
+            if (subList.isEmpty()) {
+                subList.add(os);
+            } else {
+                subList.getFirst().getGames().addAll(os.getGames());
+            }
+        });*/
+
+        // Combining data is hard, so I am going to do it the easy way
+        final var opponentStream = this.opponentPersistencePort.findParentSubmissionsForUser(userId).stream();
+        final var userOwnSubmissionStream = this.submissionPersistencePort.findByUser(userId).stream();
+
+        // We need to combine some data in order for this to work!
+        return Stream.concat(opponentStream, userOwnSubmissionStream)
             .map((submission) -> {
                 final var marathon = marathonCache.computeIfAbsent(
                     submission.getMarathonId(), (marathonId) -> this.marathonPersistencePort.findById(marathonId).get()
