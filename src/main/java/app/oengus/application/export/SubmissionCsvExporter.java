@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +43,7 @@ public class SubmissionCsvExporter implements Exporter {
                 CSVFormat.RFC4180.builder()
                     .setHeader(this.getCsvHeadersForMarathon(marathonId))
                     .setQuoteMode(QuoteMode.NON_NUMERIC)
-                    .build()
+                    .get() // why the fuck change .build on a builder to .get????
             )) {
                 final var locale = Locale.forLanguageTag(language);
                 final var resourceBundle = ResourceBundle.getBundle("export.Exports", locale);
@@ -162,17 +161,19 @@ public class SubmissionCsvExporter implements Exporter {
                         );
                 }
 
-                final var formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
                 final var zone = ZoneId.of(zoneId);
-
-                submission.getAvailabilities().forEach(
-                    (availability) -> record.add(
-                        "%s/%s".formatted(
-                            availability.getFrom().withZoneSameInstant(zone),
-                            availability.getTo().withZoneSameInstant(zone)
+                final var availabilities = submission.getAvailabilities()
+                        .stream()
+                        .map(
+                            (availability) ->
+                                "%s/%s".formatted(
+                                    availability.getFrom().withZoneSameInstant(zone),
+                                    availability.getTo().withZoneSameInstant(zone)
+                                )
                         )
-                    )
-                );
+                    .collect(Collectors.joining(", "));
+
+                record.add(availabilities);
 
                 records.add(record);
             }
