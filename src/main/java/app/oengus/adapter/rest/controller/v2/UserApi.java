@@ -46,7 +46,7 @@ public interface UserApi {
     ResponseEntity<SelfUserDto> getMe();
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isSelf(#id)")
+    @PreAuthorize("isSelfOrAdmin(#id)")
     ResponseEntity<SelfUserDto> updateUser(@PathVariable("id") final int id, @RequestBody @Valid final UserUpdateRequest patch);
 
     @PermitAll

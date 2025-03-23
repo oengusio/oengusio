@@ -53,13 +53,26 @@ public class UserApiController implements UserApi {
         final var currentUser = this.securityPort.getAuthenticatedUser();
 
         return ResponseEntity.ok(
-            this.mapper.fromDomain(currentUser)
+            this.mapper.selfUserFromDomain(currentUser)
         );
     }
 
     @Override
     public ResponseEntity<SelfUserDto> updateUser(int id, UserUpdateRequest patch) {
-        return null;
+        final var requestedUser = this.lookupService.findById(id).orElseThrow(UserNotFoundException::new);
+
+        // Unverify the email if they change it!
+        if (!patch.getEmail().equalsIgnoreCase(requestedUser.getEmail())) {
+            requestedUser.setEmailVerified(false);
+        }
+
+        this.mapper.applyPatch(requestedUser, patch);
+
+        final var savedUser = this.userService.save(requestedUser);
+
+        return ResponseEntity.ok(
+            this.mapper.selfUserFromDomain(savedUser)
+        );
     }
 
     @Override
