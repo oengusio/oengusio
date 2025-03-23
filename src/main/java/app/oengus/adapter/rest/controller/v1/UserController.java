@@ -104,25 +104,16 @@ public class UserController {
             .body(
                 this.userService.searchByUsername(name)
                     .stream()
-                    .map(this.mapper::fromDomain)
+                    .map(this.mapper::fromDomainV1)
                     .toList()
             );
     }
 
     @GetMapping("/{name}")
-    @JsonView(Views.Public.class)
     @PermitAll
-    @Operation(summary = "Get a user profile"/*,
-        response = UserProfileDto.class*/)
+    @Operation(hidden = true)
     public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("name") final String name) throws NotFoundException {
-        final var user = this.userService.findByUsername(name).orElseThrow(
-            () -> new NotFoundException("User not found")
-        );
-        final var userProfile = this.mapper.profileFromDomain(user);
-
-        return ResponseEntity.ok()
-            .headers(cachingHeaders(30))
-            .body(userProfile);
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 
     @GetMapping("/{name}/avatar")
@@ -201,15 +192,9 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
-    @JsonView(Views.Internal.class)
     @Operation(hidden = true)
     public ResponseEntity<V1UserDto> me() {
-        final var user = this.securityPort.getAuthenticatedUser();
-
-        return ResponseEntity.ok(
-            this.mapper.fromDomain(user)
-        );
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 
     @PostMapping("/{id}/ban")

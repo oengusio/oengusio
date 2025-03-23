@@ -3,10 +3,7 @@ package app.oengus.adapter.rest.mapper;
 import app.oengus.adapter.rest.dto.UserProfileDto;
 import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
-import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
+import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.user.SubmissionHistoryEntry;
@@ -21,7 +18,9 @@ import org.mapstruct.*;
     }
 )
 public interface UserDtoMapper {
-    V1UserDto fromDomain(OengusUser user);
+    V1UserDto fromDomainV1(OengusUser user);
+
+    SelfUserDto fromDomain(OengusUser user);
 
     @Mapping(target = "history", ignore = true)
     @Mapping(target = "moderatedMarathons", ignore = true)

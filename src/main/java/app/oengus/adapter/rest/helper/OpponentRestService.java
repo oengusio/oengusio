@@ -61,7 +61,7 @@ public class OpponentRestService {
         final var oppUsers = opponent.getUsers();
         final var user1 = userCache.get(game.getSubmissionId());
 
-        oppUsers.add(this.userDtoMapper.fromDomain(user1));
+        oppUsers.add(this.userDtoMapper.fromDomainV1(user1));
 
         cat.getOpponents().forEach((oppCat) -> {
             // Ignore our own submission
@@ -71,7 +71,7 @@ public class OpponentRestService {
 
             final var user2 = userCache.get(oppCat.getSubmissionId());
 
-            oppUsers.add(this.userDtoMapper.fromDomain(user2));
+            oppUsers.add(this.userDtoMapper.fromDomainV1(user2));
         });
 
         opponent.setGameName(game.getName());
@@ -170,7 +170,7 @@ public class OpponentRestService {
                     }
 
                     opponent.setUser(
-                        this.userDtoMapper.fromDomain(cachedUser)
+                        this.userDtoMapper.fromDomainV1(cachedUser)
                     );
                 });
             });

@@ -1,10 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
+import app.oengus.adapter.rest.dto.v2.users.*;
+import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,6 +33,21 @@ public interface UserApi {
         }
     )
     ResponseEntity<ProfileDto> profileByName(@PathVariable("name") final String name);
+
+    @GetMapping("/@me")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(
+        summary = "Get your own user information",
+        responses = {
+            @ApiResponse(description = "Internal user information", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SelfUserDto.class))),
+            @ApiResponse(description = "You are not logged in", responseCode = "401")
+        }
+    )
+    ResponseEntity<SelfUserDto> getMe();
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("isSelf(#id)")
+    ResponseEntity<SelfUserDto> updateUser(@PathVariable("id") final int id, @RequestBody @Valid final UserUpdateRequest patch);
 
     @PermitAll
     @GetMapping("/{name}/avatar")

@@ -1,10 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
+import app.oengus.adapter.rest.dto.v2.users.*;
+import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
@@ -48,6 +46,20 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30))
             .body(profile);
+    }
+
+    @Override
+    public ResponseEntity<SelfUserDto> getMe() {
+        final var currentUser = this.securityPort.getAuthenticatedUser();
+
+        return ResponseEntity.ok(
+            this.mapper.fromDomain(currentUser)
+        );
+    }
+
+    @Override
+    public ResponseEntity<SelfUserDto> updateUser(int id, UserUpdateRequest patch) {
+        return null;
     }
 
     @Override
