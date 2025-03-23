@@ -163,7 +163,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#id)")
+//    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#id)")
+    @PreAuthorize("isSelf(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
                                         @RequestBody @Valid final UserDto userPatch,
