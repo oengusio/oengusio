@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -132,6 +134,8 @@ public class AuthService {
         newUser.setPassword(
             this.passwordEncoder.encode(newUser.getPassword())
         );
+        newUser.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        newUser.setLastLogin(ZonedDateTime.now(ZoneOffset.UTC));
 
         final var updatedUser = this.userService.save(newUser);
 
