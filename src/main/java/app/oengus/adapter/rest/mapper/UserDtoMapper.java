@@ -8,14 +8,12 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.user.SubmissionHistoryEntry;
 import app.oengus.domain.user.SupporterStatus;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+    collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE,
     uses = {
         GameDtoMapper.class,
     }

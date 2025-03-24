@@ -42,7 +42,11 @@ public class SelfUserDto {
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections;
 
+    @Schema(description = "True if you have 2fa/mfa enabled")
     private boolean mfaEnabled;
+
+    @Schema(description = "True if you verified your email")
+    private boolean emailVerified;
 
     private String discordId;
     private String twitchId;

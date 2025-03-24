@@ -2,12 +2,10 @@ package app.oengus.adapter.rest.dto.v2.users.request;
 
 import app.oengus.adapter.rest.dto.v2.users.ConnectionDto;
 import app.oengus.application.LanguageService;
+import app.oengus.domain.OengusUser;
 import com.neovisionaries.i18n.CountryCode;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -22,14 +20,19 @@ import java.util.List;
 // TODO: model validation
 public class UserUpdateRequest {
     @Size(min = 3, max = 32)
+    @Pattern(regexp = OengusUser.USERNAME_REGEX)
+    @Schema(description = "username of the user, always lowercase.")
     private String username;
 
     @Size(min = 1, max = 32)
+    @Schema(description = "How the user is displayed on the website")
     private String displayName;
 
     @Email
+    @Schema(description = "Email address of the user")
     private String email;
 
+    @Schema(description = "True if the user is 'active' and can perform actions on the website. False for deactivated accounts")
     private boolean enabled;
 
     @NotNull
@@ -45,10 +48,9 @@ public class UserUpdateRequest {
     @Schema(description = "The country that this user resides in")
     private String country;
 
-    // TODO: validation on the model
     @NotNull
     @Schema(description = "Connected accounts of this user")
-    private List<ConnectionDto> connections;
+    private List<ConnectionDto> connections = new ArrayList<>();
 
     private boolean mfaEnabled;
 
