@@ -1,7 +1,6 @@
 package app.oengus.adapter.rest.mapper;
 
 import app.oengus.adapter.rest.dto.UserProfileDto;
-import app.oengus.adapter.rest.dto.v1.UserDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
@@ -9,7 +8,10 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.user.SubmissionHistoryEntry;
 import app.oengus.domain.user.SupporterStatus;
-import org.mapstruct.*;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(
     componentModel = "spring",
@@ -31,10 +33,6 @@ public interface UserDtoMapper {
 
     @Mapping(target = "banned", expression = "java(user.getRoles().contains(app.oengus.domain.Role.ROLE_BANNED))")
     ProfileDto v2ProfileFromDomain(OengusUser user);
-
-    @Mapping(target = "pronouns", expression = "java(userPatch.getPronouns() == null || userPatch.getPronouns().isBlank() ? List.of() : List.of(userPatch.getPronouns().split(\",\")))")
-    @Mapping(target = "languagesSpoken", expression = "java(userPatch.getLanguagesSpoken() == null || userPatch.getLanguagesSpoken().isBlank() ? List.of() : List.of(userPatch.getLanguagesSpoken().split(\",\")))")
-    void applyV1Patch(@MappingTarget OengusUser user, UserDto userPatch);
 
     void applyPatch(@MappingTarget OengusUser user, UserUpdateRequest userPatch);
 

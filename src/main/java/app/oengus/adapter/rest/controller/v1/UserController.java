@@ -1,23 +1,25 @@
 package app.oengus.adapter.rest.controller.v1;
 
-import app.oengus.adapter.rest.dto.v1.UserDto;
+import app.oengus.adapter.rest.Views;
+import app.oengus.adapter.rest.dto.ApplicationUserInformationDto;
+import app.oengus.adapter.rest.dto.PatreonStatusDto;
+import app.oengus.adapter.rest.dto.UserProfileDto;
 import app.oengus.adapter.rest.dto.v1.V1UserDto;
+import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import app.oengus.adapter.rest.mapper.PatreonStatusDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
-import app.oengus.adapter.rest.dto.ApplicationUserInformationDto;
-import app.oengus.adapter.rest.dto.PatreonStatusDto;
-import app.oengus.adapter.rest.dto.UserProfileDto;
-import app.oengus.domain.exception.OengusBusinessException;
-import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import app.oengus.domain.Role;
-import app.oengus.adapter.rest.Views;
+import app.oengus.domain.exception.OengusBusinessException;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.security.PermitAll;
 import javax.security.auth.login.LoginException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,29 +156,8 @@ public class UserController {
 //    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSelf(#id)")
     @PreAuthorize("isSelf(#id)")
     @Operation(hidden = true)
-    public ResponseEntity<?> updateUser(@PathVariable("id") final int id,
-                                        @RequestBody @Valid final UserDto userPatch,
-                                        final BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
-        }
-
-        final var currentUser = this.securityPort.getAuthenticatedUser();
-
-        // Unverify the email if they change it!
-        // TODO: move this logic to the service!
-        if (!userPatch.getEmail().equalsIgnoreCase(currentUser.getEmail())) {
-            currentUser.setEmailVerified(false);
-        }
-
-        userPatch.setEnabled(currentUser.isEnabled());
-
-        // TODO: properly compare functionality with old service
-        this.mapper.applyV1Patch(currentUser, userPatch);
-
-        this.userService.save(currentUser);
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> updateUser(@PathVariable("id") final int id) {
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 
     @DeleteMapping("/{id}")

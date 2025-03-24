@@ -45,8 +45,17 @@ public interface UserApi {
     )
     ResponseEntity<SelfUserDto> getMe();
 
+    // TODO: WRITE TESTS
     @PatchMapping("/{id}")
     @PreAuthorize("isSelfOrAdmin(#id)")
+    @Operation(
+        summary = "Get your own user information",
+        responses = {
+            @ApiResponse(description = "Internal user information", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SelfUserDto.class))),
+            @ApiResponse(description = "User not found", responseCode = "404"),
+            @ApiResponse(description = "You are not allowed to update this user", responseCode = "401")
+        }
+    )
     ResponseEntity<SelfUserDto> updateUser(@PathVariable("id") final int id, @RequestBody @Valid final UserUpdateRequest patch);
 
     @PermitAll

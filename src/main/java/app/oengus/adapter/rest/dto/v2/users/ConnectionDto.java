@@ -1,7 +1,9 @@
 package app.oengus.adapter.rest.dto.v2.users;
 
+import app.oengus.domain.Connection;
 import app.oengus.domain.SocialPlatform;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,4 +19,9 @@ public class ConnectionDto {
 
     @Schema(description = "The username for the platform")
     private String username;
+
+    @AssertTrue(message = "The username does not have a valid format for the platform")
+    public boolean isUsernameValidForPlatform() {
+        return Connection.isUsernameValidForPlatform(this.username, this.platform);
+    }
 }

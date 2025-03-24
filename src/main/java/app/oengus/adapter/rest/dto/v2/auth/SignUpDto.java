@@ -1,20 +1,20 @@
 package app.oengus.adapter.rest.dto.v2.auth;
 
 import app.oengus.adapter.rest.dto.v2.users.ConnectionDto;
-import app.oengus.adapter.rest.dto.v1.UserDto;
-import app.oengus.application.LanguageService;
 import app.oengus.adapter.rest.dto.validation.ValidPassword;
+import app.oengus.application.LanguageService;
+import app.oengus.domain.OengusUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neovisionaries.i18n.CountryCode;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.annotation.Nullable;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Getter
@@ -26,7 +26,7 @@ public class SignUpDto {
     private String displayName;
 
     @Size(min = 3, max = 32)
-    @Pattern(regexp = UserDto.USERNAME_REGEX)
+    @Pattern(regexp = OengusUser.USERNAME_REGEX)
     @Schema(description = "The unique username of the user.")
     private String username;
 
