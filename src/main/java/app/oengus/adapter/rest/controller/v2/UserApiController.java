@@ -1,10 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
-import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDto;
-import app.oengus.adapter.rest.dto.v2.users.SupporterStatusDto;
+import app.oengus.adapter.rest.dto.v2.users.*;
+import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
@@ -15,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
+import java.util.Locale;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
@@ -48,6 +48,35 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30))
             .body(profile);
+    }
+
+    @Override
+    public ResponseEntity<SelfUserDto> getMe() {
+        final var currentUser = this.securityPort.getAuthenticatedUser();
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.mapper.selfUserFromDomain(currentUser));
+    }
+
+    @Override
+    public ResponseEntity<SelfUserDto> updateUser(int id, UserUpdateRequest patch) {
+        final var requestedUser = this.lookupService.findById(id).orElseThrow(UserNotFoundException::new);
+
+        // Unverify the email if they change it!
+        if (!patch.getEmail().equalsIgnoreCase(requestedUser.getEmail())) {
+            requestedUser.setEmailVerified(false);
+        }
+
+        this.mapper.applyPatch(requestedUser, patch);
+
+        requestedUser.setUsername(requestedUser.getUsername().toLowerCase(Locale.ROOT));
+
+        final var savedUser = this.userService.save(requestedUser);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.mapper.selfUserFromDomain(savedUser));
     }
 
     @Override

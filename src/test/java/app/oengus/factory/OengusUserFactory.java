@@ -22,7 +22,7 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
             idStore.incrementAndGet()
         );
 
-        user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT));
+        user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT).replace('.', '_'));
         user.setDisplayName(faker.name().firstName());
         user.setEmail(faker.internet().emailAddress());
         user.setEnabled(true);
