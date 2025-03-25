@@ -17,17 +17,19 @@ import java.util.List;
 @Getter
 @Setter
 @Schema
-// TODO: model validation
 public class UserUpdateRequest {
+    @NotNull
     @Size(min = 3, max = 32)
     @Pattern(regexp = OengusUser.USERNAME_REGEX)
     @Schema(description = "username of the user, always lowercase.")
     private String username;
 
+    @NotNull
     @Size(min = 1, max = 32)
     @Schema(description = "How the user is displayed on the website")
     private String displayName;
 
+    @NotNull
     @Email
     @Schema(description = "Email address of the user")
     private String email;
@@ -51,8 +53,6 @@ public class UserUpdateRequest {
     @NotNull
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections = new ArrayList<>();
-
-    private boolean mfaEnabled;
 
     @Nullable
     private String discordId;

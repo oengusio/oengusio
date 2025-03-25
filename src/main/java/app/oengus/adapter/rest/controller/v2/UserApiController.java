@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
+import java.util.Locale;
 
 import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 
@@ -52,9 +54,9 @@ public class UserApiController implements UserApi {
     public ResponseEntity<SelfUserDto> getMe() {
         final var currentUser = this.securityPort.getAuthenticatedUser();
 
-        return ResponseEntity.ok(
-            this.mapper.selfUserFromDomain(currentUser)
-        );
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.mapper.selfUserFromDomain(currentUser));
     }
 
     @Override
@@ -68,11 +70,13 @@ public class UserApiController implements UserApi {
 
         this.mapper.applyPatch(requestedUser, patch);
 
+        requestedUser.setUsername(requestedUser.getUsername().toLowerCase(Locale.ROOT));
+
         final var savedUser = this.userService.save(requestedUser);
 
-        return ResponseEntity.ok(
-            this.mapper.selfUserFromDomain(savedUser)
-        );
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(this.mapper.selfUserFromDomain(savedUser));
     }
 
     @Override

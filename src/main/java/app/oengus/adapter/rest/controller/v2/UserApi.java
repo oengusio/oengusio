@@ -45,7 +45,6 @@ public interface UserApi {
     )
     ResponseEntity<SelfUserDto> getMe();
 
-    // TODO: WRITE TESTS
     @PatchMapping("/{id}")
     @PreAuthorize("isSelfOrAdmin(#id)")
     @Operation(
@@ -56,7 +55,7 @@ public interface UserApi {
             @ApiResponse(description = "You are not allowed to update this user", responseCode = "401")
         }
     )
-    ResponseEntity<SelfUserDto> updateUser(@PathVariable("id") final int id, @RequestBody @Valid final UserUpdateRequest patch);
+    ResponseEntity<SelfUserDto> updateUser(@PathVariable("id") final int id, @Valid @RequestBody final UserUpdateRequest patch);
 
     @PermitAll
     @GetMapping("/{name}/avatar")
