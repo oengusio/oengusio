@@ -45,4 +45,13 @@ public interface SubmissionsApi {
         @PathVariable("submissionId") final int submissionId,
         @PathVariable("gameId") final int gameId
     );
+
+    // GET /mine -> get my submission
+    // POST / -> create new (only sends availabilities / questions)
+    // PATCH /mine -> update submission
+    // POST /mine/games -> create new game (WITH categories)
+    // PATCH /mine/games/{gameId} -> update game
+    // POST /mine/games/{gameId}/categories -> create new category
+    // PATCH /mine/games/{gameId}/categories/{categoryId} -> update category
+    // Delete /{submissionId}/games/{gameId}/categories/{categoryId} -> Delete item, also routes for full delete
 }

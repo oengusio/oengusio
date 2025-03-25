@@ -102,6 +102,8 @@ public class SubmissionService {
             () -> new NotFoundException("Submission not found (wat?)")
         );
 
+        this.forceOpponents(oldSubmission, newSubmission);
+
         // save before sending so we catch the error if saving fails
         final Submission saved = this.saveInternal(newSubmission, submitter, marathon);
 
@@ -115,6 +117,34 @@ public class SubmissionService {
         }
 
         return saved;
+    }
+
+    private void forceOpponents(final Submission oldSubmission, final Submission newSubmission) {
+        for (final var game : oldSubmission.getGames()) {
+            for (final var category : game.getCategories()) {
+                if (category.getType() != RunType.SINGLE) {
+                    final var newCategory = this.findByIdInSubmission(newSubmission, category.getId());
+
+                    if (newCategory == null) {
+                        continue;
+                    }
+
+                    newCategory.setOpponents(category.getOpponents());
+                }
+            }
+        }
+    }
+
+    private Category findByIdInSubmission(final Submission submission, final int categoryId) {
+        for (var game : submission.getGames()) {
+            for (var category : game.getCategories()) {
+                if (category.getId() == categoryId) {
+                    return category;
+                }
+            }
+        }
+
+        return null;
     }
 
     public Submission saveInternal(final Submission submission, final OengusUser submitter, final Marathon marathon) {
