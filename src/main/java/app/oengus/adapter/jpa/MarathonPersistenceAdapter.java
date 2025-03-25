@@ -10,7 +10,6 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.marathon.MarathonStats;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 // TODO: convert methods that just need an id to just accept ids
 public class MarathonPersistenceAdapter implements MarathonPersistencePort {

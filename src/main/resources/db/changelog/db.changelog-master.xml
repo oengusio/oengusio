@@ -1018,15 +1018,17 @@
         <dropForeignKeyConstraint baseTableName="patreon_status" constraintName="fk_user_patreon_id"/>
     </changeSet>
 
-    <changeSet author="duncte123" id="20210802-1">
+    <changeSet author="duncte123" id="20210802-1-fix">
         <!-- askjdhf;skjdf;l WHY THE FUCK THIS TOOK 3 HOURS TO FIX -->
         <addAutoIncrement
             tableName="bid"
             columnName="id"
+            columnDataType="int"
         />
         <addAutoIncrement
             tableName="donation_incentive_link"
             columnName="id"
+            columnDataType="int"
         />
     </changeSet>
 
@@ -1184,6 +1186,12 @@
         <createIndex indexName="category_code" tableName="category">
             <column name="code" />
         </createIndex>
+    </changeSet>
+
+    <changeSet author="duncte123" id="20250325-1">
+        <modifyDataType tableName="users" columnName="discord_id" newDataType="varchar(255)"/>
+        <modifyDataType tableName="users" columnName="twitch_id" newDataType="varchar(255)"/>
+        <modifyDataType tableName="users" columnName="mail" newDataType="varchar(255)"/>
     </changeSet>
 
     <changeSet id="202240703-1" author="duncte123">

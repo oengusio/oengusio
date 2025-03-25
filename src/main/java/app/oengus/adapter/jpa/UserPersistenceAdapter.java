@@ -7,7 +7,6 @@ import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class UserPersistenceAdapter implements UserPersistencePort {
     private final UserRepository userRepository;

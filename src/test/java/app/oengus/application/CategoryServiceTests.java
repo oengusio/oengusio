@@ -3,6 +3,7 @@ package app.oengus.application;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.RunType;
@@ -35,6 +36,7 @@ public class CategoryServiceTests {
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
+    private final UserPersistencePort userPersistencePort;
 
     private final SubmissionHelpers submissionHelpers;
 
@@ -118,13 +120,16 @@ public class CategoryServiceTests {
     }
 
     private Pair<Marathon, Submission> createMarathonAndSubmission(String code) {
-        final var marathon = this.marathonFactory.getObject();
+        final var marathonCreator = this.userPersistencePort.save(this.oengusUserFactory.getNormalUser());
+        final var marathon = this.marathonFactory.withCreator(marathonCreator);
 
         this.marathonPersistencePort.save(marathon);
 
         final var submission = this.submissionFactory.withMarathonId(marathon.getId());
 
-        submission.setUser(this.oengusUserFactory.getNormalUser());
+        final var user = this.userPersistencePort.save(this.oengusUserFactory.getNormalUser());
+
+        submission.setUser(user);
 
         final var game = this.gameFactory.withSubmissionId(submission.getId());
         final var category = this.categoryFactory.getCategoryForGame(game.getId());

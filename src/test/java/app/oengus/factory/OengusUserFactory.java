@@ -5,22 +5,19 @@ import app.oengus.domain.Role;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class OengusUserFactory extends AbstractFactory<OengusUser> {
-    private final AtomicInteger idStore = new AtomicInteger();
-
     @NotNull
     @Override
     public OengusUser getObject() {
-        final var user = new OengusUser(
-            idStore.incrementAndGet()
-        );
+        final var user = new OengusUser(-1);
 
         user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT));
         user.setDisplayName(faker.name().firstName());
@@ -35,6 +32,7 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
             faker.nation().isoLanguage()
         ));
         user.setNeedsPasswordReset(false);
+        user.setCreatedAt(faker.timeAndDate().past(365, TimeUnit.DAYS).atZone(ZoneOffset.UTC));
 
         return user;
     }
