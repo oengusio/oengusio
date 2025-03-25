@@ -1,10 +1,11 @@
 package app.oengus.application;
 
+import app.oengus.application.port.persistence.MarathonPersistencePort;
+import app.oengus.application.port.persistence.SchedulePersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.factory.OengusUserFactory;
 import app.oengus.factory.marathon.MarathonFactory;
-import app.oengus.mock.adapter.jpa.MockMarathonPersistenceAdapter;
-import app.oengus.mock.adapter.jpa.MockSchedulePersistenceAdapter;
 import app.oengus.util.ObjectCloner;
 import app.oengus.util.ScheduleHelpers;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MarathonServiceTests {
     private final MarathonFactory marathonFactory;
     private final OengusUserFactory userFactory;
-    private final MockMarathonPersistenceAdapter marathonPersistenceAdapter;
-    private final MockSchedulePersistenceAdapter schedulePersistenceAdapter;
+    private final MarathonPersistencePort marathonPersistenceAdapter;
+    private final SchedulePersistencePort schedulePersistenceAdapter;
+    private final UserPersistencePort userPersistencePort;
 
     private final ScheduleHelpers scheduleHelpers;
     private final ObjectCloner cloner;
@@ -97,7 +99,9 @@ public class MarathonServiceTests {
     }
 
     private Marathon createTestMarathon() {
-        final var marathon = this.marathonFactory.getObject();
+        final var user = this.userFactory.getObject();
+        final var creator = this.userPersistencePort.save(user);
+        final var marathon = this.marathonFactory.withCreator(creator);
 
         marathon.setStartDate(marathon.getStartDate().plusSeconds(20));
         marathon.setEndDate(marathon.getEndDate().plusSeconds(20));

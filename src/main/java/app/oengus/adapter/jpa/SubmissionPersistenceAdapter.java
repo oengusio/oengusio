@@ -9,7 +9,6 @@ import app.oengus.domain.OengusUser;
 import app.oengus.domain.submission.Status;
 import app.oengus.domain.submission.Submission;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final SubmissionRepository repository;

@@ -1,22 +1,20 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.CategoryEntity;
+import app.oengus.adapter.jpa.entity.GameEntity;
 import app.oengus.adapter.jpa.mapper.CategoryMapper;
 import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
-import app.oengus.adapter.jpa.entity.CategoryEntity;
-import app.oengus.adapter.jpa.entity.GameEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryRepository repository;

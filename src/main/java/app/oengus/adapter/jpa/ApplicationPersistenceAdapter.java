@@ -1,16 +1,15 @@
 package app.oengus.adapter.jpa;
 
+import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import app.oengus.adapter.jpa.entity.ApplicationEntry;
+import app.oengus.adapter.jpa.entity.TeamEntity;
 import app.oengus.adapter.jpa.entity.User;
 import app.oengus.adapter.jpa.mapper.ApplicationEntryMapper;
 import app.oengus.adapter.jpa.repository.ApplicationRepository;
 import app.oengus.application.port.persistence.ApplicationPersistencePort;
 import app.oengus.domain.volunteering.Application;
 import app.oengus.domain.volunteering.ApplicationStatus;
-import app.oengus.adapter.jpa.entity.TeamEntity;
-import app.oengus.adapter.jpa.entity.ApplicationAuditlog;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class ApplicationPersistenceAdapter implements ApplicationPersistencePort {
     private final ApplicationRepository repository;

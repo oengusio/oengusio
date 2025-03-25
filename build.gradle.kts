@@ -4,7 +4,7 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "3.4.3"
+    id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "4.0.4" // TODO: do we need this?
     id("io.freefair.lombok") version "8.13"
@@ -134,7 +134,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("net.datafaker:datafaker:2.4.2")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    testRuntimeOnly("com.h2database:h2")
+    testRuntimeOnly("com.h2database:h2:2.3.232")
 }
 
 val wrapper: Wrapper by tasks
