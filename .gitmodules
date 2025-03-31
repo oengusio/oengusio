@@ -1,3 +1,3 @@
 [submodule "src/main/resources/export"]
 	path = src/main/resources/export
-	url = https://github.com/esamarathon/oengus-localization-exports.git
+	url = https://github.com/oengusio/oengus-localization-exports.git

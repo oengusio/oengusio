@@ -78,108 +78,150 @@ public class SubmissionCsvExporter implements Exporter {
         return headers.toArray(String[]::new);
     }
 
-    // TODO: split this up in more functions.
     private List<List<String>> generateCsvRecordsForSubmission(
         final Submission submission, final ResourceBundle lang, final String zoneId
     ) {
         final List<List<String>> records = new ArrayList<>();
         final Map<Integer, String> opponentNameCache = new HashMap<>();
 
+        if (submission.getGames().isEmpty()) {
+            this.addEmptyGameForAnswers(submission, lang, zoneId, records);
+        }
+
         for (final Game game : submission.getGames()) {
-            for (final Category category : game.getCategories()) {
-                final List<String> record = new ArrayList<>();
-                final var opponents = category.getOpponents();
-
-                // Caching is king!
-                opponents.forEach((opponent) -> {
-                    final var oppUser = this.opponentToUser(opponent);
-                    final var display = getUserDisplay(oppUser);
-
-                    opponentNameCache.put(opponent.getId(), display);
-                });
-
-                final var opponentNames = opponents
-                    .stream()
-                    .map(
-                        (opponent) -> opponentNameCache.get(opponent.getId())
-                    )
-                    .collect(Collectors.joining(", "));
-
-                final var submitterDisplay = getUserDisplay(submission.getUser());
-
-                record.add(
-                    submitterDisplay +
-                        (StringUtils.isEmpty(opponentNames) ? StringUtils.EMPTY : ", " + opponentNames)
-                );
-                record.add(game.getName());
-                record.add(StringUtils.normalizeSpace(game.getDescription()));
-                record.add(game.getConsole() + (game.isEmulated() ? "*" : ""));
-                record.add(game.getRatio());
-                record.add(category.getName());
-                record.add(StringUtils.normalizeSpace(category.getDescription()));
-                record.add(lang.getString("run.type." + category.getType().name()));
-                record.add(TimeHelpers.formatDuration(category.getEstimate()));
-
-                if (opponents.isEmpty()) {
-                    record.add(category.getVideo());
-                } else {
-                    final StringBuilder videos = new StringBuilder(
-                        submitterDisplay + ": " + category.getVideo() + " - "
-                    );
-                    opponents.forEach(opponent -> {
-                        videos.append(opponentNameCache.get(opponent.getId()))
-                            .append(":  ")
-                            .append(opponent.getVideo());
-
-                        if (opponents.indexOf(opponent) != opponents.size() - 1) {
-                            videos.append(" - ");
-                        }
-                    });
-                    record.add(videos.toString());
-                }
-
-                // Selection might be null, ensure that the status defaults to "TO-DO"
-                final var selection = Optional.ofNullable(category.getSelection()).orElseGet(() -> {
-                    // ids are not used so no need setting them.
-                    final var newSel = new Selection(-1, -1);
-
-                    newSel.setStatus(Status.TODO);
-
-                    return newSel;
-                });
-
-                final String statusName = selection.getStatus().name();
-                record.add(lang.getString("run.status." + statusName));
-
-                final var answers = submission.getAnswers();
-
-                if (!answers.isEmpty()) {
-                    answers.stream()
-                        .filter((a) -> a.getQuestion().getFieldType() != FieldType.FREETEXT)
-                        .forEach(
-                            (answer) -> record.add(answer.getAnswer())
-                        );
-                }
-
-                final var zone = ZoneId.of(zoneId);
-                final var availabilities = submission.getAvailabilities()
-                        .stream()
-                        .map(
-                            (availability) ->
-                                "%s/%s".formatted(
-                                    availability.getFrom().withZoneSameInstant(zone),
-                                    availability.getTo().withZoneSameInstant(zone)
-                                )
-                        )
-                    .collect(Collectors.joining(", "));
-
-                record.add(availabilities);
-
-                records.add(record);
-            }
+            this.addGame(submission, lang, zoneId, game, opponentNameCache, records);
         }
 
         return records;
+    }
+
+    private void addGame(Submission submission, ResourceBundle lang, String zoneId, Game game, Map<Integer, String> opponentNameCache, List<List<String>> records) {
+        for (final Category category : game.getCategories()) {
+            this.addCategory(submission, lang, zoneId, game, opponentNameCache, records, category);
+        }
+    }
+
+    private void addCategory(Submission submission, ResourceBundle lang, String zoneId, Game game, Map<Integer, String> opponentNameCache, List<List<String>> records, Category category) {
+        final List<String> record = new ArrayList<>();
+        final var opponents = category.getOpponents();
+
+        // Caching is king!
+        opponents.forEach((opponent) -> {
+            if (!opponentNameCache.containsKey(opponent.getUserId())) {
+                final var oppUser = this.opponentToUser(opponent);
+                final var display = getUserDisplay(oppUser);
+
+                opponentNameCache.put(opponent.getUserId(), display);
+            }
+        });
+
+        final var opponentNames = opponents
+            .stream()
+            .map(
+                (opponent) -> opponentNameCache.get(opponent.getUserId())
+            )
+            .collect(Collectors.joining(", "));
+
+        final var submitterDisplay = getUserDisplay(submission.getUser());
+
+        record.add(
+            submitterDisplay +
+                (StringUtils.isEmpty(opponentNames) ? StringUtils.EMPTY : ", " + opponentNames)
+        );
+        record.add(game.getName());
+        record.add(StringUtils.normalizeSpace(game.getDescription()));
+        record.add(game.getConsole() + (game.isEmulated() ? "*" : ""));
+        record.add(game.getRatio());
+        record.add(category.getName());
+        record.add(StringUtils.normalizeSpace(category.getDescription()));
+        record.add(lang.getString("run.type." + category.getType().name()));
+        record.add(TimeHelpers.formatDuration(category.getEstimate()));
+
+        if (opponents.isEmpty()) {
+            record.add(category.getVideo());
+        } else {
+            final StringBuilder videos = new StringBuilder(
+                submitterDisplay + ": " + category.getVideo() + " - "
+            );
+            opponents.forEach(opponent -> {
+                videos.append(opponentNameCache.get(opponent.getUserId()))
+                    .append(":  ")
+                    .append(opponent.getVideo());
+
+                if (opponents.indexOf(opponent) != opponents.size() - 1) {
+                    videos.append(" - ");
+                }
+            });
+            record.add(videos.toString());
+        }
+
+        // Selection might be null, ensure that the status defaults to "TO-DO"
+        final var selection = Optional.ofNullable(category.getSelection()).orElseGet(() -> {
+            // ids are not used so no need setting them.
+            final var newSel = new Selection(-1, -1);
+
+            newSel.setStatus(Status.TODO);
+
+            return newSel;
+        });
+
+        final String statusName = selection.getStatus().name();
+        record.add(lang.getString("run.status." + statusName));
+
+        this.addAnswersAndAvailability(submission, zoneId, record);
+
+        records.add(record);
+    }
+
+    private void addAnswersAndAvailability(Submission submission, String zoneId, List<String> record) {
+        final var answers = submission.getAnswers();
+
+        if (!answers.isEmpty()) {
+            answers.stream()
+                .filter((a) -> a.getQuestion().getFieldType() != FieldType.FREETEXT)
+                .forEach(
+                    (answer) -> record.add(answer.getAnswer())
+                );
+        }
+
+        final var zone = ZoneId.of(zoneId);
+        final var availabilities = submission.getAvailabilities()
+                .stream()
+                .map(
+                    (availability) ->
+                        "%s/%s".formatted(
+                            availability.getFrom().withZoneSameInstant(zone),
+                            availability.getTo().withZoneSameInstant(zone)
+                        )
+                )
+            .collect(Collectors.joining(", "));
+
+        record.add(availabilities);
+    }
+
+    private void addEmptyGameForAnswers(Submission submission, ResourceBundle lang, String zoneId, List<List<String>> records) {
+        final List<String> record = new ArrayList<>();
+        final var rowMsg = lang.getString("export.msg.empty");
+
+        record.add(getUserDisplay(submission.getUser()));
+
+        // Insert empty rows for CSV padding
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+        record.add(rowMsg);
+
+        record.add(rowMsg);
+
+        record.add(lang.getString("run.status.TODO"));
+
+        this.addAnswersAndAvailability(submission, zoneId, record);
+
+        records.add(record);
     }
 
     private OengusUser opponentToUser(Opponent opponent) {
