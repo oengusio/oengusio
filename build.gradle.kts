@@ -73,7 +73,7 @@ dependencies {
 
     // POSTGRESQL
 //    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.4") // temp downgrade to fix an issue with liquidbase
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.5") // temp downgrade to fix an issue with liquidbase
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.12.6")
