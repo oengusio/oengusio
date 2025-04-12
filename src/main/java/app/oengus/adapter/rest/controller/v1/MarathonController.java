@@ -39,6 +39,7 @@ import static app.oengus.adapter.rest.helper.HeaderHelpers.cachingHeaders;
 @Tag(name = "marathons-v1")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(maxAge = 3600)
 @RequestMapping("/v1/marathons")
 public class MarathonController {
     private final MarathonDtoMapper mapper;

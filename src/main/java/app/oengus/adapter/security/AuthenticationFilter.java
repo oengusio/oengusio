@@ -31,11 +31,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                                     @NotNull final FilterChain chain)
         throws ServletException, IOException {
 
-        response.setHeader("Permissions-Policy", "web-share=(self \"https://oengus.fun\")");
+//        response.setHeader("Permissions-Policy", "web-share=(self \"https://oengus.fun\")");
+
         if (request.getHeader("Access-Control-Request-Method") != null &&
             "OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.addHeader("Access-Control-Allow-Headers", "Authorization");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type, Location, Origin");
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Expose-Headers", "Location, Origin");
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type, Location, Origin, Authorization");
             response.addHeader("Access-Control-Max-Age", "1");
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
         }
