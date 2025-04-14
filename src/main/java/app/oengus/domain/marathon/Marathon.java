@@ -38,6 +38,7 @@ public class Marathon {
     private String twitter;
     private String mastodon;
     private String discord;
+    private String bluesky;
     private boolean discordPrivate = false;
     private boolean submissionsOpen = false;
     private Duration defaultSetupTime;

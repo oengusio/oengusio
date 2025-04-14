@@ -1,6 +1,8 @@
 package app.oengus.adapter.rest.dto.v2.marathon;
 
+import app.oengus.domain.Connection;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.SocialPlatform;
 import app.oengus.domain.marathon.Marathon;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -96,6 +98,7 @@ public class MarathonSettingsDto {
     private Boolean unlimitedGames = false;
     private Boolean unlimitedCategories = false;
 
+    private String bluesky;
     private String twitch;
     private String twitter;
     private String mastodon;
@@ -147,5 +150,11 @@ public class MarathonSettingsDto {
     @AssertTrue(message = "Mastodon instance is not in the valid format")
     public boolean isMastodonValid() {
         return this.mastodon == null || this.mastodon.matches(OengusUser.MASTODON_REGEX);
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "Bluesky is not in a valid format")
+    public boolean isBlueskyValid() {
+        return this.bluesky == null || Connection.isUsernameValidForPlatform(this.bluesky, SocialPlatform.BLUESKY);
     }
 }
