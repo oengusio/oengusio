@@ -3,6 +3,7 @@ package app.oengus.application;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.application.port.persistence.MarathonPersistencePort;
 import app.oengus.application.port.persistence.SubmissionPersistencePort;
+import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.RunType;
@@ -14,6 +15,7 @@ import app.oengus.factory.submission.GameFactory;
 import app.oengus.factory.submission.SubmissionFactory;
 import app.oengus.util.SubmissionHelpers;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = { @Autowired })
 public class CategoryServiceTests {
@@ -35,12 +38,13 @@ public class CategoryServiceTests {
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionPersistencePort submissionPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
+    private final UserPersistencePort userPersistencePort;
 
     private final SubmissionHelpers submissionHelpers;
 
     @Test
     public void testCategoriesCanBeFoundByGameId() {
-        final var pair = this.createMarathonAndSubmission("OENGUS0");
+        final var pair = this.createMarathonAndSubmission("OENGU0");
         final var marathon = pair.getLeft();
         final var submission = pair.getRight();
         final var game = submission.getGames().stream().findFirst().orElseThrow();
@@ -50,7 +54,7 @@ public class CategoryServiceTests {
 
         category.setType(RunType.SINGLE);
 
-        this.categoryPersistencePort.save(category);
+        final var savedCategory = this.categoryPersistencePort.save(category);
 
         final var foundCategories = this.categoryService.findByGameId(
             marathon.getId(), submission.getId(), game.getId()
@@ -59,7 +63,7 @@ public class CategoryServiceTests {
         assertEquals(2, foundCategories.size());
 
         assertEquals(firstCat, foundCategories.get(0));
-        assertEquals(category, foundCategories.get(1));
+        assertEquals(savedCategory, foundCategories.get(1));
     }
 
     @Test
@@ -80,9 +84,11 @@ public class CategoryServiceTests {
     @Test
     public void testUserCanJoinSubmissionBeforeMaxScreenCountIsReached() {
         final var pair = this.createMarathonAndSubmission("MULTI1");
-        final var marathon = pair.getLeft();
+        var marathon = pair.getLeft();
 
         marathon.setMaxNumberOfScreens(3);
+
+        marathon = this.marathonPersistencePort.save(marathon);
 
         final var submission = pair.getRight();
         final var game = submission.getGames().stream().findFirst().orElseThrow();
@@ -104,6 +110,8 @@ public class CategoryServiceTests {
 
         marathon.setMaxNumberOfScreens(3);
 
+        this.marathonPersistencePort.save(marathon);
+
         final var submission = pair.getRight();
         final var game = submission.getGames().stream().findFirst().orElseThrow();
         final var category = game.getCategories().get(0);
@@ -118,13 +126,16 @@ public class CategoryServiceTests {
     }
 
     private Pair<Marathon, Submission> createMarathonAndSubmission(String code) {
-        final var marathon = this.marathonFactory.getObject();
+        final var marathonCreator = this.userPersistencePort.save(this.oengusUserFactory.getNormalUser());
+        var marathon = this.marathonFactory.withCreator(marathonCreator);
 
-        this.marathonPersistencePort.save(marathon);
+        marathon = this.marathonPersistencePort.save(marathon);
 
         final var submission = this.submissionFactory.withMarathonId(marathon.getId());
 
-        submission.setUser(this.oengusUserFactory.getNormalUser());
+        final var user = this.userPersistencePort.save(this.oengusUserFactory.getNormalUser());
+
+        submission.setUser(user);
 
         final var game = this.gameFactory.withSubmissionId(submission.getId());
         final var category = this.categoryFactory.getCategoryForGame(game.getId());
@@ -132,15 +143,15 @@ public class CategoryServiceTests {
         category.setCode(code);
         category.setType(RunType.COOP);
 
-        this.categoryPersistencePort.save(category);
+//        final var savedCategory = this.categoryPersistencePort.save(category);
 
         game.getCategories().add(category);
 
         submission.setGames(Set.of(game));
 
-        this.submissionPersistencePort.save(submission);
+        final var savedSubmission = this.submissionPersistencePort.save(submission);
 
 
-        return Pair.of(marathon, submission);
+        return Pair.of(marathon, savedSubmission);
     }
 }

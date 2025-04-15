@@ -9,7 +9,6 @@ import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleRepository repository;
@@ -25,6 +23,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleEntityMapper mapper;
 
     @Override
+    @Transactional
     public Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId) {
         return this.repository.findByMarathonAndId(
             MarathonEntity.ofId(marathonId), scheduleId
@@ -33,6 +32,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Schedule> findByIdForMarathonWithoutLines(String marathonId, int scheduleId) {
         return this.repository.findByMarathonAndId(
                 MarathonEntity.ofId(marathonId), scheduleId
@@ -41,6 +41,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Schedule> findAllForMarathon(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
@@ -49,6 +50,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Schedule> findAllForMarathonWithoutLines(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
@@ -57,6 +59,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Schedule save(Schedule schedule) {
         final var entity = this.mapper.fromDomain(schedule);
 
@@ -102,6 +105,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Schedule> findBySlugForMarathon(String marathonId, String slug) {
         return this.repository.findByMarathonAndSlug(MarathonEntity.ofId(marathonId), slug)
             .map(this::entityToDomain);

@@ -25,5 +25,5 @@ public interface CategoryPersistencePort {
 
     void deleteAllById(List<Integer> ids);
 
-    void save(Category category);
+    Category save(Category category);
 }

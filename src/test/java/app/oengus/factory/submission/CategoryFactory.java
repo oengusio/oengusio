@@ -6,12 +6,10 @@ import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static app.oengus.util.StringUtils.limit;
 
 @Component
 public class CategoryFactory extends AbstractFactory<Category> {
-    private final AtomicInteger idStore = new AtomicInteger();
-
     @NotNull
     @Override
     public Category getObject() {
@@ -20,16 +18,16 @@ public class CategoryFactory extends AbstractFactory<Category> {
 
     public Category getCategoryForGame(int gameId) {
         final var category = new Category(
-            this.idStore.incrementAndGet(),
+            -1,
             gameId
         );
 
         category.setName(faker.leagueOfLegends().champion() + "%");
         category.setEstimate(faker.duration().atMostHours(69));
-        category.setDescription(faker.backToTheFuture().quote());
-        category.setVideo(faker.internet().url());
+        category.setDescription(limit(faker.backToTheFuture().quote(), 300));
+        category.setVideo(limit(faker.internet().url(), 100));
         category.setType(faker.options().option(RunType.values()));
-        category.setCode(faker.random().hex(5));
+        category.setCode(faker.letterify("??????"));
 
         return category;
     }

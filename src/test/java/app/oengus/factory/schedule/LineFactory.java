@@ -7,25 +7,19 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 @RequiredArgsConstructor
 public class LineFactory extends AbstractFactory<Line> {
-    private final AtomicInteger idStore = new AtomicInteger();
-
     private final RunnerFactory runnerFactory;
 
     @NotNull
     @Override
     public Line getObject() {
-        return this.getWithScheduleId(
-            faker.number().randomDigit()
-        );
+        return this.getWithScheduleId(-1);
     }
 
     public Line getWithScheduleId(int scheduleId) {
-        final var line = new Line(this.idStore.incrementAndGet(), scheduleId);
+        final var line = new Line(-1, scheduleId);
 
         line.setGameName(faker.videoGame().title());
         line.setConsole(faker.videoGame().platform());
@@ -52,7 +46,7 @@ public class LineFactory extends AbstractFactory<Line> {
     }
 
     public Line getSetupBlockWithScheduleId(int scheduleId) {
-        final var line = new Line(this.idStore.incrementAndGet(), scheduleId);
+        final var line = new Line(-1, scheduleId);
 
         line.setSetupBlock(true);
         line.setSetupBlockText(faker.lorem().sentence(5));

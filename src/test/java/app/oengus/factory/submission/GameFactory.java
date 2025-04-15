@@ -5,12 +5,10 @@ import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static app.oengus.util.StringUtils.limit;
 
 @Component
 public class GameFactory extends AbstractFactory<Game> {
-    private final AtomicInteger idStore = new AtomicInteger();
-
     @NotNull
     @Override
     public Game getObject() {
@@ -18,10 +16,10 @@ public class GameFactory extends AbstractFactory<Game> {
     }
 
     public Game withSubmissionId(int submissionId) {
-        final var game = new Game(this.idStore.incrementAndGet(), submissionId);
+        final var game = new Game(-1, submissionId);
 
         game.setName(faker.appliance().equipment());
-        game.setDescription(faker.lorem().paragraph(10));
+        game.setDescription(limit(faker.lorem().paragraph(10), 500));
         game.setConsole(faker.videoGame().platform());
         game.setRatio("4:3");
         game.setEmulated(faker.bool().bool());

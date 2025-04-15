@@ -5,22 +5,20 @@ import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static app.oengus.util.StringUtils.limit;
 
 @Component
 public class OpponentFactory extends AbstractFactory<Opponent> {
-    private final AtomicInteger idStore = new AtomicInteger();
-
     @NotNull
     @Override
     public Opponent getObject() {
-        return this.getOpponent(this.idStore.incrementAndGet());
+        return this.getOpponent(-1);
     }
 
     public Opponent getOpponent(int categoryId) {
-        final var opponent = new Opponent(this.idStore.incrementAndGet(), categoryId);
+        final var opponent = new Opponent(-1, categoryId);
 
-        opponent.setVideo(faker.internet().url());
+        opponent.setVideo(limit(faker.internet().url(), 100));
 
         return opponent;
     }

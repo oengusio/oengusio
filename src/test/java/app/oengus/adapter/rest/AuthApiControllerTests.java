@@ -54,6 +54,7 @@ public class AuthApiControllerTests {
         testUser.setPassword("");
         testUser.setEmail("test@example.com");
         testUser.setNeedsPasswordReset(false);
+        testUser.setDiscordId("1234567890"); // Needed so we can try to log in
 
         this.userService.save(testUser);
 

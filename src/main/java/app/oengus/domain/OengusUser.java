@@ -1,5 +1,6 @@
 package app.oengus.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.Set;
 // TODO: should this be a record?
 @Getter
 @Setter
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class OengusUser implements IUsername {
     public static final String DISCORD_USERNAME_REGEX = "^\\S.{0,30}\\S\\s*(?:#\\d{4})?$";

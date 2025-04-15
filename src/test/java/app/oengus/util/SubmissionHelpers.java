@@ -21,26 +21,24 @@ public class SubmissionHelpers {
     private final SubmissionPersistencePort submissionPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
 
-    public void addOpponents(int opponentCount, Category category, String marathonId) {
+    public Category addOpponents(int opponentCount, Category category, String marathonId) {
         for (int i = 0; i < opponentCount; i++) {
-            final var user = this.oengusUserFactory.getNormalUser();
-
-            this.userPersistencePort.save(user);
+            final var user = this.userPersistencePort.save(this.oengusUserFactory.getNormalUser());
 
             final var submission = this.submissionFactory.withMarathonId(marathonId);
 
             submission.setUser(user);
 
-            this.submissionPersistencePort.save(submission);
+            final var savedSubmission = this.submissionPersistencePort.save(submission);
 
             final var opponent = this.opponentFactory.getOpponent(category.getId());
 
             opponent.setUserId(user.getId());
-            opponent.setSubmissionId(submission.getId());
+            opponent.setSubmissionId(savedSubmission.getId());
 
             category.getOpponents().add(opponent);
         }
 
-        this.categoryPersistencePort.save(category);
+        return this.categoryPersistencePort.save(category);
     }
 }

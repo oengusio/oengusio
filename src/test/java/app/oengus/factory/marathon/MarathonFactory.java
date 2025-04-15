@@ -18,8 +18,9 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
 
     @NotNull
     @Override
+    @Deprecated
     public Marathon getObject() {
-        return this.withCreator(oengusUserFactory.getNormalUser());
+        throw new RuntimeException("Must initialise marathon with creator");
     }
 
     public Marathon withCreator(OengusUser creator) {
@@ -29,7 +30,7 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
 
         marathon.setCreator(creator);
 
-        marathon.setName(faker.australia().animals());
+        marathon.setName(faker.letterify("????? ????? ?????"));
 
         marathon.setDescription(faker.dumbAndDumber().quote());
         marathon.setOnsite(faker.bool().bool());
@@ -37,13 +38,13 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
         marathon.setCountry(faker.address().countryCode());
         marathon.setLanguage(faker.nation().isoLanguage());
         marathon.setMaxGamesPerRunner(faker.number().numberBetween(1, 100));
-        marathon.setMaxCategoriesPerGame(faker.number().numberBetween(1, 100));
+        marathon.setMaxCategoriesPerGame(faker.number().numberBetween(1, 10));
         marathon.setHasMultiplayer(faker.bool().bool());
         marathon.setMaxNumberOfScreens(faker.number().numberBetween(1, 100));
 
-        final var fakeStartDate = faker.date().future(20, TimeUnit.DAYS);
+        final var fakeStartDate = faker.timeAndDate().future(20, TimeUnit.DAYS);
 
-        marathon.setStartDate(fakeStartDate.toLocalDateTime().atZone(ZoneOffset.UTC));
+        marathon.setStartDate(fakeStartDate.atZone(ZoneOffset.UTC));
         marathon.setEndDate(marathon.getStartDate().plusDays(
             faker.number().numberBetween(1, 69)
         ));
