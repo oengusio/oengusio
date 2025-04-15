@@ -27,17 +27,20 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public Optional<Marathon> findById(String marathonId) {
         return this.repository.findById(marathonId).map(this.mapper::toDomain);
     }
 
     @Override
+    @Transactional
     public Optional<OengusUser> findCreatorById(String marathonId) {
         return this.repository.findCreatorById(MarathonEntity.ofId(marathonId))
             .map(this.userMapper::toDomain);
     }
 
     @Override
+    @Transactional
     public Marathon save(Marathon marathon) {
         final var entity = this.mapper.fromDomain(marathon);
 
@@ -68,6 +71,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findLive() {
         return this.repository.findLive()
             .stream()
@@ -76,6 +80,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findNextUp() {
         return this.repository.findNext()
             .stream()
@@ -84,6 +89,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findSubmissionsOpen() {
         return this.repository.findBySubmitsOpenTrue()
             .stream()
@@ -92,6 +98,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findActiveModeratedBy(int userId) {
         return this.repository.findActiveMarathonsByCreatorOrModerator(
                 User.ofId(userId)
@@ -102,6 +109,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findAllModeratedBy(int userId) {
         return this.repository.findAllMarathonsByCreatorOrModerator(
                 User.ofId(userId)
@@ -112,6 +120,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findBetween(ZonedDateTime start, ZonedDateTime end) {
         return this.repository.findBetween(start, end)
             .stream()
@@ -148,6 +157,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findNotClearedBefore(ZonedDateTime date) {
         return this.repository.findByClearedFalseAndEndDateBefore(date)
             .stream()
@@ -173,6 +183,7 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Marathon> findAll() {
         return this.repository.findAll()
             .stream()

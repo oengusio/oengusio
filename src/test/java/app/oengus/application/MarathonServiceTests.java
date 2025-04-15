@@ -56,10 +56,10 @@ public class MarathonServiceTests {
 
     @Test
     public void testCreatorCanBeRetrieved() {
-        final var marathon = this.createTestMarathon();
+        var marathon = this.createTestMarathon();
         final var creator = marathon.getCreator();
 
-        this.marathonService.create(marathon);
+        marathon = this.marathonService.create(marathon);
 
         final var optionalUser = this.marathonService.findCreatorById(marathon.getId());
 

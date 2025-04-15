@@ -30,7 +30,7 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
 
         marathon.setCreator(creator);
 
-        marathon.setName(faker.australia().animals());
+        marathon.setName(faker.letterify("????? ????? ?????"));
 
         marathon.setDescription(faker.dumbAndDumber().quote());
         marathon.setOnsite(faker.bool().bool());
@@ -38,7 +38,7 @@ public class MarathonFactory extends AbstractFactory<Marathon> {
         marathon.setCountry(faker.address().countryCode());
         marathon.setLanguage(faker.nation().isoLanguage());
         marathon.setMaxGamesPerRunner(faker.number().numberBetween(1, 100));
-        marathon.setMaxCategoriesPerGame(faker.number().numberBetween(1, 100));
+        marathon.setMaxCategoriesPerGame(faker.number().numberBetween(1, 10));
         marathon.setHasMultiplayer(faker.bool().bool());
         marathon.setMaxNumberOfScreens(faker.number().numberBetween(1, 100));
 

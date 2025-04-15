@@ -133,8 +133,9 @@ public class UserApiControllerTests {
 
         final var userToUpdate = this.createTestUser();
 
+        // Duh, I try to set the user's name to the admin's username. That is a duped username and is not allowed
         String patchBody = """
-            {"username": "%s", "displayName": "%s", "email": "%s", "enabled": true, "pronouns": [], "languagesSpoken": [], "country": "NL", "connections": [], "discordId": "1234567890", "twitchId": null, "patreonId": null}
+            {"username": "%s_child", "displayName": "%s", "email": "%s", "enabled": true, "pronouns": [], "languagesSpoken": [], "country": "NL", "connections": [], "discordId": "1234567890", "twitchId": null, "patreonId": null}
             """.trim().formatted(user.getUsername(), user.getDisplayName(), userToUpdate.getEmail());
 
         final var bodyJson = assertThat(
@@ -149,7 +150,7 @@ public class UserApiControllerTests {
 
         bodyJson.extractingPath("$.username")
             .asString()
-            .isEqualTo(user.getUsername().toLowerCase(Locale.ROOT));
+            .isEqualTo(user.getUsername().toLowerCase(Locale.ROOT) + "_child");
 
         bodyJson.extractingPath("$.displayName")
             .asString()

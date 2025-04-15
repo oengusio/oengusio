@@ -20,7 +20,7 @@ public class Submission {
 
     private OengusUser user;
 
-    private List<Opponent> opponents;
+    private List<Opponent> opponents = new ArrayList<>();
 
     // TODO: do we need to make this sorted?
     private Set<Answer> answers = new HashSet<>();

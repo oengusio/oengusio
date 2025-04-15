@@ -23,6 +23,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     private final ScheduleEntityMapper mapper;
 
     @Override
+    @Transactional
     public Optional<Schedule> findByIdForMarathon(String marathonId, int scheduleId) {
         return this.repository.findByMarathonAndId(
             MarathonEntity.ofId(marathonId), scheduleId
@@ -31,6 +32,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Schedule> findByIdForMarathonWithoutLines(String marathonId, int scheduleId) {
         return this.repository.findByMarathonAndId(
                 MarathonEntity.ofId(marathonId), scheduleId
@@ -39,6 +41,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Schedule> findAllForMarathon(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
@@ -47,6 +50,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Schedule> findAllForMarathonWithoutLines(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(MarathonEntity.ofId(marathonId))
             .stream()
@@ -55,6 +59,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Schedule save(Schedule schedule) {
         final var entity = this.mapper.fromDomain(schedule);
 
@@ -100,6 +105,7 @@ public class SchedulePersistenceAdapter implements SchedulePersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Schedule> findBySlugForMarathon(String marathonId, String slug) {
         return this.repository.findByMarathonAndSlug(MarathonEntity.ofId(marathonId), slug)
             .map(this::entityToDomain);

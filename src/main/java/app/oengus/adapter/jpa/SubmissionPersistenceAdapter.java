@@ -29,11 +29,13 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     private final SchedulePersistenceAdapter schedulePersistenceAdapter;
 
     @Override
+    @Transactional
     public Optional<Submission> findById(int id) {
         return this.repository.findById(id).map(this.mapper::toDomain);
     }
 
     @Override
+    @Transactional
     public Submission getByGameId(int gameId) {
         final var entity = this.repository.findByGamesContaining(
             GameEntity.ofId(gameId)
@@ -43,6 +45,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Submission getToplevelByGamId(int gameId) {
         final var entity = this.repository.findByGamesContaining(
             GameEntity.ofId(gameId)
@@ -52,6 +55,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Submission> findForUserInMarathon(int userId, String marathonId) {
         return this.repository.findByUserAndMarathon(
             User.ofId(userId),
@@ -68,6 +72,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Submission> findAcceptedInMarathon(String marathonId) {
         return this.repository.findValidatedOrBonusSubmissionsForMarathon(
                 MarathonEntity.ofId(marathonId)
@@ -78,6 +83,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Page<Submission> searchInMarathon(String marathonId, String query, Pageable pageable) {
         return this.repository.searchForMarathon(
             MarathonEntity.ofId(marathonId),
@@ -87,6 +93,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Page<Submission> searchInMarathon(String marathonId, String query, Status status, Pageable pageable) {
         return this.repository.searchForMarathonWithStatus(
             MarathonEntity.ofId(marathonId),
@@ -169,6 +176,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Submission> findByUser(int userId) {
         return this.repository.findByUser(User.ofId(userId))
             .stream()
@@ -177,6 +185,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Page<Submission> findByMarathon(String marathonId, Pageable pageable) {
         return this.repository.findByMarathonOrderByIdAsc(
             MarathonEntity.ofId(marathonId),
@@ -185,6 +194,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Submission> findAllByMarathon(String marathonId) {
         return this.repository.findByMarathonOrderByIdAsc(
                 MarathonEntity.ofId(marathonId)
@@ -201,6 +211,7 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
     }
 
     @Override
+    @Transactional
     public Map<Integer, OengusUser> findUsersByIds(List<Integer> submissionIds) {
         return ((List<SubmissionEntity>) this.repository.findAllById(submissionIds))
             .stream()

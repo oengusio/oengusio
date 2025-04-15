@@ -57,7 +57,7 @@ public class CategoryEntity {
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private SelectionEntity selection;
 
-    @OneToMany(mappedBy = "category", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OpponentEntity> opponents = new ArrayList<>();
 
     @Override

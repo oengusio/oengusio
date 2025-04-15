@@ -5,16 +5,13 @@ import app.oengus.factory.AbstractFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 public class ScheduleFactory extends AbstractFactory<Schedule> {
-    private final AtomicInteger idStore = new AtomicInteger();
 
     @NotNull
     @Override
     public Schedule getObject() {
-        final var schedule = new Schedule(this.idStore.incrementAndGet());
+        final var schedule = new Schedule(-1);
 
         schedule.setName(faker.name().name());
         schedule.setSlug(faker.buffy().bigBads());

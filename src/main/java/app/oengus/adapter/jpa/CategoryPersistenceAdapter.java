@@ -21,11 +21,13 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryMapper mapper;
 
     @Override
+    @Transactional
     public Optional<Category> findById(int id) {
         return this.repository.findById(id).map(this.mapper::toDomain);
     }
 
     @Override
+    @Transactional
     public List<Category> findByMarathonSubmissionAndGameId(String marathonId, int submissionId, int gameId) {
         return this.repository.findByGameId(
             marathonId,
@@ -38,6 +40,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Category> findByGameId(int gameId) {
         return this.repository.findByGame(GameEntity.ofId(gameId))
             .stream()
@@ -46,11 +49,13 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    @Transactional
     public List<Category> findByGame(Game game) {
         return this.findByGameId(game.getId());
     }
 
     @Override
+    @Transactional
     public List<Category> findAllById(List<Integer> ids) {
         return ((List<CategoryEntity>) this.repository.findAllById(ids))
             .stream()
@@ -59,6 +64,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<Category> findByCode(String code) {
         return this.repository.findByCode(code).map(this.mapper::toDomain);
     }
@@ -82,13 +88,24 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
-    public void save(Category category) {
+    @Transactional
+    public Category save(Category category) {
         final var entity = this.mapper.fromDomain(category);
 
         if (entity.getId() < 1) {
             entity.setId(null);
         }
 
-        this.repository.save(entity);
+        entity.getOpponents().forEach((opp) -> {
+            opp.setCategory(entity);
+
+            if (opp.getId() < 1) {
+                opp.setId(null);
+            }
+        });
+
+        final var savedCategory = this.repository.save(entity);
+
+        return this.mapper.toDomain(savedCategory);
     }
 }

@@ -31,6 +31,7 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
             faker.nation().isoLanguage(),
             faker.nation().isoLanguage()
         ));
+        user.setPassword("SuperSecurePassword");
         user.setNeedsPasswordReset(false);
         user.setCreatedAt(faker.timeAndDate().past(365, TimeUnit.DAYS).atZone(ZoneOffset.UTC));
 
