@@ -41,7 +41,7 @@ public class CategoryController {
 
         opponentDto.setUsers(
             users.stream()
-                .map(this.userMapper::fromDomain)
+                .map(this.userMapper::fromDomainV1)
                 .toList()
         );
         opponentDto.setGameName(game.getName());

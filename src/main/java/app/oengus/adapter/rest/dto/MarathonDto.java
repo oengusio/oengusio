@@ -56,6 +56,7 @@ public class MarathonDto {
     private String donationCurrency;
     private String webhook;
     private String youtube;
+    private String bluesky;
     private String discordGuildId;
     private String discordGuildName;
     private boolean discordRequired;

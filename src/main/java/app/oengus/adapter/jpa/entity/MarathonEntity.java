@@ -95,6 +95,11 @@ public class MarathonEntity {
     @Size(max = 255)
     private String mastodon;
 
+    @Nullable
+    @Column(name = "bluesky")
+    @Size(max = 255)
+    private String bluesky;
+
     @Column(name = "discord")
     @Size(max = 20)
     private String discord;

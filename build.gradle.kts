@@ -7,7 +7,7 @@ plugins {
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "4.0.4" // TODO: do we need this?
-    id("io.freefair.lombok") version "8.13"
+    id("io.freefair.lombok") version "8.13.1"
 }
 
 //dependencyManagement {
@@ -18,7 +18,7 @@ plugins {
 
 project.group = "app.oengus"
 // Version code is year.month.(release num)
-project.version = "2025.03.3"
+project.version = "2025.03.4"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -83,10 +83,10 @@ dependencies {
 
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.17.0")
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.13.0")
+    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.0")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.2.0")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.2.1")
 
     // JACKSON
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = jacksonVersion)
@@ -94,7 +94,7 @@ dependencies {
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = jacksonVersion)
 
     // documentation
-    implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "2.8.5")
+    implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "2.8.6")
 
     // iCal4J
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "4.1.1")
@@ -132,7 +132,7 @@ dependencies {
     // And of course, we are going to write unit tests.
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("net.datafaker:datafaker:2.4.2")
+    testImplementation("net.datafaker:datafaker:2.4.3")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.3.232")
 }

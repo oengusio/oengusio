@@ -19,7 +19,7 @@ public class OengusUserFactory extends AbstractFactory<OengusUser> {
     public OengusUser getObject() {
         final var user = new OengusUser(-1);
 
-        user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT));
+        user.setUsername(faker.internet().username().toLowerCase(Locale.ROOT).replace('.', '_'));
         user.setDisplayName(faker.name().firstName());
         user.setEmail(faker.internet().emailAddress());
         user.setEnabled(true);

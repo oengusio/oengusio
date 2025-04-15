@@ -1,6 +1,7 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.IUsername;
+import app.oengus.domain.OengusUser;
 import app.oengus.domain.Role;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static app.oengus.adapter.rest.dto.v1.UserDto.USERNAME_REGEX;
-
 @Entity
 @Getter
 @Setter
@@ -28,7 +27,7 @@ public class User implements IUsername {
 
     @Column
     @Size(min = 3, max = 32)
-    @Pattern(regexp = USERNAME_REGEX)
+    @Pattern(regexp = OengusUser.USERNAME_REGEX)
     private String username;
 
     @Column(name = "display_name")

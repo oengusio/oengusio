@@ -1311,4 +1311,10 @@
             <column name="needs_password_reset" type="bool" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20250414-1">
+        <addColumn tableName="marathon">
+            <column name="bluesky" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

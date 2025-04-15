@@ -1,6 +1,6 @@
 oengus:
     jwt:
-        secret: 'CorrectHorseBatteryStaple'
+        secret: 'CorrectHorseBatteryStapleVerySecureKeyBlaBlaLongString'
         expiration: 604800
     baseUrl: 'https://oengus.net'
     oauthOrigins: 'oengus.io'
