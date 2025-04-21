@@ -24,6 +24,7 @@ public class Category {
     private String video;
     private RunType type;
     private String code;
+    private int expectedRunnerCount;
 
     @Nullable
     private Selection selection;
