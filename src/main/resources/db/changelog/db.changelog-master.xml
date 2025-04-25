@@ -1317,4 +1317,11 @@
             <column name="bluesky" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20250421-1">
+        <addColumn tableName="category">
+            <column name="expected_runners" type="int" defaultValueNumeric="0" />
+            <column name="created_at" type="timestamp with time zone" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

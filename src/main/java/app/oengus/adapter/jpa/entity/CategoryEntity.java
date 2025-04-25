@@ -1,6 +1,7 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.domain.submission.RunType;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
@@ -53,6 +54,10 @@ public class CategoryEntity {
     @Column(name = "code")
     @Size(max = 6)
     private String code;
+
+    @Min(value = 0)
+    @Column(name = "expected_runners")
+    private int expectedRunnerCount;
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private SelectionEntity selection;
