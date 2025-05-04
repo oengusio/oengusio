@@ -12,7 +12,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import javax.annotation.Nullable;
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,6 +67,10 @@ public class CategoryEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OpponentEntity> opponents = new ArrayList<>();
+
+    @Nullable
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
 
     @Override
     public boolean equals(Object o) {

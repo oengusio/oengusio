@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class Category {
     private RunType type;
     private String code;
     private int expectedRunnerCount;
+
+    private ZonedDateTime createdAt;
 
     @Nullable
     private Selection selection;

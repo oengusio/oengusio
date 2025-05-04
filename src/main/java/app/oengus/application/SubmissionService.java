@@ -27,6 +27,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Predicate;
@@ -182,6 +184,10 @@ public class SubmissionService {
                     );
                 }
 
+                if (category.getCreatedAt() == null) {
+                    category.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+                }
+
                 // Truncate the estimate to minutes?
                 if (category.getEstimate().toSecondsPart() > 0) {
                     category.setEstimate(
@@ -195,7 +201,7 @@ public class SubmissionService {
                     if (StringUtils.isEmpty(category.getCode())) {
                         String code;
                         do {
-                            code = RandomStringUtils.random(6, true, true).toUpperCase();
+                            code = RandomStringUtils.secure().next(6, true, true).toUpperCase();
                         } while (this.categoryPersistencePort.existsByCode(code));
                         category.setCode(code);
                     }
