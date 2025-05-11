@@ -37,7 +37,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Expose-Headers", "Location, Origin");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type, Location, Origin, Authorization");
+            response.addHeader("Access-Control-Allow-Headers", "*");
             response.addHeader("Access-Control-Max-Age", "1");
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
         }
