@@ -22,7 +22,7 @@ public class ConnectionDto {
     private String username;
 
     @JsonIgnore
-    @AssertTrue(message = "The username does not have a valid format for the platform")
+    @AssertTrue(message = "The username '${validatedValue}' does not have a valid format for the platform")
     public boolean isUsernameValidForPlatform() {
         return Connection.isUsernameValidForPlatform(this.username, this.platform);
     }
