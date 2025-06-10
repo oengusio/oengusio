@@ -16,7 +16,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,7 @@ import static app.oengus.application.helper.StringHelper.getUserDisplay;
 public class SubmissionCsvExporter implements Exporter {
     private static final List<String> DEFAULT_HEADERS =
         List.of("runner", "game_name", "game_description", "game_console", "game_ratio", "category_name",
-            "category_description", "category_type", "category_estimate", "category_video", "status");
+            "category_description", "category_type", "category_estimate", "category_video", "category_submitted_on", "status");
 
     private final MarathonPersistencePort marathonPersistencePort;
     private final SubmissionService submissionService;
@@ -155,6 +159,12 @@ public class SubmissionCsvExporter implements Exporter {
             record.add(videos.toString());
         }
 
+        final var formattedTime = Optional.ofNullable(category.getCreatedAt())
+                .orElseGet(() -> ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC))
+                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        record.add(formattedTime);
+
         // Selection might be null, ensure that the status defaults to "TO-DO"
         final var selection = Optional.ofNullable(category.getSelection()).orElseGet(() -> {
             // ids are not used so no need setting them.
@@ -215,6 +225,7 @@ public class SubmissionCsvExporter implements Exporter {
         record.add(rowMsg);
         record.add(rowMsg);
 
+        record.add(rowMsg);
         record.add(rowMsg);
 
         record.add(lang.getString("run.status.TODO"));
