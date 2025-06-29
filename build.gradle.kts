@@ -48,7 +48,7 @@ extra["snippetsDir"] = snippetsDir
 
 val sentryVersion = "7.9.0"
 val mapstructVersion = "1.6.3"
-val jacksonVersion = "2.18.2"
+val jacksonVersion = "2.19.1"
 
 // TODO: gradle version catalog
 dependencies {
