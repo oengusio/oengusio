@@ -2,6 +2,8 @@ package app.oengus.adapter.rest.dto.v2.schedule;
 
 import app.oengus.domain.submission.RunType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,11 +34,17 @@ public class LineDto {
     private List<LineRunnerDto> runners = new ArrayList<>();
     @Schema(description = "Category that will be showcased")
     private String category;
+
+    @NotNull
+    @NotBlank
     @Schema(
         description = "Approximate duration of the run. Formatted in the ISO-8601 duration format.",
         example = "PT5H30M20S"
     )
     private Duration estimate;
+
+    @NotNull
+    @NotBlank
     @Schema(
         description = "Time allocated to get the run set-up. Formatted in the ISO-8601 duration format.",
         example = "PT5H30M20S"
