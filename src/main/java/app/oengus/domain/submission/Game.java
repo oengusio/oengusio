@@ -11,6 +11,11 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class Game {
+    public static final int NAME_MAX_LENGTH = 100;
+    public static final int DESCRIPTION_MAX_LENGTH = 500;
+    public static final int CONSOLE_MAX_LENGTH = 45; // can grow upto 100 due to db type being varchar(100)
+    public static final int RATIO_MAX_LENGTH = 10;
+
     private final int id;
     private final int submissionId;
 

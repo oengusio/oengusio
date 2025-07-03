@@ -16,6 +16,10 @@ import java.util.List;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class Category {
+    public static final int NAME_MAX_LENGTH = 100;
+    public static final int DESCRIPTION_MAX_LENGTH = 300;
+    public static final int VIDEO_MAX_LENGTH = 100;
+
     private final int id;
     private final int gameId;
 

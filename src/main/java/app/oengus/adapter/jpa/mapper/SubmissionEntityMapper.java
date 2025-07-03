@@ -29,8 +29,6 @@ public interface SubmissionEntityMapper {
     @Mapping(target = "marathonId", source = "marathon.id")
     Submission toToplevelDomain(SubmissionEntity submissionEntity);
 
-    // TODO: fix
-    @Mapping(target = "fresh", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")
     SubmissionEntity fromDomain(Submission submission);
 }

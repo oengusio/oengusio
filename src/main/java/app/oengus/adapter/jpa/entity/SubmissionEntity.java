@@ -1,13 +1,11 @@
 package app.oengus.adapter.jpa.entity;
 
 import app.oengus.adapter.jpa.entity.comparator.AnswerComparator;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.SortComparator;
-import org.springframework.beans.BeanUtils;
 
-import jakarta.persistence.*;
 import java.util.*;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -60,47 +58,6 @@ public class SubmissionEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, user, marathon, games, opponents);
-    }
-
-    @Deprecated(forRemoval = true)
-    public SubmissionEntity fresh(boolean withGames) {
-        final SubmissionEntity submission = new SubmissionEntity();
-
-        // load all the items needed from the old submission
-        Hibernate.initialize(this.getAvailabilities());
-        Hibernate.initialize(this.getOpponents());
-        Hibernate.initialize(this.getAnswers());
-
-        // the games will be copied separately
-        BeanUtils.copyProperties(this, submission, "games");
-
-        // only load the game if we say so
-        // might cause issues if we load the submission from a game otherwise
-        if (withGames) {
-            final Set<GameEntity> freshGames = new HashSet<>();
-
-            this.getGames().forEach(
-                (game) -> freshGames.add(game.fresh(false))
-            );
-
-            submission.setGames(freshGames);
-        }
-
-        return submission;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static void initialize(SubmissionEntity submission, boolean withGames) {
-        // load all the items needed from the old submission
-        Hibernate.initialize(submission.getAvailabilities());
-        Hibernate.initialize(submission.getOpponents());
-        Hibernate.initialize(submission.getAnswers());
-
-        // only load the game if we say so
-        // might cause issues if we load the submission from a game otherwise
-        if (withGames) {
-            submission.getGames().forEach(GameEntity::initialize);
-        }
     }
 
     public static SubmissionEntity ofId(int id) {
