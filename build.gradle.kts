@@ -1,4 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     java
@@ -37,7 +38,6 @@ application {
 
 repositories {
     mavenCentral()
-    jcenter()
 
     maven { url = uri("https://jitpack.io") }
 }
@@ -174,7 +174,8 @@ tasks.test {
     outputs.dir(snippetsDir)
 
     testLogging {
-        showStandardStreams = true // System.getenv("CI") == null
+        showStandardStreams = System.getenv("CI") == null
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
