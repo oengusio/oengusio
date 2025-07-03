@@ -174,7 +174,7 @@ tasks.test {
     outputs.dir(snippetsDir)
 
     testLogging {
-        showStandardStreams = System.getenv("CI") == null
+        showStandardStreams = true // System.getenv("CI") == null
     }
 }
 
