@@ -120,6 +120,37 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         return user.isEmailVerified();
     }
 
+    public boolean isSupporter() {
+        return this.isSupporter(this.getUser());
+    }
+
+    public boolean isSupporter(OengusUser user) {
+        if (user == null) {
+            return false;
+        }
+
+        // Sponsors are different from patrons
+        if (user.getRoles().contains(Role.ROLE_SPONSOR) || user.getRoles().contains(Role.ROLE_ADMIN)) {
+            return true;
+        }
+
+        // TODO: use UserService#getSupporterStatus? Current impl of this fn saves a database call if sponsor role is found.
+        final var userPatreonId = user.getPatreonId();
+
+        if (userPatreonId != null && !userPatreonId.isBlank()) {
+            final var patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(user.getPatreonId());
+
+            if (patreonStatus.isPresent()) {
+                final var status = patreonStatus.get();
+
+                // Pledge amount is in cents, supporters need to at least pledge €1
+                return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT;
+            }
+        }
+
+        return false;
+    }
+
     public boolean isMarathonArchived(final String id) throws NotFoundException {
         final Marathon marathon = this.getMarathon(id);
 
@@ -308,9 +339,17 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return null;
         }
 
+        if (this.getFilterObject() instanceof final OengusUser user) {
+            return user;
+        }
+
         if (this.getPrincipal() instanceof final UserDetailsDto tmp) {
             // fetch an up-to-date user to make sure we have the correct roles
-            return this.userPersistencePort.getById(tmp.id());
+            final var foundUser = this.userPersistencePort.getById(tmp.id());
+
+            this.setFilterObject(foundUser);
+
+            return foundUser;
         }
 
         return null;
@@ -348,31 +387,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     }
 
     private boolean isMarathonCreatorSupporter(String marathonId) {
-        final var marathonCreator = this.marathonService.findCreatorById(marathonId);
-
-        if (marathonCreator.isPresent()) {
-            final var creator = marathonCreator.get();
-
-            // Sponsors are different from patrons
-            if (creator.getRoles().contains(Role.ROLE_SPONSOR) || creator.getRoles().contains(Role.ROLE_ADMIN)) {
-                return true;
-            }
-
-            // TODO: use UserService#getSupporterStatus? Current impl saves a database call if sponsor role is found.
-            final var userPatreonId = creator.getPatreonId();
-
-            if (userPatreonId != null && !userPatreonId.isBlank()) {
-                final var patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(creator.getPatreonId());
-
-                if (patreonStatus.isPresent()) {
-                    final var status = patreonStatus.get();
-
-                    // Pledge amount is in cents, supporters need to at least pledge €1
-                    return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT;
-                }
-            }
-        }
-
-        return false;
+        return this.marathonService.findCreatorById(marathonId)
+            .map(this::isSupporter)
+            .orElse(false);
     }
 }

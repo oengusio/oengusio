@@ -1393,6 +1393,5 @@
         <createIndex tableName="saved_categories" indexName="saved_categories_game_id">
             <column name="game_id"/>
         </createIndex>
-
     </changeSet>
 </databaseChangeLog>
