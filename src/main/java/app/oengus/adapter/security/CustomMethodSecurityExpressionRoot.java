@@ -11,6 +11,7 @@ import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Schedule;
 import javassist.NotFoundException;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -340,10 +341,12 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         }
 
         if (this.getFilterObject() instanceof final OengusUser user) {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Using user from filter object");
             return user;
         }
 
         if (this.getPrincipal() instanceof final UserDetailsDto tmp) {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Fetching a new user");
             // fetch an up-to-date user to make sure we have the correct roles
             final var foundUser = this.userPersistencePort.getById(tmp.id());
 

@@ -42,7 +42,7 @@ public class CoreConfiguration implements WebMvcConfigurer {
                     .license(
                         new License()
                             .name("AGPL v3")
-                            .url("https://github.com/esamarathon/oengusio/blob/master/LICENSE")
+                            .url("https://github.com/oengusio/oengusio/blob/master/LICENSE")
                     )
                     .version("@OENGUS_VERSION@")
             );

@@ -1346,6 +1346,9 @@
             <column name="console" type="varchar(100)">
                 <constraints nullable="false" />
             </column>
+            <column name="ratio" type="varchar(10)">
+                <constraints nullable="false" />
+            </column>
             <column name="emulated" type="boolean" defaultValueBoolean="false"/>
         </createTable>
 

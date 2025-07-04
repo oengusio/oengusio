@@ -3,18 +3,20 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
 import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.security.PermitAll;
-import jakarta.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -121,4 +123,35 @@ public interface UserApi {
     @GetMapping("/{id}/supporter-status")
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     ResponseEntity<SupporterStatusDto> getUserSupporterStatus(@PathVariable final int id);
+
+    // TODO: how to display in UI? Current id is: {game.name} - {category.name} - {game.console}
+    // TODO: rest of adding/removing of games and categories should be its own controller
+    @GetMapping("/@me/saved-games")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
+    ResponseEntity<DataListDto<?>> getMySavedGames(); // TODO: different DTO?? Might contain a bit more info
+
+    @GetMapping("/{id}/saved-games")
+    @Operation(
+        summary = "Get the saved games for a user by their id, has a 24 hour cache",
+        responses = {
+            @ApiResponse(
+                description = "Submission History",
+                responseCode = "200",
+                content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(
+                        arraySchema = @Schema(
+                            implementation = DataListDto.class
+                        ),
+                        schema = @Schema(
+                            implementation = SavedGameDto.class
+                        )
+                    )
+                )
+            ),
+            @ApiResponse(description = "User not found", responseCode = "404")
+        }
+    )
+    ResponseEntity<DataListDto<SavedGameDto>> getAllSavedGames(@PathVariable final int id);
+
 }
