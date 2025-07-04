@@ -126,9 +126,11 @@ public interface UserApi {
 
     // TODO: how to display in UI? Current id is: {game.name} - {category.name} - {game.console}
     // TODO: rest of adding/removing of games and categories should be its own controller
+    // TODO: tests for these two
+    @Operation(hidden = true)
     @GetMapping("/@me/saved-games")
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
-    ResponseEntity<DataListDto<?>> getMySavedGames(); // TODO: different DTO?? Might contain a bit more info
+    ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames(); // TODO: different DTO?? Might contain a bit more info
 
     @GetMapping("/{id}/saved-games")
     @Operation(
@@ -140,9 +142,6 @@ public interface UserApi {
                 content = @Content(
                     mediaType = "application/json",
                     array = @ArraySchema(
-                        arraySchema = @Schema(
-                            implementation = DataListDto.class
-                        ),
                         schema = @Schema(
                             implementation = SavedGameDto.class
                         )

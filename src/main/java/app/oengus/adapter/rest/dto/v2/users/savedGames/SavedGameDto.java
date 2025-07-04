@@ -26,6 +26,6 @@ public record SavedGameDto(
     boolean emulated,
 
     @Schema(description = "List of categories that this game has.")
-    List<?> categories
+    List<SavedCategoryDto> categories
 ) {
 }

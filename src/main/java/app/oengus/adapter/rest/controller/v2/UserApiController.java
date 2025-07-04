@@ -189,8 +189,20 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<?>> getMySavedGames() {
-        return null;
+    public ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames() {
+        final var currUserId = this.securityPort.getAuthenticatedUserId();
+
+        // Should never happen in theory, but just in case.
+        if (currUserId == -1) {
+            throw new UserNotFoundException();
+        }
+
+        final var savedGames = this.savedGamePort.findAllByUser(currUserId, Pageable.unpaged())
+            .map(this.savedGameMapper::fromDomain);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new DataListDto<>(savedGames.getContent()));
     }
 
     @Override

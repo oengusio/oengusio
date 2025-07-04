@@ -10,10 +10,12 @@ import org.mapstruct.Mapper;
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     uses = {
-//        CategoryDtoMapper.class,
+        SavedCategoryDtoMapper.class,
     }
 )
 public interface SavedGameDtoMapper {
     @BeanMapping(ignoreUnmappedSourceProperties = { "userId" })
     SavedGameDto fromDomain(SavedGame savedGame);
+
+    SavedGame toDomain(SavedGameDto dto, int userId);
 }
