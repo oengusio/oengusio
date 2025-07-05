@@ -5,8 +5,10 @@ import app.oengus.adapter.jpa.mapper.SavedGameEntityMapper;
 import app.oengus.adapter.jpa.repository.SavedGameRepository;
 import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.domain.user.SavedGame;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +21,20 @@ public class SavedGamePersistenceAdapter implements SavedGamePersistencePort {
     private final SavedGameEntityMapper mapper;
 
     @Override
+    @Transactional
     public Optional<SavedGame> findById(int id) {
         return this.repository.findById(id).map(this.mapper::toDomain);
     }
 
     @Override
+    @Transactional
     public Page<SavedGame> findAllByUser(int userId, Pageable pageable) {
         return this.repository.findByUser(User.ofId(userId), pageable)
             .map(this.mapper::toDomain);
     }
 
     @Override
+    @Transactional
     public SavedGame save(SavedGame savedGame) {
         final var entity = this.mapper.fromDomain(savedGame);
 
@@ -41,6 +46,8 @@ public class SavedGamePersistenceAdapter implements SavedGamePersistencePort {
             if (c.getId() < 1) {
                 c.setId(null);
             }
+
+            c.setGame(entity);
         });
 
         final var saved = this.repository.save(entity);
@@ -49,6 +56,7 @@ public class SavedGamePersistenceAdapter implements SavedGamePersistencePort {
     }
 
     @Override
+    @Transactional
     public void delete(SavedGame savedGame) {
         this.repository.deleteById(savedGame.getId());
     }

@@ -124,7 +124,9 @@ public interface UserApi {
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     ResponseEntity<SupporterStatusDto> getUserSupporterStatus(@PathVariable final int id);
 
-    // TODO: how to display in UI? Current id is: {game.name} - {category.name} - {game.console}
+    // TODO: Delete saved games on user deletion
+    /// //////
+    // TODO: how to display in UI? Current idea is: {game.name} - {category.name} - {game.console}
     // TODO: rest of adding/removing of games and categories should be its own controller
     // TODO: tests for these two
     @Operation(hidden = true)

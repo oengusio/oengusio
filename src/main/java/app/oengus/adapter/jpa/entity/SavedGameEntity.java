@@ -47,7 +47,8 @@ public class SavedGameEntity {
     @Column(name = "emulated")
     private boolean emulated;
 
+    // TODO: not a fan of eager fetching, but it seems to bre required for some stupid reason
     @OrderBy("id ASC")
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<SavedCategoryEntity> categories;
 }
