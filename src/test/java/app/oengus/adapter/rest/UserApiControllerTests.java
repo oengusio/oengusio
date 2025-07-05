@@ -45,6 +45,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.get()
+                .header("Accept", "application/json")
                 .uri("/v2/users/@me")
                 .header("Authorization", "Bearer " + authToken)
         )
@@ -87,6 +88,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)
@@ -125,6 +127,7 @@ public class UserApiControllerTests {
 
         assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + userToUpdate.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)
@@ -147,6 +150,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + userToUpdate.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)
@@ -164,12 +168,24 @@ public class UserApiControllerTests {
             .isEqualTo(user.getDisplayName());
     }
 
+    // TODO: test for supporter status
+    @Test
+    public void gettingOwnGamesFailsWithoutAuth() {
+        assertThat(
+            this.mvc.get()
+                .uri("/v2/users/@me/saved-games")
+                .header("Accept", "application/json")
+        )
+            .hasStatus(401);
+    }
+
     @Test
     public void userGamesCanBeRetrieved() {
         final var user = this.createUserWithGames();
 
         final var bodyJson = assertThat(
             this.mvc.get()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + user.getId() + "/saved-games")
         )
             .hasStatus(200)
@@ -203,6 +219,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.get()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + user.getId() + "/saved-games")
         )
             .hasStatus(200)
