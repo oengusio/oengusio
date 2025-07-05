@@ -128,11 +128,10 @@ public interface UserApi {
     /// //////
     // TODO: how to display in UI? Current idea is: {game.name} - {category.name} - {game.console}
     // TODO: rest of adding/removing of games and categories should be its own controller
-    // TODO: tests for these two
     @Operation(hidden = true)
     @GetMapping("/@me/saved-games")
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
-    ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames(); // TODO: different DTO?? Might contain a bit more info
+    ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames(); // TODO: Move this route to UserSavedGamesApi?
 
     @GetMapping("/{id}/saved-games")
     @Operation(
