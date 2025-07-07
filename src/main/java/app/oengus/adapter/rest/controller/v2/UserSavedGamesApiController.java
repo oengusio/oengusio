@@ -6,6 +6,7 @@ import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
 import app.oengus.adapter.rest.mapper.SavedGameDtoMapper;
 import app.oengus.application.SavedGameService;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,25 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
     private final UserSecurityPort securityPort;
     private final SavedGameDtoMapper savedGameMapper;
     private final SavedGameService savedGameService;
+
+    @Override
+    public ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames() {
+        final var currUserId = this.securityPort.getAuthenticatedUserId();
+
+        // Should never happen in theory, but just in case.
+        if (currUserId == -1) {
+            throw new UserNotFoundException();
+        }
+
+        final var savedGames = this.savedGameService.getByUserId(currUserId)
+            .stream()
+            .map(this.savedGameMapper::fromDomain)
+            .toList();
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new DataListDto<>(savedGames));
+    }
 
     @Override
     public ResponseEntity<SavedGameDto> create(SavedGameCreateDto body) {

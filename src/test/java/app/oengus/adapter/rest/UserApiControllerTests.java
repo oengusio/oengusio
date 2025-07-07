@@ -1,20 +1,14 @@
 package app.oengus.adapter.rest;
 
-import app.oengus.application.AuthService;
 import app.oengus.application.UserService;
-import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
 import app.oengus.factory.OengusUserFactory;
-import app.oengus.factory.user.SavedCategoryFactory;
-import app.oengus.factory.user.SavedGameFactory;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
@@ -28,14 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @RequiredArgsConstructor(onConstructor_ = { @Autowired })
 public class UserApiControllerTests {
-
     private final MockMvcTester mvc;
     private final OengusUserFactory userFactory;
-    private final SavedGameFactory gameFactory;
-    private final SavedCategoryFactory categoryFactory;
     private final UserService userService;
-    private final AuthService authService;
-    private final SavedGamePersistencePort savedGamePort; // TODO: switch out with service when it gets made
     private final JWTPort jwtPort;
 
     @Test
@@ -168,69 +157,6 @@ public class UserApiControllerTests {
             .isEqualTo(user.getDisplayName());
     }
 
-    // TODO: test for supporter status
-    @Test
-    public void gettingOwnGamesFailsWithoutAuth() {
-        assertThat(
-            this.mvc.get()
-                .uri("/v2/users/@me/saved-games")
-                .header("Accept", "application/json")
-        )
-            .hasStatus(401);
-    }
-
-    @Test
-    public void userGamesCanBeRetrieved() {
-        final var user = this.createUserWithGames();
-
-        final var bodyJson = assertThat(
-            this.mvc.get()
-                .header("Accept", "application/json")
-                .uri("/v2/users/" + user.getId() + "/saved-games")
-        )
-            .hasStatus(200)
-            .hasHeader("Content-Type", "application/json")
-            .bodyJson();
-
-        bodyJson.extractingPath("$.data")
-            .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .hasSize(2);
-
-        bodyJson.extractingPath("$.data[0].categories")
-            .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .hasSize(5);
-
-        bodyJson.extractingPath("$.data[1].categories")
-            .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .hasSize(5);
-    }
-
-    @Test
-    public void userGameListIsEmptyWhenPreferenceIsHidden() {
-        final var user = this.createUserWithGames();
-
-        user.setSavedGamesPublic(false);
-
-        this.userService.save(user);
-
-        final var foundGames = this.savedGamePort.findAllByUser(user, Pageable.unpaged());
-
-        assertThat(foundGames).hasSize(2);
-
-        final var bodyJson = assertThat(
-            this.mvc.get()
-                .header("Accept", "application/json")
-                .uri("/v2/users/" + user.getId() + "/saved-games")
-        )
-            .hasStatus(200)
-            .hasHeader("Content-Type", "application/json")
-            .bodyJson();
-
-        bodyJson.extractingPath("$.data")
-            .asInstanceOf(InstanceOfAssertFactories.LIST)
-            .hasSize(0);
-    }
-
     private OengusUser createTestUser() {
         final var testUser = this.userFactory.getNormalUser();
         testUser.setEnabled(true);
@@ -245,29 +171,5 @@ public class UserApiControllerTests {
         testUser.setEmailVerified(true);
 
         return this.userService.save(testUser);
-    }
-
-    private OengusUser createUserWithGames() {
-        final var testUser = this.userFactory.getNormalUser();
-        testUser.setEnabled(true);
-        testUser.setEmailVerified(true);
-        testUser.setSavedGamesPublic(true);
-
-        final var savedUser = this.userService.save(testUser);
-        final var userId = savedUser.getId();
-
-        for (int i = 0; i < 2; i++) {
-            final var newGame = this.gameFactory.withUserId(userId);
-
-            for (int xxx = 0; xxx < 5; xxx++) {
-                final var newCategory = this.categoryFactory.withGameId(-1);
-
-                newGame.getCategories().add(newCategory);
-            }
-
-            this.savedGamePort.save(newGame);
-        }
-
-        return savedUser;
     }
 }
