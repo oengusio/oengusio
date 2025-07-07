@@ -24,4 +24,11 @@ public interface UserSavedGamesApi {
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
     ResponseEntity<SavedGameDto> create(@RequestBody @Valid SavedGameCreateDto body);
 
+    // TODO: update game
+
+    // TODO: update category
+
+    // TODO: delete game
+
+    // TODO: delete category
 }
