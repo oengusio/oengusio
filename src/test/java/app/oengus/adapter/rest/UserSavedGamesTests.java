@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest;
 
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameUpdateDto;
 import app.oengus.application.SavedGameService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
@@ -198,6 +199,77 @@ public class UserSavedGamesTests {
         assertThat(newSavedGames).hasSize(1);
     }
 
+    @Test
+    public void testUserCanUpdateSavedGame() throws IOException {
+        final var supporterUser = this.createPatreonSupporterUserWithGames();
+        final var currSavedGames = this.savedGameService.getByUser(supporterUser);
+        final var selectedGame = currSavedGames.getFirst();
+
+        final var updateBody = new SavedGameUpdateDto(
+            "The Stanley Parable: Ultra Deluxe",
+            selectedGame.getDescription(),
+            "Steam Deck",
+            selectedGame.getRatio(),
+            !selectedGame.isEmulated()
+        );
+        final var jsonBody = this.objectMapper.writeValueAsString(updateBody);
+
+        final var authToken = this.jwtPort.generateToken(supporterUser);
+
+        final var bodyJson = assertThat(
+            this.mvc.patch()
+                .header("Accept", "application/json")
+                .uri("/v2/users/@me/saved-games/" + selectedGame.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200)
+            .bodyJson();
+
+        final var updatedGames = this.savedGameService.getByUser(supporterUser);
+        final var updatedGame = updatedGames.getFirst();
+
+        bodyJson.extractingPath("$.name")
+            .asString()
+            .isEqualTo(updatedGame.getName());
+
+        bodyJson.extractingPath("$.description")
+            .asString()
+            .isEqualTo(updatedGame.getDescription());
+
+        bodyJson.extractingPath("$.console")
+            .asString()
+            .isEqualTo(updatedGame.getConsole());
+
+        bodyJson.extractingPath("$.ratio")
+            .asString()
+            .isEqualTo(updatedGame.getRatio());
+
+        bodyJson.extractingPath("$.emulated")
+            .asBoolean()
+            .isEqualTo(updatedGame.isEmulated());
+
+        // check that bool is correctly flipped
+        assertThat(updatedGame.isEmulated()).isNotEqualTo(selectedGame.isEmulated());
+    }
+
+    private void addGamesToUser(OengusUser user) {
+        final var userId = user.getId();
+
+        for (int i = 0; i < 2; i++) {
+            final var newGame = this.gameFactory.withUserId(userId);
+
+            for (int xxx = 0; xxx < 5; xxx++) {
+                final var newCategory = this.categoryFactory.withGameId(-1);
+
+                newGame.getCategories().add(newCategory);
+            }
+
+            this.savedGameService.save(newGame);
+        }
+    }
+
     private OengusUser createPatreonSupporterUser() {
         final var testUser = this.userFactory.getNormalUser();
         testUser.setEnabled(true);
@@ -217,6 +289,14 @@ public class UserSavedGamesTests {
         return savedUser;
     }
 
+    private OengusUser createPatreonSupporterUserWithGames() {
+        final var user = this.createPatreonSupporterUser();
+
+        this.addGamesToUser(user);
+
+        return user;
+    }
+
     private OengusUser createUserWithGames() {
         final var testUser = this.userFactory.getNormalUser();
         testUser.setEnabled(true);
@@ -224,19 +304,8 @@ public class UserSavedGamesTests {
         testUser.setSavedGamesPublic(true);
 
         final var savedUser = this.userService.save(testUser);
-        final var userId = savedUser.getId();
 
-        for (int i = 0; i < 2; i++) {
-            final var newGame = this.gameFactory.withUserId(userId);
-
-            for (int xxx = 0; xxx < 5; xxx++) {
-                final var newCategory = this.categoryFactory.withGameId(-1);
-
-                newGame.getCategories().add(newCategory);
-            }
-
-            this.savedGameService.save(newGame);
-        }
+        this.addGamesToUser(savedUser);
 
         return savedUser;
     }

@@ -27,6 +27,11 @@ public class SavedGamePersistenceAdapter implements SavedGamePersistencePort {
     }
 
     @Override
+    public Optional<SavedGame> findByIdAndUser(int id, int userId) {
+        return this.repository.findByIdAndUser(id, User.ofId(userId)).map(this.mapper::toDomain);
+    }
+
+    @Override
     @Transactional
     public Page<SavedGame> findAllByUser(int userId, Pageable pageable) {
         return this.repository.findByUser(User.ofId(userId), pageable)

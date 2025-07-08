@@ -2,11 +2,9 @@ package app.oengus.adapter.rest.mapper;
 
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameCreateDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameUpdateDto;
 import app.oengus.domain.user.SavedGame;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(
     componentModel = "spring",
@@ -23,4 +21,7 @@ public interface SavedGameDtoMapper {
 
     @Mapping(target = "id", ignore = true)
     SavedGame createToDomain(SavedGameCreateDto dto, int userId);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void applyPatch(@MappingTarget SavedGame game, SavedGameUpdateDto patch);
 }

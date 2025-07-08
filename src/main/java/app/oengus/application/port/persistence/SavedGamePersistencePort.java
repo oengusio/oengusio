@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface SavedGamePersistencePort {
     Optional<SavedGame> findById(int id);
 
+    Optional<SavedGame> findByIdAndUser(int id, int userId);
+
     default Page<SavedGame> findAllByUser(OengusUser user, Pageable pageable) {
         return this.findAllByUser(user.getId(), pageable);
     }
