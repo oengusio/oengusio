@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@Schema(description = "Patch request body for saved games")
 public record SavedGameUpdateDto(
     @NotBlank
     @Size(max = Game.NAME_MAX_LENGTH)

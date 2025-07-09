@@ -45,4 +45,11 @@ public class SavedCategoryEntity {
     @Size(max = Category.VIDEO_MAX_LENGTH)
     private String video;
 
+    public static SavedCategoryEntity ofId(int id) {
+        final var category = new SavedCategoryEntity();
+
+        category.setId(id);
+
+        return category;
+    }
 }

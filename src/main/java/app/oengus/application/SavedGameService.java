@@ -1,8 +1,10 @@
 package app.oengus.application;
 
+import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.exception.OengusBusinessException;
+import app.oengus.domain.user.SavedCategory;
 import app.oengus.domain.user.SavedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SavedGameService {
     private final SavedGamePersistencePort savedGamePort;
+    private final SavedCategoryPersistencePort savedCategoryPort;
 
     public Optional<SavedGame> findByIdAndUser(int gameId, OengusUser user) {
         return this.findByIdAndUser(gameId, user.getId());
@@ -40,4 +43,11 @@ public class SavedGameService {
         throw new OengusBusinessException("SavedGameService#deleteForUser has not yet been implemented");
     }
 
+    public Optional<SavedCategory> findCategoryByIdAndGame(int gameId, int categoryId) {
+        return this.savedCategoryPort.findByIdAndGameId(categoryId, gameId);
+    }
+
+    public SavedCategory saveCategory(SavedCategory category) {
+        return this.savedCategoryPort.save(category);
+    }
 }

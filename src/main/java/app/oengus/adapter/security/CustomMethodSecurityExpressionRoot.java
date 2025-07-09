@@ -3,6 +3,7 @@ package app.oengus.adapter.security;
 import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.application.MarathonService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
+import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
@@ -34,19 +35,24 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     private final UserPersistencePort userPersistencePort;
     private final PatreonStatusPersistencePort patreonStatusPersistencePort;
     private final SchedulePersistencePort schedulePersistencePort;
+    private final SavedCategoryPersistencePort savedCategoryPersistencePort;
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(final Supplier<Authentication> authentication,
-                                              final MarathonService marathonService,
-                                              final UserPersistencePort userPersistencePort,
-                                              final SchedulePersistencePort schedulePersistencePort,
-                                              final PatreonStatusPersistencePort patreonStatusPersistencePort) {
+    public CustomMethodSecurityExpressionRoot(
+        final Supplier<Authentication> authentication,
+        final MarathonService marathonService,
+        final UserPersistencePort userPersistencePort,
+        final SchedulePersistencePort schedulePersistencePort,
+        final PatreonStatusPersistencePort patreonStatusPersistencePort,
+        final SavedCategoryPersistencePort savedCategoryPersistencePort
+    ) {
         super(authentication);
         this.marathonService = marathonService;
         this.userPersistencePort = userPersistencePort;
         this.schedulePersistencePort = schedulePersistencePort;
         this.patreonStatusPersistencePort = patreonStatusPersistencePort;
+        this.savedCategoryPersistencePort = savedCategoryPersistencePort;
     }
 
     public boolean isSelf(final int id) {
@@ -332,6 +338,20 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
 
         return marathon.getCreator().getId() == uId ||
             marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
+    }
+
+    public boolean isCategoryOwnedByUser(int categoryId) {
+        final var user = this.getUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        if (this.isBanned(user)) {
+            return false;
+        }
+
+        return this.savedCategoryPersistencePort.doesUserOwnCategory(user.getId(), categoryId);
     }
 
     @Nullable

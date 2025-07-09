@@ -1,12 +1,12 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameCreateDto;
-import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
-import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameUpdateDto;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.*;
+import app.oengus.adapter.rest.mapper.SavedCategoryDtoMapper;
 import app.oengus.adapter.rest.mapper.SavedGameDtoMapper;
 import app.oengus.application.SavedGameService;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.domain.exception.CategoryNotFoundException;
 import app.oengus.domain.exception.GameNotFoundException;
 import app.oengus.domain.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserSavedGamesApiController implements UserSavedGamesApi {
     private final UserSecurityPort securityPort;
     private final SavedGameDtoMapper savedGameMapper;
+    private final SavedCategoryDtoMapper savedCategoryMapper;
     private final SavedGameService savedGameService;
 
     @Override
@@ -70,5 +71,20 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(savedGameDto);
+    }
+
+    @Override
+    public ResponseEntity<SavedCategoryDto> updateCategory(int gameId, int categoryId, SavedCategoryCreateDto body) {
+        final var oldCategory = this.savedGameService.findCategoryByIdAndGame(gameId, categoryId)
+            .orElseThrow(CategoryNotFoundException::new);
+
+        this.savedCategoryMapper.applyPatch(oldCategory, body);
+
+        final var savedCategory = this.savedGameService.saveCategory(oldCategory);
+        final var dto = this.savedCategoryMapper.fromDomain(savedCategory);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(dto);
     }
 }

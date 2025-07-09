@@ -51,4 +51,12 @@ public class SavedGameEntity {
     @OrderBy("id ASC")
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<SavedCategoryEntity> categories;
+
+    public static SavedGameEntity ofId(int id) {
+        final var savedGame = new SavedGameEntity();
+
+        savedGame.setId(id);
+
+        return savedGame;
+    }
 }

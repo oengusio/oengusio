@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@Schema(description = "Create request for a saved game")
 public record SavedGameCreateDto(
     @NotBlank
     @Size(max = Game.NAME_MAX_LENGTH)
