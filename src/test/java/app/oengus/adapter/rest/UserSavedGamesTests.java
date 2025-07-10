@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest;
 
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedCategoryCreateDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameUpdateDto;
 import app.oengus.application.SavedGameService;
 import app.oengus.application.UserService;
@@ -252,6 +253,91 @@ public class UserSavedGamesTests {
 
         // check that bool is correctly flipped
         assertThat(updatedGame.isEmulated()).isNotEqualTo(selectedGame.isEmulated());
+    }
+
+    @Test
+    public void testUserCannotUpdateSavedCategoryFromOtherUser() throws IOException {
+        final var randoWithGames = this.createUserWithGames();
+        final var userThatWillUpdate = this.createPatreonSupporterUser();
+
+        final var randoCategory = this.savedGameService.getByUser(randoWithGames)
+            .getFirst()
+            .getCategories()
+            .getFirst();
+
+        final var categoryPatch = new SavedCategoryCreateDto(
+            randoCategory.getName(),
+            randoCategory.getDescription(),
+            randoCategory.getEstimate(),
+            randoCategory.getVideo()
+        );
+        final var jsonBody = this.objectMapper.writeValueAsString(categoryPatch);
+
+        final var authToken = this.jwtPort.generateToken(userThatWillUpdate);
+
+        assertThat(
+            this.mvc.patch()
+                .header("Accept", "application/json")
+                .uri("/v2/users/@me/saved-games/%d/%d".formatted(randoCategory.getGameId(), randoCategory.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(401);
+    }
+
+    @Test
+    public void testUserCanUpdateOwnSavedCategory() throws IOException {
+        final var supporterUser = this.createPatreonSupporterUserWithGames();
+
+        final var randoCategory = this.savedGameService.getByUser(supporterUser)
+            .getFirst()
+            .getCategories()
+            .getFirst();
+
+        final var categoryPatch = new SavedCategoryCreateDto(
+            randoCategory.getName(),
+            randoCategory.getDescription(),
+            randoCategory.getEstimate(),
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        );
+        final var jsonBody = this.objectMapper.writeValueAsString(categoryPatch);
+
+        final var authToken = this.jwtPort.generateToken(supporterUser);
+
+        final var bodyJson = assertThat(
+            this.mvc.patch()
+                .header("Accept", "application/json")
+                .uri("/v2/users/@me/saved-games/%d/%d".formatted(randoCategory.getGameId(), randoCategory.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200)
+            .bodyJson();
+
+        final var updatedGames = this.savedGameService.getByUser(supporterUser);
+        final var updatedCategory = updatedGames.getFirst().getCategories().getFirst();
+
+        bodyJson.extractingPath("$.name")
+            .asString()
+            .isEqualTo(updatedCategory.getName());
+
+        bodyJson.extractingPath("$.description")
+            .asString()
+            .isEqualTo(updatedCategory.getDescription());
+
+        bodyJson.extractingPath("$.estimate")
+            .asString()
+            .isEqualTo(updatedCategory.getEstimate().toString());
+
+        bodyJson.extractingPath("$.video")
+            .asString()
+            .isEqualTo("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+
+        bodyJson.extractingPath("$.video")
+            .asString()
+            .isEqualTo(updatedCategory.getVideo());
     }
 
     private void addGamesToUser(OengusUser user) {

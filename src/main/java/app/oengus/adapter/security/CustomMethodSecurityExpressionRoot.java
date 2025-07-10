@@ -360,6 +360,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return null;
         }
 
+        // TODO: set these to debug
         if (this.getFilterObject() instanceof final OengusUser user) {
             LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Using user from filter object");
             return user;
