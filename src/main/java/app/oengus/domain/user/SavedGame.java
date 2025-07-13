@@ -1,5 +1,6 @@
 package app.oengus.domain.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class SavedGame {
     private final int id;
@@ -20,5 +22,6 @@ public class SavedGame {
     private String ratio;
     private boolean emulated;
 
+    @EqualsAndHashCode.Exclude
     private List<SavedCategory> categories = new ArrayList<>();
 }

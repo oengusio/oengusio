@@ -340,6 +340,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
     }
 
+    // TODO: use game id instead since we will just have access to that in the controller
     public boolean isCategoryOwnedByUser(int categoryId) {
         final var user = this.getUser();
 

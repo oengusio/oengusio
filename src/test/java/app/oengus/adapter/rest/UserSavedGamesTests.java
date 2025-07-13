@@ -107,8 +107,6 @@ public class UserSavedGamesTests {
             .hasStatus(401);
     }
 
-    // TODO: make tests for supporter status
-
     @Test
     public void testNonSupporterCannotAddGames() throws IOException {
         final var supporterUser = this.createUserWithGames();
@@ -253,6 +251,62 @@ public class UserSavedGamesTests {
 
         // check that bool is correctly flipped
         assertThat(updatedGame.isEmulated()).isNotEqualTo(selectedGame.isEmulated());
+    }
+
+    @Test
+    public void testUserCanDeleteGames() {
+        final var supporterUser = this.createPatreonSupporterUserWithGames();
+
+        final var currSavedGames = this.savedGameService.getByUser(supporterUser);
+
+        assertThat(currSavedGames).hasSize(2);
+
+        final var authToken = this.jwtPort.generateToken(supporterUser);
+
+        assertThat(
+            this.mvc.delete()
+                .header("Accept", "application/json")
+                .uri("/v2/users/@me/saved-games/" + currSavedGames.getFirst().getId())
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200);
+
+        final var newSavedGames = this.savedGameService.getByUser(supporterUser);
+
+        assertThat(newSavedGames).hasSize(1);
+        assertThat(newSavedGames).doesNotContain(currSavedGames.getFirst());
+    }
+
+    @Test
+    public void testUserCanDeleteCategories() {
+        final var supporterUser = this.createPatreonSupporterUserWithGames();
+
+        final var currSavedGames = this.savedGameService.getByUser(supporterUser);
+        final var game = currSavedGames.getFirst();
+        final var categories = currSavedGames.getFirst().getCategories();
+        final var targetCategory = categories.getFirst();
+
+        assertThat(categories).hasSize(5);
+
+        final var authToken = this.jwtPort.generateToken(supporterUser);
+
+        assertThat(
+            this.mvc.delete()
+                .header("Accept", "application/json")
+                .uri(
+                    "/v2/users/@me/saved-games/%s/%s".formatted(game.getId(), targetCategory.getId())
+                )
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200);
+
+        final var newSavedGames = this.savedGameService.getByUser(supporterUser);
+        final var newGame = newSavedGames.getFirst();
+        final var newCategories = newGame.getCategories();
+
+        assertThat(newSavedGames).hasSize(2);
+        assertThat(newCategories).hasSize(4);
+        assertThat(newCategories).doesNotContain(targetCategory);
     }
 
     @Test

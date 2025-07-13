@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.*;
 import app.oengus.adapter.rest.mapper.SavedCategoryDtoMapper;
@@ -86,5 +87,30 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(dto);
+    }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> delete(int gameId) {
+        final var userId = this.securityPort.getAuthenticatedUserId();
+        final var foundGame = this.savedGameService.findByIdAndUser(gameId, userId)
+            .orElseThrow(GameNotFoundException::new);
+
+        this.savedGameService.delete(foundGame);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
+    }
+
+    @Override
+    public ResponseEntity<BooleanStatusDto> deleteCategory(int gameId, int categoryId) {
+        final var foundCategory = this.savedGameService.findCategoryByIdAndGame(gameId, categoryId)
+            .orElseThrow(CategoryNotFoundException::new);
+
+        this.savedGameService.deleteCategory(foundCategory);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(new BooleanStatusDto(true));
     }
 }

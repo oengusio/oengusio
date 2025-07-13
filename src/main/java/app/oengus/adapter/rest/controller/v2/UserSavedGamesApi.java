@@ -1,5 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
+import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +34,11 @@ public interface UserSavedGamesApi {
         @RequestBody @Valid SavedCategoryCreateDto body
     );
 
-    // TODO: delete game
+    @DeleteMapping("/{gameId}")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
+    ResponseEntity<BooleanStatusDto> delete(@PathVariable int gameId);
 
-    // TODO: delete category
+    @DeleteMapping("/{gameId}/{categoryId}")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter() && isCategoryOwnedByUser(#categoryId)")
+    ResponseEntity<BooleanStatusDto> deleteCategory(@PathVariable int gameId, @PathVariable int categoryId);
 }

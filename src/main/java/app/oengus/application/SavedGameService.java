@@ -39,6 +39,10 @@ public class SavedGameService {
         return this.savedGamePort.save(game);
     }
 
+    public void delete(SavedGame game) {
+        this.savedGamePort.delete(game);
+    }
+
     public void deleteForUser(OengusUser user) {
         throw new OengusBusinessException("SavedGameService#deleteForUser has not yet been implemented");
     }
@@ -49,5 +53,9 @@ public class SavedGameService {
 
     public SavedCategory saveCategory(SavedCategory category) {
         return this.savedCategoryPort.save(category);
+    }
+
+    public void deleteCategory(SavedCategory category) {
+        this.savedCategoryPort.delete(category);
     }
 }

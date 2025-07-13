@@ -1,13 +1,13 @@
 package app.oengus.domain.user;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Duration;
 
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @RequiredArgsConstructor
 public class SavedCategory {
     private final int id;
