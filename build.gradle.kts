@@ -8,7 +8,7 @@ plugins {
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "4.0.4" // TODO: do we need this?
-    id("io.freefair.lombok") version "8.13.1"
+    id("io.freefair.lombok") version "8.14"
 }
 
 dependencyManagement {
@@ -103,7 +103,7 @@ dependencies {
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "2.0.0")
 
     // OKHTTP
-    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0")
+    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "5.1.0")
 
     // COUNTRY SUPPORT
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
