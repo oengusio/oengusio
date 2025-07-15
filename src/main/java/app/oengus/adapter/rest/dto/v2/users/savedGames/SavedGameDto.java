@@ -4,11 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "A game saved by a user, used for showcasing on profiles and submission autocompletion")
+@Schema(description = "Also referred to as 'Saved Speedrun' in the UI, is a game saved by a user, used for showcasing on profiles and submission autofill.")
 public record SavedGameDto(
     @Schema(description = "Unique identifier of this saved game.")
     int id,
-    // TODO: add user id? Might be redundant as we already have it into the url
 
     @Schema(description = "The name of the game. E.G. \"The Sanley Parable\"")
     String name,
