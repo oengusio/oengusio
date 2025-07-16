@@ -21,7 +21,6 @@ public interface CategoryMapper {
     @Mapping(target = "id", source = "id")
     Category toDomain(CategoryEntity entity);
 
-    @Mapping(target = "fresh", ignore = true)
     @InheritInverseConfiguration(name = "toDomain")
     CategoryEntity fromDomain(Category category);
 }

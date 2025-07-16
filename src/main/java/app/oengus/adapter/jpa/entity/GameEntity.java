@@ -1,13 +1,12 @@
 package app.oengus.adapter.jpa.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.Hibernate;
-import org.springframework.beans.BeanUtils;
-
+import app.oengus.domain.submission.Game;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -27,22 +26,22 @@ public class GameEntity {
 
     @Column(name = "name")
     @NotBlank
-    @Size(max = 100)
+    @Size(max = Game.NAME_MAX_LENGTH)
     private String name;
 
     @Column(name = "description")
     @NotBlank
-    @Size(max = 500)
+    @Size(max = Game.DESCRIPTION_MAX_LENGTH)
     private String description;
 
     @Column(name = "console")
     @NotBlank
-    @Size(max = 45) // can grow upto 100 due to db type being varchar(100)
+    @Size(max = Game.CONSOLE_MAX_LENGTH) // can grow upto 100 due to db type being varchar(100)
     private String console;
 
     @Column(name = "ratio")
     @NotBlank
-    @Size(max = 10)
+    @Size(max = Game.RATIO_MAX_LENGTH)
     private String ratio;
 
     @Column(name = "emulated")
@@ -63,42 +62,6 @@ public class GameEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, console, ratio, emulated, categories);
-    }
-
-    @Deprecated(forRemoval = true)
-    public GameEntity fresh(boolean withSubmission) {
-        return this.fresh(withSubmission, true);
-    }
-
-    @Deprecated(forRemoval = true)
-    public GameEntity fresh(boolean withSubmission, boolean withCategories) {
-        final GameEntity game = new GameEntity();
-
-        // load all the items needed from the old game
-        Hibernate.initialize(this.getCategories());
-
-        BeanUtils.copyProperties(this, game, "categories");
-
-        if (withCategories) {
-            // De-reference :D
-            game.setCategories(
-                this.getCategories().stream().map((c) -> c.fresh(game)).toList()
-            );
-        }
-
-        if (withSubmission) {
-            game.setSubmission(this.getSubmission().fresh(false));
-        }
-
-        return game;
-    }
-
-    public static void initialize(GameEntity game) {
-        // load all the items needed from the old game
-        Hibernate.initialize(game.getCategories());
-        game.getCategories().forEach((category) -> {
-            Hibernate.initialize(category.getOpponents());
-        });
     }
 
     public static GameEntity ofId(int id) {

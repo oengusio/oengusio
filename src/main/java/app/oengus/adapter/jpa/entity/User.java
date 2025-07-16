@@ -98,6 +98,9 @@ public class User implements IUsername {
     @Column(name = "needs_password_reset")
     private boolean needsPasswordReset;
 
+    @Column(name = "saved_games_public")
+    private boolean savedGamesPublic;
+
     @AssertTrue
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users

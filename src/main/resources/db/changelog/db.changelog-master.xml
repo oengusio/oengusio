@@ -1324,4 +1324,77 @@
             <column name="created_at" type="timestamp with time zone" />
         </addColumn>
     </changeSet>
+
+    <changeSet author="duncte123" id="20250703-1">
+        <addColumn tableName="users">
+            <column name="saved_games_public" type="bool" defaultValueBoolean="true" />
+        </addColumn>
+
+        <createTable tableName="saved_games">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="console" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="ratio" type="varchar(10)">
+                <constraints nullable="false" />
+            </column>
+            <column name="emulated" type="boolean" defaultValueBoolean="false"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="saved_games"
+            baseColumnNames="user_id"
+            constraintName="fk_saved_games_user_id"
+            referencedTableName="users"
+            deleteCascade="true"
+            referencedColumnNames="id"
+        />
+        <createIndex tableName="saved_games" indexName="saved_game_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createTable tableName="saved_categories">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="game_id" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="video" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="estimate" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="saved_categories"
+            baseColumnNames="game_id"
+            constraintName="fk_saved_categories_saved_game_id"
+            referencedTableName="saved_games"
+            deleteCascade="true"
+            referencedColumnNames="id"
+        />
+        <createIndex tableName="saved_categories" indexName="saved_categories_game_id">
+            <column name="game_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
