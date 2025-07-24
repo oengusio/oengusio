@@ -15,8 +15,8 @@ public interface SavedCategoryDtoMapper {
     SavedCategory toDomain(SavedCategoryDto dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "gameId", ignore = true)
-    SavedCategory createToDomain(SavedCategoryCreateDto dto);
+//    @Mapping(target = "gameId", ignore = true)
+    SavedCategory createToDomain(int gameId, SavedCategoryCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void applyPatch(@MappingTarget SavedCategory category, SavedCategoryCreateDto dto);

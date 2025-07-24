@@ -365,6 +365,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         if (this.getFilterObject() instanceof final OengusUser user) {
             LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Using user from filter object");
             return user;
+        } else {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Filter object is {}", this.filterObject);
         }
 
         if (this.getPrincipal() instanceof final UserDetailsDto tmp) {

@@ -26,6 +26,10 @@ public interface UserSavedGamesApi {
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
     ResponseEntity<SavedGameDto> update(@PathVariable int gameId, @RequestBody @Valid SavedGameUpdateDto body);
 
+    @PostMapping("/{gameId}")
+    @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
+    ResponseEntity<SavedCategoryDto> createCategory(@PathVariable int gameId, @RequestBody @Valid SavedCategoryCreateDto body);
+
     @PatchMapping("/{gameId}/{categoryId}")
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter() && isCategoryOwnedByUser(#categoryId)")
     ResponseEntity<SavedCategoryDto> updateCategory(

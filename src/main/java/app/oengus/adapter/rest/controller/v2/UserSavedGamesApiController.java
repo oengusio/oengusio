@@ -75,6 +75,24 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
     }
 
     @Override
+    public ResponseEntity<SavedCategoryDto> createCategory(int gameId, SavedCategoryCreateDto body) {
+        final var userId = this.securityPort.getAuthenticatedUserId();
+        final var foundGame = this.savedGameService.findByIdAndUser(gameId, userId)
+            .orElseThrow(GameNotFoundException::new);
+        final var unsavedSavedCategory = this.savedCategoryMapper.createToDomain(gameId, body);
+        final var savedCategory = this.savedGameService.saveCategory(unsavedSavedCategory);
+
+        // foundGame.getCategories().add(savedCategory);
+        // this.savedGameService.save(foundGame);
+
+        final var dto = this.savedCategoryMapper.fromDomain(savedCategory);
+
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(dto);
+    }
+
+    @Override
     public ResponseEntity<SavedCategoryDto> updateCategory(int gameId, int categoryId, SavedCategoryCreateDto body) {
         final var oldCategory = this.savedGameService.findCategoryByIdAndGame(gameId, categoryId)
             .orElseThrow(CategoryNotFoundException::new);

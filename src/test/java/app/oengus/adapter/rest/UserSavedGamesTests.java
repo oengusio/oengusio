@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -277,6 +278,7 @@ public class UserSavedGamesTests {
         assertThat(newSavedGames).doesNotContain(currSavedGames.getFirst());
     }
 
+    // TODO: fix, category does not get deleted properly?
     @Test
     public void testUserCanDeleteCategories() {
         final var supporterUser = this.createPatreonSupporterUserWithGames();
@@ -301,7 +303,7 @@ public class UserSavedGamesTests {
             .hasStatus(200);
 
         final var newSavedGames = this.savedGameService.getByUser(supporterUser);
-        final var newGame = newSavedGames.getFirst();
+        final var newGame = newSavedGames.stream().filter(it -> it.getId() == game.getId()).findFirst().get();
         final var newCategories = newGame.getCategories();
 
         assertThat(newSavedGames).hasSize(2);
@@ -392,6 +394,41 @@ public class UserSavedGamesTests {
         bodyJson.extractingPath("$.video")
             .asString()
             .isEqualTo(updatedCategory.getVideo());
+    }
+
+    @Test
+    public void testUserCanCreateSavedCategory() throws IOException {
+        final var supporterUser = this.createPatreonSupporterUserWithGames();
+        final var selectedGame = this.savedGameService.getByUser(supporterUser).getFirst();
+
+        assertThat(selectedGame.getCategories()).hasSize(5);
+
+
+        final var body = new SavedCategoryCreateDto(
+            "I am an example category",
+            "HI I am a description!",
+            Duration.ofDays(1),
+            "https://google.com/"
+        );
+        final var jsonBody = this.objectMapper.writeValueAsString(body);
+
+        final var authToken = this.jwtPort.generateToken(supporterUser);
+
+        final var bodyJson = assertThat(
+            this.mvc.post()
+                .header("Accept", "application/json")
+                .uri("/v2/users/@me/saved-games/%d".formatted(selectedGame.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200)
+            .bodyJson();
+
+
+        final var updatedGame = this.savedGameService.getByUser(supporterUser).getFirst();
+
+        assertThat(updatedGame.getCategories()).hasSize(6);
     }
 
     private void addGamesToUser(OengusUser user) {

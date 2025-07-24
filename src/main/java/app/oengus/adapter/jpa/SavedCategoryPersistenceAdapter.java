@@ -27,6 +27,11 @@ public class SavedCategoryPersistenceAdapter implements SavedCategoryPersistence
     @Override
     public SavedCategory save(SavedCategory category) {
         final var entity = this.mapper.fromDomain(category);
+
+        if (entity.getId() < 1) {
+            entity.setId(null);
+        }
+
         final var savedEntity = this.repository.save(entity);
 
         return this.mapper.toDomain(savedEntity);
