@@ -47,9 +47,9 @@ public class SavedGameEntity {
     @Column(name = "emulated")
     private boolean emulated;
 
-    // TODO: not a fan of eager fetching, but it seems to bre required for some stupid reason
+    // HOW THE FUCK IS THIS THE CAUSE FOR NOT DELETING https://stackoverflow.com/a/67423651/4807235
     @OrderBy("id ASC")
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SavedCategoryEntity> categories;
 
     public static SavedGameEntity ofId(int id) {

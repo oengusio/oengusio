@@ -278,7 +278,6 @@ public class UserSavedGamesTests {
         assertThat(newSavedGames).doesNotContain(currSavedGames.getFirst());
     }
 
-    // TODO: fix, category does not get deleted properly?
     @Test
     public void testUserCanDeleteCategories() {
         final var supporterUser = this.createPatreonSupporterUserWithGames();

@@ -7,9 +7,9 @@ import app.oengus.adapter.jpa.repository.CategoryRepository;
 import app.oengus.application.port.persistence.CategoryPersistencePort;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

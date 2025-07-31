@@ -5,10 +5,9 @@ import app.oengus.adapter.jpa.mapper.SavedGameEntityMapper;
 import app.oengus.adapter.jpa.repository.SavedGameRepository;
 import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.domain.user.SavedGame;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +26,7 @@ public class SavedGamePersistenceAdapter implements SavedGamePersistencePort {
     }
 
     @Override
+    @Transactional
     public Optional<SavedGame> findByIdAndUser(int id, int userId) {
         return this.repository.findByIdAndUser(id, User.ofId(userId)).map(this.mapper::toDomain);
     }

@@ -4,8 +4,8 @@ import app.oengus.adapter.jpa.entity.SavedCategoryEntity;
 import app.oengus.adapter.jpa.entity.SavedGameEntity;
 import app.oengus.adapter.jpa.entity.User;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 

@@ -9,11 +9,7 @@ public interface SavedCategoryPersistencePort {
 
     SavedCategory save(SavedCategory category);
 
-    default void delete(SavedCategory category) {
-        this.deleteById(category.getId());
-    }
-
-    void deleteById(int id);
+    void delete(SavedCategory category);
 
     boolean doesUserOwnCategory(int userId, int categoryId);
 }

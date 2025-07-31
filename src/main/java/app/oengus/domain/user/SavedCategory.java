@@ -6,8 +6,8 @@ import java.time.Duration;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class SavedCategory {
     private final int id;

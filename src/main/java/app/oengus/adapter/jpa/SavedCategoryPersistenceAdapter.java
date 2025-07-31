@@ -9,6 +9,7 @@ import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.domain.user.SavedCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class SavedCategoryPersistenceAdapter implements SavedCategoryPersistence
     }
 
     @Override
+    @Transactional
     public SavedCategory save(SavedCategory category) {
         final var entity = this.mapper.fromDomain(category);
 
@@ -38,8 +40,9 @@ public class SavedCategoryPersistenceAdapter implements SavedCategoryPersistence
     }
 
     @Override
-    public void deleteById(int id) {
-        this.repository.deleteById(id);
+    @Transactional
+    public void delete(SavedCategory category) {
+        this.repository.deleteById(category.getId());
     }
 
     @Override

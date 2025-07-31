@@ -15,8 +15,8 @@ import java.time.Duration;
 @Getter
 @Setter
 @Entity
-@EqualsAndHashCode(exclude = { "game" })
 @Table(name = "saved_categories")
+@EqualsAndHashCode(exclude = { "game" })
 public class SavedCategoryEntity {
 
     @Id
