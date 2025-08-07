@@ -35,7 +35,7 @@ public record SavedGameCreateDto(
     boolean emulated,
 
     @NotNull
-    @Size(max = 20) // TODO: what would be a good number to limit this at? Like no sane person learns 20 categories in a single game right?
+    @Size(min = 1, max = 20) // Ensure the user creates at least one category // TODO: what would be a good number to limit this at? Like no sane person learns 20 categories in a single game right?
     @Schema(description = "List of categories that this game has.")
     List<SavedCategoryCreateDto> categories
 ) {
