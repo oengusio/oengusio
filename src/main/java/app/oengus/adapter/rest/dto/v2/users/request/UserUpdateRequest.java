@@ -63,6 +63,8 @@ public class UserUpdateRequest {
     @Nullable
     private String patreonId;
 
+    private boolean savedGamesPublic;
+
     // <editor-fold desc="validation" defaultstate="collapsed">
     @AssertTrue(message = "You must have at least one account synced")
     public boolean isAtLeastOneAccountSynchronized() {
