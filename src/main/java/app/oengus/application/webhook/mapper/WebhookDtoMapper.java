@@ -21,6 +21,6 @@ public interface WebhookDtoMapper {
     @BeanMapping(ignoreUnmappedSourceProperties = {"id"})
     WebhookConnectionDto fromDomain(Connection connection);
 
-    @BeanMapping(ignoreUnmappedSourceProperties = {"email", "password", "enabled", "roles", "emailVerified", "mfaEnabled", "mfaSecret", "patreonId", "discordId", "twitchId", "twitterId", "createdAt", "lastLogin", "needsPasswordReset"})
+    @BeanMapping(ignoreUnmappedSourceProperties = {"email", "password", "enabled", "roles", "emailVerified", "mfaEnabled", "mfaSecret", "patreonId", "discordId", "twitchId", "twitterId", "createdAt", "lastLogin", "needsPasswordReset", "savedGamesPublic"})
     WebhookUserDto fromDomain(OengusUser user);
 }

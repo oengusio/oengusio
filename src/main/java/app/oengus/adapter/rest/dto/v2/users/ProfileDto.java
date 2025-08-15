@@ -37,6 +37,9 @@ public class ProfileDto {
     @Schema(description = "The country that this user resides in")
     private String country;
 
+    @Schema(description = "True if the user wishes to display their saved games publicly. Calling the saved games API will return in empty responses when this is false.")
+    private boolean savedGamesPublic;
+
     @Schema(description = "Connected accounts of this user")
     private List<ConnectionDto> connections;
 }

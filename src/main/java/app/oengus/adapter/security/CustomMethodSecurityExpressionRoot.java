@@ -3,6 +3,7 @@ package app.oengus.adapter.security;
 import app.oengus.adapter.security.dto.UserDetailsDto;
 import app.oengus.application.MarathonService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
+import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import app.oengus.domain.OengusUser;
@@ -11,6 +12,7 @@ import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Schedule;
 import javassist.NotFoundException;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -33,19 +35,24 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     private final UserPersistencePort userPersistencePort;
     private final PatreonStatusPersistencePort patreonStatusPersistencePort;
     private final SchedulePersistencePort schedulePersistencePort;
+    private final SavedCategoryPersistencePort savedCategoryPersistencePort;
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(final Supplier<Authentication> authentication,
-                                              final MarathonService marathonService,
-                                              final UserPersistencePort userPersistencePort,
-                                              final SchedulePersistencePort schedulePersistencePort,
-                                              final PatreonStatusPersistencePort patreonStatusPersistencePort) {
+    public CustomMethodSecurityExpressionRoot(
+        final Supplier<Authentication> authentication,
+        final MarathonService marathonService,
+        final UserPersistencePort userPersistencePort,
+        final SchedulePersistencePort schedulePersistencePort,
+        final PatreonStatusPersistencePort patreonStatusPersistencePort,
+        final SavedCategoryPersistencePort savedCategoryPersistencePort
+    ) {
         super(authentication);
         this.marathonService = marathonService;
         this.userPersistencePort = userPersistencePort;
         this.schedulePersistencePort = schedulePersistencePort;
         this.patreonStatusPersistencePort = patreonStatusPersistencePort;
+        this.savedCategoryPersistencePort = savedCategoryPersistencePort;
     }
 
     public boolean isSelf(final int id) {
@@ -118,6 +125,37 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         }
 
         return user.isEmailVerified();
+    }
+
+    public boolean isSupporter() {
+        return this.isSupporter(this.getUser());
+    }
+
+    public boolean isSupporter(OengusUser user) {
+        if (user == null) {
+            return false;
+        }
+
+        // Sponsors are different from patrons
+        if (user.getRoles().contains(Role.ROLE_SPONSOR) || user.getRoles().contains(Role.ROLE_ADMIN)) {
+            return true;
+        }
+
+        // TODO: use UserService#getSupporterStatus? Current impl of this fn saves a database call if sponsor role is found.
+        final var userPatreonId = user.getPatreonId();
+
+        if (userPatreonId != null && !userPatreonId.isBlank()) {
+            final var patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(user.getPatreonId());
+
+            if (patreonStatus.isPresent()) {
+                final var status = patreonStatus.get();
+
+                // Pledge amount is in cents, supporters need to at least pledge €1
+                return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT;
+            }
+        }
+
+        return false;
     }
 
     public boolean isMarathonArchived(final String id) throws NotFoundException {
@@ -302,15 +340,41 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
     }
 
+    public boolean isCategoryOwnedByUser(int categoryId) {
+        final var user = this.getUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        if (this.isBanned(user)) {
+            return false;
+        }
+
+        return this.savedCategoryPersistencePort.doesUserOwnCategory(user.getId(), categoryId);
+    }
+
     @Nullable
     public OengusUser getUser() {
         if (this.isAnonymous()) {
             return null;
         }
 
+        if (this.getFilterObject() instanceof final OengusUser user) {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Using user from filter object");
+            return user;
+        } else {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Filter object is {}", this.filterObject);
+        }
+
         if (this.getPrincipal() instanceof final UserDetailsDto tmp) {
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Fetching a new user");
             // fetch an up-to-date user to make sure we have the correct roles
-            return this.userPersistencePort.getById(tmp.id());
+            final var foundUser = this.userPersistencePort.getById(tmp.id());
+
+            this.setFilterObject(foundUser);
+
+            return foundUser;
         }
 
         return null;
@@ -348,31 +412,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     }
 
     private boolean isMarathonCreatorSupporter(String marathonId) {
-        final var marathonCreator = this.marathonService.findCreatorById(marathonId);
-
-        if (marathonCreator.isPresent()) {
-            final var creator = marathonCreator.get();
-
-            // Sponsors are different from patrons
-            if (creator.getRoles().contains(Role.ROLE_SPONSOR) || creator.getRoles().contains(Role.ROLE_ADMIN)) {
-                return true;
-            }
-
-            // TODO: use UserService#getSupporterStatus? Current impl saves a database call if sponsor role is found.
-            final var userPatreonId = creator.getPatreonId();
-
-            if (userPatreonId != null && !userPatreonId.isBlank()) {
-                final var patreonStatus = this.patreonStatusPersistencePort.findByPatreonId(creator.getPatreonId());
-
-                if (patreonStatus.isPresent()) {
-                    final var status = patreonStatus.get();
-
-                    // Pledge amount is in cents, supporters need to at least pledge €1
-                    return status.getStatus() == PatreonPledgeStatus.ACTIVE_PATRON && status.getPledgeAmount() >= MIN_PATREON_PLEDGE_AMOUNT;
-                }
-            }
-        }
-
-        return false;
+        return this.marathonService.findCreatorById(marathonId)
+            .map(this::isSupporter)
+            .orElse(false);
     }
 }

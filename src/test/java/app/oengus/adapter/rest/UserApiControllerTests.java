@@ -1,7 +1,5 @@
 package app.oengus.adapter.rest;
 
-import app.oengus.adapter.rest.dto.v2.auth.LoginResponseDto;
-import app.oengus.application.AuthService;
 import app.oengus.application.UserService;
 import app.oengus.application.port.security.JWTPort;
 import app.oengus.domain.OengusUser;
@@ -24,11 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @RequiredArgsConstructor(onConstructor_ = { @Autowired })
 public class UserApiControllerTests {
-
     private final MockMvcTester mvc;
     private final OengusUserFactory userFactory;
     private final UserService userService;
-    private final AuthService authService;
     private final JWTPort jwtPort;
 
     @Test
@@ -38,6 +34,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.get()
+                .header("Accept", "application/json")
                 .uri("/v2/users/@me")
                 .header("Authorization", "Bearer " + authToken)
         )
@@ -80,6 +77,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)
@@ -118,6 +116,7 @@ public class UserApiControllerTests {
 
         assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + userToUpdate.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)
@@ -140,6 +139,7 @@ public class UserApiControllerTests {
 
         final var bodyJson = assertThat(
             this.mvc.patch()
+                .header("Accept", "application/json")
                 .uri("/v2/users/" + userToUpdate.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(patchBody)

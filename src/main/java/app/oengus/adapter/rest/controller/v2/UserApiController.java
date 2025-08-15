@@ -3,9 +3,12 @@ package app.oengus.adapter.rest.controller.v2;
 import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
+import app.oengus.adapter.rest.mapper.SavedGameDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
 import app.oengus.application.UserService;
+import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.Role;
 import app.oengus.domain.exception.UserNotFoundException;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +39,8 @@ public class UserApiController implements UserApi {
     private final UserSecurityPort securityPort;
     private final UserLookupService lookupService;
     private final UserDtoMapper mapper;
+    private final SavedGamePersistencePort savedGamePort;
+    private final SavedGameDtoMapper savedGameMapper;
     // TODO: automatically inject this
     private final OkHttpClient client = new OkHttpClient();
 
@@ -180,5 +186,23 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok()
             .headers(cachingHeaders(5))
             .body(this.mapper.fromDomain(model));
+    }
+
+    @Override
+    public ResponseEntity<DataListDto<SavedGameDto>> getAllSavedGames(int id) {
+        final var foundUser = this.lookupService.findById(id).orElseThrow(UserNotFoundException::new);
+
+        if (!foundUser.isSavedGamesPublic()) {
+            return ResponseEntity.ok()
+                .headers(cachingHeaders(24 * 60, false))
+                .body(new DataListDto<>());
+        }
+
+        final var savedGames = this.savedGamePort.findAllByUser(id, Pageable.unpaged())
+            .map(this.savedGameMapper::fromDomain);
+
+        return ResponseEntity.ok()
+            .headers(cachingHeaders(24 * 60, false))
+            .body(new DataListDto<>(savedGames.getContent()));
     }
 }

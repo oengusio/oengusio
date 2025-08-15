@@ -3,6 +3,7 @@ package app.oengus.configuration.spring.handler;
 import app.oengus.adapter.security.CustomMethodSecurityExpressionRoot;
 import app.oengus.application.MarathonService;
 import app.oengus.application.port.persistence.PatreonStatusPersistencePort;
+import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.application.port.persistence.UserPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     private final ObjectFactory<UserPersistencePort> userPersistencePort;
     private final ObjectFactory<SchedulePersistencePort> schedulePersistencePort;
     private final ObjectFactory<PatreonStatusPersistencePort> patreonStatusPersistencePort;
+    private final ObjectFactory<SavedCategoryPersistencePort> savedCategoryPersistencePort;
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
@@ -59,7 +61,8 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
             this.marathonService.getObject(),
             this.userPersistencePort.getObject(),
             this.schedulePersistencePort.getObject(),
-            this.patreonStatusPersistencePort.getObject()
+            this.patreonStatusPersistencePort.getObject(),
+            this.savedCategoryPersistencePort.getObject()
         );
 
         root.setPermissionEvaluator(this.getPermissionEvaluator());

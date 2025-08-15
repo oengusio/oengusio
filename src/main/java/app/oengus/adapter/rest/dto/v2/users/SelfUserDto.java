@@ -48,6 +48,9 @@ public class SelfUserDto {
     @Schema(description = "True if you verified your email")
     private boolean emailVerified;
 
+    @Schema(description = "True if the user wishes to display their saved games publicly. Calling the saved games API will return in empty responses when this is false.")
+    private boolean savedGamesPublic;
+
     private String discordId;
     private String twitchId;
     private String patreonId;

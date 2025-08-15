@@ -20,7 +20,7 @@ For other ways to install JDK and Postgres, see their respective websites:
 ## Source code
 
 ```shell
-$ git clone git@github.com:esamarathon/oengusio.git
+$ git clone git@github.com:oengusio/oengusio.git
 $ cd oengusio
 ```
 
