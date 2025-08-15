@@ -124,9 +124,6 @@ public interface UserApi {
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned()")
     ResponseEntity<SupporterStatusDto> getUserSupporterStatus(@PathVariable final int id);
 
-    /// //////
-    // TODO: how to display in UI? Current idea is: {game.name} - {category.name} - {game.console}
-
     @GetMapping("/{id}/saved-games")
     @Operation(
         summary = "Get the saved games for a user by their id, has a 24 hour cache",

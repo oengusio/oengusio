@@ -3,7 +3,6 @@ package app.oengus.application;
 import app.oengus.application.port.persistence.SavedCategoryPersistencePort;
 import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.domain.OengusUser;
-import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.user.SavedCategory;
 import app.oengus.domain.user.SavedGame;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +40,6 @@ public class SavedGameService {
 
     public void delete(SavedGame game) {
         this.savedGamePort.delete(game);
-    }
-
-    public void deleteForUser(OengusUser user) {
-        throw new OengusBusinessException("SavedGameService#deleteForUser has not yet been implemented");
     }
 
     public Optional<SavedCategory> findCategoryByIdAndGame(int gameId, int categoryId) {

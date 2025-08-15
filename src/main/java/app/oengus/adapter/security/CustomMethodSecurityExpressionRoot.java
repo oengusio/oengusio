@@ -340,7 +340,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             marathon.getModerators().stream().anyMatch((u) -> u.getId() == uId);
     }
 
-    // TODO: use game id instead since we will just have access to that in the controller
     public boolean isCategoryOwnedByUser(int categoryId) {
         final var user = this.getUser();
 
@@ -361,16 +360,15 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return null;
         }
 
-        // TODO: set these to debug
         if (this.getFilterObject() instanceof final OengusUser user) {
-            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Using user from filter object");
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Using user from filter object");
             return user;
         } else {
-            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Filter object is {}", this.filterObject);
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Filter object is {}", this.filterObject);
         }
 
         if (this.getPrincipal() instanceof final UserDetailsDto tmp) {
-            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).info("Fetching a new user");
+            LoggerFactory.getLogger(CustomMethodSecurityExpressionRoot.class).debug("Fetching a new user");
             // fetch an up-to-date user to make sure we have the correct roles
             final var foundUser = this.userPersistencePort.getById(tmp.id());
 
