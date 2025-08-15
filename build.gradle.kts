@@ -82,7 +82,7 @@ dependencies {
     // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.17.0")
+    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.18.0")
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.0")
 
     // FEIGN
@@ -113,7 +113,7 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.0")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.1")
     implementation("org.passay:passay:1.6.6")
 
     // idk
@@ -132,7 +132,7 @@ dependencies {
     // And of course, we are going to write unit tests.
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("net.datafaker:datafaker:2.4.3")
+    testImplementation("net.datafaker:datafaker:2.4.4")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.3.232")
 }
