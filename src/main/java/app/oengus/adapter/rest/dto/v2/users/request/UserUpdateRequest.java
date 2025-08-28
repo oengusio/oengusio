@@ -66,16 +66,17 @@ public class UserUpdateRequest {
     private boolean savedGamesPublic;
 
     // <editor-fold desc="validation" defaultstate="collapsed">
-    @AssertTrue(message = "You must have at least one account synced")
+    // TODO: check if password hash is set
+    /*@AssertTrue(message = "You must have at least one account synced")
     public boolean isAtLeastOneAccountSynchronized() {
         // ignore for disabled users
-        if (!this.enabled) { // TODO: check if password hash is set
+        if (!this.enabled) {
             return true;
         }
 
         return StringUtils.isNotEmpty(this.discordId) ||
             StringUtils.isNotEmpty(this.twitchId);
-    }
+    }*/
 
     @AssertTrue(message = "The country code is not valid")
     public boolean isCountryValid() {
