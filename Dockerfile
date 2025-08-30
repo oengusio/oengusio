@@ -1,5 +1,7 @@
 FROM azul/zulu-openjdk-alpine:21 AS builder
 
+RUN apk update --no-cache && apk add curl
+
 WORKDIR /oengus-backend
 COPY gradle ./gradle
 COPY gradlew build.gradle.kts settings.gradle.kts ./
