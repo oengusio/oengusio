@@ -136,6 +136,10 @@ public class UserService {
             || "settings".equalsIgnoreCase(name);
     }
 
+    public boolean hasPasswordSet(final int userId) {
+        return this.userPersistencePort.hasPassword(userId);
+    }
+
     public OengusUser save(final OengusUser user) {
         return this.userPersistencePort.save(user);
     }

@@ -12,10 +12,12 @@ import app.oengus.application.port.persistence.SavedGamePersistencePort;
 import app.oengus.application.port.security.UserSecurityPort;
 import app.oengus.domain.Role;
 import app.oengus.domain.exception.UserNotFoundException;
+import app.oengus.domain.exception.user.AccountSyncOrPasswordRequiredException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -72,6 +74,12 @@ public class UserApiController implements UserApi {
         // Unverify the email if they change it!
         if (!patch.getEmail().equalsIgnoreCase(requestedUser.getEmail())) {
             requestedUser.setEmailVerified(false);
+        }
+
+        final var hasPW = this.userService.hasPasswordSet(id);
+
+        if (!hasPW && StringUtils.isAllBlank(patch.getDiscordId(), patch.getTwitchId())) {
+            throw new AccountSyncOrPasswordRequiredException();
         }
 
         this.mapper.applyPatch(requestedUser, patch);

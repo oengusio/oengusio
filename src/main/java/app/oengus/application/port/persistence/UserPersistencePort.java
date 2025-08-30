@@ -25,6 +25,8 @@ public interface UserPersistencePort {
 
     boolean existsByUsername(String name);
 
+    boolean hasPassword(int userId);
+
     Optional<OengusUser> findByDiscordId(final String discordId);
 
     Optional<OengusUser> findByTwitchId(final String twitchId);

@@ -102,6 +102,11 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     }
 
     @Override
+    public boolean hasPassword(final int userId) {
+        return this.userRepository.hasPasswordById(userId);
+    }
+
+    @Override
     public Optional<OengusUser> findByDiscordId(String discordId) {
         return this.userRepository.findByDiscordId(discordId)
             .map(this.mapper::toDomain);
