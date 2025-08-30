@@ -143,6 +143,8 @@ springdoc:
     pathsToMatch: /**
 
 management:
+    server:
+        port: 8082
     endpoints:
         web:
             exposure:
