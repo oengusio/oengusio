@@ -76,7 +76,9 @@ See [docs/DEVELOPER.md](./docs/DEVELOPER.md) for detailed instructions on how to
 
 ## Support
 
-Please join the official [Discord server](https://discord.gg/ZZFS8YT) for questions and support
+Support for Oengus is available on both IRC and Discord:
+- IRC: irc.libera.chat #oengus
+- Discord: https://discord.gg/ZZFS8YT
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
