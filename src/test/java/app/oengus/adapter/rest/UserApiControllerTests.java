@@ -104,6 +104,92 @@ public class UserApiControllerTests {
     }
 
     @Test
+    public void authenticatedUserCanUpdateSelfWithoutSocialsWhenPwSet() {
+        var user = this.createTestUser();
+
+        user.setDiscordId(null);
+        user.setPassword("ASecurePassword!");
+
+        user = this.userService.save(user);
+
+        final var authToken = this.jwtPort.generateToken(user);
+
+        String patchBody = """
+            {"username": "%s", "displayName": "%s", "email": "coolNewEmail@example.com", "enabled": true, "pronouns": [], "languagesSpoken": [], "country": "NL", "connections": [], "discordId": null, "twitchId": null, "patreonId": null}
+            """.trim().formatted(user.getUsername().toUpperCase(Locale.ROOT), user.getDisplayName());
+
+        final var bodyJson = assertThat(
+            this.mvc.patch()
+                .header("Accept", "application/json")
+                .uri("/v2/users/" + user.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(patchBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200)
+            .bodyJson();
+
+        bodyJson.extractingPath("$.username")
+            .asString()
+            .isEqualTo(user.getUsername());
+
+        bodyJson.extractingPath("$.displayName")
+            .asString()
+            .isEqualTo(user.getDisplayName());
+
+        bodyJson.extractingPath("$.email")
+            .asString()
+            .isEqualTo("coolNewEmail@example.com");
+
+        bodyJson.extractingPath("$.emailVerified")
+            .asBoolean()
+            .isEqualTo(false);
+    }
+
+    @Test
+    public void authenticatedUserCanUpdateSelfWithSocialsWhithoutPwSet() {
+        var user = this.createTestUser();
+
+        user.setDiscordId("1234567890");
+        user.setPassword(null);
+
+        user = this.userService.save(user);
+
+        final var authToken = this.jwtPort.generateToken(user);
+
+        String patchBody = """
+            {"username": "%s", "displayName": "%s", "email": "coolNewEmail@example.com", "enabled": true, "pronouns": [], "languagesSpoken": [], "country": "NL", "connections": [], "discordId": "1234567890", "twitchId": null, "patreonId": null}
+            """.trim().formatted(user.getUsername().toUpperCase(Locale.ROOT), user.getDisplayName());
+
+        final var bodyJson = assertThat(
+            this.mvc.patch()
+                .header("Accept", "application/json")
+                .uri("/v2/users/" + user.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(patchBody)
+                .header("Authorization", "Bearer " + authToken)
+        )
+            .hasStatus(200)
+            .bodyJson();
+
+        bodyJson.extractingPath("$.username")
+            .asString()
+            .isEqualTo(user.getUsername());
+
+        bodyJson.extractingPath("$.displayName")
+            .asString()
+            .isEqualTo(user.getDisplayName());
+
+        bodyJson.extractingPath("$.email")
+            .asString()
+            .isEqualTo("coolNewEmail@example.com");
+
+        bodyJson.extractingPath("$.emailVerified")
+            .asBoolean()
+            .isEqualTo(false);
+    }
+
+    @Test
     public void authenticatedUserCannotUpdateOthers() {
         final var user = this.createTestUser();
         final var authToken = this.jwtPort.generateToken(user);

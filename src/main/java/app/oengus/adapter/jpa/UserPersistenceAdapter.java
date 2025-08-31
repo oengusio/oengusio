@@ -103,7 +103,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
 
     @Override
     public boolean hasPassword(final int userId) {
-        return this.userRepository.hasPasswordById(userId);
+        return this.userRepository.hasPasswordById(userId).orElse(false);
     }
 
     @Override

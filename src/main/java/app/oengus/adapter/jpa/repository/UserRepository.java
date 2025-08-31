@@ -29,7 +29,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     boolean existsByTwitchId(String twitchId);
 
     @Query("SELECT id > 0 FROM User WHERE id = :userId AND hashedPassword IS NOT NULL AND hashedPassword != ''")
-    boolean hasPasswordById(@Param("userId") int userId);
+    Optional<Boolean> hasPasswordById(@Param("userId") int userId);
 
     List<User> findByUsernameContainingIgnoreCaseAndEnabledTrue(String username);
 
