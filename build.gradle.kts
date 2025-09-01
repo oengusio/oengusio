@@ -120,7 +120,7 @@ dependencies {
     implementation("org.javassist:javassist:3.30.2-GA")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.25.0")
+    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.26.0")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
