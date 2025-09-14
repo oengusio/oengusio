@@ -12,6 +12,7 @@ public enum SocialPlatform {
     NICO,
     SNAPCHAT,
     SPEEDRUNCOM,
+    SPEEDRUNSME,
     TWITCH,
     TWITTER,
     MASTODON,
