@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 // TODO: needs a lot of cleanup
@@ -157,6 +159,28 @@ public class OengusWebhookService {
         if (handleOnBot(url)) {
             data.put("url", url);
             final String jsonData = mapper.writeValueAsString(data);
+            this.rabbitMq.queueBotMessage(jsonData);
+
+            return;
+        }
+
+        callAsync(url, data);
+    }
+
+    public void sendSubmissionChangedStatus(final String url, final boolean submissionsOpen, @Nullable final ZonedDateTime closeDateTime) throws IOException {
+        final var submissionData = mapper.createObjectNode()
+            .put("open", submissionsOpen)
+            .put("closes_at", mapper.writeValueAsString(closeDateTime));
+
+        final ObjectNode data = mapper.createObjectNode()
+            .put("event", "SUBMISSION_OPEN_STATUS_CHANGED")
+            .set("submission_status", submissionData);
+
+        if (handleOnBot(url)) {
+            data.put("url", url);
+
+            final String jsonData = mapper.writeValueAsString(data);
+
             this.rabbitMq.queueBotMessage(jsonData);
 
             return;
