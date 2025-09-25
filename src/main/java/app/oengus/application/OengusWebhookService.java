@@ -6,6 +6,7 @@ import app.oengus.application.rabbitmq.IRabbitMQService;
 import app.oengus.application.webhook.mapper.WebhookDtoMapper;
 import app.oengus.domain.OengusBotUrl;
 import app.oengus.domain.OengusUser;
+import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.submission.Category;
 import app.oengus.domain.submission.Game;
 import app.oengus.domain.submission.Submission;
@@ -167,10 +168,11 @@ public class OengusWebhookService {
         callAsync(url, data);
     }
 
-    public void sendSubmissionChangedStatus(final String url, final boolean submissionsOpen, @Nullable final ZonedDateTime closeDateTime) throws IOException {
+    public void sendSubmissionChangedStatus(final String url, final boolean submissionsOpen, final Marathon marathon) throws IOException {
         final var submissionData = mapper.createObjectNode()
             .put("open", submissionsOpen)
-            .put("closes_at", mapper.writeValueAsString(closeDateTime));
+            .put("marathon_name", marathon.getName())
+            .put("closes_at", mapper.writeValueAsString(marathon.getSubmissionsEndDate()));
 
         final ObjectNode data = mapper.createObjectNode()
             .put("event", "SUBMISSION_OPEN_STATUS_CHANGED")

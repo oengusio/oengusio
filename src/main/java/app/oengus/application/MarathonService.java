@@ -215,18 +215,10 @@ public class MarathonService {
                 // TODO: implement settings to allow for disabling these
                 if (patch.isSubmissionsOpen() && !oldMarathon.isSubmissionsOpen()) {
                     // send open
-                    this.webhookService.sendSubmissionChangedStatus(
-                        patch.getWebhook(),
-                        true,
-                        patch.getSubmissionsEndDate()
-                    );
+                    this.webhookService.sendSubmissionChangedStatus(patch.getWebhook(), true, patch);
                 } else if (!patch.isSubmissionsOpen() && oldMarathon.isSubmissionsOpen()) {
                     // send closed
-                    this.webhookService.sendSubmissionChangedStatus(
-                        patch.getWebhook(),
-                        false,
-                        patch.getSubmissionsEndDate()
-                    );
+                    this.webhookService.sendSubmissionChangedStatus(patch.getWebhook(), false, patch);
                 }
             } catch (IOException e) {
                 Sentry.captureException(e);
