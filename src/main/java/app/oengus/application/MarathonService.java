@@ -15,7 +15,7 @@ import app.oengus.domain.webhook.WebhookSelectionDone;
 import io.sentry.Sentry;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MarathonService {
@@ -176,7 +177,7 @@ public class MarathonService {
                     this.webhookService.sendSelectionDoneEvent(patch.getWebhook(), parsedSelections);
                 } catch (IOException e) {
                     Sentry.captureException(e);
-                    LoggerFactory.getLogger(MarathonService.class).error("Sending selection done event failed", e);
+                    log.error("Sending selection done event failed", e);
                 }
             }
         }
@@ -207,6 +208,22 @@ public class MarathonService {
         if (patch.getSubmissionsStartDate() != null && patch.getSubmissionsEndDate() != null) {
             patch.setSubmissionsStartDate(patch.getSubmissionsStartDate().withSecond(0));
             patch.setSubmissionsEndDate(patch.getSubmissionsEndDate().withSecond(0));
+        }
+
+        if (patch.hasWebhook()) {
+            try {
+                // TODO: implement settings to allow for disabling these
+                if (patch.isSubmissionsOpen() && !oldMarathon.isSubmissionsOpen()) {
+                    // send open
+                    this.webhookService.sendSubmissionChangedStatus(patch.getWebhook(), true, patch);
+                } else if (!patch.isSubmissionsOpen() && oldMarathon.isSubmissionsOpen()) {
+                    // send closed
+                    this.webhookService.sendSubmissionChangedStatus(patch.getWebhook(), false, patch);
+                }
+            } catch (IOException e) {
+                Sentry.captureException(e);
+                log.error("Logging submission open state failed", e);
+            }
         }
 
         return this.marathonPersistencePort.save(patch);
