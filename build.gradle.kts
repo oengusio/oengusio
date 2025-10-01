@@ -72,7 +72,7 @@ dependencies {
 
     // POSTGRESQL
 //    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.7")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.8")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
