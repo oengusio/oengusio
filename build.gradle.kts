@@ -131,7 +131,7 @@ dependencies {
     // And of course, we are going to write unit tests.
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("net.datafaker:datafaker:2.4.4")
+    testImplementation("net.datafaker:datafaker:2.5.1")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.3.232")
 }
