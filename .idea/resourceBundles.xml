@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ResourceBundleManager">
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_ca.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_cy.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_da.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_de.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_el.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_eo.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_es.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_fi.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_fr.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_it.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_ja.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_ko.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_nl.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_pl.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_pt_PT.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_ru.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/export/Exports_tr.properties" />
+    <custom-resource-bundle>
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_ca.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_cy.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_da.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_de.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_el.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_eo.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_es.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_fi.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_fr.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_it.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_ja.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_ko.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_nb-NO.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_nl.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_pl.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_pt-BR.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_pt_PT.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_ru.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_tr.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_zh-CN.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/export/Exports_zh-HK.properties" />
+      <base-name>Exports</base-name>
+    </custom-resource-bundle>
+  </component>
+</project>
