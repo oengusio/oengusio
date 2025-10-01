@@ -5,7 +5,7 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "3.5.5"
+    id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
     id("io.freefair.lombok") version "8.14.2"
 }
@@ -72,7 +72,7 @@ dependencies {
 
     // POSTGRESQL
 //    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.7")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.8")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
@@ -112,7 +112,7 @@ dependencies {
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.1")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.2")
     implementation("org.passay:passay:1.6.6")
 
     // idk
@@ -131,7 +131,7 @@ dependencies {
     // And of course, we are going to write unit tests.
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("net.datafaker:datafaker:2.4.4")
+    testImplementation("net.datafaker:datafaker:2.5.1")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.3.232")
 }
