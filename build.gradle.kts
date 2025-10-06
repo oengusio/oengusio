@@ -133,7 +133,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("net.datafaker:datafaker:2.5.1")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    testRuntimeOnly("com.h2database:h2:2.3.232")
+    testRuntimeOnly("com.h2database:h2:2.4.240")
 }
 
 val wrapper: Wrapper by tasks
