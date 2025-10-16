@@ -81,7 +81,7 @@ dependencies {
     // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.18.0")
+    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.19.0")
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.1")
 
     // FEIGN
