@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -37,21 +38,11 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     private final ObjectFactory<SavedCategoryPersistencePort> savedCategoryPersistencePort;
 
     @Override
-    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-        final Authentication authentication, final MethodInvocation invocation) {
+    protected @NonNull MethodSecurityExpressionOperations createSecurityExpressionRoot(
+        final Authentication authentication, final @NonNull MethodInvocation invocation) {
         log.warn("Using 'old' way of getting authentication");
 
         return getCustomMethodSecurityExpressionRoot(() -> authentication);
-    }
-
-    @Override
-    public EvaluationContext createEvaluationContext(Supplier<Authentication> authentication, MethodInvocation mi) {
-        final StandardEvaluationContext context = (StandardEvaluationContext) super.createEvaluationContext(authentication, mi);
-//        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
-
-        context.setRootObject(getCustomMethodSecurityExpressionRoot(authentication));
-
-        return context;
     }
 
     @NotNull
@@ -66,6 +57,8 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         );
 
         root.setPermissionEvaluator(this.getPermissionEvaluator());
+//        root.setAuthorizationManagerFactory();
+        // TODO: upgrade
         root.setTrustResolver(this.trustResolver);
         root.setRoleHierarchy(this.getRoleHierarchy());
 

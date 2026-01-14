@@ -2,8 +2,8 @@ package app.oengus.adapter.rest.advice;
 
 import app.oengus.adapter.rest.controller.v2.ScheduleApiController;
 import app.oengus.domain.exception.InvalidExportFormatException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
