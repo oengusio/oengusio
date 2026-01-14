@@ -33,6 +33,8 @@ public class RabbitMQConfiguration {
         factory.setUri(this.uri);
         factory.setUsername(this.username);
         factory.setPassword(this.password);
+        factory.setAutomaticRecoveryEnabled(true);
+        factory.setTopologyRecoveryEnabled(true);
 
         return factory;
     }
