@@ -53,7 +53,6 @@ spring:
           ddl-auto: none
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
-        enabled: true
     mail:
         host: ${MAIL_SERVER:smtp.eu.mailgun.org}
         port: ${MAIL_PORT:465}
