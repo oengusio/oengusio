@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.kotlin.dsl.register
 
 plugins {
     java
@@ -22,8 +23,8 @@ project.group = "app.oengus"
 project.version = "2025.11.1"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 configurations {
@@ -38,8 +39,6 @@ application {
 
 repositories {
     mavenCentral()
-
-    maven { url = uri("https://jitpack.io") }
 }
 
 val snippetsDir = file("build/generated-snippets")
@@ -48,7 +47,6 @@ extra["snippetsDir"] = snippetsDir
 
 val sentryVersion = "8.29.0"
 val mapstructVersion = "1.6.3"
-val jacksonVersion = "2.19.4"
 
 // TODO: gradle version catalog
 dependencies {
@@ -141,7 +139,7 @@ dependencies {
 val wrapper: Wrapper by tasks
 val compileJava: JavaCompile by tasks
 
-val sourcesForRelease = task<Copy>("sourcesForRelease") {
+val sourcesForRelease = tasks.register<Copy>("sourcesForRelease") {
     from("src/main/java") {
         include("**/CoreConfiguration.java")
 
@@ -157,12 +155,12 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
     includeEmptyDirs = false
 }
 
-val generateJavaSources = task<SourceTask>("generateJavaSources") {
+val generateJavaSources = tasks.register<SourceTask>("generateJavaSources") {
     val javaSources = sourceSets["main"].allJava.filter {
         !arrayOf("CoreConfiguration.java").contains(it.name)
     }.asFileTree
 
-    source = javaSources + fileTree(sourcesForRelease.destinationDir)
+    source = javaSources + fileTree(sourcesForRelease.get().destinationDir)
 
     dependsOn(sourcesForRelease)
 }
@@ -181,7 +179,7 @@ tasks.test {
 }
 
 compileJava.apply {
-    source = generateJavaSources.source
+    source = generateJavaSources.get().source
 
     dependsOn(generateJavaSources)
 }
