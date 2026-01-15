@@ -127,10 +127,13 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     // And of course, we are going to write unit tests.
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-validation-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-mail-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
     testImplementation("net.datafaker:datafaker:2.5.3")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.4.240")
