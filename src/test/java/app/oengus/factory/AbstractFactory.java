@@ -2,7 +2,7 @@ package app.oengus.factory;
 
 import net.datafaker.Faker;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public abstract class AbstractFactory<T> implements FactoryBean<T> {
     protected Faker faker = new Faker();

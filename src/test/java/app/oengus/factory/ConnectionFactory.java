@@ -14,7 +14,7 @@ public class ConnectionFactory extends AbstractFactory<Connection> {
 
         con.setId(faker.number().randomDigit());
         con.setPlatform(faker.options().option(SocialPlatform.values()));
-        con.setUsername(faker.internet().username());
+        con.setUsername(faker.credentials().username());
 
         return con;
     }

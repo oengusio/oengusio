@@ -12,6 +12,7 @@ import app.oengus.domain.Role;
 import app.oengus.domain.marathon.Marathon;
 import app.oengus.domain.schedule.Schedule;
 import javassist.NotFoundException;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 import static app.oengus.domain.Constants.MIN_PATREON_PLEDGE_AMOUNT;
 
-public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
+public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot<UserDetailsDto>
     implements MethodSecurityExpressionOperations {
 
     // Free users always had one schedule, this change is just in the UI for them
@@ -47,7 +48,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
         final PatreonStatusPersistencePort patreonStatusPersistencePort,
         final SavedCategoryPersistencePort savedCategoryPersistencePort
     ) {
-        super(authentication);
+        super(authentication, null);
         this.marathonService = marathonService;
         this.userPersistencePort = userPersistencePort;
         this.schedulePersistencePort = schedulePersistencePort;
@@ -386,7 +387,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     }
 
     @Override
-    public void setFilterObject(final Object obj) {
+    public void setFilterObject(final @NonNull Object obj) {
         this.filterObject = obj;
     }
 

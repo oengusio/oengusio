@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:21 AS builder
+FROM azul/zulu-openjdk-alpine:25 AS builder
 
 WORKDIR /oengus-backend
 COPY gradle ./gradle
@@ -7,7 +7,7 @@ RUN ./gradlew --no-daemon dependencies
 COPY . .
 RUN ./gradlew --no-daemon bootJar
 
-FROM azul/zulu-openjdk-alpine:21-jre
+FROM azul/zulu-openjdk-alpine:25-jre
 
 RUN apk update --no-cache && apk add curl
 

@@ -1,6 +1,6 @@
 package app.oengus.adapter.rest.advice;
 
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class ExceptionHelper {
     /**
