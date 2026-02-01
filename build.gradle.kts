@@ -20,7 +20,7 @@ dependencyManagement {
 
 project.group = "app.oengus"
 // Version code is year.month.(release num)
-project.version = "2025.11.1"
+project.version = "2026.01.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -67,11 +67,11 @@ dependencies {
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
 
     // Authentication + OTP
-    implementation(group = "com.google.zxing", name = "core", version = "3.5.3")
+    implementation(group = "com.google.zxing", name = "core", version = "3.5.4")
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.8")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.9")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")

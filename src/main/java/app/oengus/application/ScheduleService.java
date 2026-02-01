@@ -194,7 +194,7 @@ public class ScheduleService {
 
         final var saved = this.schedulePersistencePort.save(schedule);
 
-        if (marathon.isScheduleDone()) {
+        if (marathon.isScheduleDone() && !saved.getLines().isEmpty()) {
             this.computeEndDate(marathon, saved);
             this.marathonPersistencePort.save(marathon);
         }
