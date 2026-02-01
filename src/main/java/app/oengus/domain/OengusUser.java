@@ -1,6 +1,9 @@
 package app.oengus.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -11,7 +14,6 @@ import java.util.Set;
 // TODO: should this be a record?
 @Getter
 @Setter
-@ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class OengusUser implements IUsername {
