@@ -1,6 +1,5 @@
 package app.oengus.util;
 
-import app.oengus.application.port.persistence.SchedulePersistencePort;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Schedule;
 import app.oengus.factory.schedule.LineFactory;
