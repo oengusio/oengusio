@@ -67,7 +67,7 @@ dependencies {
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
 
     // Authentication + OTP
-    implementation(group = "com.google.zxing", name = "core", version = "3.5.3")
+    implementation(group = "com.google.zxing", name = "core", version = "3.5.4")
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
