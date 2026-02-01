@@ -1,18 +1,19 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.kotlin.dsl.register
 
 plugins {
     java
     application
 
-    id("org.springframework.boot") version "3.5.6"
+    id("org.springframework.boot") version "4.0.0"
     id("io.spring.dependency-management") version "1.1.7"
-    id("io.freefair.lombok") version "9.1.0"
+    id("io.freefair.lombok") version "9.2.0"
 }
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.0.0")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.1.0")
     }
 }
 
@@ -21,8 +22,8 @@ project.group = "app.oengus"
 project.version = "2026.01.1"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 configurations {
@@ -37,17 +38,14 @@ application {
 
 repositories {
     mavenCentral()
-
-    maven { url = uri("https://jitpack.io") }
 }
 
 val snippetsDir = file("build/generated-snippets")
 
 extra["snippetsDir"] = snippetsDir
 
-val sentryVersion = "7.9.0"
+val sentryVersion = "8.29.0"
 val mapstructVersion = "1.6.3"
-val jacksonVersion = "2.19.1"
 
 // TODO: gradle version catalog
 dependencies {
@@ -60,9 +58,10 @@ dependencies {
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf")
     implementation(group = "org.springframework.boot", name = "spring-boot-starter-web") {
         // remove tomcat as we replace it with undertow
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
+//        exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
     }
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
+//    implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
+    implementation(group = "org.springframework.boot", name = "spring-boot-starter-cache")
     implementation(group = "org.liquibase", name = "liquibase-core")
     implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
 
@@ -71,29 +70,27 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-//    implementation(group = "com.zaxxer", name = "HikariCP", version = "6.2.1")
     implementation(group = "org.postgresql", name = "postgresql", version = "42.7.9")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.13.0")
     runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.13.0")
-    // implementation(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
 
     // APACHE
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.20.0")
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.1")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "4.3.0")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "5.0.0")
 
     // JACKSON
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-core", version = jacksonVersion)
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = jacksonVersion)
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = jacksonVersion)
+    implementation(group = "tools.jackson.core", name = "jackson-core", version = "3.0.3")
+    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.20")
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.20.1")
 
     // documentation
-    implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "2.8.13")
+    implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "2.8.15")
 
     // iCal4J
     implementation(group = "org.mnode.ical4j", name = "ical4j", version = "4.2.3")
@@ -108,11 +105,11 @@ dependencies {
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
 
     // Sentry
-    implementation(group = "io.sentry", name = "sentry-spring-boot-starter-jakarta", version = sentryVersion)
+    implementation(group = "io.sentry", name = "sentry-spring-boot-4", version = sentryVersion)
     implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
 
     // security and shit
-    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.2")
+    implementation("org.apache.logging.log4j:log4j-to-slf4j:2.25.3")
     implementation("org.passay:passay:1.6.6")
 
     // idk
@@ -129,8 +126,13 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     // And of course, we are going to write unit tests.
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-validation-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-mail-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
     testImplementation("net.datafaker:datafaker:2.5.3")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.4.240")
@@ -139,7 +141,7 @@ dependencies {
 val wrapper: Wrapper by tasks
 val compileJava: JavaCompile by tasks
 
-val sourcesForRelease = task<Copy>("sourcesForRelease") {
+val sourcesForRelease = tasks.register<Copy>("sourcesForRelease") {
     from("src/main/java") {
         include("**/CoreConfiguration.java")
 
@@ -155,12 +157,12 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
     includeEmptyDirs = false
 }
 
-val generateJavaSources = task<SourceTask>("generateJavaSources") {
+val generateJavaSources = tasks.register<SourceTask>("generateJavaSources") {
     val javaSources = sourceSets["main"].allJava.filter {
         !arrayOf("CoreConfiguration.java").contains(it.name)
     }.asFileTree
 
-    source = javaSources + fileTree(sourcesForRelease.destinationDir)
+    source = javaSources + fileTree(sourcesForRelease.get().destinationDir)
 
     dependsOn(sourcesForRelease)
 }
@@ -179,7 +181,7 @@ tasks.test {
 }
 
 compileJava.apply {
-    source = generateJavaSources.source
+    source = generateJavaSources.get().source
 
     dependsOn(generateJavaSources)
 }

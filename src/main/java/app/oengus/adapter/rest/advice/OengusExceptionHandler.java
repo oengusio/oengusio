@@ -3,6 +3,7 @@ package app.oengus.adapter.rest.advice;
 import app.oengus.domain.exception.OengusBusinessException;
 import app.oengus.domain.exception.base.GenericNotFoundException;
 import io.sentry.Sentry;
+import jakarta.servlet.ServletException;
 import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.util.NestedServletException;
+//import org.springframework.web.util.NestedServletException;
 
 import javax.security.auth.login.LoginException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -96,8 +97,8 @@ public class OengusExceptionHandler {
             .body(toMap(req, exc));
     }
 
-    @ExceptionHandler(NestedServletException.class)
-    public ResponseEntity<?> validationException(final NestedServletException exc, final HttpServletRequest req) {
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<?> validationException(final ServletException exc, final HttpServletRequest req) {
         final Throwable cause = ExceptionHelper.getRootCause(exc);
 
         if (cause instanceof ConstraintViolationException ex) {

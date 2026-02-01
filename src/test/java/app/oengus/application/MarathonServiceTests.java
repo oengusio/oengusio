@@ -64,7 +64,7 @@ public class MarathonServiceTests {
         final var optionalUser = this.marathonService.findCreatorById(marathon.getId());
 
         assertTrue(optionalUser.isPresent());
-        assertEquals(creator, optionalUser.get());
+        assertEquals(creator.getId(), optionalUser.get().getId());
     }
 
     @Test

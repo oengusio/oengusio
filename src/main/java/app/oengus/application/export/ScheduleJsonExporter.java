@@ -13,12 +13,12 @@ import app.oengus.domain.horaro.HoraroSchedule;
 import app.oengus.domain.schedule.Line;
 import app.oengus.domain.schedule.Runner;
 import app.oengus.domain.schedule.Schedule;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -139,7 +139,7 @@ public class ScheduleJsonExporter implements Exporter {
                     )
                 )
             ));
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             Sentry.captureException(e);
             throw new OengusBusinessException("EXPORT_FAIL");
         }

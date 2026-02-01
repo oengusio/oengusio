@@ -9,7 +9,7 @@ import app.oengus.application.port.persistence.UserPersistencePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -37,27 +37,13 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
     private final ObjectFactory<SavedCategoryPersistencePort> savedCategoryPersistencePort;
 
     @Override
-    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-        final Authentication authentication, final MethodInvocation invocation) {
-        log.warn("Using 'old' way of getting authentication");
-
-        return getCustomMethodSecurityExpressionRoot(() -> authentication);
-    }
-
-    @Override
-    public EvaluationContext createEvaluationContext(Supplier<Authentication> authentication, MethodInvocation mi) {
+    public @NonNull EvaluationContext createEvaluationContext(@NonNull Supplier<? extends Authentication> authentication, @NonNull MethodInvocation mi) {
         final StandardEvaluationContext context = (StandardEvaluationContext) super.createEvaluationContext(authentication, mi);
-//        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
+        final MethodSecurityExpressionOperations delegate = (MethodSecurityExpressionOperations) context.getRootObject().getValue();
 
-        context.setRootObject(getCustomMethodSecurityExpressionRoot(authentication));
-
-        return context;
-    }
-
-    @NotNull
-    private CustomMethodSecurityExpressionRoot getCustomMethodSecurityExpressionRoot(Supplier<Authentication> authentication) {
+        @SuppressWarnings("unchecked") // hehe
         final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(
-            authentication,
+            (Supplier<Authentication>) authentication,
             this.marathonService.getObject(),
             this.userPersistencePort.getObject(),
             this.schedulePersistencePort.getObject(),
@@ -65,10 +51,8 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
             this.savedCategoryPersistencePort.getObject()
         );
 
-        root.setPermissionEvaluator(this.getPermissionEvaluator());
-        root.setTrustResolver(this.trustResolver);
-        root.setRoleHierarchy(this.getRoleHierarchy());
+        context.setRootObject(root);
 
-        return root;
+        return context;
     }
 }
