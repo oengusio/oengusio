@@ -82,7 +82,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.1")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "5.0.0")
+    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "5.0.1")
 
     // JACKSON
     implementation(group = "tools.jackson.core", name = "jackson-core", version = "3.0.4")
