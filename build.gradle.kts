@@ -195,6 +195,6 @@ tasks.withType<JavaCompile> {
 }
 
 wrapper.apply {
-    gradleVersion = "9.2.1"
+    gradleVersion = "9.3.1"
     distributionType = Wrapper.DistributionType.BIN
 }
