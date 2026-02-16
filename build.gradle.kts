@@ -133,7 +133,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
-    testImplementation("net.datafaker:datafaker:2.5.3")
+    testImplementation("net.datafaker:datafaker:2.5.4")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.4.240")
 }
