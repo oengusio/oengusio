@@ -87,7 +87,7 @@ dependencies {
     // JACKSON
     implementation(group = "tools.jackson.core", name = "jackson-core", version = "3.1.0")
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21")
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.21.1")
+    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.21.2")
 
     // documentation
     implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "3.0.2")
