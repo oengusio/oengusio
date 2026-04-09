@@ -4,13 +4,19 @@ import org.passay.*;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.passay.data.EnglishCharacterData;
+import org.passay.data.EnglishSequenceData;
+import org.passay.rule.CharacterRule;
+import org.passay.rule.IllegalSequenceRule;
+import org.passay.rule.LengthRule;
+import org.passay.rule.WhitespaceRule;
 
 // Inspired by https://github.com/Baeldung/spring-security-registration
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         // @formatter:off
-        final PasswordValidator validator = new PasswordValidator(
+        final PasswordValidator validator = new DefaultPasswordValidator(
             // length between 8 and 50 characters
             new LengthRule(8, 50),
 
@@ -36,12 +42,12 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
             // no whitespace
             new WhitespaceRule()
         );
-        final RuleResult result = validator.validate(new PasswordData(value));
+        final ValidationResult result = validator.validate(new PasswordData(value));
         if (result.isValid()) {
             return true;
         }
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(String.join(",", validator.getMessages(result))).addConstraintViolation();
+        context.buildConstraintViolationWithTemplate(String.join(",", result.getMessages())).addConstraintViolation();
         return false;
     }
 }
