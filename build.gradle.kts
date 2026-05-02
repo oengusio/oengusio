@@ -113,7 +113,7 @@ dependencies {
     implementation("org.passay:passay:2.0.0")
 
     // idk
-    implementation("org.javassist:javassist:3.30.2-GA")
+    implementation("org.javassist:javassist:3.31.0-GA")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.30.0")
