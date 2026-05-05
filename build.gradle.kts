@@ -70,7 +70,7 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.10")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.11")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
