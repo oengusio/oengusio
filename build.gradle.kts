@@ -86,7 +86,7 @@ dependencies {
 
     // JACKSON
     implementation(group = "tools.jackson.core", name = "jackson-core", version = "3.1.4")
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21")
+    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.22")
     implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.22.0")
 
     // documentation
