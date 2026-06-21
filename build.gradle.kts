@@ -99,7 +99,7 @@ dependencies {
     implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "2.0.0")
 
     // OKHTTP
-    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "5.3.2")
+    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "5.4.0")
 
     // COUNTRY SUPPORT
     implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
