@@ -2,6 +2,7 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.QuestionDtoList;
 import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
@@ -128,13 +129,13 @@ public class MarathonApiController implements MarathonApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<QuestionDto>> getQuestions(String marathonId) {
+    public ResponseEntity<QuestionDtoList> getQuestions(String marathonId) {
         final var questions = this.marathonService.findQuestions(marathonId);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(
-                new DataListDto<>(
+                new QuestionDtoList(
                     questions.stream()
                         .map(this.questionMapper::toDto)
                         .toList()

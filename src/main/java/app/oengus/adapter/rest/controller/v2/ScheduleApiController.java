@@ -2,6 +2,8 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.schedule.LineDtoList;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDtoList;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
@@ -40,7 +42,7 @@ public class ScheduleApiController implements ScheduleApi {
     private final ScheduleDtoMapper mapper;
 
     @Override
-    public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(final String marathonId) {
+    public ResponseEntity<ScheduleInfoDtoList> findAllForMarathon(final String marathonId) {
         if (!this.marathonService. exists(marathonId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
@@ -49,7 +51,7 @@ public class ScheduleApiController implements ScheduleApi {
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(1, false))
-            .body(new DataListDto<>(
+            .body(new ScheduleInfoDtoList(
                 schedules.stream()
                     .map(this.mapper::infoFromSchedule)
                     .toList()
@@ -157,7 +159,7 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathonManagement(String marathonId) {
+    public ResponseEntity<ScheduleInfoDtoList> findAllForMarathonManagement(String marathonId) {
         if (!this.marathonService. exists(marathonId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Marathon not found");
         }
@@ -166,7 +168,7 @@ public class ScheduleApiController implements ScheduleApi {
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(new DataListDto<>(
+            .body(new ScheduleInfoDtoList(
                 schedules.stream()
                     .map(this.mapper::infoFromSchedule)
                     .toList()
@@ -236,18 +238,18 @@ public class ScheduleApiController implements ScheduleApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<LineDto>> getLinesForSchedule(String marathonId, int scheduleId) {
+    public ResponseEntity<LineDtoList> getLinesForSchedule(String marathonId, int scheduleId) {
         final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
             .orElseThrow(ScheduleNotFoundException::new);
         final var dtos = schedule.getLines().stream().map(this.mapper::fromDomain).toList();
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(new DataListDto<>(dtos));
+            .body(new LineDtoList(dtos));
     }
 
     @Override
-    public ResponseEntity<DataListDto<LineDto>> saveLinesForSchedule(String marathonId, int scheduleId, LineUpdateRequestDto body) {
+    public ResponseEntity<LineDtoList> saveLinesForSchedule(String marathonId, int scheduleId, LineUpdateRequestDto body) {
         final var schedule = this.scheduleService.findByScheduleId(marathonId, scheduleId, true)
             .orElseThrow(ScheduleNotFoundException::new);
         final var newLines = body.getData().stream().map(this.mapper::toDomain).toList();
@@ -260,7 +262,7 @@ public class ScheduleApiController implements ScheduleApi {
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(new DataListDto<>(dtos));
+            .body(new LineDtoList(dtos));
     }
 
     @Override

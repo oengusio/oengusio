@@ -1,6 +1,9 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDtoList;
+import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDtoList;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDtoList;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
@@ -131,19 +134,19 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<ProfileHistoryDto>> userSubmissionHistory(final int id) {
+    public ResponseEntity<ProfileHistoryDtoList> userSubmissionHistory(final int id) {
         final var history = this.userService.getSubmissionHistory(id);
         final var dtos = history.stream().map(this.mapper::fromDomain).toList();
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(30))
             .body(
-                new DataListDto<>(dtos)
+                new ProfileHistoryDtoList(dtos)
             );
     }
 
     @Override
-    public ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(final int id) {
+    public ResponseEntity<ModeratedHistoryDtoList> userModerationHistory(final int id) {
         final var history = this.userService.getModeratedHistory(id);
         // Only show public marathons
         final var dtos = history.stream()
@@ -154,7 +157,7 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30))
             .body(
-                new DataListDto<>(dtos)
+                new ModeratedHistoryDtoList(dtos)
             );
     }
 
@@ -197,13 +200,13 @@ public class UserApiController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<SavedGameDto>> getAllSavedGames(int id) {
+    public ResponseEntity<SavedGameDtoList> getAllSavedGames(int id) {
         final var foundUser = this.lookupService.findById(id).orElseThrow(UserNotFoundException::new);
 
         if (!foundUser.isSavedGamesPublic()) {
             return ResponseEntity.ok()
                 .headers(cachingHeaders(24 * 60, false))
-                .body(new DataListDto<>());
+                .body(new SavedGameDtoList());
         }
 
         final var savedGames = this.savedGamePort.findAllByUser(id, Pageable.unpaged())
@@ -211,6 +214,6 @@ public class UserApiController implements UserApi {
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(24 * 60, false))
-            .body(new DataListDto<>(savedGames.getContent()));
+            .body(new SavedGameDtoList(savedGames.getContent()));
     }
 }

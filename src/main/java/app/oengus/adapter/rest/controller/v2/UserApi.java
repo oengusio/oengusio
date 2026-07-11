@@ -1,12 +1,14 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDtoList;
+import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDtoList;
+import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDtoList;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
 import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -80,13 +82,13 @@ public interface UserApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProfileHistoryDto.class)
+                    schema = @Schema(implementation = ProfileHistoryDtoList.class)
                 )
             ),
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )
-    ResponseEntity<DataListDto<ProfileHistoryDto>> userSubmissionHistory(@PathVariable("id") final int id);
+    ResponseEntity<ProfileHistoryDtoList> userSubmissionHistory(@PathVariable("id") final int id);
 
     @PermitAll
     @GetMapping("/{id}/moderation-history")
@@ -98,13 +100,13 @@ public interface UserApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ModeratedHistoryDto.class)
+                    schema = @Schema(implementation = ModeratedHistoryDtoList.class)
                 )
             ),
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )
-    ResponseEntity<DataListDto<ModeratedHistoryDto>> userModerationHistory(@PathVariable("id") final int id);
+    ResponseEntity<ModeratedHistoryDtoList> userModerationHistory(@PathVariable("id") final int id);
 
     @Operation(hidden = true)
     @GetMapping("/{id}/roles")
@@ -133,16 +135,12 @@ public interface UserApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(
-                        schema = @Schema(
-                            implementation = SavedGameDto.class
-                        )
-                    )
+                    schema = @Schema(implementation = SavedGameDtoList.class)
                 )
             ),
             @ApiResponse(description = "User not found", responseCode = "404")
         }
     )
-    ResponseEntity<DataListDto<SavedGameDto>> getAllSavedGames(@PathVariable final int id);
+    ResponseEntity<SavedGameDtoList> getAllSavedGames(@PathVariable final int id);
 
 }
