@@ -2,8 +2,8 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
 import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.schedule.LineDtoList;
-import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDtoList;
+import app.oengus.adapter.rest.dto.v2.schedule.LineDataListDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
@@ -38,7 +38,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ScheduleInfoDtoList.class)
+                    schema = @Schema(implementation = ScheduleInfoDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -47,7 +47,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<ScheduleInfoDtoList> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
+    ResponseEntity<ScheduleInfoDataListDto> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
@@ -186,7 +186,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ScheduleInfoDtoList.class)
+                    schema = @Schema(implementation = ScheduleInfoDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -195,7 +195,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<ScheduleInfoDtoList> findAllForMarathonManagement(@PathVariable("marathonId") final String marathonId);
+    ResponseEntity<ScheduleInfoDataListDto> findAllForMarathonManagement(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}/manage")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
@@ -308,7 +308,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = LineDtoList.class)
+                    schema = @Schema(implementation = LineDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -317,7 +317,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<LineDtoList> getLinesForSchedule(
+    ResponseEntity<LineDataListDto> getLinesForSchedule(
         @PathVariable final String marathonId,
         @PathVariable final int scheduleId
     );
@@ -332,7 +332,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = LineDtoList.class)
+                    schema = @Schema(implementation = LineDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -345,7 +345,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<LineDtoList> saveLinesForSchedule(
+    ResponseEntity<LineDataListDto> saveLinesForSchedule(
         @PathVariable final String marathonId,
         @PathVariable final int scheduleId,
         @RequestBody @Valid final LineUpdateRequestDto body
