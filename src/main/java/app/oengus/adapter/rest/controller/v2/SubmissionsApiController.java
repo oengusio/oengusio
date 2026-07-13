@@ -2,10 +2,9 @@ package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.mapper.CategoryDtoMapper;
 import app.oengus.adapter.rest.mapper.GameDtoMapper;
-import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
-import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
-import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
+import app.oengus.adapter.rest.dto.v2.marathon.CategoryDataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.GameDataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDataListDto;
 import app.oengus.application.CategoryService;
 import app.oengus.application.ExportService;
 import app.oengus.application.GameService;
@@ -27,10 +26,10 @@ public class SubmissionsApiController implements SubmissionsApi {
     private final GameDtoMapper gameDtoMapper;
 
     @Override
-    public ResponseEntity<DataListDto<SubmissionDto>> getAllSubmissionsToplevel(final String marathonId) {
+    public ResponseEntity<SubmissionDataListDto> getAllSubmissionsToplevel(final String marathonId) {
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new DataListDto<>(
+            .body(new SubmissionDataListDto(
                 this.submissionService.getToplevelSubmissionsForMarathon(marathonId)
             ));
     }
@@ -38,23 +37,23 @@ public class SubmissionsApiController implements SubmissionsApi {
     // TODO: do we really need the marathon id in the queries?
     // (technically we don't, but is it better for security?)
     @Override
-    public ResponseEntity<DataListDto<GameDto>> getGamesForSubmission(final String marathonId, final int submissionId) {
+    public ResponseEntity<GameDataListDto> getGamesForSubmission(final String marathonId, final int submissionId) {
         final var games = this.gameService.findBySubmissionId(marathonId, submissionId);
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new DataListDto<>(
+            .body(new GameDataListDto(
                 games.stream().map(this.gameDtoMapper::fromDomain).toList()
             ));
     }
 
     @Override
-    public ResponseEntity<DataListDto<CategoryDto>> getCatgegoriesForGame(final String marathonId, final int submissionId, final int gameId) {
+    public ResponseEntity<CategoryDataListDto> getCatgegoriesForGame(final String marathonId, final int submissionId, final int gameId) {
         final var categories = this.categoryService.findByGameId(marathonId, submissionId, gameId);
 
         return ResponseEntity.ok()
             .headers(cachingHeaders(30, false))
-            .body(new DataListDto<>(
+            .body(new CategoryDataListDto(
                 categories.stream()
                     .map(this.categoryDtoMapper::fromDomain)
                     .toList()

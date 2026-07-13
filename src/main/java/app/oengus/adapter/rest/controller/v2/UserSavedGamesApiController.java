@@ -1,7 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
-import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.*;
 import app.oengus.adapter.rest.mapper.SavedCategoryDtoMapper;
 import app.oengus.adapter.rest.mapper.SavedGameDtoMapper;
@@ -24,7 +23,7 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
     private final SavedGameService savedGameService;
 
     @Override
-    public ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames() {
+    public ResponseEntity<SavedGameDataListDto> getMySavedGames() {
         final var currUserId = this.securityPort.getAuthenticatedUserId();
 
         // Should never happen in theory, but just in case.
@@ -39,7 +38,7 @@ public class UserSavedGamesApiController implements UserSavedGamesApi {
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(new DataListDto<>(savedGames));
+            .body(new SavedGameDataListDto(savedGames));
     }
 
     @Override

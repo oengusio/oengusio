@@ -4,12 +4,12 @@ import app.oengus.adapter.rest.dto.AbstractDataListDto;
 
 import java.util.Collection;
 
-public class QuestionDataListDto extends AbstractDataListDto<QuestionDto> {
-    public QuestionDataListDto() {
+public class GameDataListDto extends AbstractDataListDto<GameDto> {
+    public GameDataListDto() {
         super();
     }
 
-    public QuestionDataListDto(Collection<QuestionDto> data) {
+    public GameDataListDto(Collection<GameDto> data) {
         super(data);
     }
 }

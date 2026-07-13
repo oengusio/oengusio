@@ -1,7 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
-import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;

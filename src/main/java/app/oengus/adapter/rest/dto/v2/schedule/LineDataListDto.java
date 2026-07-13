@@ -1,10 +1,10 @@
 package app.oengus.adapter.rest.dto.v2.schedule;
 
-import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.AbstractDataListDto;
 
 import java.util.Collection;
 
-public class LineDataListDto extends DataListDto<LineDto> {
+public class LineDataListDto extends AbstractDataListDto<LineDto> {
     public LineDataListDto() {
         super();
     }

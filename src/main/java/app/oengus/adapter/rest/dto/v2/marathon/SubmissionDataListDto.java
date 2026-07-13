@@ -4,12 +4,12 @@ import app.oengus.adapter.rest.dto.AbstractDataListDto;
 
 import java.util.Collection;
 
-public class QuestionDataListDto extends AbstractDataListDto<QuestionDto> {
-    public QuestionDataListDto() {
+public class SubmissionDataListDto extends AbstractDataListDto<SubmissionDto> {
+    public SubmissionDataListDto() {
         super();
     }
 
-    public QuestionDataListDto(Collection<QuestionDto> data) {
+    public SubmissionDataListDto(Collection<SubmissionDto> data) {
         super(data);
     }
 }

@@ -1,13 +1,11 @@
 package app.oengus.adapter.rest.controller.v2;
 
-import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ModeratedHistoryDataListDto;
 import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDataListDto;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
-import app.oengus.domain.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -111,14 +109,14 @@ public interface UserApi {
     @Operation(hidden = true)
     @GetMapping("/{id}/roles")
     @PreAuthorize("isAdmin()")
-    ResponseEntity<DataListDto<Role>> getUserRoles(@PathVariable("id") final int id);
+    ResponseEntity<RoleDataListDto> getUserRoles(@PathVariable("id") final int id);
 
     @Operation(hidden = true)
     @PutMapping("/{id}/roles")
     @PreAuthorize("isAdmin()")
-    ResponseEntity<DataListDto<Role>> updateUserRoles(
+    ResponseEntity<RoleDataListDto> updateUserRoles(
         @PathVariable("id") final int id,
-        @RequestBody @Valid final DataListDto<Role> roles
+        @RequestBody @Valid final RoleDataListDto roles
     );
 
     @Operation(hidden = true)
