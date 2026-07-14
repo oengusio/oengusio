@@ -10,15 +10,15 @@ import java.util.Collection;
 @Getter
 @Setter
 @Schema(description = "Representation of an array")
-public class DataListDto<T> {
+public abstract class AbstractDataListDto<T> {
     @Schema(description = "The contents of this array")
     private Collection<T> data;
 
-    public DataListDto() {
+    protected AbstractDataListDto() {
         this(new ArrayList<>());
     }
 
-    public DataListDto(Collection<T> data) {
+    protected AbstractDataListDto(Collection<T> data) {
         this.data = data;
     }
 }

@@ -1,9 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
-import app.oengus.adapter.rest.dto.DataListDto;
-import app.oengus.adapter.rest.dto.v2.marathon.CategoryDto;
-import app.oengus.adapter.rest.dto.v2.marathon.GameDto;
-import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDto;
+import app.oengus.adapter.rest.dto.v2.marathon.CategoryDataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.GameDataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.SubmissionDataListDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public interface SubmissionsApi {
         summary = "List submissions for marathon",
         description = "List all submissions for a marathon, top-level info only, has a 30 minute cache"
     )
-    ResponseEntity<DataListDto<SubmissionDto>> getAllSubmissionsToplevel(
+    ResponseEntity<SubmissionDataListDto> getAllSubmissionsToplevel(
         @PathVariable("marathonId") final String marathonId
     );
 
@@ -30,7 +29,7 @@ public interface SubmissionsApi {
         summary = "List games for a submission",
         description = "List all games for a specific submission, has a 30 minute cache"
     )
-    ResponseEntity<DataListDto<GameDto>> getGamesForSubmission(
+    ResponseEntity<GameDataListDto> getGamesForSubmission(
         @PathVariable("marathonId") final String marathonId,
         @PathVariable("submissionId") final int submissionId
     );
@@ -40,7 +39,7 @@ public interface SubmissionsApi {
         summary = "List categories for a game",
         description = "List all categories for a specific game, has a 30 minute cache"
     )
-    ResponseEntity<DataListDto<CategoryDto>> getCatgegoriesForGame(
+    ResponseEntity<CategoryDataListDto> getCatgegoriesForGame(
         @PathVariable("marathonId") final String marathonId,
         @PathVariable("submissionId") final int submissionId,
         @PathVariable("gameId") final int gameId

@@ -1,7 +1,6 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
-import app.oengus.adapter.rest.dto.DataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,7 +15,7 @@ public interface UserSavedGamesApi {
 
     @GetMapping
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")
-    ResponseEntity<DataListDto<SavedGameDto>> getMySavedGames();
+    ResponseEntity<SavedGameDataListDto> getMySavedGames();
 
     @PostMapping
     @PreAuthorize("hasVerifiedEmailAndIsNotBanned() && isSupporter()")

@@ -1,14 +1,14 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
-import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.marathon.QuestionDataListDto;
 import app.oengus.adapter.rest.dto.v1.MarathonBasicInfoDto;
 import app.oengus.adapter.rest.dto.v2.MarathonHomeDto;
 import app.oengus.adapter.rest.dto.v2.marathon.MarathonSettingsDto;
 import app.oengus.adapter.rest.dto.v2.marathon.QuestionDto;
 import app.oengus.adapter.rest.dto.v2.marathon.request.ModeratorsUpdateRequest;
 import app.oengus.adapter.rest.dto.v2.marathon.request.QuestionsUpdateRequest;
-import app.oengus.adapter.rest.dto.v2.users.ProfileDto;
+import app.oengus.adapter.rest.dto.v2.users.ProfileDataListDto;
 import app.oengus.adapter.rest.mapper.MarathonDtoMapper;
 import app.oengus.adapter.rest.mapper.QuestionDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
@@ -93,13 +93,13 @@ public class MarathonApiController implements MarathonApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<ProfileDto>> getModerators(String marathonId) {
+    public ResponseEntity<ProfileDataListDto> getModerators(String marathonId) {
         final var moderators = this.marathonService.findModerators(marathonId);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(
-                new DataListDto<>(
+                new ProfileDataListDto(
                     moderators.stream()
                         .map(this.userDtoMapper::v2ProfileFromDomain)
                         .toList()
@@ -128,13 +128,13 @@ public class MarathonApiController implements MarathonApi {
     }
 
     @Override
-    public ResponseEntity<DataListDto<QuestionDto>> getQuestions(String marathonId) {
+    public ResponseEntity<QuestionDataListDto> getQuestions(String marathonId) {
         final var questions = this.marathonService.findQuestions(marathonId);
 
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(
-                new DataListDto<>(
+                new QuestionDataListDto(
                     questions.stream()
                         .map(this.questionMapper::toDto)
                         .toList()

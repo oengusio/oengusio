@@ -1,7 +1,8 @@
 package app.oengus.adapter.rest.controller.v2;
 
 import app.oengus.adapter.rest.dto.BooleanStatusDto;
-import app.oengus.adapter.rest.dto.DataListDto;
+import app.oengus.adapter.rest.dto.v2.schedule.LineDataListDto;
+import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDataListDto;
 import app.oengus.adapter.rest.dto.v2.schedule.LineDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleDto;
 import app.oengus.adapter.rest.dto.v2.schedule.ScheduleInfoDto;
@@ -11,7 +12,6 @@ import app.oengus.adapter.rest.dto.v2.schedule.request.ScheduleUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,7 +37,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                    schema = @Schema(implementation = ScheduleInfoDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -46,7 +46,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
+    ResponseEntity<ScheduleInfoDataListDto> findAllForMarathon(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}")
     @PreAuthorize("canUpdateMarathon(#marathonId) || isSchedulePublished(#marathonId, #scheduleId)")
@@ -185,7 +185,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ScheduleInfoDto.class))
+                    schema = @Schema(implementation = ScheduleInfoDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -194,7 +194,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<DataListDto<ScheduleInfoDto>> findAllForMarathonManagement(@PathVariable("marathonId") final String marathonId);
+    ResponseEntity<ScheduleInfoDataListDto> findAllForMarathonManagement(@PathVariable("marathonId") final String marathonId);
 
     @GetMapping("/{scheduleId}/manage")
     @PreAuthorize("canUpdateMarathon(#marathonId)")
@@ -307,7 +307,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = LineDto.class))
+                    schema = @Schema(implementation = LineDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -316,7 +316,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<DataListDto<LineDto>> getLinesForSchedule(
+    ResponseEntity<LineDataListDto> getLinesForSchedule(
         @PathVariable final String marathonId,
         @PathVariable final int scheduleId
     );
@@ -331,7 +331,7 @@ public interface ScheduleApi {
                 responseCode = "200",
                 content = @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = LineDto.class))
+                    schema = @Schema(implementation = LineDataListDto.class)
                 )
             ),
             @ApiResponse(
@@ -344,7 +344,7 @@ public interface ScheduleApi {
             )
         }
     )
-    ResponseEntity<DataListDto<LineDto>> saveLinesForSchedule(
+    ResponseEntity<LineDataListDto> saveLinesForSchedule(
         @PathVariable final String marathonId,
         @PathVariable final int scheduleId,
         @RequestBody @Valid final LineUpdateRequestDto body
