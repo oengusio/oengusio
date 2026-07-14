@@ -70,7 +70,7 @@ dependencies {
     implementation(group = "de.taimos", name = "totp", version = "1.0")
 
     // POSTGRESQL
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.11")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.13")
 
     // JWT
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
@@ -113,10 +113,10 @@ dependencies {
     implementation("org.passay:passay:2.0.0")
 
     // idk
-    implementation("org.javassist:javassist:3.31.0-GA")
+    implementation("org.javassist:javassist:3.32.0-GA")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.31.0")
+    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.34.0")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
@@ -133,7 +133,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
-    testImplementation("net.datafaker:datafaker:2.5.4")
+    testImplementation("net.datafaker:datafaker:2.7.0")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.4.240")
 }
