@@ -44,7 +44,7 @@ val snippetsDir = file("build/generated-snippets")
 
 extra["snippetsDir"] = snippetsDir
 
-val sentryVersion = "8.29.0"
+val sentryVersion = "8.64.0"
 val mapstructVersion = "1.6.3"
 
 // TODO: gradle version catalog
