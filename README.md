@@ -51,6 +51,7 @@ OAUTH_ORIGINS=http://localhost:4200,https://oengus.io;
 SENTRY_DSN=;
 SENTRY_TRACES_SAMPLE_RATE=1.0;
 SENTRY_ENVIRONMENT=local;
+OENGUS_WIBBY_USER_ID=<user id of your created "ghost" user, usually 1 on a new instance>;
 ```
 
 #### Dependencies

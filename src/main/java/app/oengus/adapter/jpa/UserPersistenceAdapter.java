@@ -125,7 +125,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
     }
 
     @Override
-    public void deleteAll() {
-        this.userRepository.deleteAll();
+    public void deleteById(int userId) {
+        this.userRepository.deleteById(userId);
     }
 }

@@ -37,5 +37,5 @@ public interface UserPersistencePort {
 
     void removeRole(int userId, Role role);
 
-    void deleteAll();
+    void deleteById(int userId);
 }

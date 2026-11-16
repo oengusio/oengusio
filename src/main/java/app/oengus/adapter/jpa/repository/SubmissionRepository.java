@@ -4,6 +4,7 @@ import app.oengus.adapter.jpa.entity.*;
 import app.oengus.domain.submission.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -85,4 +86,11 @@ public interface SubmissionRepository extends CrudRepository<SubmissionEntity, I
     boolean existsByMarathonAndUser(MarathonEntity marathon, User user);
 
     Optional<SubmissionEntity> findFirstByOpponentsContaining(OpponentEntity opponent);
+
+    @Modifying
+    @Query(
+        value = "UPDATE submission SET user_id = :newUseId WHERE user_id = :oldUserId",
+        nativeQuery = true
+    )
+    void reassignUser(@Param(value = "oldUserId") int oldUserId, @Param(value = "newUseId") int newUserId);
 }

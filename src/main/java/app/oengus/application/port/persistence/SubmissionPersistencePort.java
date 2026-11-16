@@ -43,4 +43,6 @@ public interface SubmissionPersistencePort {
     Optional<Integer> getUserIdFromOpponentId(int opponentId);
 
     Map<Integer, OengusUser> findUsersByIds(List<Integer> submissionIds);
+
+    void reassignUser(int oldUserId, int newUserid);
 }

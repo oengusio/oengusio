@@ -23,6 +23,8 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
     @Query(value = "SELECT m.name FROM MarathonEntity m WHERE m.id = :id")
     String getNameById(@Param("id") String id);
 
+    void deleteByCreator(User creator);
+
     default List<MarathonEntity> findNext() {
         return this.findNext(PageRequest.of(0, 5));
     }
@@ -91,4 +93,8 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
 
     @Query(value = "SELECT m.creator from MarathonEntity m WHERE m = :marathon")
     Optional<User> findCreatorById(@Param("marathon") MarathonEntity marathon);
+
+    @Modifying
+    @Query(value = "DELETE FROM moderator WHERE user_id = :userId", nativeQuery = true)
+    void deleteModeratorFromAllEvents(@Param("userId") int userId);
 }

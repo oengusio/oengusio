@@ -17,6 +17,10 @@ public interface MarathonPersistencePort {
 
     void delete(Marathon marathon);
 
+    void deleteByUser(int userId);
+
+    void unmodUserGlobal(int userId);
+
     boolean existsById(String marathonId);
 
     List<Marathon> findLive();

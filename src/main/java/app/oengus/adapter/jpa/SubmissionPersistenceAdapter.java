@@ -219,4 +219,10 @@ public class SubmissionPersistenceAdapter implements SubmissionPersistencePort {
                 SubmissionEntity::getId, (v) -> this.userMapper.toDomain(v.getUser())
             ));
     }
+
+    @Override
+    @Transactional
+    public void reassignUser(int oldUserId, int newUserid) {
+       this.repository.reassignUser(oldUserId, newUserid);
+    }
 }

@@ -85,8 +85,8 @@ spring:
                         missing_cache_strategy: create
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 current_session_context_class: org.springframework.orm.jpa.hibernate.SpringSessionContext
-                temp:
-                    use_jdbc_metadata_defaults: false
+                boot:
+                    allow_jdbc_metadata_access: false
         open-in-view: true # TODO: should this be false?
     datasource:
         url: ${DB_URL}

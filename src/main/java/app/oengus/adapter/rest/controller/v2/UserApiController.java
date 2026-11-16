@@ -5,7 +5,6 @@ import app.oengus.adapter.rest.dto.v2.users.ProfileHistoryDataListDto;
 import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDataListDto;
 import app.oengus.adapter.rest.dto.v2.users.*;
 import app.oengus.adapter.rest.dto.v2.users.request.UserUpdateRequest;
-import app.oengus.adapter.rest.dto.v2.users.savedGames.SavedGameDto;
 import app.oengus.adapter.rest.mapper.SavedGameDtoMapper;
 import app.oengus.adapter.rest.mapper.UserDtoMapper;
 import app.oengus.application.UserLookupService;
@@ -26,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

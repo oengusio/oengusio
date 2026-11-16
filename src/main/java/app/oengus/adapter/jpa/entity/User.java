@@ -34,6 +34,10 @@ public class User implements IUsername {
     @Size(max = 32)
     private String displayName;
 
+    @Column(name = "bio")
+    @Size(max = 200)
+    private String bio;
+
     @Column(name = "active")
     private boolean enabled;
 

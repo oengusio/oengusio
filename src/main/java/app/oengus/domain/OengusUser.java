@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// TODO: should this be a record?
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -28,6 +27,7 @@ public class OengusUser implements IUsername {
     private final int id;
     private String username;
     private String displayName;
+    private String bio;
     private String email; // TODO: use response model to hide fields we don't want.
     private String password; // hashed password
     private boolean enabled;

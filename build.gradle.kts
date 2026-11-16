@@ -6,7 +6,7 @@ plugins {
     java
     application
 
-    id("org.springframework.boot") version "4.1.0"
+    id("org.springframework.boot") version "4.0.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("io.freefair.lombok") version "9.5.0"
 }
@@ -50,63 +50,60 @@ val mapstructVersion = "1.6.3"
 // TODO: gradle version catalog
 dependencies {
     // SPRING
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-validation")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-actuator")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-security")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-mail")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-web") {
-        // remove tomcat as we replace it with undertow
-//        exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
-    }
-//    implementation(group = "org.springframework.boot", name = "spring-boot-starter-undertow")
-    implementation(group = "org.springframework.boot", name = "spring-boot-starter-cache")
-    implementation(group = "org.liquibase", name = "liquibase-core")
-    implementation(group = "io.micrometer", name = "micrometer-registry-prometheus")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
+//    implementation("org.liquibase:liquibase-core")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     // Authentication + OTP
-    implementation(group = "com.google.zxing", name = "core", version = "3.5.4")
-    implementation(group = "de.taimos", name = "totp", version = "1.0")
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("de.taimos:totp:1.0")
 
     // POSTGRESQL
-    implementation(group = "org.postgresql", name = "postgresql", version = "42.7.13")
+    implementation("org.postgresql:postgresql:42.7.13")
 
     // JWT
-    implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.13.0")
-    runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.13.0")
-    runtimeOnly(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.13.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
     // APACHE
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.20.0")
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.14.1")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.apache.commons:commons-csv:1.14.1")
 
     // FEIGN
-    implementation(group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign", version = "5.0.2")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     // JACKSON
-    implementation(group = "tools.jackson.core", name = "jackson-core", version = "3.3.0")
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.22")
-    implementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.22.1")
+    implementation("tools.jackson.core:jackson-core:3.3.0")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.22")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.1")
 
     // documentation
-    implementation(group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-api", version = "3.1.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.0")
 
     // iCal4J
-    implementation(group = "org.mnode.ical4j", name = "ical4j", version = "4.3.0")
+    implementation("org.mnode.ical4j:ical4j:4.3.0")
 
     // Paypal
-    implementation(group = "com.paypal.sdk", name = "checkout-sdk", version = "2.0.0")
+    implementation("com.paypal.sdk:checkout-sdk:2.0.0")
 
     // OKHTTP
-    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "5.4.0")
+    implementation("com.squareup.okhttp3:okhttp:5.4.0")
 
     // COUNTRY SUPPORT
-    implementation(group = "com.neovisionaries", name = "nv-i18n", version = "1.29")
+    implementation("com.neovisionaries:nv-i18n:1.29")
 
     // Sentry
-    implementation(group = "io.sentry", name = "sentry-spring-boot-4", version = sentryVersion)
-    implementation(group = "io.sentry", name = "sentry-logback", version = sentryVersion)
+    implementation("io.sentry:sentry-spring-boot-4:$sentryVersion")
+    implementation("io.sentry:sentry-logback:$sentryVersion")
 
     // security and shit
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.26.1")
@@ -116,7 +113,7 @@ dependencies {
     implementation("org.javassist:javassist:3.32.0-GA")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation(group = "com.rabbitmq", name = "amqp-client", version = "5.37.1")
+    implementation("com.rabbitmq:amqp-client:5.37.1")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
     // development tools, will be removed in production builds
@@ -126,16 +123,18 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     // And of course, we are going to write unit tests.
-    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-validation-test")
-    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-data-jpa-test")
-    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-mail-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-liquibase-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-mail-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation(group = "org.springframework.boot", name = "spring-boot-starter-cache-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-cache-test")
     testImplementation("net.datafaker:datafaker:2.7.0")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     testRuntimeOnly("com.h2database:h2:2.4.240")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 val wrapper: Wrapper by tasks

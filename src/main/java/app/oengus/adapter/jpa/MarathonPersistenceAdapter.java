@@ -61,8 +61,15 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     }
 
     @Override
+    @Transactional
     public void delete(Marathon marathon) {
         this.repository.deleteById(marathon.getId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteByUser(int userId) {
+        this.repository.deleteByCreator(User.ofId(userId));
     }
 
     @Override
@@ -117,6 +124,12 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
             .stream()
             .map(this.mapper::toDomain)
             .toList();
+    }
+
+    @Override
+    @Transactional
+    public void unmodUserGlobal(int userId) {
+        this.repository.deleteModeratorFromAllEvents(userId);
     }
 
     @Override

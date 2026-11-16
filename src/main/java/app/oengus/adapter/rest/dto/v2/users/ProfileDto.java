@@ -21,6 +21,9 @@ public class ProfileDto {
     @Schema(description = "The name that will be shown for the user in the interface")
     private String displayName;
 
+    @Schema(description = "The bio(graphy)/description for this user. Currently not available to set by end users.")
+    private String bio;
+
     @Schema(description = "True if this profile is enabled, false otherwise")
     private boolean enabled;
 

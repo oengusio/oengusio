@@ -1397,4 +1397,27 @@
             <column name="game_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="20261116-01" author="duncte123">
+        <addColumn tableName="users">
+            <column name="bio" type="varchar(200)" />
+        </addColumn>
+    </changeSet>
+
+
+    <!-- Add Wibby to the users table if they're missing -->
+    <changeSet id="20261116-02" author="duncte123">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(id) FROM users WHERE username = 'ghost';
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO users (username, display_name, bio, mail, email_verified, pronouns)
+            VALUES ('ghost', 'Wibby', 'Hi there, I''m (the ghost of) Wibby! I take the place of deleted accounts on Oengus', 'ghost@oengus.io', True, 'They/Them');
+
+            INSERT INTO user_roles(user_id, role)
+            VALUES ((SELECT id FROM users WHERE username = 'ghost' LIMIT 1), 0);
+        </sql>
+    </changeSet>
 </databaseChangeLog>

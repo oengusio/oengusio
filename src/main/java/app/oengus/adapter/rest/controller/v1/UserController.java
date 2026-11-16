@@ -164,7 +164,7 @@ public class UserController {
     @PreAuthorize("isSelfOrAdmin(#id)")
     @Operation(hidden = true)
     public ResponseEntity<?> deleteUser(@PathVariable("id") final int id) throws NotFoundException {
-        this.userService.markDeleted(id);
+        this.userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
     }

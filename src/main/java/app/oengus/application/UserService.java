@@ -4,6 +4,7 @@ import app.oengus.adapter.rest.dto.SyncDto;
 import app.oengus.adapter.rest.dto.v1.request.LoginRequest;
 import app.oengus.application.port.persistence.*;
 import app.oengus.application.port.security.UserSecurityPort;
+import app.oengus.configuration.OengusConfiguration;
 import app.oengus.domain.OengusUser;
 import app.oengus.domain.PatreonPledgeStatus;
 import app.oengus.domain.Role;
@@ -31,8 +32,10 @@ public class UserService {
     private final SubmissionPersistencePort submissionPersistencePort;
     private final OpponentPersistencePort opponentPersistencePort;
     private final PatreonStatusPersistencePort patreonStatusPersistencePort;
+    private final ScheduleLinePersistencePort scheduleLinePersistencePort;
     private final DiscordService discordService;
     private final TwitchService twitchService;
+    private final OengusConfiguration oengusConfig;
 
     // TODO: move these all to the lookup service
     public Optional<OengusUser> findByUsername(final String username) {
@@ -158,16 +161,33 @@ public class UserService {
         this.userPersistencePort.removeRole(id, role);
     }
 
-    public void markDeleted(int userId) {
+    public void deleteUser(int userId) {
         final var user = this.userPersistencePort.getById(userId);
 
         if (user == null) {
             return; // TODO: return error
         }
 
-        // TODO: delete all connections manually?
+        final int wibbyId = this.oengusConfig.getWibbyUserId();
+        System.out.println("Wibby id: " + wibbyId);
 
-        user.getConnections().clear();
+        int targetId = user.getId();
+
+        // TODO:
+        //  - Give all submissions to wibby (done)
+        //  - Delete all marathons that the user owns (done)
+        //  - Update schedules to assign Wibby (done)
+        //  - Test deleting a marathon that has submissions
+
+        this.scheduleLinePersistencePort.reassignRunner(targetId, wibbyId);
+        this.submissionPersistencePort.reassignUser(targetId, wibbyId);
+
+        this.marathonPersistencePort.deleteByUser(targetId);
+        this.marathonPersistencePort.unmodUserGlobal(targetId);
+
+        this.userPersistencePort.deleteById(targetId);
+
+        /*user.getConnections().clear();
         user.setDiscordId(null);
         user.setTwitchId(null);
         user.setTwitterId(null);
@@ -194,7 +214,7 @@ public class UserService {
         );
         user.setDisplayName("Deleted user");
 
-        this.save(user);
+        this.save(user);*/
     }
 
     // TODO: reimplement this when we actually do applications.
