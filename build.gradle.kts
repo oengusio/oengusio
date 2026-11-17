@@ -83,7 +83,7 @@ dependencies {
 
     // JACKSON
     implementation("tools.jackson.core:jackson-core:3.3.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.22")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.23")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.1")
 
     // documentation
