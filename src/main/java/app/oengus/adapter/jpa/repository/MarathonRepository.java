@@ -16,14 +16,14 @@ import java.util.Optional;
 
 public interface MarathonRepository extends JpaRepository<MarathonEntity, String> {
 
+    boolean existsByIdIgnoreCase(String id);
+
     @Query(value = "SELECT m from MarathonEntity m WHERE m.startDate > current_timestamp AND m.isPrivate = FALSE " +
         "ORDER BY m.startDate ASC")
     List<MarathonEntity> findNext(Pageable pageable);
 
     @Query(value = "SELECT m.name FROM MarathonEntity m WHERE m.id = :id")
     String getNameById(@Param("id") String id);
-
-    void deleteByCreator(User creator);
 
     default List<MarathonEntity> findNext() {
         return this.findNext(PageRequest.of(0, 5));
@@ -63,6 +63,8 @@ public interface MarathonRepository extends JpaRepository<MarathonEntity, String
             "WHERE (m.creator = :user OR u = :user)" +
             "ORDER BY m.startDate ASC")
     List<MarathonEntity> findAllMarathonsByCreatorOrModerator(@Param("user") User user);
+
+    List<MarathonEntity> findAllByCreator(User creator);
 
     @Modifying
     @Query("UPDATE MarathonEntity m SET m.cleared = true WHERE m = :marathon")

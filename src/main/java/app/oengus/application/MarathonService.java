@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -229,14 +227,37 @@ public class MarathonService {
         return this.marathonPersistencePort.save(patch);
     }
 
-    public void delete(final String marathonId) throws NotFoundException {
-        this.marathonPersistencePort.findById(marathonId).ifPresent((marathon) -> {
-            this.incentiveService.deleteByMarathon(marathonId);
-            this.scheduleService.deleteByMarathon(marathonId);
-            this.submissionService.deleteByMarathon(marathon.getId());
+    public void deleteModel(final Marathon marathon) {
+        this.incentiveService.deleteByMarathon(marathon.getId());
+        this.scheduleService.deleteByMarathon(marathon.getId());
+        this.submissionService.deleteByMarathon(marathon.getId());
 
-            this.marathonPersistencePort.delete(marathon);
-        });
+        this.marathonPersistencePort.delete(marathon);
+    }
+
+    public void delete(final String marathonId) throws NotFoundException {
+        this.marathonPersistencePort.findById(marathonId).ifPresent(this::deleteModel);
+    }
+
+    public void deleteFromCreator(final int userId) {
+        // is this overcomplicating things? maybe :D
+        final List<CompletableFuture<Void>> futures = new ArrayList<>();
+        final List<Marathon> marathons = this.marathonPersistencePort.findAllCreatedBy(userId);
+
+        for (final Marathon marathon : marathons) {
+            final CompletableFuture<Void> future = new CompletableFuture<>();
+            futures.add(future);
+
+            try {
+                this.deleteModel(marathon);
+
+                future.complete(null);
+            } catch (Exception e) {
+                Sentry.captureException(e);
+            }
+        }
+
+        futures.forEach(CompletableFuture::join);
     }
 
     public List<Marathon> findNext() {

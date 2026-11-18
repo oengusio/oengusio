@@ -63,18 +63,12 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
     @Override
     @Transactional
     public void delete(Marathon marathon) {
-        this.repository.deleteById(marathon.getId());
-    }
-
-    @Override
-    @Transactional
-    public void deleteByUser(int userId) {
-        this.repository.deleteByCreator(User.ofId(userId));
+        this.repository.delete(MarathonEntity.ofId(marathon.getId()));
     }
 
     @Override
     public boolean existsById(String marathonId) {
-        return this.repository.existsById(marathonId);
+        return this.repository.existsByIdIgnoreCase(marathonId);
     }
 
     @Override
@@ -121,6 +115,14 @@ public class MarathonPersistenceAdapter implements MarathonPersistencePort {
         return this.repository.findAllMarathonsByCreatorOrModerator(
                 User.ofId(userId)
             )
+            .stream()
+            .map(this.mapper::toDomain)
+            .toList();
+    }
+
+    @Override
+    public List<Marathon> findAllCreatedBy(int userId) {
+        return this.repository.findAllByCreator(User.ofId(userId))
             .stream()
             .map(this.mapper::toDomain)
             .toList();

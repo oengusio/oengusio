@@ -36,6 +36,7 @@ public class UserService {
     private final DiscordService discordService;
     private final TwitchService twitchService;
     private final OengusConfiguration oengusConfig;
+    private final MarathonService marathonService;
 
     // TODO: move these all to the lookup service
     public Optional<OengusUser> findByUsername(final String username) {
@@ -134,9 +135,9 @@ public class UserService {
     }
 
     public boolean existsByUsername(String name) {
-        return this.userPersistencePort.existsByUsername(name)
-            || "new".equalsIgnoreCase(name)
-            || "settings".equalsIgnoreCase(name);
+        return "new".equalsIgnoreCase(name)
+            || "settings".equalsIgnoreCase(name)
+            || this.userPersistencePort.existsByUsername(name);
     }
 
     public boolean hasPasswordSet(final int userId) {
@@ -182,7 +183,7 @@ public class UserService {
         this.scheduleLinePersistencePort.reassignRunner(targetId, wibbyId);
         this.submissionPersistencePort.reassignUser(targetId, wibbyId);
 
-        this.marathonPersistencePort.deleteByUser(targetId);
+        this.marathonService.deleteFromCreator(targetId);
         this.marathonPersistencePort.unmodUserGlobal(targetId);
 
         this.userPersistencePort.deleteById(targetId);

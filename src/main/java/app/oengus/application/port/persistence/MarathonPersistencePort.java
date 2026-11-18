@@ -17,8 +17,6 @@ public interface MarathonPersistencePort {
 
     void delete(Marathon marathon);
 
-    void deleteByUser(int userId);
-
     void unmodUserGlobal(int userId);
 
     boolean existsById(String marathonId);
@@ -32,6 +30,8 @@ public interface MarathonPersistencePort {
     List<Marathon> findActiveModeratedBy(int userId);
 
     List<Marathon> findAllModeratedBy(int userId);
+
+    List<Marathon> findAllCreatedBy(int userId);
 
     List<Marathon> findBetween(ZonedDateTime start, ZonedDateTime end);
 
