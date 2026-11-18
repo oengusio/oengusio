@@ -257,7 +257,7 @@ public class MarathonService {
             }
         }
 
-        futures.forEach(CompletableFuture::join);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     public List<Marathon> findNext() {
