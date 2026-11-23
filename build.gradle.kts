@@ -67,7 +67,7 @@ dependencies {
     implementation("de.taimos:totp:1.0")
 
     // POSTGRESQL
-    implementation("org.postgresql:postgresql:42.7.13")
+    implementation("org.postgresql:postgresql:42.7.14")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
