@@ -90,7 +90,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.0")
 
     // iCal4J
-    implementation("org.mnode.ical4j:ical4j:4.3.0")
+    implementation("org.mnode.ical4j:ical4j:4.4.0")
 
     // Paypal
     implementation("com.paypal.sdk:checkout-sdk:2.0.0")
