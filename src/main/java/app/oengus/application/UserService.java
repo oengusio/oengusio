@@ -178,7 +178,7 @@ public class UserService {
         //  - Give all submissions to wibby (done)
         //  - Delete all marathons that the user owns (done)
         //  - Update schedules to assign Wibby (done)
-        //  - Test deleting a marathon that has submissions
+        //  - Test deleting a marathon that has submissions (done)
 
         this.scheduleLinePersistencePort.reassignRunner(targetId, wibbyId);
         this.submissionPersistencePort.reassignUser(targetId, wibbyId);
