@@ -170,23 +170,21 @@ public class UserService {
         }
 
         final int wibbyId = this.oengusConfig.getWibbyUserId();
-        System.out.println("Wibby id: " + wibbyId);
-
-        int targetId = user.getId();
 
         // TODO:
         //  - Give all submissions to wibby (done)
         //  - Delete all marathons that the user owns (done)
         //  - Update schedules to assign Wibby (done)
         //  - Test deleting a marathon that has submissions (done)
+        //  - select id, username from users where mail like '%example.com%' or username like 'Deleted%';
 
-        this.scheduleLinePersistencePort.reassignRunner(targetId, wibbyId);
-        this.submissionPersistencePort.reassignUser(targetId, wibbyId);
+        this.scheduleLinePersistencePort.reassignRunner(userId, wibbyId);
+        this.submissionPersistencePort.reassignUser(userId, wibbyId);
 
-        this.marathonService.deleteFromCreator(targetId);
-        this.marathonPersistencePort.unmodUserGlobal(targetId);
+        this.marathonService.deleteFromCreator(userId);
+        this.marathonPersistencePort.unmodUserGlobal(userId);
 
-        this.userPersistencePort.deleteById(targetId);
+        this.userPersistencePort.deleteById(userId);
 
         /*user.getConnections().clear();
         user.setDiscordId(null);
